@@ -1,0 +1,22 @@
+# <type>(optional scope): short summary
+#
+# Types:
+# feat     -> new feature
+# fix      -> bug fix
+# refactor -> code change without behavior change
+# style    -> styles, formatting, CSS
+# chore    -> tooling, config, setup
+# docs     -> documentation
+# test     -> tests
+#
+# Example:
+# feat(layout): add base layout
+#
+# Body (optional):
+# - What was changed?
+# - Why was it changed?
+# - Any trade-offs or notes?
+#
+# Footer (optional):
+# - Related issue / ticket
+# - Breaking changes
