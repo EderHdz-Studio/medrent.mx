@@ -7,5 +7,13 @@ export default defineConfig({
   site: 'https://example.com',
   vite: {
     plugins: [tailwind()],
+    resolve: {
+      alias: {
+        '@components': '/src/components',
+        '@layouts': '/src/layouts',
+        '@lib': '/src/lib',
+        '@pages': '/src/pages',
+      },
+    },
   },
 });
