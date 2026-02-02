@@ -7,6 +7,7 @@ import { SITE } from '@lib/site';
 const site = SITE;
 import Upperbar from "@components/layout/header/Upperbar.astro";
 import Footer from "@components/layout/footer/Footer.astro";
+import Navbar from "@components/layout/header/Navbar.astro";
 ---
 
 <!doctype html>
@@ -24,6 +25,11 @@ import Footer from "@components/layout/footer/Footer.astro";
   
   <body>
     <Upperbar />
+
+    <Navbar />
+
+
+
     <div class="bg-red-500 text-white p-4">
       Tailwind is workingd
     </div>
