@@ -1,0 +1,38 @@
+---
+import "../styles/global.css"; 
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const { title } = Astro.props;
+
+import { SITE } from '@lib/site';
+const site = SITE;
+import Upperbar from "@components/layout/header/Upperbar.astro";
+import Footer from "@components/layout/footer/Footer.astro";
+import Navbar from "@components/layout/header/Navbar.astro";
+import StickyCta from "@components/layout/overlays/StickyCta.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <title>{title ?? 'Mi sitio'}</title>
+    
+    <slot name="metas" /> 
+    <slot name="head" />
+  </head>
+  
+  <body>
+    <Upperbar />
+    <Navbar />
+
+    <div class="bg-red-500 text-white p-4">
+      Tailwind is workingd
+    </div>
+    
+    <StickyCta />
+    <Footer site={site}/>
+  </body>
+</html>

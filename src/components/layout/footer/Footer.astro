@@ -1,0 +1,80 @@
+---
+const { site } = Astro.props;
+---
+<footer class="text-white"  style="background: var(--gradient-surface-dark);">
+    <!-- Grid de links -->
+    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-4 py-12 text-white text-[14px] font-normal">
+        <div>
+        <h4 class="font-bold mb-2  text-[22px] ">Explora</h4>
+        <ul class="space-y-1">
+            <li>
+            <a href="/" class="text-[var(--color-white)]  opacity-70 hover:underline">Inicio</a>
+            </li>
+            <li>
+            <a href="/acerca-de-nosotros" class="text-[var(--color-white)] opacity-70 hover:underline">Acerca de nosotros</a>
+            </li>
+            <li>
+            <a href="/productos" class="text-[var(--color-white)] opacity-70 hover:underline">Productos</a>
+            </li>
+            <li>
+            <a href="/nuestras-marcas" class="text-[var(--color-white)] opacity-70 hover:underline">Nuestras marcas</a>
+            </li>
+            <li>
+            <a href="/financiamiento" class="text-[var(--color-white)] opacity-70 hover:underline">Financiamiento</a>
+            </li>
+            <li>
+            <a href="/contacto" class="text-[var(--color-white)] opacity-70 hover:underline">Contacto</a>
+            </li>
+        </ul>
+        </div>
+        <div>
+        <h4 class="font-bold mb-2  text-[22px] ">Legales</h4>
+        <ul class="space-y-1">
+            <li>
+            <a href="/aviso-de-privacidad" class="text-[var(--color-white)] opacity-70 hover:underline">Aviso de privacidad</a>
+            </li>
+            <li>
+            <a href="/condiciones-de-uso" class="text-[var(--color-white)] opacity-70 hover:underline">Condiciones de uso</a>
+            </li>
+        </ul>
+        </div>
+        <div>
+        <h4 class="font-bold mb-2  text-[22px] ">Social</h4>
+        <ul class="space-y-1">
+            <li>
+            <a href="https://www.facebook.com/people/cuenta/?_rdr" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">Facebook</a>
+            </li>
+            <li>
+            <a href="https://www.instagram.com/cuenta/" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">Instagram</a>
+            </li>
+            <li>
+            <a href="https://www.linkedin.com/company/cuenta/" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">LinkedIn</a>
+            </li>
+            <li>
+            <a href="https://www.youtube.com/@cuenta" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">Youtube</a>
+            </li>
+        </ul>
+        </div>
+        <div>
+            <h4 class="font-bold mb-2  text-[22px] ">Contácto</h4>
+            <p class="text-[#A8A3A3]"> Tel: 
+                <a href="https://wa.me/5215569526686" target="_blank" rel="noopener noreferrer" class="underline text-[var(--color-secondary)]">+52 5569526686</a>
+            </p>
+            <p class="text-[#A8A3A3]"> Email: 
+                <a href="mailto:contacto@lattitude.com" class="underline text-[var(--color-secondary)]">mail@empresa.com</a>
+            </p>
+            <p class="text-[#A8A3A3]"> Lunes a viernes de 9:00 am a 6:00 pm</p>
+            
+            <p class="text-[#A8A3A3]"> 
+                Domicilio: Av. Insurgentes Sur 866, Del Valle, Benito Juárez, 03100 Ciudad de México, CDMX.
+            </p>
+        </div>
+    </div>
+    <!-- Bottom Bar -->
+    <div class="bg-[var(--color-primary)] text-center py-2 text-white font-bold text-sm ">
+        {site.legalName} {new Date().getFullYear()}. <span class="">Todos los derechos reservados.</span>
+        <span class="block mt-1 text-xs font-normal">
+        <a href="#" onclick="window.openCookieBanner && window.openCookieBanner(); return false;" class="underline hover:text-white transition-colors">Configuración de cookies</a>
+        </span>
+    </div>
+</footer>
