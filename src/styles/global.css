@@ -20,6 +20,14 @@
   /* Brand */
   --color-primary: #006764;      /* #006764 */
   --color-secondary: #69D8D3;  /* #69D8D3 */
+  --color-accent: #00827F;
+  --color-green-dark:#3D4948;
+  --color-secondary-light: #F5FAF9;
+  --color-text-default: #171D1C;
+  --color-gray: #BCC9C8;
+  --color-white: #FFFFFF;
+  --color-primary-light: #87F4EF;
+
 
   /* Light surfaces */
   --color-surface-light: 245 250 249; /* #F5FAF9 */
@@ -52,4 +60,34 @@
 
 body {
   font-family: "Lato", sans-serif;
+}
+html, body {
+  height: 100%;
+}
+
+
+::selection {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+::-moz-selection {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.bg-black ::selection {
+  background: var(--color-accent);
+  color: #FFFFFF;
+}
+.bg-black ::-moz-selection {
+  background: var(--color-accent);
+  color: #FFFFFF;
+}
+
+select option:hover,
+select option:focus {
+  background: none !important;
+  color: var(--color-primary) !important;
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary) !important;
 }

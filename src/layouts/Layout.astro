@@ -22,17 +22,20 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     
     <slot name="metas" /> 
     <slot name="head" />
+
+    <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
+    <link rel="stylesheet" href="node_modules/@glidejs/glide/dist/css/glide.core.min.css">
+    <!-- Optional Theme stylesheet | https://github.com/glidejs/glide -->
+    <link rel="stylesheet" href="node_modules/@glidejs/glide/dist/css/glide.theme.min.css">
   </head>
   
   <body>
     <Upperbar />
     <Navbar />
-
-    <div class="bg-red-500 text-white p-4">
-      Tailwind is workingd
-    </div>
-    
+    <slot />
     <StickyCta />
     <Footer site={site}/>
+
+    <script type="module" src="/src/scripts/main.ts"></script>
   </body>
 </html>
