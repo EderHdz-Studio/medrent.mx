@@ -1,11 +1,17 @@
+---
+import { BRANDS, ESPECIALTIES } from "@lib/site.ts";
+const marcas = BRANDS; 
+const especialidades = ESPECIALTIES;
+const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
+---
 <!-- Navbar -->
-<nav class="bg-white shadow">
+<nav class="bg-white shadow" x-data="{ open: false }">
     
     <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-3 md:py-3">
         <!-- Logo -->
         <div>
             <a href="/">
-                <img src="/images/logo.svg" alt="logo empresa" width="134" height="39">
+                <img src="/temp/Logotipo_Medrent.png" alt="logo empresa" width="134" height="39">
             </a>
         </div>
 
@@ -21,120 +27,600 @@
 
         <!-- Links desktop -->
         <div id="LinksNavBar-Desktop" class="hidden lg:flex gap-6 items-center text-[14px]">
-            <a href="/acerca-de-nosotros" class="hover:underline text-center font-bold hover:text-[var(--color-primary)]">Acerca de nosotros</a>
-            <a href="/productos" class="hover:underline font-bold hover:text-[var(--color-primary)]">Productos</a>
-            <a href="/financiamiento" class="hover:underline font-bold hover:text-[var(--color-primary)]">Financiamiento</a>   
-            <a href="/especialidades" class="hover:underline font-bold hover:text-[var(--color-primary)]">Especialidades</a>
-            <a href="/especialidades" class="hover:underline font-bold hover:text-[var(--color-primary)]">Nuestras marcas</a>
-            <a href="/eventos" class="hover:underline font-bold hover:text-[var(--color-primary)]">Eventos</a>
-            <a href="/blog" class="hover:underline font-bold hover:text-[var(--color-primary)]">Blog</a>
+            <a href="/acerca-de-nosotros" class="hover:underline text-center  hover:text-[var(--color-primary)]">Acerca de nosotros</a>
+
+            <!-- Dropdown Nuestras marcas -->
+            <div id="MarcasDropdown" x-data="{ marcasOpen: false }" class="relative">
+              <button 
+                @click="marcasOpen = !marcasOpen" 
+                :class="['flex items-center focus:outline-none cursor-pointer', marcasOpen ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)]']"
+              >
+                Nuestras marcas
+                <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': marcasOpen }" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </button>
+
+              <div 
+                x-show="marcasOpen"
+                @click.away="marcasOpen = false"
+                x-transition
+                @keydown.escape.window="marcasOpen = false"
+                  x-init="
+                    $watch('marcasOpen', value => {
+                      document.body.style.overflow = value ? 'hidden' : ''
+                    })
+                  "
+                :class="marcasOpen ? 'fixed left-0 w-full top-[100px] z-[100] bg-white border border-gray-200 shadow-lg flex justify-between' : 'fixed flex justify-between left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
+                style="max-width:100vw; border-bottom:2px solid var(--color-primary);"
+                id="MarcasDropdownMenu"
+                >
+
+                <div class="flex w-full bg-white justify-between px-4 marcasContainer" 
+                  style="max-width: 1280px; max-height: 310px; overflow-y: auto; margin: 0 auto; padding: 24px 32px; justify-content: space-between; flex-direction: column;"
+                  @wheel="$event.stopPropagation(); $el.scrollTop += $event.deltaY"
+                >
+                    {marcas?.map((marca) => (
+                        <a 
+                        href={`/nuestras-marcas`} 
+                        class="p-2 cursor-pointer marcaLink group flex items-center justify-between gap-2 rounded transition-colors min-w-[140px] hover:text-[var(--color-primary)]"
+                        style="margin-bottom: 16px;"
+                            >
+                            <span class="marcaName transition-colors">
+                                {marca.name}
+                            </span>
+                            <svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="24" height="23" viewBox="0 0 24 23" fill="none" 
+                                class="marcaIcon transition-colors hover:text-[var(--color-primary)] hover:bg-transparen">
+                                <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" fill="currentColor"></path>
+                            </svg>
+                        </a>
+                    ))}
+
+                  {/* Ver más */}
+                  <a 
+                    href={`/nuestras-marcas`} 
+                    class="marcaLink group flex items-center justify-between gap-2 rounded transition-colors p-2 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer">
+                  
+                    <label class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">Ver más</label>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">
+                      <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="currentColor"/>
+                    </svg>
+                  </a>                  
+                </div>
+              </div>
+
+              <style>
+                .marcasContainer {
+                  scrollbar-width: thin;
+                  scrollbar-color: var(--color-primary) #FFF8F7;
+                  overflow-y: auto;
+                  overscroll-behavior: contain;
+                }
+
+                .marcasContainer::-webkit-scrollbar {
+                  width: 8px;
+                }
+
+                .marcasContainer::-webkit-scrollbar-track {
+                  background: #FFF8F7;
+                }
+
+                .marcasContainer::-webkit-scrollbar-thumb {
+                  background-color: var(--color-primary);
+                  border-radius: 4px;
+                  border: 2px solid #FFF8F7;
+                }
+
+                .marcaLink.active,
+                .marcaLink:active,
+                .marcaLink:focus {
+                  background: #FFF8F7 !important;
+                  border-radius: 4px !important;
+                  color: var(--color-primary) !important;
+                }
+              </style>
+            </div>
+
+            <!-- Dropdown Especialidades -->
+            <div x-data="{ 
+              especialidadesOpen: false,
+              activeItem: null,
+              activeAplicacion: null,
+              especialidades: []
+            }" 
+            x-init="
+              if ($el.dataset.especialidades) { 
+                especialidades = JSON.parse($el.dataset.especialidades); 
+                
+                // Obtener el path actual y extraer la especialidad
+                const currentPath = window.location.pathname;
+                const pathSegments = currentPath.split('/').filter(segment => segment);
+                
+                // Buscar especialidad en los segmentos de la URL
+                let especialidadEncontrada = null;
+                
+                if (pathSegments.length >= 2 && pathSegments[0] === 'especialidades') {
+                  const pathEspecialidad = pathSegments[1]; // 'vascular' en tu ejemplo
+                  
+                  // Buscar la especialidad que coincida con el Path
+                  especialidadEncontrada = especialidades.find(e => e.Path === pathEspecialidad);
+                }
+                
+                if (especialidadEncontrada) {
+                  // Si encontramos la especialidad en la URL
+                  activeItem = especialidadEncontrada.id;
+                  
+                  // También buscar si hay una aplicación específica en la URL
+                  if (pathSegments.length >= 3 && especialidadEncontrada.CatalogoAplicaciones) {
+                    const slugAplicacion = pathSegments[2]; // 'ultrasonido-vascular' en tu ejemplo
+                    const aplicacionEncontrada = especialidadEncontrada.CatalogoAplicaciones.find(a => a.Slug === slugAplicacion);
+                    
+                    if (aplicacionEncontrada) {
+                      activeAplicacion = aplicacionEncontrada.id;
+                    } else if (especialidadEncontrada.CatalogoAplicaciones.length > 0) {
+                      // Si no encuentra la aplicación específica, seleccionar la primera
+                      activeAplicacion = especialidadEncontrada.CatalogoAplicaciones[0].id;
+                    }
+                  } else if (especialidadEncontrada.CatalogoAplicaciones && especialidadEncontrada.CatalogoAplicaciones.length > 0) {
+                    // Si solo está la especialidad, seleccionar la primera aplicación
+                    activeAplicacion = especialidadEncontrada.CatalogoAplicaciones[0].id;
+                  }
+                } else {
+                  // No seleccionar ninguna especialidad por defecto cuando la URL no coincide.
+                  // activeItem y activeAplicacion se mantienen null hasta que el usuario seleccione.
+                }
+              }
+            "
+            data-especialidades={JSON.stringify(especialidades)}
+            class="relative">
+                <button 
+                    @click="especialidadesOpen = !especialidadesOpen" 
+                    :class="['flex items-center font-light focus:outline-none cursor-pointer', especialidadesOpen ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)]']"
+                >
+                    Especialidades
+                    <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': especialidadesOpen }" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            
+                <!-- Menú especialidades - DINÁMICO -->
+                <div 
+                    x-show="especialidadesOpen"
+                    @click.away="especialidadesOpen = false; activeItem = null;"
+                    x-transition 
+                    :class="especialidadesOpen ? 'fixed left-0 w-full top-[100px] z-[100] bg-white border border-gray-200 shadow-lg py-6 px-8' : 'fixed left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
+                    style="border-bottom: 2px solid #B91247;"
+                    id="EspecialidadesDropdownMenu"
+                >
+                    <div class="max-w-7xl mx-auto">
+                        <div class="flex gap-12">
+                            <!-- Columna izquierda - Especialidades -->
+                            <div class="w-1/2">
+                            <div class="space-y-6">
+                                <!-- Lista de especialidades -->
+                                <div>
+                                <ul class="space-y-4">
+                                    <template x-for="especialidad in especialidades" :key="especialidad.id">
+                                    <li>
+                                        <a :href="`/especialidades`" 
+                                        @click.prevent="activeItem = activeItem === especialidad.id ? null : especialidad.id"
+                                        :class="[
+                                            'transition-colors flex items-center justify-between gap-2 p-2 rounded cursor-pointer',
+                                            activeItem === especialidad.id ? 'bg-[#FFF8F7] text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-white/50'
+                                        ]">
+                                        <div class="flex items-center gap-2">
+
+                                            
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM17 12C17 14.8 14.8 17 12 17C9.2 17 7 14.8 7 12C7 9.2 9.2 7 12 7C14.8 7 17 9.2 17 12Z" 
+                                                fill="currentColor"/>
+                                            </svg>
+                                            <span x-text="especialidad.Nombre"></span>
+                                    
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 19V5L19 12L8 19Z" 
+                                            fill="currentColor"/>
+                                        </svg>
+                                        </a>
+                                    </li>
+                                    </template>
+                                </ul>
+
+                                <!-- "Ver más" debajo de la lista -->
+                                <div>
+                                    <a href="/especialidades" 
+                                    class="transition-colors font-medium flex items-center gap-2 p-2 rounded hover:bg-white/50"
+                                    :class="activeItem === 'vermas' ? 'text-[var(--color-primary)]' : 'text-[#261819] hover:text-[var(--color-primary)]'"
+                                    @click="activeItem = 'vermas'"
+                                    style="justify-content: space-between; margin-top: 14px;">
+                                    <span>Ver más</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                        <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                            fill="currentColor"/>
+                                    </svg>
+                                    </a>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                    
+                            <!-- Columna derecha - CatalogoAplicaciones -->
+                            <div class="w-1/2">
+                            <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
+                                <template x-if="activeItem">
+                                <div>
+                                    <!-- Lista de aplicaciones clínicas -->
+                                    <ul class="space-y-2">
+                                    <template x-if="activeItem && activeItem !== 'vermas'"> 
+                                        <template x-for="aplicacion in especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones || []" 
+                                                :key="aplicacion.id">
+                                        <li>
+                                            <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.Path}/${aplicacion.Slug}`" 
+                                            @click="activeAplicacion = aplicacion.id"
+                                                :class="[
+                                                'transition-colors flex items-center justify-between gap-2 p-2 rounded cursor-pointer',
+                                                activeAplicacion === aplicacion.id ? 'bg-[#FFF8F7] text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-white/50'
+                                                ]">
+                                            <div class="font-medium" x-text="aplicacion.AplicacionClinica"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                                <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                                fill="currentColor"/>
+                                            </a>
+                                        </li>
+                                        </template>
+                                    </template>
+                                    
+                                    <!-- Mensaje si no hay aplicaciones -->
+                                    <template x-if="(!especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones || especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones.length === 0)">
+                                        <li class="text-gray-500 italic p-2">
+                                        No hay aplicaciones clínicas disponibles para esta especialidad.
+                                        </li>
+                                    </template>
+                                    
+                                    <!-- "Ver más" del catálogo -->
+                                    <li>
+                                        <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.Path}`" 
+                                            class="text-[#261819] hover:text-[var(--color-primary)] transition-colors font-medium flex items-center gap-2 p-2 rounded hover:bg-white/50 group"
+                                        style="justify-content: space-between; text-decoration: none;">
+                                        <span>Ver más</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                            <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                                fill="currentColor"/>
+                                        </svg>
+                                        </a>
+                                    </li>
+                                    </ul>
+                                </div>
+                                </template>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+            <!-- <a href="/especialidades" class="hover:underline hover:text-[var(--color-primary)]">Especialidades</a> -->
+            <!-- <a href="/especialidades" class="hover:underline  hover:text-[var(--color-primary)]">Nuestras marcas</a> -->
+            <!-- <a href="/productos" class="hover:underline  hover:text-[var(--color-primary)]">Productos</a> -->
+            <a href="/financiamiento" class="hover:underline  hover:text-[var(--color-primary)]">Financiamiento</a>   
+            <!-- <a href="/eventos" class="hover:underline  hover:text-[var(--color-primary)]">Eventos</a> -->
+            <!-- <a href="/blog" class="hover:underline  hover:text-[var(--color-primary)]">Blog</a> -->
             <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded">Contáctanos</a>
         </div>
     </div>
 
 
-
-    <!-- MOBILE MENU REDESIGN  -->
-    <!-- Menú desplegable -->
-    <div x-show="open" x-transition class="lg:hidden fixed inset-0 bg-white z-50 flex flex-col justify-between" style="display:none">
-        <!-- Barra superior móvil dentro del menú -->
-        <div class="flex justify-between items-center px-4 py-3 bg-[#261819]">
-        <!-- Logo -->
-        <a href="/" class="block">
-            logo mobile
-        </a>
-        <!-- Botón cerrar -->
-        <button @click="open = false" class="bg-white rounded-[4px] p-1">
-            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        </div>
-        
-        <!-- Enlaces -->
-        <div class="flex-1 px-4 py-6 flex flex-col gap-6 overflow-auto" id="mobileMenuLinks">
-
-        <div class="bg-white rounded-lg">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div class="mb-4 md:mb-0">
-                <div class="font-bold text-base leading-6 tracking-[0.5px]" style="font-weight: 700;">
-                title
-                </div>
-                <div class="font-normal text-base leading-6 tracking-[0.5px]" style="font-weight: 200; font-size: 13px;">
-                Description
-                </div>
-            </div>
-            <a href="/contacto" class="w-full md:w-auto bg-[var(--color-primary)] text-white text-center px-4 py-2 rounded font-semibold">
-                Contáctanos
-            </a>
-            </div>
-        </div>
-
-        <a href="/acerca-de-nosotros" class="py-6 text-[#261819] border-b border-[#8E6F73]">Acerca de nosotros</a>
-        <a href="/productos" class="py-6 text-[#261819] border-b border-[#8E6F73]">Productos</a>
-        <a href="/financiamiento" class="py-6 text-[#261819] border-b border-[#8E6F73]">Financiamiento</a>
-        <a href="/servicio-tecnico" class="py-6 text-[#261819] border-b border-[#8E6F73]">Servicio Técnico</a>
-        <a href="/blog" class="py-6 text-[#261819] border-b border-[#8E6F73]">Blog</a>
-        <a href="/eventos" class="py-6 text-[#261819]">Eventos</a>
-        </div>
-        
         <style>
-        #mobileMenuLinks {
-            transition: transform 0.3s ease-in-out;
+          @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        
-        .overflow-y-auto::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .overflow-y-auto::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 2px;
-        }
-        
-        .overflow-y-auto::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 2px;
-        }
-        
-        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-            background: #a4133c;
+
+        .animate-fadeIn {
+          animation: fadeIn 0.15s ease-out;
         }
         </style>
+        <!-- MOBILE MENU REDESIGN  -->
+        <!-- Menú desplegable -->
+        <div x-show="open" x-transition class="lg:hidden fixed inset-0 bg-white z-50 flex flex-col justify-between">
+          <!-- Barra superior móvil dentro del menú -->
+          <div class="flex justify-between items-center px-4 py-3 " style="background: var(--Medrent-surfaces-dark-medium-contrast-surface5, linear-gradient(0deg, rgba(105, 216, 211, 0.14) 0%, rgba(105, 216, 211, 0.14) 100%), #0F1414);">
+            <!-- Logo -->
+            <a href="/">
+                <svg xmlns="http://www.w3.org/2000/svg" width="140" height="24" viewBox="0 0 140 24" fill="none">
+                  <path d="M103.388 15.8361C103.362 16.103 103.336 16.3155 103.336 16.7685C103.467 18.2065 104.282 18.9799 105.755 18.9799C107.228 18.9799 108.017 18.3935 108.358 17.4611H112.724C111.646 20.7647 108.884 22.0439 105.571 22.0439C101.784 22.0439 99.0232 20.0984 99.0232 16.0222C99.0232 11.1208 102.205 7.41686 107.149 7.41686C110.673 7.41686 113.382 9.46772 113.382 13.4648C113.382 14.2901 113.329 15.0627 113.224 15.8353H103.389L103.388 15.8361ZM109.069 13.3051C109.201 11.7599 108.49 10.4808 106.992 10.4808C105.151 10.4808 104.178 11.5729 103.704 13.3051H109.069Z" fill="white"/>
+                  <path d="M116.017 7.81633H120.488L120.12 9.4949H120.173C120.83 8.56255 122.487 7.41686 124.88 7.41686C127.273 7.41686 128.799 8.93565 128.799 11.3069C128.799 12.2129 128.483 13.5983 128.326 14.291L126.695 21.6436H122.224L123.776 14.3173C123.907 13.6782 124.039 13.0917 124.039 12.5588C124.039 11.4659 123.355 10.8803 122.408 10.8803C119.647 10.8803 119.331 13.5176 118.858 15.7826L117.648 21.6436H113.177L116.017 7.81715V7.81633Z" fill="white"/>
+                  <path d="M137.186 7.81633H140L139.395 10.7468H136.555L135.477 15.9687C135.345 16.5807 135.241 17.1407 135.241 17.6201C135.241 18.2864 135.872 18.3391 136.635 18.3391C137.108 18.3391 137.555 18.2856 138.028 18.2592L137.345 21.6427C136.45 21.6963 135.609 21.8025 134.741 21.8025C132.664 21.8025 130.507 21.5093 130.507 19.4049C130.507 18.4462 130.691 17.3796 131.033 15.7554L132.085 10.7468H129.216L129.821 7.81633H132.69L133.558 3.66025H138.028L137.187 7.81633H137.186Z" fill="white"/>
+                  <path d="M98.4037 19.0335C98.0996 18.2189 97.9354 17.2824 97.9354 16.2183V16.0758C97.9354 14.2374 97.4085 13.2515 96.015 12.9048V12.8512C98.9598 12.4246 100.301 10.4001 100.301 7.54947C100.301 3.49964 97.698 2.62082 94.2792 2.62082H85.0748L81.182 21.6427H86.074L87.4936 14.7159H90.7547C92.4905 14.7159 93.2003 15.5948 93.2003 17.2742C93.4174 19.204 93.6995 20.2384 94.6556 21.6189L100.298 21.6296C99.3216 20.8389 98.7452 19.9065 98.4029 19.0326M92.123 11.0401H88.231L89.1774 6.45732H92.7807C94.0694 6.45732 95.4101 6.80325 95.4101 8.42912C95.4101 10.4808 93.8857 11.0401 92.123 11.0401Z" fill="white"/>
+                  <path d="M13.5492 0C17.4542 0.73798 20.464 4.04654 20.7974 8.12931C20.4071 4.75981 17.5826 2.14311 14.1516 2.14311C10.454 2.14311 7.4555 5.17986 7.4555 8.92659C7.4555 12.6733 10.4531 15.7101 14.1516 15.7101C11.3784 15.7101 9.12953 13.4327 9.12953 10.6225C9.12953 7.81221 11.3784 5.53567 14.1516 5.53567C16.9249 5.53567 19.1729 7.81303 19.1729 10.6225C19.1729 13.4319 16.9249 15.7101 14.1516 15.7101C17.5542 15.7101 20.3567 13.137 20.7843 9.80871C20.3274 14.3692 16.5257 17.929 11.9028 17.929C6.97256 17.929 2.9757 13.88 2.9757 8.88541C2.9757 4.46082 6.114 0.784927 10.2572 0.00164731C4.46273 0.812931 0 5.84783 0 11.9411C0 18.6011 5.32942 24 11.9028 24C18.4761 24 23.8064 18.6011 23.8064 11.9411C23.8064 5.84783 19.3437 0.812108 13.5484 0" fill="white"/>
+                  <path d="M103.388 15.8361C103.362 16.103 103.336 16.3155 103.336 16.7685C103.467 18.2065 104.282 18.9799 105.755 18.9799C107.228 18.9799 108.017 18.3935 108.358 17.4611H112.724C111.646 20.7647 108.884 22.0439 105.571 22.0439C101.784 22.0439 99.0232 20.0984 99.0232 16.0222C99.0232 11.1208 102.205 7.41686 107.149 7.41686C110.673 7.41686 113.382 9.46772 113.382 13.4648C113.382 14.2901 113.329 15.0627 113.224 15.8353H103.389L103.388 15.8361ZM109.069 13.3051C109.201 11.7599 108.49 10.4808 106.992 10.4808C105.151 10.4808 104.178 11.5729 103.704 13.3051H109.069Z" fill="white"/>
+                  <path d="M116.017 7.81633H120.488L120.12 9.4949H120.173C120.83 8.56255 122.487 7.41686 124.88 7.41686C127.273 7.41686 128.799 8.93565 128.799 11.3069C128.799 12.2129 128.483 13.5983 128.326 14.291L126.695 21.6436H122.224L123.776 14.3173C123.907 13.6782 124.039 13.0917 124.039 12.5588C124.039 11.4659 123.355 10.8803 122.408 10.8803C119.647 10.8803 119.331 13.5176 118.858 15.7826L117.648 21.6436H113.177L116.017 7.81715V7.81633Z" fill="white"/>
+                  <path d="M137.186 7.81633H140L139.395 10.7468H136.555L135.477 15.9687C135.345 16.5807 135.241 17.1407 135.241 17.6201C135.241 18.2864 135.872 18.3391 136.635 18.3391C137.108 18.3391 137.555 18.2856 138.028 18.2592L137.345 21.6427C136.45 21.6963 135.609 21.8025 134.741 21.8025C132.664 21.8025 130.507 21.5093 130.507 19.4049C130.507 18.4462 130.691 17.3796 131.033 15.7554L132.085 10.7468H129.216L129.821 7.81633H132.69L133.558 3.66025H138.028L137.187 7.81633H137.186Z" fill="white"/>
+                  <path d="M98.4037 19.0335C98.0996 18.2189 97.9354 17.2824 97.9354 16.2183V16.0758C97.9354 14.2374 97.4085 13.2515 96.015 12.9048V12.8512C98.9598 12.4246 100.301 10.4001 100.301 7.54947C100.301 3.49964 97.698 2.62082 94.2792 2.62082H85.0748L81.182 21.6427H86.074L87.4936 14.7159H90.7547C92.4905 14.7159 93.2003 15.5948 93.2003 17.2742C93.4174 19.204 93.6995 20.2384 94.6556 21.6189L100.298 21.6296C99.3216 20.8389 98.7452 19.9065 98.4029 19.0326M92.123 11.0401H88.231L89.1774 6.45732H92.7807C94.0694 6.45732 95.4101 6.80325 95.4101 8.42912C95.4101 10.4808 93.8857 11.0401 92.123 11.0401Z" fill="white"/>
+                  <path d="M13.5492 0C17.4542 0.73798 20.464 4.04654 20.7974 8.12931C20.4071 4.75981 17.5826 2.14311 14.1516 2.14311C10.454 2.14311 7.4555 5.17986 7.4555 8.92659C7.4555 12.6733 10.4531 15.7101 14.1516 15.7101C11.3784 15.7101 9.12953 13.4327 9.12953 10.6225C9.12953 7.81221 11.3784 5.53567 14.1516 5.53567C16.9249 5.53567 19.1729 7.81303 19.1729 10.6225C19.1729 13.4319 16.9249 15.7101 14.1516 15.7101C17.5542 15.7101 20.3567 13.137 20.7843 9.80871C20.3274 14.3692 16.5257 17.929 11.9028 17.929C6.97256 17.929 2.9757 13.88 2.9757 8.88541C2.9757 4.46082 6.114 0.784927 10.2572 0.00164731C4.46273 0.812931 0 5.84783 0 11.9411C0 18.6011 5.32942 24 11.9028 24C18.4761 24 23.8064 18.6011 23.8064 11.9411C23.8064 5.84783 19.3437 0.812108 13.5484 0" fill="white"/>
+                  <path d="M29.3374 2.37674H36.0702L36.9637 15.9371H37.0165L43.4866 2.37674H50.2185L46.3005 21.3987H41.6711L45.1956 6.29314H45.1428L37.7271 21.3987H33.966L32.8619 6.29314H32.8091L30.0212 21.3987H25.3926L29.3374 2.37674Z" fill="white"/>
+                  <path d="M53.143 15.5912C53.117 15.8581 53.0902 16.0706 53.0902 16.5236C53.2211 17.9616 54.0365 18.735 55.5098 18.735C56.983 18.735 57.7716 18.1486 58.1131 17.2162H62.4783C61.3994 20.5198 58.6383 21.799 55.3252 21.799C51.5381 21.799 48.7762 19.8535 48.7762 15.7773C48.7762 10.8759 51.9584 7.17196 56.9025 7.17196C60.4262 7.17196 63.1352 9.22282 63.1352 13.2199C63.1352 14.0452 63.0823 14.8178 62.9775 15.5904H53.1422L53.143 15.5912ZM58.8237 13.0602C58.9554 11.515 58.2448 10.2359 56.7464 10.2359C54.9057 10.2359 53.9325 11.328 53.4593 13.0602H58.8237Z" fill="white"/>
+                  <path d="M77.1787 21.3987H72.8395L73.2078 19.6937H73.155C72.2346 21.159 70.8931 21.7981 69.1841 21.7981C65.6336 21.7981 64.1612 19.2407 64.1612 15.9108C64.1612 11.4351 66.6857 7.17279 71.4192 7.17279C73.3127 7.17279 74.6274 7.86547 75.1534 9.41061H75.2063L76.6266 2.37756H81.0975L77.1787 21.3995V21.3987ZM74.3648 13.1936C74.3648 11.6748 73.5493 10.6354 72.0769 10.6354C69.5524 10.6354 68.6313 13.486 68.6313 15.6439C68.6313 17.1092 69.263 18.3347 70.8931 18.3347C73.3916 18.3347 74.3648 15.2972 74.3648 13.1928" fill="white"/>
+                  <path d="M29.3374 2.37674H36.0702L36.9637 15.9371H37.0165L43.4866 2.37674H50.2185L46.3005 21.3987H41.6711L45.1956 6.29314H45.1428L37.7271 21.3987H33.966L32.8619 6.29314H32.8091L30.0212 21.3987H25.3926L29.3374 2.37674Z" fill="white"/>
+                  <path d="M53.143 15.5912C53.117 15.8581 53.0902 16.0706 53.0902 16.5236C53.2211 17.9616 54.0365 18.735 55.5098 18.735C56.983 18.735 57.7716 18.1486 58.1131 17.2162H62.4783C61.3994 20.5198 58.6383 21.799 55.3252 21.799C51.5381 21.799 48.7762 19.8535 48.7762 15.7773C48.7762 10.8759 51.9584 7.17196 56.9025 7.17196C60.4262 7.17196 63.1352 9.22282 63.1352 13.2199C63.1352 14.0452 63.0823 14.8178 62.9775 15.5904H53.1422L53.143 15.5912ZM58.8237 13.0602C58.9554 11.515 58.2448 10.2359 56.7464 10.2359C54.9057 10.2359 53.9325 11.328 53.4593 13.0602H58.8237Z" fill="white"/>
+                  <path d="M77.1787 21.3987H72.8395L73.2078 19.6937H73.155C72.2346 21.159 70.8931 21.7981 69.1841 21.7981C65.6336 21.7981 64.1612 19.2407 64.1612 15.9108C64.1612 11.4351 66.6857 7.17279 71.4192 7.17279C73.3127 7.17279 74.6274 7.86547 75.1534 9.41061H75.2063L76.6266 2.37756H81.0975L77.1787 21.3995V21.3987ZM74.3648 13.1936C74.3648 11.6748 73.5493 10.6354 72.0769 10.6354C69.5524 10.6354 68.6313 13.486 68.6313 15.6439C68.6313 17.1092 69.263 18.3347 70.8931 18.3347C73.3916 18.3347 74.3648 15.2972 74.3648 13.1928" fill="white"/>
+                </svg>
+            </a>
+            <!-- Botón cerrar -->
+            <button @click="open = false" class="bg-white rounded-[4px] p-1">
+              <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+           
+          <!-- Enlaces -->
+          <div class="flex-1 px-4 py-6 flex flex-col gap-6 overflow-auto" id="mobileMenuLinks">
 
-        <!-- Footer del menú móvil -->
-        <div class="bg-[#261819] text-white text-[11px] tracking-[0.5px] font-light px-4 py-4">
-            <div class="flex flex-col gap-2 text-center">
-                <a href="https://wa.me/525569526686" target="_blank" rel="noopener noreferrer" class="hover:text-white flex items-center justify-center gap-1">
-                <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.501 2.00006C18.024 2.00006 22.501 6.47706 22.501 12.0001C22.501 17.5231 18.024 22.0001 12.501 22.0001C10.7337 22.0031 8.99757 21.5354 7.47099 20.6451L2.50499 22.0001L3.85699 17.0321C2.96595 15.505 2.49789 13.7681 2.50099 12.0001C2.50099 6.47706 6.97799 2.00006 12.501 2.00006ZM9.09299 7.30006L8.89299 7.30806C8.76368 7.31697 8.63734 7.35093 8.52099 7.40806C8.41257 7.46957 8.31355 7.54636 8.22699 7.63606C8.10699 7.74906 8.03899 7.84706 7.96599 7.94206C7.59611 8.42296 7.39696 9.01337 7.39999 9.62006C7.40199 10.1101 7.52999 10.5871 7.72999 11.0331C8.13899 11.9351 8.81199 12.8901 9.69999 13.7751C9.91399 13.9881 10.124 14.2021 10.35 14.4011C11.4534 15.3725 12.7683 16.073 14.19 16.4471L14.758 16.5341C14.943 16.5441 15.128 16.5301 15.314 16.5211C15.6052 16.5057 15.8895 16.4269 16.147 16.2901C16.2778 16.2224 16.4056 16.149 16.53 16.0701C16.53 16.0701 16.5723 16.0414 16.655 15.9801C16.79 15.8801 16.873 15.8091 16.985 15.6921C17.069 15.6054 17.139 15.5047 17.195 15.3901C17.273 15.2271 17.351 14.9161 17.383 14.6571C17.407 14.4591 17.4 14.3511 17.397 14.2841C17.393 14.1771 17.304 14.0661 17.207 14.0191L16.625 13.7581C16.625 13.7581 15.755 13.3791 15.223 13.1371C15.1673 13.1128 15.1077 13.0989 15.047 13.0961C14.9786 13.0889 14.9094 13.0965 14.8442 13.1185C14.779 13.1404 14.7192 13.176 14.669 13.2231C14.664 13.2211 14.597 13.2781 13.874 14.1541C13.8325 14.2098 13.7753 14.252 13.7098 14.2751C13.6443 14.2983 13.5733 14.3014 13.506 14.2841C13.4408 14.2667 13.377 14.2446 13.315 14.2181C13.191 14.1661 13.148 14.1461 13.063 14.1101C12.4889 13.86 11.9574 13.5215 11.488 13.1071C11.362 12.9971 11.245 12.8771 11.125 12.7611C10.7316 12.3843 10.3887 11.958 10.105 11.4931L10.046 11.3981C10.0043 11.3339 9.97003 11.2651 9.94399 11.1931C9.90599 11.0461 10.005 10.9281 10.005 10.9281C10.005 10.9281 10.248 10.6621 10.361 10.5181C10.471 10.3781 10.564 10.2421 10.624 10.1451C10.742 9.95506 10.779 9.76006 10.717 9.60906C10.437 8.92506 10.1477 8.24473 9.84899 7.56806C9.78999 7.43406 9.61499 7.33806 9.45599 7.31906C9.40199 7.31239 9.34799 7.30706 9.29399 7.30306C9.15972 7.29536 9.02508 7.2967 8.89099 7.30706L9.09299 7.30006Z" fill="white" />
-                </svg> Servicio al cliente: <span class="underline">+52 5569526686</span>
+            <div class="bg-white rounded-lg">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div class="mb-4 md:mb-0">
+                  <div class="font-bold text-base leading-6 tracking-[0.5px]" style="font-weight: 700;">
+                    Hablemos de innovación médica
+                  </div>
+                  <div class="font-normal text-base leading-6 tracking-[0.5px]" style="font-weight: 200; font-size: 13px;">
+                    Estamos listos para asesorarte en equipo de alta especialidad.
+                  </div>
+                </div>
+                <a href="/contacto" class="w-full md:w-auto bg-[var(--color-primary)] text-white text-center px-4 py-2 rounded font-semibold">
+                  Contáctanos
                 </a>
-                <div class="flex justify-center items-center gap-2">
+              </div>
+            </div>
+
+            <!-- MARCAS REDISEÑO MOBILE -->
+            <div x-data="{ marcasMobileOpen: false }">
+              <a @click="marcasMobileOpen = !marcasMobileOpen" :class="marcasMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
+                <span>Nuestras marcas</span>
+                <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': marcasMobileOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+              </a>
+              <div x-show="marcasMobileOpen" x-transition class="flex flex-wrap gap-4 w-full" >
+                <div class="grid grid-cols-1 gap-4 w-full pt-4">
+                  {marcas?.map((marca) => (
+                    <a href={`/nuestras-marcas`} class="marcaLink flex items-center justify-between gap-2 text-gray-700 transition-colors p-4">
+                      <span class="text-gray-700">{marca.name}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#171D1C"></path>
+                      </svg>
+                    </a>
+                  ))}
+                </div>
+                <a href={`/nuestras-marcas`} class="marcaLink flex items-center justify-between gap-2 text-gray-700 transition-colors p-4">
+                  <label class="cursor-pointer text-gray-700">Ver más</label>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#171D1C"/></svg>
+                </a>
+              </div>
+            </div> 
+            
+            <!-- Especialidades -->
+            <div class="especialidades-container" x-data="{ 
+              especialidadesMobileOpen: false,
+              vistaActual: 'lista-especialidades',
+              activeAplicacion: null,
+              activeItem: null,
+              especialidadesData: [] 
+            }" 
+              x-effect="document.querySelectorAll('#mobileMenuLinks > *:not(.especialidades-container)').forEach(el => el.style.display = (vistaActual === 'catalogo-aplicaciones') ? 'none' : '')"
+            
+              data-especialidades={JSON.stringify(especialidades || [])}
+              x-init="(() => {
+                  try {
+                    especialidadesData = JSON.parse($el.dataset.especialidades || '[]');
+                  } catch (e) {
+                    console.error('Error parsing especialidades data:', e);
+                    especialidadesData = [];
+                  }
+                  <!-- console.log('Datos cargados (mobile):', especialidadesData); -->
+                })()">
+
+              
+                <a x-show="vistaActual !== 'catalogo-aplicaciones'" @click="especialidadesMobileOpen = !especialidadesMobileOpen" 
+                    :class="especialidadesMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
+                    <span>Especialidades</span>
+                    <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': especialidadesMobileOpen && vistaActual === 'lista-especialidades' }" 
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+              
+              <div x-show="especialidadesMobileOpen" x-transition class="relative w-full" style="position: relative; min-height: 300px;">
+                
+                <!-- Vista de lista de especialidades -->
+                <div x-show="vistaActual === 'lista-especialidades'" 
+                      x-transition:enter="transition ease-out duration-300"
+                      x-transition:enter-start="opacity-100 transform translate-x-0"
+                      x-transition:enter-end="opacity-100 transform translate-x-0"
+                      x-transition:leave="transition ease-in duration-200"
+                      x-transition:leave-start="opacity-100 transform translate-x-0"
+                      x-transition:leave-end="opacity-0 transform -translate-x-full"
+                      class="grid grid-cols-1 gap-4 w-full pt-4">
+
+                  
+                  {especialidades?.map((especialidad) => (
+                     <a
+                      href="#"
+                      @click.prevent={`activeItem = ${especialidad.id}; vistaActual = 'catalogo-aplicaciones';`}
+                      :class={`activeItem === ${especialidad.id} 
+                      ? 'bg-[#FFF8F7] text-[var(--color-primary)] rounded-[4px]' 
+                      : 'bg-[#FFF] text-gray-700'`}
+                      class="especialidadLink flex flex-row items-center hover:text-[var(--color-primary)] justify-between gap-2 rounded hover:bg-[#FFF8F7] text-[#261819] transition-colors min-w-[140px] group min-h-[80px] md:min-h-[120px] w-full px-4">
+                        <!-- SVG + Texto juntos -->
+                        <div class="flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM17 12C17 14.8 14.8 17 12 17C9.2 17 7 14.8 7 12C7 9.2 9.2 7 12 7C14.8 7 17 9.2 17 12Z" fill="currentColor"/>
+                          </svg>
+
+                          <label class="bg-white bg-opacity-80 px-2 py-1 rounded group-hover:text-[var(--color-primary)] cursor-pointer">{especialidad.Nombre}</label>
+                        </div>
+
+                        <!-- SVG derecho -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path d="M8 19V5L19 12L8 19Z" fill="currentColor"/>
+                        </svg>
+                    </a>
+                  ))}
+                  
+                  <a href="/especialidades" 
+                     class="especialidadLink flex items-center gap-2 p-4 text-gray-700 transition-colors min-w-[140px] justify-between" 
+                     style="text-decoration: none!important;">
+                    <label class="cursor-pointer" style="text-decoration: none!important; color:oklch(37.3% 0.034 259.733);">Ver más</label>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#171D1C"/>
+                    </svg>
+                  </a>
+                </div>
+                
+                <!-- Vista de catálogo de aplicaciones - SIMPLIFICADA -->
+                     <div x-show="vistaActual === 'catalogo-aplicaciones'" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-x-full"
+                     x-transition:enter-end="opacity-100 transform translate-x-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform translate-x-0"
+                     x-transition:leave-end="opacity-0 transform translate-x-full"
+                     class="absolute top-0 left-0 w-full bg-white pt-4" 
+                     style="position: absolute; top: 0; left: 0; height: 100%;">
+                  
+                  <!-- Botón Regresar -->
+                  <div :class="vistaActual !== 'catalogo-aplicaciones' ? 'mb-4 px-4' : ''">
+                    <button @click="
+                      vistaActual = 'lista-especialidades';
+                      document.getElementById('mobileMenuLinks').style.transform = 'translateX(0)';
+                      activeItem = null;
+                      activeAplicacion = null;
+                    " 
+                      class="flex items-center gap-2 text-[#261819] transition-colors mb-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="transform rotate-180">
+                        <path d="M8 19V5L19 12L8 19Z" fill="currentColor"/>
+                      </svg>
+                      <span class="font-medium">Regresar</span>
+                    </button>
+                    
+                    <!-- Contenedor dinámico para aplicaciones -->
+                    <div>
+                      <!-- Mostrar si hay aplicaciones -->
+                      <div x-show="activeItem && especialidadesData.find(e => e.id == activeItem)?.CatalogoAplicaciones?.length > 0">
+                        <div class="space-y-3">
+                          <template x-for="aplicacion in especialidadesData.find(e => e.id == activeItem)?.CatalogoAplicaciones || []" :key="aplicacion.id">
+                            <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.Path || ''}/${aplicacion.Slug}`"
+                               @click="activeAplicacion = aplicacion.id"
+                               :class="
+                                activeAplicacion == aplicacion.id 
+                                  ? 'flex items-center justify-between p-3 rounded-lg bg-[#FFF8F7] text-[var(--color-primary)]' 
+                                  : 'flex items-center justify-between p-3 rounded-lg text-[#261819]'
+                                ">
+                              <div x-text="aplicacion.AplicacionClinica || 'Aplicación'"></div>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 19V5L19 12L8 19Z" fill="currentColor"/>
+                              </svg>
+                            </a>
+                          </template>
+                        </div>
+                        
+                        <!-- Enlace para ver más -->
+                        <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.Path || ''}`" 
+                           class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-[#261819] mt-4">
+                          <div class="font-medium">Ver todas las aplicaciones</div>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#171D1C"/>
+                          </svg>
+                        </a>
+                      </div>
+                      
+                      <!-- Mostrar si NO hay aplicaciones -->
+                      <div x-show="activeItem && (!especialidadesData.find(e => e.id == activeItem)?.CatalogoAplicaciones || especialidadesData.find(e => e.id == activeItem)?.CatalogoAplicaciones?.length === 0)">
+                        <div class="text-center py-8 text-gray-500">
+                          <p>No hay aplicaciones disponibles para esta especialidad.</p>
+                            <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.Path || ''}`" 
+                              class="inline-block mt-4 text-[var(--color-primary)] font-medium hover:underline">
+                            Ver especialidad
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            
+            <a href="/acerca-de-nosotros" class="py-6 text-[#261819] border-b border-[#8E6F73]">Acerca de nosotros</a>
+            
+            <!-- <a href="/productos" class="py-6 text-[#261819] border-b border-[#8E6F73]">Productos</a> -->
+            <a href="/financiamiento" class="py-6 text-[#261819] border-b border-[#8E6F73]">Financiamiento</a>
+            <!-- <a href="/servicio-tecnico" class="py-6 text-[#261819] border-b border-[#8E6F73]">Servicio Técnico</a> -->
+            <!-- <a href="/blog" class="py-6 text-[#261819] border-b border-[#8E6F73]">Blog</a> -->
+            <!-- <a href="/eventos" class="py-6 text-[#261819]">Eventos</a> -->
+          </div>
+          
+          <style>
+            #mobileMenuLinks {
+              transition: transform 0.3s ease-in-out;
+            }
+            
+            .overflow-y-auto::-webkit-scrollbar {
+              width: 4px;
+            }
+            
+            .overflow-y-auto::-webkit-scrollbar-track {
+              background: #f1f1f1;
+              border-radius: 2px;
+            }
+            
+            .overflow-y-auto::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 2px;
+            }
+            
+            .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+              background: var(--color-primary);
+            }
+          </style>
+
+          <!-- Footer del menú móvil -->
+          <div class="bg-[#261819] text-white text-[11px] tracking-[0.5px] font-light px-4 py-4">
+            <div class="flex flex-col gap-2 text-center">
+              <a href="https://wa.me/525569526686" target="_blank" rel="noopener noreferrer" class="hover:text-white flex items-center justify-center gap-1">
+                <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.501 2.00006C18.024 2.00006 22.501 6.47706 22.501 12.0001C22.501 17.5231 18.024 22.0001 12.501 22.0001C10.7337 22.0031 8.99757 21.5354 7.47099 20.6451L2.50499 22.0001L3.85699 17.0321C2.96595 15.505 2.49789 13.7681 2.50099 12.0001C2.50099 6.47706 6.97799 2.00006 12.501 2.00006ZM9.09299 7.30006L8.89299 7.30806C8.76368 7.31697 8.63734 7.35093 8.52099 7.40806C8.41257 7.46957 8.31355 7.54636 8.22699 7.63606C8.10699 7.74906 8.03899 7.84706 7.96599 7.94206C7.59611 8.42296 7.39696 9.01337 7.39999 9.62006C7.40199 10.1101 7.52999 10.5871 7.72999 11.0331C8.13899 11.9351 8.81199 12.8901 9.69999 13.7751C9.91399 13.9881 10.124 14.2021 10.35 14.4011C11.4534 15.3725 12.7683 16.073 14.19 16.4471L14.758 16.5341C14.943 16.5441 15.128 16.5301 15.314 16.5211C15.6052 16.5057 15.8895 16.4269 16.147 16.2901C16.2778 16.2224 16.4056 16.149 16.53 16.0701C16.53 16.0701 16.5723 16.0414 16.655 15.9801C16.79 15.8801 16.873 15.8091 16.985 15.6921C17.069 15.6054 17.139 15.5047 17.195 15.3901C17.273 15.2271 17.351 14.9161 17.383 14.6571C17.407 14.4591 17.4 14.3511 17.397 14.2841C17.393 14.1771 17.304 14.0661 17.207 14.0191L16.625 13.7581C16.625 13.7581 15.755 13.3791 15.223 13.1371C15.1673 13.1128 15.1077 13.0989 15.047 13.0961C14.9786 13.0889 14.9094 13.0965 14.8442 13.1185C14.779 13.1404 14.7192 13.176 14.669 13.2231C14.664 13.2211 14.597 13.2781 13.874 14.1541C13.8325 14.2098 13.7753 14.252 13.7098 14.2751C13.6443 14.2983 13.5733 14.3014 13.506 14.2841C13.4408 14.2667 13.377 14.2446 13.315 14.2181C13.191 14.1661 13.148 14.1461 13.063 14.1101C12.4889 13.86 11.9574 13.5215 11.488 13.1071C11.362 12.9971 11.245 12.8771 11.125 12.7611C10.7316 12.3843 10.3887 11.958 10.105 11.4931L10.046 11.3981C10.0043 11.3339 9.97003 11.2651 9.94399 11.1931C9.90599 11.0461 10.005 10.9281 10.005 10.9281C10.005 10.9281 10.248 10.6621 10.361 10.5181C10.471 10.3781 10.564 10.2421 10.624 10.1451C10.742 9.95506 10.779 9.76006 10.717 9.60906C10.437 8.92506 10.1477 8.24473 9.84899 7.56806C9.78999 7.43406 9.61499 7.33806 9.45599 7.31906C9.40199 7.31239 9.34799 7.30706 9.29399 7.30306C9.15972 7.29536 9.02508 7.2967 8.89099 7.30706L9.09299 7.30006Z" fill="white" />
+                </svg> Servicio al cliente: <span class="underline">+52 5569526686</span>
+              </a>
+              <div class="flex justify-center items-center gap-2">
                 <span>Síguenos en todas nuestras redes:</span>
                 <!-- Icons de ejemplo -->
                 <a href="https://www.linkedin.com/company/lattitude-cardiologia/" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2.00006C6.47708 2.00006 2 6.47714 2 12.0001C2 17.523 6.47708 22.0001 12 22.0001C17.5229 22.0001 22 17.523 22 12.0001C22 6.47714 17.5229 2.00006 12 2.00006ZM9.55208 16.1449H7.52708V9.62819H9.55208V16.1449ZM8.52708 8.82819C7.8875 8.82819 7.47396 8.37506 7.47396 7.81464C7.47396 7.24277 7.9 6.80319 8.55312 6.80319C9.20625 6.80319 9.60625 7.24277 9.61875 7.81464C9.61875 8.37506 9.20625 8.82819 8.52708 8.82819ZM16.9479 16.1449H14.9229V12.5334C14.9229 11.6928 14.6292 11.1219 13.8969 11.1219C13.3375 11.1219 13.0052 11.5084 12.8583 11.8803C12.8042 12.0126 12.7906 12.2001 12.7906 12.3865V16.1438H10.7646V11.7063C10.7646 10.8928 10.7385 10.2126 10.7115 9.62714H12.4708L12.5635 10.5324H12.6042C12.8708 10.1074 13.524 9.48027 14.6167 9.48027C15.949 9.48027 16.9479 10.373 16.9479 12.2917V16.1449Z" fill="white" />
-                    </svg>
+                  </svg>
                 </a>
                 <a href="https://www.facebook.com/people/Lattitude/61574675921627/?_rdr" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22 12.0001C22 6.48006 17.52 2.00006 12 2.00006C6.48 2.00006 2 6.48006 2 12.0001C2 16.8401 5.44 20.8701 10 21.8001V15.0001H8V12.0001H10V9.50006C10 7.57006 11.57 6.00006 13.5 6.00006H16V9.00006H14C13.45 9.00006 13 9.45006 13 10.0001V12.0001H16V15.0001H13V21.9501C18.05 21.4501 22 17.1901 22 12.0001Z" fill="white" />
-                    </svg>
+                  </svg>
                 </a>
                 <a href="https://www.instagram.com/lattitude.mx/" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 9.52C11.5095 9.52 11.03 9.66545 10.6222 9.93795C10.2144 10.2105 9.89648 10.5978 9.70878 11.0509C9.52107 11.5041 9.47196 12.0028 9.56765 12.4838C9.66334 12.9649 9.89954 13.4068 10.2464 13.7536C10.5932 14.1005 11.0351 14.3367 11.5162 14.4323C11.9972 14.528 12.4959 14.4789 12.9491 14.2912C13.4022 14.1035 13.7895 13.7856 14.062 13.3778C14.3346 12.97 14.48 12.4905 14.48 12C14.48 11.6743 14.4159 11.3518 14.2912 11.0509C14.1666 10.7501 13.9839 10.4767 13.7536 10.2464C13.5233 10.0161 13.2499 9.83341 12.9491 9.70878C12.6482 9.58415 12.3257 9.52 12 9.52ZM21.93 7.07C21.9247 6.29776 21.7825 5.53257 21.51 4.81C21.3093 4.28126 20.9987 3.80109 20.5988 3.40119C20.1989 3.00128 19.7187 2.69072 19.19 2.49C18.4674 2.21746 17.7022 2.07526 16.93 2.07C15.64 2 15.26 2 12 2C8.74 2 8.36 2 7.07 2.07C6.29776 2.07526 5.53257 2.21746 4.81 2.49C4.28126 2.69072 3.80109 3.00128 3.40119 3.40119C3.00128 3.80109 2.69072 4.28126 2.49 4.81C2.21746 5.53257 2.07526 6.29776 2.07 7.07C2 8.36 2 8.74 2 12C2 15.26 2 15.64 2.07 16.93C2.08076 17.705 2.22277 18.4725 2.49 19.2C2.68983 19.7263 3.00013 20.2037 3.4 20.6C3.79819 21.0023 4.27939 21.3129 4.81 21.51C5.53257 21.7825 6.29776 21.9247 7.07 21.93C8.36 22 8.74 22 12 22C15.26 22 15.64 22 16.93 21.93C17.7022 21.9247 18.4674 21.7825 19.19 21.51C19.7206 21.3129 20.2018 21.0023 20.6 20.6C20.9999 20.2037 21.3102 19.7263 21.51 19.2C21.7823 18.4739 21.9244 17.7055 21.93 16.93C22 15.64 22 15.26 22 12C22 8.74 22 8.36 21.93 7.07ZM19.39 15.07C19.3579 15.6871 19.2262 16.295 19 16.87C18.8059 17.3497 18.5173 17.7854 18.1514 18.1514C17.7854 18.5173 17.3497 18.8059 16.87 19C16.2895 19.2136 15.6783 19.3318 15.06 19.35C14.27 19.35 14.06 19.35 12 19.35C9.94 19.35 9.73 19.35 8.94 19.35C8.32173 19.3318 7.71049 19.2136 7.13 19C6.6341 18.8157 6.18628 18.5217 5.82 18.14C5.45767 17.7813 5.17784 17.3479 5 16.87C4.78556 16.2901 4.67061 15.6782 4.66 15.06C4.66 14.27 4.66 14.06 4.66 12C4.66 9.94 4.66 9.73 4.66 8.94C4.67061 8.32183 4.78556 7.70988 5 7.13C5.18428 6.6341 5.47827 6.18628 5.86 5.82C6.22033 5.45962 6.65326 5.18009 7.13 5C7.71049 4.78641 8.32173 4.66821 8.94 4.65C9.73 4.65 9.94 4.65 12 4.65C14.06 4.65 14.27 4.65 15.06 4.65C15.6783 4.66821 16.2895 4.78641 16.87 5C17.3659 5.18428 17.8137 5.47827 18.18 5.86C18.5423 6.21875 18.8222 6.65213 19 7.13C19.2136 7.71049 19.3318 8.32173 19.35 8.94C19.35 9.73 19.35 9.94 19.35 12C19.35 14.06 19.42 14.27 19.39 15.06V15.07ZM17.79 7.63C17.6709 7.30698 17.4832 7.01364 17.2398 6.77021C16.9964 6.52678 16.703 6.33906 16.38 6.22C15.9365 6.06626 15.4693 5.99179 15 6C14.22 6 14 6 12 6C10 6 9.78 6 9 6C8.52827 6.00461 8.06107 6.09263 7.62 6.26C7.30193 6.37366 7.01169 6.55371 6.76858 6.7882C6.52547 7.02269 6.33506 7.30624 6.21 7.62C6.06478 8.06537 5.99383 8.5316 6 9C6 9.78 6 10 6 12C6 14 6 14.22 6 15C6.00991 15.4712 6.09777 15.9375 6.26 16.38C6.37906 16.703 6.56678 16.9964 6.81021 17.2398C7.05364 17.4832 7.34698 17.6709 7.67 17.79C8.09667 17.9469 8.54565 18.0347 9 18.05C9.78 18.05 10 18.05 12 18.05C14 18.05 14.22 18.05 15 18.05C15.4717 18.0454 15.9389 17.9574 16.38 17.79C16.703 17.6709 16.9964 17.4832 17.2398 17.2398C17.4832 16.9964 17.6709 16.703 17.79 16.38C17.9574 15.9389 18.0454 15.4717 18.05 15C18.05 14.22 18.05 14 18.05 12C18.05 10 18.05 9.78 18.05 9C18.0503 8.5278 17.9621 8.05972 17.79 7.62V7.63ZM12 15.82C11.4988 15.82 11.0026 15.7211 10.5397 15.529C10.0768 15.3369 9.6563 15.0554 9.30238 14.7005C8.94846 14.3457 8.66803 13.9245 8.47714 13.4611C8.28626 12.9977 8.18868 12.5012 8.19 12C8.19 11.2441 8.4143 10.5051 8.83449 9.87669C9.25468 9.24828 9.85187 8.75866 10.5505 8.46983C11.2491 8.181 12.0177 8.10594 12.7589 8.25415C13.5002 8.40236 14.1808 8.76717 14.7147 9.30241C15.2485 9.83764 15.6116 10.5192 15.7578 11.2609C15.9041 12.0026 15.827 12.771 15.5363 13.4688C15.2457 14.1666 14.7545 14.7625 14.125 15.1811C13.4955 15.5996 12.7559 15.822 12 15.82ZM16 8.93C15.7789 8.9066 15.5744 8.80222 15.4257 8.63697C15.277 8.47172 15.1947 8.25729 15.1947 8.035C15.1947 7.81271 15.277 7.59828 15.4257 7.43303C15.5744 7.26778 15.7789 7.1634 16 7.14C16.2211 7.1634 16.4256 7.26778 16.5743 7.43303C16.723 7.59828 16.8053 7.81271 16.8053 8.035C16.8053 8.25729 16.723 8.47172 16.5743 8.63697C16.4256 8.80222 16.2211 8.9066 16 8.93Z" fill="white" />
-                    </svg>
+                  </svg>
                 </a>
                 <a href="https://www.youtube.com/@LattitudeMX" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23 9.71C23.0495 8.27865 22.7365 6.85802 22.09 5.58C21.6514 5.0556 21.0427 4.70171 20.37 4.58C17.5875 4.32752 14.7936 4.22404 12 4.27C9.21667 4.22196 6.43274 4.3221 3.66003 4.57C3.11185 4.66972 2.60454 4.92684 2.20003 5.31C1.30003 6.14 1.20003 7.56 1.10003 8.76C0.954939 10.9176 0.954939 13.0824 1.10003 15.24C1.12896 15.9154 1.22952 16.5858 1.40003 17.24C1.5206 17.7451 1.76455 18.2123 2.11003 18.6C2.51729 19.0035 3.03641 19.2752 3.60003 19.38C5.75594 19.6461 7.92824 19.7564 10.1 19.71C13.6 19.76 16.67 19.71 20.3 19.43C20.8775 19.3316 21.4112 19.0595 21.83 18.65C22.11 18.3699 22.3191 18.0271 22.44 17.65C22.7977 16.5526 22.9733 15.4041 22.96 14.25C23 13.69 23 10.31 23 9.71ZM9.74003 14.85V8.66L15.66 11.77C14 12.69 11.81 13.73 9.74003 14.85Z" fill="white" />
-                    </svg>
+                  </svg>
                 </a>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
 </nav>

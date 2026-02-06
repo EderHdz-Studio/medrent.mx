@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@glidejs/glide": "^3.7.1",
+    "@astrojs/alpinejs": "^0.4.9",
     "astro": "^5.16.15"
   },
   "devDependencies": {
