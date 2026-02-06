@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { BRANDS } from '@lib/site';
+const brands = BRANDS;
+---
+
+<Layout title="Med Rent - Nuestras marcas">
+    {brands.map((brand) => (
+        <section class="max-w-7xl mx-auto px-4 py-16 space-y-12">
+            {/* Logo con fondo */}
+            <div class:list={[brand.bgColor, "min-h-[424px] rounded-2xl p-8 flex flex-col justify-center items-center"]}>
+                <img
+                    src={`/temp/marcas/${brand.logo}`}
+                    class="w-full max-w-[500px] h-auto"
+                    alt={brand.name}
+                />
+            </div>
+
+            {/* Descripción */}
+            <div class="space-y-4">
+                <h3 class:list={[brand.textColor, "text-xs font-semibold uppercase"]}>{brand.name}</h3>
+                <h2 class="text-2xl md:text-[28px] text-[#212121] font-bold">
+                    {brand.title}
+                </h2>
+                <p class="text-[14px] md:text-[16px] font-normal text-[#212121]" set:html={brand.description} />
+                {/* 
+                <a href={`/nuestras-marcas/${brand.slug}`} class="inline-flex items-center gap-1 mt-4 font-kallisto font-bold text-[14px] text-white rounded transition-colors" style="background: #212121; padding: 12px 16px;">
+                    Descubrir productos
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18" fill="none"><path d="M13.44 4.965C13.3638 4.78174 13.2182 4.63611 13.035 4.56C12.9448 4.52157 12.848 4.50118 12.75 4.5H5.24995C5.05104 4.5 4.86028 4.57902 4.71962 4.71967C4.57897 4.86032 4.49995 5.05109 4.49995 5.25C4.49995 5.44891 4.57897 5.63968 4.71962 5.78033C4.86028 5.92098 5.05104 6 5.24995 6H10.9425L4.71745 12.2175C4.64716 12.2872 4.59136 12.3702 4.55329 12.4616C4.51521 12.553 4.49561 12.651 4.49561 12.75C4.49561 12.849 4.51521 12.947 4.55329 13.0384C4.59136 13.1298 4.64716 13.2128 4.71745 13.2825C4.78718 13.3528 4.87013 13.4086 4.96152 13.4467C5.05292 13.4847 5.15095 13.5043 5.24995 13.5043C5.34896 13.5043 5.44699 13.4847 5.53839 13.4467C5.62978 13.4086 5.71273 13.3528 5.78245 13.2825L12 7.0575V12.75C12 12.9489 12.079 13.1397 12.2196 13.2803C12.3603 13.421 12.551 13.5 12.75 13.5C12.9489 13.5 13.1396 13.421 13.2803 13.2803C13.4209 13.1397 13.5 12.9489 13.5 12.75V5.25C13.4988 5.15199 13.4784 5.05517 13.44 4.965Z" fill="white"/></svg>
+                </a> 
+                */}
+            </div>
+
+            {/* Categorías */}
+            {brand.categories && brand.categories.length > 0 && (
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-[16px] text-[#5A3A36]">
+                    {brand.categories.map((category) => (
+                        <div class="w-full">
+                            <h4 class="font-bold text-[#212121]">{category.title}</h4>
+                            <p>{category.description}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </section>
+    ))}
+</Layout>
