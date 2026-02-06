@@ -1,13 +1,14 @@
 import { initGlide } from '@lib/glide';
 
 document.addEventListener('DOMContentLoaded', () => {
+  
    initGlide('#BrandSlider', {
     type: 'carousel',
     perView: 8,
     gap: 0,
-    autoplay: 2000, // 2 segundos
+    autoplay: 2000, 
     hoverpause: true,
-    rewind: false, // para que sea infinito
+    rewind: false,
     breakpoints: {
       1024: {
         perView: 4
@@ -22,9 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     type: 'slider',
     perView: 1,
     gap: 0,
-    // autoplay: 2000, // 2 segundos
     hoverpause: true,
-    //rewind: false, // para que sea infinito
     breakpoints: {
       1024: {
         perView: 1
@@ -34,4 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  initGlide('#MetricsSlider', {
+    type: 'carousel',
+    perView: 5,
+    gap: 24,
+    autoplay: 2000,
+    hoverpause: true,
+    rewind: false,
+    breakpoints: {
+      1024: {
+        perView: 3
+      },
+      640: {
+        perView: 1
+      }
+    }
+  });
+
 });

@@ -24,6 +24,10 @@
   --color-green-dark:#3D4948;
   --color-secondary-light: #F5FAF9;
   --color-text-default: #171D1C;
+  --color-gray: #BCC9C8;
+  --color-white: #FFFFFF;
+  --color-primary-light: #87F4EF;
+
 
   /* Light surfaces */
   --color-surface-light: 245 250 249; /* #F5FAF9 */

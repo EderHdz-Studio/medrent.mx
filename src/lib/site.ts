@@ -24,3 +24,11 @@ export const BRANDS = [
   { name: "tVNS", logo: "tVNS Health - Logotipo.png" },
   { name: "Weaver", logo: "Weaver.png" }, 
 ];
+
+export const METRICS = [
+  { value: '+8000', label: 'CLIENTES AL 2026' },
+  { value: '+200', label: 'FINANCIAMIENTOS OTORGADOS' },
+  { value: '15', label: 'MARCAS' },
+  { value: '+50', label: 'AÑOS DE EXPERIENCIA' },
+  { value: '+45', label: 'ÁREAS DE ESPECIALIDAD' },
+]

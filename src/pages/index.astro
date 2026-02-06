@@ -42,26 +42,26 @@ const marcas = [
     },
 ];
 ---
-<Layout title="Med Rent - Distribuimos las mejores marcas de equipo médico" pageType="product">
+<Layout title="Med Rent - Distribuimos las mejores marcas de equipo médico">
 
     <!-- Sección de contacto -->
     <section class="max-w-7xl mx-auto grid md:grid-cols-2 gap-6 rounded-a-[24px] pt-6 pr-4 pb-0 pl-4 md:py-6 md:px-6 lg:px-[135px] lg:py-6">
         <!-- Columna 1: Encabezado -->
         <div class="space-y-2 p-0 md:pt-16 md:pb-16 md:px-0 lg:pt-[100px] lg:pb-6 lg:px-6 xl:px-6 2xl:px-6">
-        <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase "> SOMOS MEDRENT</h3>
-        <h1 class="font-normal md:text-[28px] text-[28px]  mb-6">
-            {dataHome.TituloContacto || 'La tecnología del futuro, hoy en tu consultorio gracias a MedRent. Financiamiento sin enganche.'}
-        </h1>
-        <p class="text-[#212121] md:text-[16px] text-[16px] text-[var(--color-green-dark)] mt-2 text-pretty">
-            
-            {dataHome.DescripcionContacto ? (
-                <BlocksRenderer content={dataHome.DescripcionContacto} />
-            ) : (
-                <>
-                    <span class="font-light">En MedRent no solo distribuimos equipos, impulsamos tu crecimiento profesional. Déjanos asesorarte para encontrar la solución tecnológica perfecta para transformar la vida de tus pacientes.</strong>
-                </>
-            )}
-        </p>
+            <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase "> SOMOS MEDRENT</h3>
+            <h1 class="font-normal md:text-[28px] text-[28px]  mb-6">
+                {dataHome.TituloContacto || 'La tecnología del futuro, hoy en tu consultorio gracias a MedRent. Financiamiento sin enganche.'}
+            </h1>
+            <p class="text-[#212121] md:text-[16px] text-[16px] text-[var(--color-green-dark)] mt-2 text-pretty">
+                
+                {dataHome.DescripcionContacto ? (
+                    <BlocksRenderer content={dataHome.DescripcionContacto} />
+                ) : (
+                    <>
+                        <span class="font-light">En MedRent no solo distribuimos equipos, impulsamos tu crecimiento profesional. Déjanos asesorarte para encontrar la solución tecnológica perfecta para transformar la vida de tus pacientes.</strong>
+                    </>
+                )}
+            </p>
         </div>
     
         <!-- Columna 2: Formulario -->
