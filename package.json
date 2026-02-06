@@ -9,7 +9,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@glidejs/glide": "^3.7.1",
     "astro": "^5.16.15"
   },
   "devDependencies": {
