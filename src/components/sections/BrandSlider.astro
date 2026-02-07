@@ -51,3 +51,21 @@ const brands = BRANDS;
 </section>
 
 
+<script type="module">
+  const slider = document.querySelector('#BrandSlider');
+
+  if (slider) {
+    new Glide(slider, {
+      type: 'carousel',
+      perView: 8,
+      gap: 0,
+      autoplay: 2000,
+      hoverpause: true,
+      rewind: false,
+      breakpoints: {
+        1024: { perView: 4 },
+        640: { perView: 2 }
+      }
+    }).mount();
+  }
+</script>

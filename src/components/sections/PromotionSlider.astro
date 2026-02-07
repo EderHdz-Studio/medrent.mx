@@ -16,3 +16,25 @@
         </div>
     </div>
 </section>
+
+<script type="module">
+  const slider = document.querySelector('#PromotionSlider');
+
+  if (slider) {
+    new Glide(slider, {
+    type: 'slider',
+    perView: 1,
+    gap: 0,
+    hoverpause: true,
+    breakpoints: {
+      1024: {
+        perView: 1
+      },
+      640: {
+        perView: 1
+      }
+    }
+    }).mount();
+  }
+</script>
+

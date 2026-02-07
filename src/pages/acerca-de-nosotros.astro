@@ -180,4 +180,29 @@ const metrics = METRICS;
             </div>
         </div>
     </section>
+    <script type="module">
+        const slider = document.querySelector('#MetricsSlider');
+
+        if (slider) {
+            new Glide(slider, {
+            type: 'carousel',
+                perView: 5,
+                gap: 24,
+                autoplay: 2000,
+                hoverpause: true,
+                rewind: false,
+                breakpoints: {
+                1024: {
+                    perView: 3
+                },
+                640: {
+                    perView: 1
+                }
+                }
+            }).mount();
+        }
+    </script>
+
+
+
 </Layout>

@@ -24,9 +24,11 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <slot name="head" />
 
     <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
-      <!-- Optional Theme stylesheet | https://github.com/glidejs/glide/dist/css/glide.theme.min.css -->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+    <!-- Optional Theme stylesheet | https://github.com/glidejs/glide/dist/css/glide.theme.min.css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+    <!-- Glide JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/glide.min.js"></script>
   </head>
   
   <body>
@@ -35,7 +37,5 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <slot />
     <StickyCta />
     <Footer site={site}/>
-
-    <script type="module" src="/src/scripts/main.ts"></script>
   </body>
 </html>
