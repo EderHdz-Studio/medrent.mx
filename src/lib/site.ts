@@ -3,6 +3,8 @@ export const SITE = {
   legalName: 'Medrent®',
   slogan: 'Distribuimos las mejores marcas de equipo médico',
   contact: '525559854347',
+  contactText: '+52 55 59 85 43 47',
+  email: 'sdr_telemarketing@medrent.mx',
   socialMedia:{
     facebook: { 
       name:"Facebook", url: "https://www.facebook.com/MedRentMX/" 
