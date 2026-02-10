@@ -53,8 +53,8 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <Upperbar />
-    <Navbar />
+    <Upperbar site={site} />
+    <Navbar site={site}/>
     <slot />
     <StickyCta />
     <Footer site={site}/>

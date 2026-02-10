@@ -2,7 +2,27 @@ export const SITE = {
   name: 'Med Rent',
   legalName: 'Medrent®',
   slogan: 'Distribuimos las mejores marcas de equipo médico',
-  contact: '525559854347'
+  contact: '525559854347',
+  socialMedia:{
+    facebook: { 
+      name:"Facebook", url: "https://www.facebook.com/MedRentMX/" 
+    },
+    instagram: { 
+      name:"Instagram", url: "https://www.instagram.com/medrent_mx/" 
+    },
+    linkedIn: { 
+      name:"LinkedIn", url: "https://www.linkedin.com/company/medrent/" 
+    },
+    youtube: { 
+      name:"Youtube", url: "https://www.youtube.com/channel/UCUEPtpdAJ-nLl9yKcH-JGVg" 
+    },
+    pinterest: { 
+      name:"Pinterest", url: "https://www.pinterest.com.mx/Med_Rent/" 
+    },
+    x: { 
+      name:"X", url: "https://www.x.com/MedRent_MX" 
+    },
+  }
 };
 
 export const METRICS = [

@@ -13,9 +13,9 @@ const { site } = Astro.props;
             <li>
             <a href="/acerca-de-nosotros" class="text-[var(--color-white)] opacity-70 hover:underline">Acerca de nosotros</a>
             </li>
-            <li>
+            <!-- <li>
             <a href="/productos" class="text-[var(--color-white)] opacity-70 hover:underline">Productos</a>
-            </li>
+            </li> -->
             <li>
             <a href="/nuestras-marcas" class="text-[var(--color-white)] opacity-70 hover:underline">Nuestras marcas</a>
             </li>
@@ -39,21 +39,14 @@ const { site } = Astro.props;
         </ul>
         </div>
         <div>
-        <h4 class="font-bold mb-2  text-[22px] ">Social</h4>
-        <ul class="space-y-1">
-            <li>
-            <a href="https://www.facebook.com/people/cuenta/?_rdr" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">Facebook</a>
-            </li>
-            <li>
-            <a href="https://www.instagram.com/cuenta/" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">Instagram</a>
-            </li>
-            <li>
-            <a href="https://www.linkedin.com/company/cuenta/" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">LinkedIn</a>
-            </li>
-            <li>
-            <a href="https://www.youtube.com/@cuenta" target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">Youtube</a>
-            </li>
-        </ul>
+            <h4 class="font-bold mb-2  text-[22px] ">Social</h4>
+            <ul class="space-y-1">
+                {Object.entries(site.socialMedia).map(([key, social]:any) => (
+                    <li>
+                        <a href={social.url} target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">{social.name}</a>
+                    </li>
+                ))}
+            </ul>
         </div>
         <div>
             <h4 class="font-bold mb-2  text-[22px] ">Contácto</h4>
