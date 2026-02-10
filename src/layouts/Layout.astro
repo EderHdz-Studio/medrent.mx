@@ -5,6 +5,10 @@ const { title } = Astro.props;
 
 import { SITE } from '@lib/site';
 const site = SITE;
+
+import OrganizationSchema from '@components/seo/OrganizationSchema.astro';
+import WebSiteSchema from '@components/seo/WebSiteSchema.astro';
+
 import Upperbar from "@components/layout/header/Upperbar.astro";
 import Footer from "@components/layout/footer/Footer.astro";
 import Navbar from "@components/layout/header/Navbar.astro";
@@ -24,6 +28,9 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
 
     <link rel="canonical" href={canonical} />
     <title>{title ?? 'Mi sitio'}</title>
+
+    <OrganizationSchema />
+    <WebSiteSchema />
 
     <!-- Google Tag Manager -->
     <script is:inline>
