@@ -1,5 +1,5 @@
 /* TEAM */
-Design & UX: Giovanni vidaurri
+Design & UX: Giovanni Vidaurri
 Developer: Eder Hernández
 Role: Fullstack Developer
 Location: Mexico
