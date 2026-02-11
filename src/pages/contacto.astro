@@ -1,0 +1,455 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE } from '@lib/site';
+const site = SITE;
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+---
+
+<Layout title="Med Rent - Contacto">
+    <Fragment slot="head">
+        <BreadcrumbSchema
+        items={[
+            { name: 'Inicio', url: 'https://www.medrent.mx' },
+            { name: 'Contacto', url: 'https://www.medrent.mx/contacto' },
+        ]}
+        />
+    </Fragment>
+
+    <Breadcrumb
+        textColor="text-black"
+        items={[
+            { name: "INICIO", href: "/" },
+            { name: "CONTACTO" }
+        ]}
+    />
+    
+    <section class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-start relative z-10">
+        <!-- Columna 1: Encabezado -->
+        <div class="p-4 md:p-6 lg:pt-20 lg:pr-[103px] lg:pb-6 lg:pl-[135px]">
+            <h3 class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase font-kallisto">
+                Contacto
+            </h3>
+            <h2 class="font-normal md:text-[28px] text-[28px]">
+                Agenda una DEMO con nuestro equipo técnico y nuestros especialistas de producto.
+            </h2>
+            <p
+                class="text-[#212121] md:text-[16px] text-[16px] text-[#5A4043] mt-2 text-pretty"
+            >
+                <span class="font-light">
+                    En <b>Medrent</b> estamos listos para ayudarte con atención
+                    personalizada y soluciones médicas a la medida de tu práctica.
+                </span>
+            </p>
+        </div>
+
+        <!-- Columna 2: Formulario -->
+        <div class="p-4 md:p-6 lg:pt-20 lg:pr-[134px] lg:pb-6 lg:pl-[115px]">
+            <!-- Columna 2: Formulario -->
+            <form
+                id="contact-form"
+                class="space-y-6 bg-white rounded "
+            >
+                <!-- Nombre -->
+                <div class="relative">
+                    <label
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        >Nombre completo*</label
+                    >
+                    <input
+                        name="name"
+                        type="text"
+                        placeholder="Ej: Dra. Carolina Ávila"
+                        required
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                    />
+                </div>
+
+                <!-- Correo -->
+                <div class="relative">
+                    <label
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        >Correo electrónico*</label
+                    >
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="Ej: carolina.avila@neuro.mx"
+                        required
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                    />
+                </div>
+
+                <!-- Teléfono -->
+                <div class="relative">
+                    <label
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        >Teléfono de contacto*</label
+                    >
+                    <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="Ej: 55 1234 5678"
+                        required
+                        maxlength="16"
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded focus:border-2  placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                    />
+                </div>
+
+                <!-- Institución o clínica -->
+                <div class="relative">
+                    <label
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        >Nombre de institución o clínica*</label
+                    >
+                    <input
+                        name="lugar_de_trabajo"
+                        type="text"
+                        placeholder="Ej: Clínica Neuro"
+                        required
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded focus:border-2  placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                    />
+                </div>
+
+                <!-- Especialidad -->
+                <div class="relative">
+                    <label
+                        for="specialty"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                    >
+                        Especialidad médica*
+                    </label>
+
+                    <select
+                        name="specialty"
+                        required
+                        class="appearance-none w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                    >
+                        <option value="">¿Cuál es tu especialidad médica?</option>
+
+                        <option value="Anestesiología">Anestesiología</option>
+                        <option value="Audiología">Audiología</option>
+                        <option value="Belleza y Salud">Belleza y Salud</option>
+                        <option value="Biomédico de Autismo">Biomédico de Autismo</option>
+                        <option value="Cardiología">Cardiología</option>
+                        <option value="Cardiopediatría">Cardiopediatría</option>
+                        <option value="Clínica Especializada">Clínica Especializada</option>
+                        <option value="Comercializadora">Comercializadora</option>
+                        <option value="Consulta Externa">Consulta Externa</option>
+                        <option value="Director">Director</option>
+                        <option value="Distribuidor">Distribuidor</option>
+                        <option value="Ecocardiografista">Ecocardiografista</option>
+                        <option value="Electrodiagnóstico">Electrodiagnóstico</option>
+                        <option value="Electroencefalografia Digital y Mapeo">Electroencefalografia Digital y Mapeo</option>
+                        <option value="Endocrinólogo">Endocrinólogo</option>
+                        <option value="Enfermería">Enfermería</option>
+                        <option value="Epileptología">Epileptología</option>
+                        <option value="Espera de Primer Contacto">Espera de Primer Contacto</option>
+                        <option value="Farmacología Clínica">Farmacología Clínica</option>
+                        <option value="Fisioterapia y Rehabilitación">Fisioterapia y Rehabilitación</option>
+                        <option value="Gastroenterólogo">Gastroenterólogo</option>
+                        <option value="Gerente Comercial">Gerente Comercial</option>
+                        <option value="Gerente General">Gerente General</option>
+                        <option value="Geriatra">Geriatra</option>
+                        <option value="Ginecología y Obstetricia">Ginecología y Obstetricia</option>
+                        <option value="Imagenología">Imagenología</option>
+                        <option value="Inhaloterapia">Inhaloterapia</option>
+                        <option value="Kinesiología">Kinesiología</option>
+                        <option value="Laboratorio Clínico">Laboratorio Clínico</option>
+                        <option value="Masoterapeuta">Masoterapeuta</option>
+                        <option value="Medicina Crítica">Medicina Crítica</option>
+                        <option value="Medicina del deporte">Medicina del deporte</option>
+                        <option value="Medicina del Sueño">Medicina del Sueño</option>
+                        <option value="Medicina Estética">Medicina Estética</option>
+                        <option value="Medicina Física y Rehabilitación">Medicina Física y Rehabilitación</option>
+                        <option value="Medicina Integrativa">Medicina Integrativa</option>
+                        <option value="Medicina Interna">Medicina Interna</option>
+                        <option value="Medicina Regenerativa">Medicina Regenerativa</option>
+                        <option value="Medico Cirujano">Medico Cirujano</option>
+                        <option value="Médico de Urgencias">Médico de Urgencias</option>
+                        <option value="Médico General">Médico General</option>
+                        <option value="Nefrólogo">Nefrólogo</option>
+                        <option value="Neonatología">Neonatología</option>
+                        <option value="Neumólogo">Neumólogo</option>
+                        <option value="Neurociencias">Neurociencias</option>
+                        <option value="Neurocirugía">Neurocirugía</option>
+                        <option value="Neurodesarrollo">Neurodesarrollo</option>
+                        <option value="Neurofisiatra">Neurofisiatra</option>
+                        <option value="Neurofisiología">Neurofisiología</option>
+                        <option value="Neurología">Neurología</option>
+                        <option value="Neuronutrición">Neuronutrición</option>
+                        <option value="Neuropediatría">Neuropediatría</option>
+                        <option value="Neuropsicología">Neuropsicología</option>
+                        <option value="Neurorehabilitación">Neurorehabilitación</option>
+                        <option value="Neuroterapeuta">Neuroterapeuta</option>
+                        <option value="Nutrición">Nutrición</option>
+                        <option value="Oncólogo">Oncólogo</option>
+                        <option value="Ortodoncista">Ortodoncista</option>
+                        <option value="Ortopedia">Ortopedia</option>
+                        <option value="Otorrinolaringología">Otorrinolaringología</option>
+                        <option value="Paciente">Paciente</option>
+                        <option value="Pediatría">Pediatría</option>
+                        <option value="Psicología Clínica">Psicología Clínica</option>
+                        <option value="Psicoterapeuta">Psicoterapeuta</option>
+                        <option value="Psiquiatría">Psiquiatría</option>
+                        <option value="Quimico Farmaceutico Biologico">Quimico Farmaceutico Biologico</option>
+                        <option value="Quiropráctico">Quiropráctico</option>
+                        <option value="Radiología">Radiología</option>
+                        <option value="Rehabilitación cognitiva">Rehabilitación cognitiva</option>
+                        <option value="Rehabilitador Neurofisiológico">Rehabilitador Neurofisiológico</option>
+                        <option value="Representante Compras">Representante Compras</option>
+                        <option value="Representante Ventas">Representante Ventas</option>
+                        <option value="Residente">Residente</option>
+                        <option value="Reumatólogo">Reumatólogo</option>
+                        <option value="Sociología">Sociología</option>
+                        <option value="Somnologia">Somnologia</option>
+                        <option value="Sonografista">Sonografista</option>
+                        <option value="Telemática">Telemática</option>
+                        <option value="Terapeuta">Terapeuta</option>
+                        <option value="Terapeuta Clínico">Terapeuta Clínico</option>
+                        <option value="Terapeuta de Lenguaje">Terapeuta de Lenguaje</option>
+                        <option value="Terapeuta en Rehabilitación">Terapeuta en Rehabilitación</option>
+                        <option value="Terapeuta Holístico">Terapeuta Holístico</option>
+                        <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+                        <option value="Trastorno del Sueño">Trastorno del Sueño</option>
+                        <option value="Traumatólogo">Traumatólogo</option>
+                        <option value="Ultrasonografía">Ultrasonografía</option>
+                        <option value="Urólogo">Urólogo</option>
+                        <option value="Intensivista">Intensivista</option>
+                        <option value="Fisiatra">Fisiatra</option>
+                        <option value="Técnico">Técnico</option>
+                        <option value="Paidopsiquiatría">Paidopsiquiatría</option>
+                        <option value="Neuromodulación">Neuromodulación</option>
+                        <option value="Rehabilitación">Rehabilitación</option>
+                        <option value="Neurovascular">Neurovascular</option>
+                        <option value="Otra">Otra</option>
+
+
+                    </select>
+
+                    <!-- Flechita SVG -->
+                    <div
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                        <svg
+                            class="w-4 h-4 text-[#5A3A36]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Estado de la República -->
+                <div class="relative">
+                    <label
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        >Estado de la república*</label
+                    >
+                    <select
+                        name="estado_mx"
+                        required
+                        class="appearance-none w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                    >
+                        <option value="">Selecciona tu estado</option>
+                        <option>Aguascalientes</option>
+                        <option>Baja California</option>
+                        <option>Baja California Sur</option>
+                        <option>Campeche</option>
+                        <option>Chiapas</option>
+                        <option>Chihuahua</option>
+                        <option>Ciudad de México</option>
+                        <option>Coahuila</option>
+                        <option>Colima</option>
+                        <option>Durango</option>
+                        <option>Estado de México</option>
+                        <option>Guanajuato</option>
+                        <option>Guerrero</option>
+                        <option>Hidalgo</option>
+                        <option>Jalisco</option>
+                        <option>Michoacán</option>
+                        <option>Morelos</option>
+                        <option>Nayarit</option>
+                        <option>Nuevo León</option>
+                        <option>Oaxaca</option>
+                        <option>Puebla</option>
+                        <option>Querétaro</option>
+                        <option>Quintana Roo</option>
+                        <option>San Luis Potosí</option>
+                        <option>Sinaloa</option>
+                        <option>Sonora</option>
+                        <option>Tabasco</option>
+                        <option>Tamaulipas</option>
+                        <option>Tlaxcala</option>
+                        <option>Veracruz</option>
+                        <option>Yucatán</option>
+                        <option>Zacatecas</option>
+                    </select>
+                    <!-- Flechita SVG -->
+                    <div
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                        <svg
+                            class="w-4 h-4 text-[#5A3A36]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- ¿Cómo nos conociste? -->
+                <div class="relative">
+                    <label
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        >¿Por qué medio nos conociste?*</label
+                    >
+                    <input
+                        name="por_qu_medio_nos_conociste"
+                        type="text"
+                        placeholder="Ej: Congreso, recomendación, redes..."
+                        required
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                    />
+                </div>
+
+
+            <!-- Selector Equipos -->
+            <!--<SelectorEquipos />-->
+
+            <!-- Mensaje -->
+            <div class="relative">
+                <label
+                    class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                    >Mensaje</label
+                >
+                <textarea
+                    name="message"
+                    rows="4"
+                    placeholder="Cuéntanos tus dudas o necesidades..."
+                    class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                ></textarea>
+            </div>
+
+
+            <!-- Inputs ocultos -->
+            <input
+                type="hidden"
+                name="unidades_de_negocios"
+                value="LATTITUDE"
+            />
+            <input
+                type="hidden"
+                name="hs_all_assigned_business_unit_ids"
+                value="2380506"
+            />
+            <input type="hidden" name="utm_term" />
+            <input type="hidden" name="utm_medium" />
+            <input type="hidden" name="utm_source" />
+            <input type="hidden" name="utm_content" />
+            <input type="hidden" name="utm_campaign" />
+            <input
+                type="hidden"
+                name="definicion_de_necesidad"
+                value="Compra Equipo Médico"
+            />
+
+            <!-- Checkbox -->
+            <div class="flex items-start gap-2">
+                <input
+                    type="checkbox"
+                    id="aviso"
+                    required
+                    class="mt-1 border-[var(--color-green-dark)]  text-[#5A3A36] focus:ring-[#5A3A36]"
+                />
+                <label for="aviso" class="text-sm text-[#212121]">
+                    He leído y acepto el
+                    <a
+                        href="/aviso-de-privacidad"
+                        target="_blank"
+                        class="text-[#006764] underline"
+                    >
+                        Aviso de Privacidad
+                    </a>
+                </label>
+            </div>
+
+            <!-- Botón -->
+            <button
+                type="submit"
+                class="bg-[#006764] text-white px-6 py-3 rounded w-full font-700 font-lato"
+                style="cursor: pointer;"
+                aria-label="Recibir asesoría personalizada"
+            >
+                Recibir asesoría personalizada
+            </button>
+
+            <div id="status" class="text-center mt-2 text-sm"></div>
+        </form>
+        </div>
+    </section>
+
+    <!--  FOOTER CONTACTO -->
+    <section class="w-full  " >
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-start rounded-t-[32px] p-8" style="background: linear-gradient(rgba(105,216,211,0.08), rgba(105,216,211,0.08)), #0F1414">
+            <!-- INFORMACIÓN -->
+            <div class="space-y-6">
+                <h3 class="uppercase text-[#87F4EF] font-Lato text-[28px] font-700 tracking-wide">Información de contacto</h3>
+                <div>
+                    <p class="font-semibold text-white">Teléfono</p>
+                    <a href="https://wa.me/{site.contact}" target="_blank" rel="noopener noreferrer" class="text-[#87F4EF] underline">
+                        {site.contactText}
+                    </a>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-white">Correo</p>
+                    <a href="mailto:{site.email}" class="text-[#87F4EF]">
+                        {site.email}
+                    </a>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-white">Horario de atención</p>
+                    <p class=" text-[#FFFF]">Lunes a Viernes, 9:00 a.m. – 6:00 p.m. (Hora de México)</p>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-white">Dirección</p>
+                    <p class=" text-[#87F4EF]">Av. Insurgentes Sur 866, Del Valle, Benito Juárez, 03100 Ciudad de México, CDMX.</p>
+                </div>
+
+                <a href="https://maps.google.com/?q=Insurgentes+Sur+866,+Del+Valle,+Benito+Juárez,+03100+Ciudad+de+México,+CDMX" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-white text-white px-4 py-2 rounded bg-[#FFFF]">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 4.94606L9 2.94606L2 5.27906V21.3881L9 19.0541L15 21.0541L22 18.7211V2.61206L15 4.94606ZM10 5.38706L14 6.72006V18.6131L10 17.2801V5.38706ZM4 6.72106L8 5.38706V17.2791L4 18.6121V6.72106ZM20 17.2791L16 18.6131V6.72106L20 5.38806V17.2791Z" fill="#006764"/>
+                    </svg>              
+                    <span class="text-sm font-medium text-[#006764]">Cómo llegar</span>
+                </a>
+            </div>
+            
+            <!-- MAPA -->
+            <div class="overflow-hidden rounded-[32px]">
+                <iframe
+                    class="w-full h-96 rounded-[32px] border-0"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.412706424679!2d-99.1653395!3d19.3964756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff647fe7e97d%3A0x323ec214d7a7cfb9!2sAv.%20Insurgentes%20Sur%20866%2C%20Del%20Valle%2C%20Benito%20Ju%C3%A1rez%2C%2003100%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses-419!2smx!4v1721324059029!5m2!1ses-419!2smx">
+                </iframe>
+            </div>
+        </div>
+    </section>
+</Layout>
