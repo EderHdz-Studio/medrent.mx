@@ -69,7 +69,7 @@ const marcas = [
 
             <!-- Inputs visibles con label flotante -->
             <div class="relative">
-                <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">Nombre completo*</label>
+                <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs" style="background: #3D4948!important;">Nombre completo*</label>
                 <input name="name" type="text" placeholder="Ej: Dra. Carolina Ávila" required class="w-full border border-[var(--color-green-dark)] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300" />
             </div>
 
@@ -250,7 +250,7 @@ const marcas = [
             </div>
         
             <!-- Botón -->
-            <button id="submit-btn" type="submit" class="bg-[var(--color-primary)] text-white m-0 rounded w-full font-bold transition  cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed py-3 px-4 " aria-label="Recibir asesoría personalizada" disabled>
+            <button id="submit-btn" type="submit" class="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white m-0 rounded w-full font-bold transition  cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed py-3 px-4 " aria-label="Recibir asesoría personalizada" disabled>
                  Agenda una DEMO
             </button>
         
@@ -340,4 +340,216 @@ const marcas = [
         </div>
     </section>
 
+
+
+	<script type="module">
+		// Validación de campos y habilitación de botón
+		document.addEventListener('DOMContentLoaded', function() {
+			const form = document.getElementById('home-form');
+			const nameInput = form.querySelector('input[name="name"]');
+			const emailInput = form.querySelector('input[name="email"]');
+			const phoneInput = form.querySelector('input[name="phone"]');
+			const selectInput = form.querySelector('select[name="specialty"]');
+			const termsInput = form.querySelector('input[type="checkbox"]#aviso');
+			const submitBtn = document.getElementById('submit-btn');
+
+			// Obtener color primario desde variables CSS
+			const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+			const greenDarkColor = getComputedStyle(document.documentElement).getPropertyValue('--color-green-dark').trim();
+
+			function validateName() {
+				const label = nameInput.parentElement.querySelector('label');
+				if (nameInput.value.trim().length >= 3) {
+					nameInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
+					if (label) label.style.background = primaryColor;
+					return true;
+				} else {
+					nameInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
+					if (label) label.style.background = greenDarkColor;
+					return false;
+				}
+			}
+
+			function validateEmail() {
+				const label = emailInput.parentElement.querySelector('label');
+				const value = emailInput.value.trim();
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				if (emailRegex.test(value)) {
+					emailInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
+					if (label) label.style.background = primaryColor;
+					return true;
+				} else {
+					emailInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
+					if (label) label.style.background = greenDarkColor;
+					return false;
+				}
+			}
+
+			function validatePhone() {
+				const label = phoneInput.parentElement.querySelector('label');
+				const digits = phoneInput.value.replace(/\D/g, '');
+				if (digits.length >= 10) {
+					phoneInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
+					if (label) label.style.background = primaryColor;
+					return true;
+				} else {
+					phoneInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
+					if (label) label.style.background = greenDarkColor;
+					return false;
+				}
+			}
+
+			function validateSelect() {
+				const label = selectInput.parentElement.querySelector('label');
+				if (selectInput.value && selectInput.value !== '') {
+					selectInput.classList.remove('text-[#A0A0A0]');
+					selectInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
+					if (label) label.style.background = primaryColor;
+					return true;
+				} else {
+					selectInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
+					if (label) label.style.background = greenDarkColor;
+					return false;
+				}
+			}
+            // Elimina el fondo azul de autocomplete para todos los inputs
+            const style = document.createElement('style');
+            style.innerHTML = `
+                input:-webkit-autofill,
+                input:-webkit-autofill:focus,
+                input:-webkit-autofill:hover,
+                input:-webkit-autofill:active {
+                    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+                    box-shadow: 0 0 0 1000px #fff inset !important;
+                    background-color: #fff !important;
+                    color: #261819 !important;
+                    transition: background-color 5000s ease-in-out 0s;
+                    outline: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+			function validateTerms() {
+				return termsInput.checked;
+			}
+
+			function checkAll() {
+				const allValid = validateName() && validateEmail() && validatePhone() && validateSelect() && validateTerms();
+				if (allValid) {
+					submitBtn.disabled = false;
+					submitBtn.classList.add('hover:bg-[#6B0028]');
+				} else {
+					submitBtn.disabled = true;
+					submitBtn.classList.remove('hover:bg-[#6B0028]');
+				}
+			}
+
+			nameInput.addEventListener('input', checkAll);
+			emailInput.addEventListener('input', checkAll);
+			phoneInput.addEventListener('input', checkAll);
+			selectInput.addEventListener('change', checkAll);
+			termsInput.addEventListener('change', checkAll);
+
+			// Inicializa el estado al cargar
+			checkAll();
+		});
+
+
+        // Formato teléfono - Versión simplificada
+        const phoneInput = document.getElementById("phone");
+
+        phoneInput.addEventListener("input", () => {
+            // Obtener solo números del input
+            let numbers = phoneInput.value.replace(/\D/g, "");
+            
+            // Limitar a máximo 12 dígitos (52 + 10 dígitos del número mexicano)
+            if (numbers.length > 12) {
+                numbers = numbers.slice(0, 12);
+            }
+            
+            // Si no empieza con 52 y tiene 10+ dígitos, agregar código de país
+            if (!numbers.startsWith("52") && numbers.length >= 10) {
+                numbers = "52" + numbers;
+            }
+            
+            // Formatear con + al inicio
+            phoneInput.value = numbers.length > 0 ? "+" + numbers : "";
+        });
+
+        // Procesar formulario
+        const form = document.getElementById("home-form");
+        const status = document.getElementById("status");
+
+        // Capturar UTM de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmFields = [
+            "utm_term",
+            "utm_medium",
+            "utm_source",
+            "utm_content",
+            "utm_campaign",
+        ];
+
+        utmFields.forEach((field) => {
+            const value = urlParams.get(field) || "";
+            const input = form.querySelector(`input[name="${field}"]`);
+            if (input) input.value = value;
+        });
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // 👇 Asegura que se actualice el campo oculto antes del envío
+            if (typeof window.applyEquipos === "function") window.applyEquipos();
+
+            const formData = new FormData(form);
+            // const data = Object.fromEntries(formData.entries());
+            
+            // Construir el objeto manualmente para mayor control y evitar errores de JSON
+            const data = {};
+            formData.forEach((value, key) => {
+                if (data.hasOwnProperty(key)) {
+                    if (!Array.isArray(data[key])) {
+                        data[key] = [data[key]];
+                    }
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            });
+
+
+            try {
+                const jsonBody = JSON.stringify(data);
+                console.log("Objeto de datos a enviar:", data);
+                console.log("JSON string enviado:", jsonBody);
+
+                const response = await fetch("/api/contact", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: jsonBody,
+                });
+
+                if (response.ok) {
+                    status.textContent = "✅ Tu solicitud se envió correctamente. Pronto nos pondremos en contacto.";
+                    // sendFormEvent();
+                    form.reset();
+                } else {
+
+                    const resData = await response.json();
+                    if (resData.category === 'CONFLICT') {
+                        status.textContent = "✅ Tu solicitud ya está en proceso. ";
+                        form.reset();
+                    } 
+
+                    // status.textContent = "❌ Hubo un problema al enviar tu solicitud. Intenta nuevamente más tarde.";
+                    // console.error("Error response:", await response.json());
+                }
+
+            } catch (error) {
+                console.error("Network error:", error);
+                status.textContent = "❌ Error de red. Por favor, verifica tu conexión e intenta nuevamente.";
+            }
+        });
+    </script>
 </Layout>
