@@ -5,7 +5,6 @@ import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://medrent.mx',
-  output: 'server',
   integrations: [alpinejs()],
   vite: {
     plugins: [tailwind()],

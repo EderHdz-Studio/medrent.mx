@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://www.medrent.mx/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/especialidades</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/especialidades/neurocirugia</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/especialidades/neurofisiologia</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/especialidades/neuromodulacion</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/especialidades/rehabilitacion</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/aplicaciones</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/acerca-de-nosotros</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.medrent.mx/nuestras-marcas</loc>
+    <priority>0.7</priority>
+  </url>
+</urlset>
