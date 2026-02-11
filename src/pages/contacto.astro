@@ -2,20 +2,36 @@
 import Layout from '../layouts/Layout.astro';
 import { SITE } from '@lib/site';
 const site = SITE;
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 ---
 
 <Layout title="Med Rent - Contacto">
+    <Fragment slot="head">
+        <BreadcrumbSchema
+        items={[
+            { name: 'Inicio', url: 'https://www.medrent.mx' },
+            { name: 'Contacto', url: 'https://www.medrent.mx/contacto' },
+        ]}
+        />
+    </Fragment>
+
+    <Breadcrumb
+        textColor="text-black"
+        items={[
+            { name: "INICIO", href: "/" },
+            { name: "CONTACTO" }
+        ]}
+    />
+    
     <section class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-start relative z-10">
         <!-- Columna 1: Encabezado -->
         <div class="p-4 md:p-6 lg:pt-20 lg:pr-[103px] lg:pb-6 lg:pl-[135px]">
-            <h3
-                class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase font-kallisto"
-            >
+            <h3 class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase font-kallisto">
                 Contacto
             </h3>
             <h2 class="font-normal md:text-[28px] text-[28px]">
-                Agenda una DEMO con nuestro equipo técnico y 
-                nuestros especialistas de producto.
+                Agenda una DEMO con nuestro equipo técnico y nuestros especialistas de producto.
             </h2>
             <p
                 class="text-[#212121] md:text-[16px] text-[16px] text-[#5A4043] mt-2 text-pretty"
@@ -37,7 +53,7 @@ const site = SITE;
                 <!-- Nombre -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >Nombre completo*</label
                     >
                     <input
@@ -45,14 +61,14 @@ const site = SITE;
                         type="text"
                         placeholder="Ej: Dra. Carolina Ávila"
                         required
-                        class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
                     />
                 </div>
 
                 <!-- Correo -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >Correo electrónico*</label
                     >
                     <input
@@ -60,14 +76,14 @@ const site = SITE;
                         type="email"
                         placeholder="Ej: carolina.avila@neuro.mx"
                         required
-                        class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
                     />
                 </div>
 
                 <!-- Teléfono -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >Teléfono de contacto*</label
                     >
                     <input
@@ -77,14 +93,14 @@ const site = SITE;
                         placeholder="Ej: 55 1234 5678"
                         required
                         maxlength="16"
-                        class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded focus:border-2  placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     />
                 </div>
 
                 <!-- Institución o clínica -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >Nombre de institución o clínica*</label
                     >
                     <input
@@ -92,7 +108,7 @@ const site = SITE;
                         type="text"
                         placeholder="Ej: Clínica Neuro"
                         required
-                        class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded focus:border-2  placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     />
                 </div>
 
@@ -100,7 +116,7 @@ const site = SITE;
                 <div class="relative">
                     <label
                         for="specialty"
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                     >
                         Especialidad médica*
                     </label>
@@ -108,96 +124,108 @@ const site = SITE;
                     <select
                         name="specialty"
                         required
-                        class="appearance-none w-full border border-[#5A3A36] px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10"
+                        class="appearance-none w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     >
-                        <option value=""
-                            >¿Cuál es tu especialidad médica?</option
-                        >
-                        <option value="Alergología">Alergología</option>
-                        <option value="Angiología">Angiología</option>
+                        <option value="">¿Cuál es tu especialidad médica?</option>
+
+                        <option value="Anestesiología">Anestesiología</option>
+                        <option value="Audiología">Audiología</option>
+                        <option value="Belleza y Salud">Belleza y Salud</option>
+                        <option value="Biomédico de Autismo">Biomédico de Autismo</option>
                         <option value="Cardiología">Cardiología</option>
-                        <option value="Cardiología Intervencionista Pediátrica"
-                            >Cardiología Intervencionista Pediátrica</option
-                        >
-                        <option value="Cardiología clínica"
-                            >Cardiología clínica</option
-                        >
-                        <option value="Cardiología deportiva"
-                            >Cardiología deportiva</option
-                        >
-                        <option value="Cardiología intensivista"
-                            >Cardiología intensivista</option
-                        >
-                        <option value="Cardiología intervencionista"
-                            >Cardiología intervencionista</option
-                        >
-                        <option value="Cardiología pediátrica"
-                            >Cardiología pediátrica</option
-                        >
-                        <option value="Cardiólogo arritmología"
-                            >Cardiólogo arritmología</option
-                        >
-                        <option value="Cardioneumología"
-                            >Cardioneumología</option
-                        >
-                        <option value="Cirugía Cardiovascular Pediátrica"
-                            >Cirugía Cardiovascular Pediátrica</option
-                        >
-                        <option value="Cirugía cardiovascular"
-                            >Cirugía cardiovascular</option
-                        >
-                        <option value="Cirugía cardiotorácica"
-                            >Cirugía cardiotorácica</option
-                        >
-                        <option value="Ecocardiografía">Ecocardiografía</option>
-                        <option value="Ecocardiografía pediátrica"
-                            >Ecocardiografía pediátrica</option
-                        >
-                        <option value="Electrofisiología cardiaca"
-                            >Electrofisiología cardiaca</option
-                        >
-                        <option value="Electrofisiología cardiaca pediátrica"
-                            >Electrofisiología cardiaca pediátrica</option
-                        >
-                        <option value="Medicina Familiar"
-                            >Medicina Familiar</option
-                        >
-                        <option value="Medicina de Urgencias"
-                            >Medicina de Urgencias</option
-                        >
-                        <option value="Medicina del Deporte"
-                            >Medicina del Deporte</option
-                        >
-                        <option value="Medicina del sueño/Somnología"
-                            >Medicina del sueño/Somnología</option
-                        >
-                        <option value="Medicina interna"
-                            >Medicina interna</option
-                        >
-                        <option value="Nefrología">Nefrología</option>
-                        <option value="Neumología">Neumología</option>
-                        <option value="Neumología Intervencionista"
-                            >Neumología Intervencionista</option
-                        >
-                        <option value="Neumología pediátrica"
-                            >Neumología pediátrica</option
-                        >
-                        <option value="Otorrinolaringología"
-                            >Otorrinolaringología</option
-                        >
-                        <option value="Paramedicina / Atención Prehospitalaria"
-                            >Paramedicina / Atención Prehospitalaria</option
-                        >
-                        <option value="Radiología Intervencionista"
-                            >Radiología Intervencionista</option
-                        >
-                        <option value="Rehabilitación cardiaca"
-                            >Rehabilitación cardiaca</option
-                        >
-                        <option value="Terapia intensiva cardiovascular"
-                            >Terapia intensiva cardiovascular</option
-                        >
-                        <option value="Otro">Otro</option>
+                        <option value="Cardiopediatría">Cardiopediatría</option>
+                        <option value="Clínica Especializada">Clínica Especializada</option>
+                        <option value="Comercializadora">Comercializadora</option>
+                        <option value="Consulta Externa">Consulta Externa</option>
+                        <option value="Director">Director</option>
+                        <option value="Distribuidor">Distribuidor</option>
+                        <option value="Ecocardiografista">Ecocardiografista</option>
+                        <option value="Electrodiagnóstico">Electrodiagnóstico</option>
+                        <option value="Electroencefalografia Digital y Mapeo">Electroencefalografia Digital y Mapeo</option>
+                        <option value="Endocrinólogo">Endocrinólogo</option>
+                        <option value="Enfermería">Enfermería</option>
+                        <option value="Epileptología">Epileptología</option>
+                        <option value="Espera de Primer Contacto">Espera de Primer Contacto</option>
+                        <option value="Farmacología Clínica">Farmacología Clínica</option>
+                        <option value="Fisioterapia y Rehabilitación">Fisioterapia y Rehabilitación</option>
+                        <option value="Gastroenterólogo">Gastroenterólogo</option>
+                        <option value="Gerente Comercial">Gerente Comercial</option>
+                        <option value="Gerente General">Gerente General</option>
+                        <option value="Geriatra">Geriatra</option>
+                        <option value="Ginecología y Obstetricia">Ginecología y Obstetricia</option>
+                        <option value="Imagenología">Imagenología</option>
+                        <option value="Inhaloterapia">Inhaloterapia</option>
+                        <option value="Kinesiología">Kinesiología</option>
+                        <option value="Laboratorio Clínico">Laboratorio Clínico</option>
+                        <option value="Masoterapeuta">Masoterapeuta</option>
+                        <option value="Medicina Crítica">Medicina Crítica</option>
+                        <option value="Medicina del deporte">Medicina del deporte</option>
+                        <option value="Medicina del Sueño">Medicina del Sueño</option>
+                        <option value="Medicina Estética">Medicina Estética</option>
+                        <option value="Medicina Física y Rehabilitación">Medicina Física y Rehabilitación</option>
+                        <option value="Medicina Integrativa">Medicina Integrativa</option>
+                        <option value="Medicina Interna">Medicina Interna</option>
+                        <option value="Medicina Regenerativa">Medicina Regenerativa</option>
+                        <option value="Medico Cirujano">Medico Cirujano</option>
+                        <option value="Médico de Urgencias">Médico de Urgencias</option>
+                        <option value="Médico General">Médico General</option>
+                        <option value="Nefrólogo">Nefrólogo</option>
+                        <option value="Neonatología">Neonatología</option>
+                        <option value="Neumólogo">Neumólogo</option>
+                        <option value="Neurociencias">Neurociencias</option>
+                        <option value="Neurocirugía">Neurocirugía</option>
+                        <option value="Neurodesarrollo">Neurodesarrollo</option>
+                        <option value="Neurofisiatra">Neurofisiatra</option>
+                        <option value="Neurofisiología">Neurofisiología</option>
+                        <option value="Neurología">Neurología</option>
+                        <option value="Neuronutrición">Neuronutrición</option>
+                        <option value="Neuropediatría">Neuropediatría</option>
+                        <option value="Neuropsicología">Neuropsicología</option>
+                        <option value="Neurorehabilitación">Neurorehabilitación</option>
+                        <option value="Neuroterapeuta">Neuroterapeuta</option>
+                        <option value="Nutrición">Nutrición</option>
+                        <option value="Oncólogo">Oncólogo</option>
+                        <option value="Ortodoncista">Ortodoncista</option>
+                        <option value="Ortopedia">Ortopedia</option>
+                        <option value="Otorrinolaringología">Otorrinolaringología</option>
+                        <option value="Paciente">Paciente</option>
+                        <option value="Pediatría">Pediatría</option>
+                        <option value="Psicología Clínica">Psicología Clínica</option>
+                        <option value="Psicoterapeuta">Psicoterapeuta</option>
+                        <option value="Psiquiatría">Psiquiatría</option>
+                        <option value="Quimico Farmaceutico Biologico">Quimico Farmaceutico Biologico</option>
+                        <option value="Quiropráctico">Quiropráctico</option>
+                        <option value="Radiología">Radiología</option>
+                        <option value="Rehabilitación cognitiva">Rehabilitación cognitiva</option>
+                        <option value="Rehabilitador Neurofisiológico">Rehabilitador Neurofisiológico</option>
+                        <option value="Representante Compras">Representante Compras</option>
+                        <option value="Representante Ventas">Representante Ventas</option>
+                        <option value="Residente">Residente</option>
+                        <option value="Reumatólogo">Reumatólogo</option>
+                        <option value="Sociología">Sociología</option>
+                        <option value="Somnologia">Somnologia</option>
+                        <option value="Sonografista">Sonografista</option>
+                        <option value="Telemática">Telemática</option>
+                        <option value="Terapeuta">Terapeuta</option>
+                        <option value="Terapeuta Clínico">Terapeuta Clínico</option>
+                        <option value="Terapeuta de Lenguaje">Terapeuta de Lenguaje</option>
+                        <option value="Terapeuta en Rehabilitación">Terapeuta en Rehabilitación</option>
+                        <option value="Terapeuta Holístico">Terapeuta Holístico</option>
+                        <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+                        <option value="Trastorno del Sueño">Trastorno del Sueño</option>
+                        <option value="Traumatólogo">Traumatólogo</option>
+                        <option value="Ultrasonografía">Ultrasonografía</option>
+                        <option value="Urólogo">Urólogo</option>
+                        <option value="Intensivista">Intensivista</option>
+                        <option value="Fisiatra">Fisiatra</option>
+                        <option value="Técnico">Técnico</option>
+                        <option value="Paidopsiquiatría">Paidopsiquiatría</option>
+                        <option value="Neuromodulación">Neuromodulación</option>
+                        <option value="Rehabilitación">Rehabilitación</option>
+                        <option value="Neurovascular">Neurovascular</option>
+                        <option value="Otra">Otra</option>
+
+
                     </select>
 
                     <!-- Flechita SVG -->
@@ -222,13 +250,13 @@ const site = SITE;
                 <!-- Estado de la República -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >Estado de la república*</label
                     >
                     <select
                         name="estado_mx"
                         required
-                        class="appearance-none w-full border border-[#5A3A36] px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10"
+                        class="appearance-none w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     >
                         <option value="">Selecciona tu estado</option>
                         <option>Aguascalientes</option>
@@ -286,7 +314,7 @@ const site = SITE;
                 <!-- ¿Cómo nos conociste? -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >¿Por qué medio nos conociste?*</label
                     >
                     <input
@@ -294,7 +322,7 @@ const site = SITE;
                         type="text"
                         placeholder="Ej: Congreso, recomendación, redes..."
                         required
-                        class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     />
                 </div>
 
@@ -305,14 +333,14 @@ const site = SITE;
             <!-- Mensaje -->
             <div class="relative">
                 <label
-                    class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs"
+                    class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                     >Mensaje</label
                 >
                 <textarea
                     name="message"
                     rows="4"
                     placeholder="Cuéntanos tus dudas o necesidades..."
-                    class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                    class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
                 ></textarea>
             </div>
 
@@ -345,7 +373,7 @@ const site = SITE;
                     type="checkbox"
                     id="aviso"
                     required
-                    class="mt-1 border-[#5A3A36] text-[#5A3A36] focus:ring-[#5A3A36]"
+                    class="mt-1 border-[var(--color-green-dark)]  text-[#5A3A36] focus:ring-[#5A3A36]"
                 />
                 <label for="aviso" class="text-sm text-[#212121]">
                     He leído y acepto el
