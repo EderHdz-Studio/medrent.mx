@@ -18,20 +18,40 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- 1. Meta esenciales -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="google-site-verification" content="bfDcp6cDny991Jfo6sn0-XdBnk7ZsE_uMlqxZuBNDBY" />
+
+    <!-- 2. Title -->
+    <title>{title ?? 'Mi sitio'}</title>
+
+    <!-- 3. Canonical -->
+    <link rel="canonical" href={canonical} />
+
+    <!-- 4. Favicons -->
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-    <link rel="canonical" href={canonical} />
-    <title>{title ?? 'Mi sitio'}</title>
+    <!-- 5. Metas dinámicos (OG, description, etc.) -->
+    <slot name="metas" /> 
 
+    <!-- 6. Schemas globales -->
     <OrganizationSchema />
     <WebSiteSchema />
 
+    <!-- 7. Schemas por página (Breadcrumb, etc.) -->
+    <slot name="head" />
+
+    <!-- 8. CSS externo -->
+      <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+      <!-- Optional Theme stylesheet | https://github.com/glidejs/glide/dist/css/glide.theme.min.css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+
+    <!-- 9. Scripts que deben cargarse temprano (GTM) -->
     <!-- Google Tag Manager -->
     <script is:inline>
       (function(w,d,s,l,i){
@@ -40,16 +60,10 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
       })(window,document,'script','dataLayer','GTM-PH4DRF6B');
     </script>
     <!-- End Google Tag Manager -->
-    
-    <slot name="metas" /> 
-    <slot name="head" />
 
-    <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
-    <!-- Optional Theme stylesheet | https://github.com/glidejs/glide/dist/css/glide.theme.min.css -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+    <!-- 10. JS externos (defer siempre que sea posible) -->
     <!-- Glide JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/glide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/glide.min.js" defer></script>
   </head>
   
   <body>

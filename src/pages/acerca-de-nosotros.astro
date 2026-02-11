@@ -2,9 +2,19 @@
 import Layout from '../layouts/Layout.astro';
 import { METRICS } from '@lib/site';
 const metrics = METRICS;
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 ---
 
 <Layout title="Med Rent - Acerca de nosotros">
+    <Fragment slot="head">
+        <BreadcrumbSchema
+        items={[
+            { name: 'Inicio', url: 'https://www.medrent.mx' },
+            { name: 'Acerca de nosotros', url: 'https://www.medrent.mx/acerca-de-nosotros' },
+        ]}
+        />
+    </Fragment>
+
 
     <section aria-labelledby="about-hero-title" class="max-w-[1280px] w-full flex flex-col justify-start bg-[#000] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;"> 
         <div class="w-full flex flex-col gap-2 py-[32px] px-4 sm:px-[16px] md:px-[135px] md:py-[32px] sm:py-[32px] sm:px-[24px] m-auto"> 

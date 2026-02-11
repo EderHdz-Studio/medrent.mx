@@ -1,6 +1,8 @@
 ---
 import Layout from './../../layouts/Layout.astro';
 import { ESPECIALTIES } from "../../lib/site.ts";
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+
 
 export async function getStaticPaths() {
   return ESPECIALTIES.map((especialidad) => ({
@@ -10,10 +12,22 @@ export async function getStaticPaths() {
 }
 
 const { especialidad } = Astro.props;
+const canonical = `https://www.medrent.mx/especialidades/${especialidad.Slug}`;
+
 ---
 
 <Layout title={especialidad.Nombre}>
-    <div class="w-full max-w-7xl mx-auto flex flex-col ">
+  <!-- Breadcrumb dinámico -->
+  <BreadcrumbSchema
+    slot="head"
+    items={[
+      { name: 'Inicio', url: 'https://www.medrent.mx' },
+      { name: 'Especialidades', url: 'https://www.medrent.mx/especialidades' },
+      { name: especialidad.Nombre, url: canonical },
+    ]}
+  />
+
+  <div class="w-full max-w-7xl mx-auto flex flex-col ">
       <!-- Hero Section de la Categoría -->
     <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none">
           

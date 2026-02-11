@@ -2,9 +2,19 @@
 import Layout from '../layouts/Layout.astro';
 import { BRANDS } from '@lib/site';
 const brands = BRANDS;
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 ---
 
 <Layout title="Med Rent - Nuestras marcas">
+    <Fragment slot="head">
+        <BreadcrumbSchema
+        items={[
+            { name: 'Inicio', url: 'https://www.medrent.mx' },
+            { name: 'Nuestras marcas', url: 'https://www.medrent.mx/nuestras-marcas' },
+        ]}
+        />
+    </Fragment>
+
     {brands.map((brand) => (
         <section class="max-w-7xl mx-auto px-4 py-16 space-y-12">
             {/* Logo con fondo */}
