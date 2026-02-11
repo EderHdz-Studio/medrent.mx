@@ -1,6 +1,8 @@
 ---
 import Layout from './../../layouts/Layout.astro';
 import { ESPECIALTIES } from "../../lib/site.ts";
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
 export async function getStaticPaths() {
   return ESPECIALTIES.map((especialidad) => ({
@@ -10,14 +12,36 @@ export async function getStaticPaths() {
 }
 
 const { especialidad } = Astro.props;
+const canonical = `https://www.medrent.mx/especialidades/${especialidad.Slug}`;
 ---
 
 <Layout title={especialidad.Nombre}>
-    <div class="w-full max-w-7xl mx-auto flex flex-col ">
+  <!-- Breadcrumb Schema dinámico -->
+  <BreadcrumbSchema
+    slot="head"
+    items={[
+      { name: 'Inicio', url: 'https://www.medrent.mx' },
+      { name: 'Especialidades', url: 'https://www.medrent.mx/especialidades' },
+      { name: especialidad.Nombre, url: canonical },
+    ]}
+  />
+
+
+  <div class="w-full max-w-7xl mx-auto flex flex-col ">
       <!-- Hero Section de la Categoría -->
-    <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none">
+    <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none relative">
           
       <!-- Breadcrumb sobre la imagen -->
+      <div class="absolute w-full z-2">
+        <Breadcrumb
+          textColor="text-white"
+          items={[
+            { name: "INICIO", href: "/" },
+            { name: "ESPECIALIDADES", href: "/especialidades" },
+            { name: especialidad.Nombre } 
+          ]}
+        />
+      </div>
         
       <!-- Fila 1 -->
       <div class="flex flex-col w-full h-auto rounded-b-[24px] md:rounded-none lg:flex-row mb-8">
@@ -117,7 +141,7 @@ const { especialidad } = Astro.props;
                   {/* Imagen específica de la aplicación */}
                   {/* {getAplicacionImagenUrl(aplicacion) ? ( */}
                     <img
-                        src={ `/temp/especialidades/M${especialidad.Slug}/${aplicacion.image}` }
+                        src={ `/temp/especialidades/${especialidad.Slug}/${aplicacion.image}` }
                         alt={aplicacion.AplicacionClinica}
                         class="object-cover block sm:hidden rounded-[8px]"
                         style="width:118px;height:83px;"
@@ -127,7 +151,7 @@ const { especialidad } = Astro.props;
                   {/* Imagen responsiva en tablet/desktop */}
                   {/* {getAplicacionImagenUrl(aplicacion) ? ( */}
                     <img
-                        src={ `http://localhost:4321/public/temp/especialidades/${especialidad.Slug}/${aplicacion.image}` }
+                        src={ `/temp/especialidades/${especialidad.Slug}/${aplicacion.image}` }
                         alt={aplicacion.AplicacionClinica}
                         class="object-cover hidden sm:block w-full h-full"
                     />

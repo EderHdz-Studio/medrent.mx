@@ -1,0 +1,40 @@
+---
+const { items, textColor } = Astro.props;
+---
+<nav class="max-w-7xl mx-auto px-8 py-2" aria-label="Breadcrumb">
+  <ol class="flex items-center space-x-2 text-sm uppercase font-kallisto">
+
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+
+      return (
+        <>
+          <li>
+            {isLast ? (
+              <span class={`font-semibold ${textColor || 'text-black'}`}>
+                {item.name}
+              </span>
+            ) : (
+              <a
+                href={item.href}
+                class={`opacity-70 hover:opacity-100 transition cursor-pointer ${textColor || 'text-black'}`}
+                style="cursor: pointer;"
+              >
+                {item.name}
+              </a>
+            )}
+          </li>
+
+          {!isLast && (
+            <li class={index === items.length - 2 ? '' : 'opacity-70'}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M10 7L15 12L10 17L10 7Z" fill={textColor === 'text-white' ? 'white' : textColor || 'black'}/>
+              </svg>
+            </li>
+          )}
+        </>
+      );
+    })}
+
+  </ol>
+</nav>

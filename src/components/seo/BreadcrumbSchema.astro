@@ -1,0 +1,17 @@
+---
+const { items } = Astro.props;
+// items = [{ name: string, url: string }]
+---
+
+<script type="application/ld+json">
+{JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": items.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    "item": item.url
+  }))
+})}
+</script>
