@@ -51,6 +51,12 @@ async function ALL({ request }) {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method Not Allowed' }), { status: 405, headers });
   }
+
+  // --- Validar Token ---
+  if (!HUBSPOT_TOKEN) {
+    console.error('HUBSPOT_PAT_TK is not defined');
+    return new Response(JSON.stringify({ error: 'HubSpot token is not configured' }), { status: 500, headers });
+  }
   
   try {
     // --- Procesar el cuerpo de la petición ---
