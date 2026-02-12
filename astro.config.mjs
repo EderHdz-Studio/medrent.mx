@@ -6,7 +6,12 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   output: 'server',
   site: 'https://medrent.mx',
-  integrations: [alpinejs()],
+  integrations: [
+    alpinejs(),
+    vercel({
+      webAnalytics: { enabled: true }
+    })
+  ],
   vite: {
     plugins: [tailwind()],
     resolve: {
@@ -18,7 +23,4 @@ export default defineConfig({
       },
     },
   },
-  adapter: vercel({
-    webAnalytics: { enabled: true }
-  }),
 });
