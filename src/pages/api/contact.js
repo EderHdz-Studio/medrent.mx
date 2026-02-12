@@ -1,6 +1,7 @@
 export const prerender = false;
 
-const HUBSPOT_TOKEN = process.env.HUBSPOT_PAT_TK;
+const HUBSPOT_TOKEN = import.meta.env.HUBSPOT_PAT_TK;
+
 
 // Dominios permitidos para CORS
 const allowedOrigins = [
