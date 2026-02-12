@@ -1,5 +1,5 @@
-import { A as AstroError, ao as MissingSharp } from './astro/server_C7LFaYYO.mjs';
-import { b as baseService, p as parseQuality } from './generic_BcINEi2x.mjs';
+import { A as AstroError, ao as MissingSharp } from './astro/server_ogVGQPpc.mjs';
+import { b as baseService, p as parseQuality } from './generic_DuybZM6Y.mjs';
 
 let sharp;
 const qualityTable = {
@@ -36,6 +36,7 @@ const sharpService = {
   async transform(inputBuffer, transformOptions, config) {
     if (!sharp) sharp = await loadSharp();
     const transform = transformOptions;
+    const kernel = config.service.config.kernel;
     if (transform.format === "svg") return { data: inputBuffer, format: "svg" };
     const result = sharp(inputBuffer, {
       failOnError: false,
@@ -50,6 +51,7 @@ const sharpService = {
       result.resize({
         width: Math.round(transform.width),
         height: Math.round(transform.height),
+        kernel,
         fit,
         position: transform.position,
         withoutEnlargement
@@ -57,13 +59,18 @@ const sharpService = {
     } else if (transform.height && !transform.width) {
       result.resize({
         height: Math.round(transform.height),
+        kernel,
         withoutEnlargement
       });
     } else if (transform.width) {
       result.resize({
         width: Math.round(transform.width),
+        kernel,
         withoutEnlargement
       });
+    }
+    if (transform.background) {
+      result.flatten({ background: transform.background });
     }
     if (transform.format) {
       let quality = void 0;
