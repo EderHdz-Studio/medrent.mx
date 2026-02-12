@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "src/pages/api/contact.js": {
-      "runtime": "nodejs24.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
