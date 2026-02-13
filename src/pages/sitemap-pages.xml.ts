@@ -14,6 +14,7 @@ const PAGES: { path: string; priority: string }[] = [
     { path: '/aplicaciones', priority: '0.8' },
     { path: '/acerca-de-nosotros', priority: '0.7' },
     { path: '/nuestras-marcas', priority: '0.7' },
+    { path: '/financiamiento', priority: '0.8' },
     //   { path: '/contacto', priority: '0.9' },
 ];
 
