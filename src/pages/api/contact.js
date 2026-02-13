@@ -1,7 +1,6 @@
 export const prerender = false;
 
-const HUBSPOT_TOKEN = "pat-na1-302b3c6c-de6c-4718-b4f8-b9e25bab469b";
-
+const HUBSPOT_TOKEN = import.meta.env.HUBSPOT_PAT_TK;
 
 // Dominios permitidos para CORS
 const allowedOrigins = [
