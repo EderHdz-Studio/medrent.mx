@@ -1,0 +1,411 @@
+---
+import Layout from "@layouts/Layout.astro"
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+---
+
+<Layout title="Financiamiento" description="Conoce las opciones de financiamiento que Medrent tiene para ti. Facilidades de pago, créditos y más para adquirir tu equipo médico.">
+    <Fragment slot="head">
+        <BreadcrumbSchema
+        items={[
+            { name: 'Inicio', url: 'https://www.medrent.mx' },
+            { name: 'Financiamiento', url: 'https://www.medrent.mx/financiamiento' },
+        ]}
+        />
+    </Fragment>
+
+    <div class="absolute w-full z-2">
+        <Breadcrumb
+        textColor="text-black"
+        items={[
+            { name: "INICIO", href: "/" },
+            { name: "FINANCIAMIENTO" }
+        ]}
+        />
+    </div>
+    <!-- HERO -->
+    <section class="max-w-7xl mx-auto flex flex-col gap-6">
+        <div class="hero-slider relative w-full h-full">
+            <div id="slides-hero" class="relative w-full h-full">
+                <div class="fade-slide-hero w-full h-full active-slide-hero">
+                    <!-- Layout responsive: mobile = imagen full width arriba, texto abajo -->
+                    <!-- En mobile/tablet: Imagen full width primero (arriba) -->
+                    <div class="w-full block lg:hidden">
+                        <img src="/temp/FinanciamientoMobile.png" alt="SOMOS MED RENT" class="w-full h-[50vh] object-cover" loading="lazy" decoding="async">
+                    </div>
+                    <!-- Layout para desktop y contenido -->
+                    <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
+                        <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
+                        <div class="w-full flex flex-col items-center justify-center space-y-6 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 order-1 relative">
+                            <div class="w-full space-y-6">
+                                <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</h3>
+
+                                <div class="text-[16px] md:text-[16px] text-left m-0">
+                                    <p class="text-[28px] md:text-[24px] text-left">
+                                        <strong>Korum Capital: Tecnología médica al alcance de tu práctica&nbsp;</strong>
+                                    </p>
+                                    <br>
+                                    <p>Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
+                                </div>
+                                <a
+                                href="/contacto"
+                                class="bg-[var(--color-primary)] text-white py-3 px-4 m-0 mt-6 rounded w-full font-bold transition cursor-pointer flex justify-center gap-2"
+                                aria-label="Recibir asesoría personalizada"
+                                >
+                                    Recibir asesoría personalizada
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- En desktop: Imagen derecha (oculta en mobile) -->
+                        <div class="hidden lg:flex flex-1 items-center justify-center relative w-full h-full order-2">
+                            <img src="/temp/Financiamiento.png" alt="SOMOS MED RENT" class="w-full h-auto lg:h-[524px] object-cover z-10" loading="lazy" decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- CARDS -->
+<section class="w-full mx-auto py-16 px-4 max-w-[1280px] ">
+    <div class="col-span-12 lg:col-span-6 flex flex-col mb-8 text-center">
+        <div class="flex items-center justify-center text-center flex-col mb-8">
+            <h3 class="uppercase font-lato font-bold text-[#00827F] tracking-[0.06em] leading-[0.95] text-[14px] max-w-[860px]">
+                KORUM CAPITAL
+            </h3>
+            <p class="text-[28px] font-lato leading-[1.55] text-[#171D1C] max-w-[860px]">
+                Ventajas principales
+            </p>
+        </div>
+
+        <!-- Grid 4 col -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Col 1 -->
+            <div class="flex flex-col p-8 justify-center items-center gap-2 self-stretch rounded-2xl bg-[#F5FAF9]" style="height: 260px; border-radius: 16px;">
+                <div class="text-[#3D4948] text-4xl font-lato text-center font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="39" height="37" viewBox="0 0 39 37" fill="none">
+                    <path d="M3.19995 8V30.4H35.2V8H3.19995ZM32 11.2V14.4H6.39995V11.2H32ZM6.39995 27.2V17.6H32V27.2H6.39995Z" fill="#171D1C"/>
+                    <path d="M16.0001 20.8H9.6001V24H16.0001V20.8Z" fill="#171D1C"/>
+                </svg>
+                </div>
+                <h3 class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px]">
+                Financiamiento rápido y flexible
+                </h3>
+                <p class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px] italic">
+                Para equipos médicos de alta gama
+                </p>
+            </div>
+
+            <!-- Col 2 -->
+            <div class="flex flex-col p-8 justify-center items-center gap-2 self-stretch rounded-2xl bg-[#F5FAF9]" style="height: 260px; border-radius: 16px;">
+                <div class="text-[#3D4948] text-4xl font-lato text-center font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="39" height="37" viewBox="0 0 39 37" fill="none">
+                    <path d="M35.5048 24.782L35.444 23.4588L25.0712 21.9772L22.9672 26.0956C20.7455 24.8452 18.7147 23.2827 16.9368 21.4556C15.09 19.6799 13.5161 17.6408 12.2664 15.4044L16.7464 13.1644L12.2664 2.72916L11.0504 2.90516C8.99155 3.18918 7.08419 4.14539 5.6248 5.62516C0.547996 10.6988 2.5352 20.6396 10.148 28.2508C14.9176 33.0204 20.6008 35.582 25.4296 35.582C26.7794 35.6287 28.1249 35.4044 29.3865 34.9224C30.6482 34.4404 31.8004 33.7104 32.7752 32.7756C33.771 31.7129 34.5293 30.4506 35 29.0724C35.4706 27.6942 35.6427 26.2317 35.5048 24.782ZM30.5128 30.5132C26.8328 34.1932 18.5448 32.1132 12.4104 25.9884C6.276 19.8636 4.2056 11.566 7.8856 7.88756C8.57141 7.19178 9.41101 6.66676 10.3368 6.35476L12.6088 11.6556L10.8376 12.5404C10.4539 12.7325 10.1126 12.9995 9.83368 13.3256C9.55478 13.6517 9.34397 14.0304 9.21365 14.4392C9.08334 14.848 9.03616 15.2788 9.07489 15.7062C9.11363 16.1335 9.23749 16.5488 9.4392 16.9276C10.84 19.4369 12.6017 21.727 14.668 23.7244C16.6656 25.7663 18.9459 27.5111 21.4392 28.9052C21.8231 29.1144 22.245 29.2445 22.68 29.2879C23.115 29.3314 23.5543 29.2872 23.972 29.158C24.3814 29.0314 24.7607 28.8229 25.0869 28.5451C25.4132 28.2672 25.6795 27.926 25.8696 27.542L26.9032 25.4716L32.292 26.2412C32.2308 27.8325 31.5993 29.3488 30.5128 30.5132Z" fill="#171D1C"/>
+                    <path d="M31.9992 19.1996H35.1992C35.1946 14.9575 33.5074 10.8906 30.5078 7.89099C27.5082 4.89142 23.4413 3.20421 19.1992 3.19955V6.39955C22.5928 6.40337 25.8463 7.75316 28.246 10.1528C30.6456 12.5524 31.9954 15.806 31.9992 19.1996Z" fill="#171D1C"/>
+                    <path d="M25.5992 19.1995H28.7992C28.7967 16.6543 27.7844 14.2139 25.9846 12.4141C24.1848 10.6143 21.7445 9.60209 19.1992 9.59955V12.7995C20.8966 12.7995 22.5245 13.4738 23.7247 14.6741C24.9249 15.8743 25.5992 17.5022 25.5992 19.1995Z" fill="#171D1C"/>
+                </svg>
+                </div>
+                <h3 class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px]">
+                Atención personalizada
+                </h3>
+                <p class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px] italic">
+                En cada etapa del proceso
+                </p>
+            </div>
+
+            <!-- Col 3 -->
+            <div class="flex flex-col p-8 justify-center items-center gap-2 self-stretch rounded-2xl bg-[#F5FAF9]" style="height: 260px; border-radius: 16px;">
+                <div class="text-[#3D4948] text-4xl font-lato text-center font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="39" height="37" viewBox="0 0 39 37" fill="none">
+                    <path d="M27.6688 8.46784L8.46826 27.6683L10.731 29.9311L29.9315 10.7306L27.6688 8.46784Z" fill="#171D1C"/>
+                    <path d="M17.5999 12C17.5999 10.8925 17.2715 9.80975 16.6561 8.88883C16.0408 7.96792 15.1662 7.25015 14.1429 6.8263C13.1197 6.40245 11.9937 6.29155 10.9074 6.50763C9.82111 6.72371 8.82328 7.25705 8.04011 8.04023C7.25693 8.8234 6.72358 9.82123 6.50751 10.9075C6.29143 11.9938 6.40233 13.1198 6.82618 14.1431C7.25003 15.1663 7.9678 16.0409 8.88871 16.6563C9.80963 17.2716 10.8923 17.6 11.9999 17.6C13.4851 17.6 14.9095 17.01 15.9597 15.9598C17.0099 14.9096 17.5999 13.4852 17.5999 12ZM9.5999 12C9.5999 11.5254 9.74066 11.0613 10.0044 10.6667C10.2681 10.272 10.6429 9.96437 11.0815 9.78272C11.52 9.60107 12.0026 9.55354 12.4681 9.64614C12.9337 9.73875 13.3613 9.96732 13.697 10.303C14.0326 10.6386 14.2612 11.0663 14.3538 11.5318C14.4464 11.9974 14.3989 12.4799 14.2172 12.9185C14.0356 13.357 13.728 13.7318 13.3333 13.9956C12.9386 14.2593 12.4746 14.4 11.9999 14.4C11.3634 14.4 10.7529 14.1472 10.3028 13.6971C9.85276 13.247 9.5999 12.6365 9.5999 12Z" fill="#171D1C"/>
+                    <path d="M26.4001 20.8C25.2925 20.8 24.2098 21.1285 23.2889 21.7438C22.3679 22.3592 21.6502 23.2338 21.2263 24.257C20.8025 25.2803 20.6916 26.4063 20.9077 27.4926C21.1237 28.5788 21.6571 29.5767 22.4403 30.3598C23.2234 31.143 24.2213 31.6764 25.3075 31.8924C26.3938 32.1085 27.5198 31.9976 28.5431 31.5738C29.5663 31.1499 30.4409 30.4322 31.0563 29.5112C31.6716 28.5903 32.0001 27.5076 32.0001 26.4C32.0001 24.9148 31.4101 23.4905 30.3599 22.4403C29.3096 21.39 27.8853 20.8 26.4001 20.8ZM26.4001 28.8C25.9254 28.8 25.4614 28.6593 25.0667 28.3956C24.672 28.1319 24.3644 27.757 24.1827 27.3185C24.0011 26.8799 23.9536 26.3974 24.0462 25.9318C24.1388 25.4663 24.3673 25.0386 24.703 24.703C25.0386 24.3673 25.4663 24.1388 25.9318 24.0462C26.3974 23.9536 26.8799 24.0011 27.3185 24.1827C27.757 24.3644 28.1319 24.672 28.3956 25.0667C28.6593 25.4614 28.8001 25.9254 28.8001 26.4C28.8001 27.0366 28.5472 27.647 28.0971 28.0971C27.647 28.5472 27.0366 28.8 26.4001 28.8Z" fill="#171D1C"/>
+                </svg>
+                </div>
+                <h3 class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px]">
+                Tasas preferenciales
+                </h3>
+                <p class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px] italic">
+                Condiciones adaptadas a tu capacidad operativa.
+                </p>
+            </div>
+
+            <!-- Col 4 -->
+            <div class="flex flex-col p-8 justify-center items-center gap-2 self-stretch rounded-2xl bg-[#F5FAF9]" style="height: 260px; border-radius: 16px;">
+                <div class="text-[#3D4948] text-4xl font-lato text-center font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="39" height="37" viewBox="0 0 39 37" fill="none">
+                    <path d="M25.5999 7.99999V4.79999H12.7999V7.99999H6.3999V33.6H31.9999V7.99999H25.5999ZM15.9999 7.99999H22.3999V9.59999H15.9999V7.99999ZM28.7999 30.4H9.5999V11.2H12.7999V12.8H25.5999V11.2H28.7999V30.4Z" fill="#171D1C"/>
+                    <path d="M17.4672 23.2048L15.5312 21.2688L13.2688 23.5312L17.7328 27.9952L25.2496 18.6L22.7504 16.6L17.4672 23.2048Z" fill="#171D1C"/>
+                </svg>
+                </div>
+                <h3 class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px]">
+                Aprobaciones ágile
+                </h3>
+                <p class="text-[#3D4948] text-basefont-lato font-bold text-center text-[16px] italic">
+                Sin la complejidad de la banca tradicional.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- 2 ROW FINANCIAMIENTO -->
+<section class="w-full mx-auto pt-0 md:pt-16 pb-16 px-4 max-w-[1280px]">
+    <div class="flex flex-col lg:flex-row gap-12" x-data="{ openTechItems: [] }">
+        
+        <!-- Col izq -->
+        <div class="lg:w-[40%]">
+        <h2 class="font-lato text-[14px] font-light text-[#006764] uppercase tracking-[0.02em] mb-4">
+            ACOMPAÑAMIENTO ESPECIALIZADO
+        </h2>
+        
+        <p class="font-lato text-[28px] font-bold text-[#171D1C] leading-[1.2] tracking-[0.02em] mb-8">
+            Nuestro equipo cuenta con personal biomédico certificado, brindando soporte completo en la instalación, capacitación y operación de cada equipo.
+        </p>
+        
+        <a 
+            href="/contacto" 
+            class="inline-flex items-center justify-center md:justify-start bg-white text-[#006764] font-lato font-medium text-[16px] px-8 py-4 rounded w-full md:w-auto border-2 border-[#006764] duration-300"
+            style="gap: 12px; justify-content: center; align-items: center;"
+        >
+            Recibe asesoría personalizada
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#006764"/>
+            </svg>
+        </a>
+        </div>
+        
+        <!-- Col der -->
+        <div class="lg:w-[60%] space-y-0">
+            <!-- Item 1 -->
+            <div 
+                class="group py-6 px-2 relative overflow-hidden rounded-[2px] hover:bg-transparent" 
+                style="border-bottom: 0.5px solid #006764;"
+            >
+                <div 
+                    class="absolute inset-0 bg-[#E6F2F2] transform translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-[2px]"
+                    x-bind:class="{'translate-y-0': openTechItems.includes(1)}"
+                ></div>
+                
+                <div class="relative z-10">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-6 cursor-pointer w-full">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 flex items-center justify-center text-[#006764] font-bold text-lg">
+                        01
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between w-full" style="flex-direction: column;">
+                        <div class="flex-1 cursor-pointer"
+                        x-on:click="openTechItems.includes(1) ? openTechItems = openTechItems.filter(i => i !== 1) : openTechItems.push(1)"
+                        >
+                        <h3 class="text-[22px] font-bold text-[#171D1C] transition-colors duration-300">
+                        Diagnóstico técnico y renovación tecnológica.
+                        </h3>
+                        
+                        <div 
+                        x-ref="techContent1"
+                        x-bind:style="openTechItems.includes(1) ? 'max-height: ' + $refs.techContent1.scrollHeight + 'px; opacity: 1;' : 'max-height: 0px; opacity: 0;'"
+                        class="transition-all duration-500 ease-in-out overflow-hidden"
+                        >
+                        <p class="text-[#4A5568] leading-relaxed mt-4">
+                            Nuestros especialistas evalúan el rendimiento de tus equipos médicos para garantizar precisión y continuidad operativa. Asesoramos en la actualización o sustitución tecnológica para mantener tu infraestructura siempre al día.
+                        </p>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <button
+                    aria-label="Abrir" 
+                    x-on:click="openTechItems.includes(1) ? openTechItems = openTechItems.filter(i => i !== 1) : openTechItems.push(1)"
+                    x-bind:class="{'text-[#006764]': openTechItems.includes(1), 'bg-transparent text-[#006764]': !openTechItems.includes(1)}"
+                    class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-300 border-none relative z-20 flex-shrink-0"
+                    >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-6 w-6 transition-transform duration-300 text-[#006764]"
+                        :class="openTechItems.includes(1) ? 'rotate-45' : ''"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        d="M6 18L18 6M6 6l12 12" 
+                        />
+                    </svg>
+                    </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+            <!-- Item 2 -->
+            <div 
+                class="group py-6 px-2 relative overflow-hidden rounded-[2px] hover:bg-transparent" 
+                style="border-bottom: 0.5px solid #006764;"
+            >
+                <div 
+                    class="absolute inset-0 bg-[#E6F2F2] transform translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-[2px]"
+                    x-bind:class="{'translate-y-0': openTechItems.includes(2)}"
+                ></div>
+                
+                <div class="relative z-10">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-6 cursor-pointer w-full">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 flex items-center justify-center text-[#006764] font-bold text-lg">
+                        02
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between w-full" style="flex-direction: column;">
+                        <div class="flex-1 cursor-pointer"
+                        x-on:click="openTechItems.includes(2) ? openTechItems = openTechItems.filter(i => i !== 2) : openTechItems.push(2)"
+                        >
+                        <h3 class="text-[22px] font-bold text-[#171D1C] transition-colors duration-300">
+                        Cobertura nacional.
+                        </h3>
+                        
+                        <div 
+                        x-ref="techContent2"
+                        x-bind:style="openTechItems.includes(2) ? 'max-height: ' + $refs.techContent2.scrollHeight + 'px; opacity: 1;' : 'max-height: 0px; opacity: 0;'"
+                        class="transition-all duration-500 ease-in-out overflow-hidden"
+                        >
+                        <p class="text-[#4A5568] leading-relaxed mt-4">
+                            Atendemos hospitales, clínicas y consultorios en todo el país, asegurando la entrega, instalación y mantenimiento de equipos con la misma calidad y tiempos óptimos en cualquier región de México.
+                        </p>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <button
+                        aria-label="Abrir" 
+                        x-on:click="openTechItems.includes(2) ? openTechItems = openTechItems.filter(i => i !== 2) : openTechItems.push(2)"
+                        x-bind:class="{'text-[#006764]': openTechItems.includes(2), 'bg-transparent text-[#006764]': !openTechItems.includes(2)}"
+                        class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-300 border-none relative z-20 flex-shrink-0"
+                    >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-6 w-6 transition-transform duration-300 text-[#006764]"
+                        :class="openTechItems.includes(2) ? 'rotate-45' : ''"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            d="M6 18L18 6M6 6l12 12" 
+                        />
+                    </svg>
+                    </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+            <!-- Item 3 -->
+            <div 
+                class="group py-6 px-2 relative overflow-hidden rounded-[2px] hover:bg-transparent" 
+                style="border-bottom: 0.5px solid #006764;"
+            >
+                <div 
+                class="absolute inset-0 bg-[#E6F2F2] transform translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-[2px]"
+                x-bind:class="{'translate-y-0': openTechItems.includes(3)}"
+                ></div>
+                
+                <div class="relative z-10">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-6 cursor-pointer w-full">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 flex items-center justify-center text-[#006764] font-bold text-lg">
+                        03
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between w-full" style="flex-direction: column;">
+                        <div class="flex-1 cursor-pointer"
+                        x-on:click="openTechItems.includes(3) ? openTechItems = openTechItems.filter(i => i !== 3) : openTechItems.push(3)"
+                        >
+                        <h3 class="text-[22px] font-bold text-[#171D1C] transition-colors duration-300">
+                            Soporte continuo y asesoría profesional.
+                        </h3>
+                        
+                        <div 
+                            x-ref="techContent3"
+                            x-bind:style="openTechItems.includes(3) ? 'max-height: ' + $refs.techContent3.scrollHeight + 'px; opacity: 1;' : 'max-height: 0px; opacity: 0;'"
+                            class="transition-all duration-500 ease-in-out overflow-hidden"
+                        >
+                            <p class="text-[#4A5568] leading-relaxed mt-4">
+                            Ofrecemos acompañamiento permanente antes, durante y después de la instalación. Nuestro equipo técnico y comercial brinda orientación personalizada para maximizar el valor y desempeño de tu inversión médica.
+                            </p>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <button
+                        aria-label="Abrir" 
+                        x-on:click="openTechItems.includes(3) ? openTechItems = openTechItems.filter(i => i !== 3) : openTechItems.push(3)"
+                        x-bind:class="{'text-[#006764]': openTechItems.includes(3),'bg-transparent text-[#006764]': !openTechItems.includes(3)}"
+                        class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-300 border-none relative z-20 flex-shrink-0"
+                    >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-6 w-6 transition-transform duration-300 text-[#006764]"
+                        :class="openTechItems.includes(3) ? 'rotate-45' : ''"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            d="M6 18L18 6M6 6l12 12" 
+                        />
+                    </svg>
+                    </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    
+    <!-- Text -->
+    <div class="mt-16 pt-10">
+        <div class="text-center">
+        <p class="text-lg leading-relaxed max-w-4xl mx-auto text-[32px]" style="font-weight: 700; background: linear-gradient(268deg, var(--Schemes-Secondary-Container, #007BB6) 3.33%, #23A19C 50%, var(--Schemes-Primary-Container, #00827F) 96.67%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Korum Capital impulsa el crecimiento del sector salud con soluciones financieras diseñadas para que la innovación y la atención médica de calidad estén siempre al alcance.
+        </p>
+        </div>
+    </div>
+</section>
+
+<!-- Script para Alpine -->
+<script>
+    if (typeof Alpine === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js';
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+</script>
+
+<style>
+    [x-cloak] { display: none !important; }
+    
+    .font-lato {
+        font-family: 'Lato', sans-serif;
+}
+</style>
+</Layout>
