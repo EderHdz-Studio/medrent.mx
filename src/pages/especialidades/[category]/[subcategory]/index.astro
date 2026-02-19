@@ -1,0 +1,44 @@
+---
+import { getProducts } from "@server/api/products";
+import { getApplicationsByCategory } from "@server/api/applications";
+import { getCategories } from "@server/api/categories";
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+
+  const paths = [];
+
+  for (const category of categories) {
+    const subcategory = await getApplicationsByCategory(category.slug);
+
+    for (const app of subcategory) {
+      paths.push({
+        params: {
+          category: category.slug,
+          subcategory: app.slug,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { category, subcategory } = Astro.params;
+
+const products = await getProducts({
+  category,
+  subcategory,
+});
+---
+
+<h1>{subcategory}</h1>
+{products.map((product) => (
+  <div key={product.id}>
+    <a href={`/productos/${product.slug}`}>
+      {product.name}
+    </a>
+  </div>
+))}
+
+<!-- reutiliza grid base -->

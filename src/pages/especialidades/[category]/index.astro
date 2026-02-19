@@ -1,0 +1,28 @@
+---
+import { getApplicationsByCategory } from "@server/api/applications";
+import { getCategories } from "@server/api/categories";
+
+const { category } = Astro.params;
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+
+  return categories.map((c) => ({
+    params: { category: c.slug },
+  }));
+}
+
+const applications = await getApplicationsByCategory(category);
+---
+
+<h1>{category}</h1>
+
+<ul>
+  {applications.map((app) => (
+    <li>
+      <a href={`/especialidades/${category}/${app.slug}`}>
+        {app.name}
+      </a>
+    </li>
+  ))}
+</ul>
