@@ -1,0 +1,60 @@
+---
+Astro.response.headers.set("Cache-Control", "public, max-age=60");
+// import { getProductBySlug } from "@server/api/products";
+import { getProducts, getProductBySlug } from "@server/api/products";
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+
+  return products.map((product) => ({
+    params: { slug: product.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  throw new Error("Missing product slug");
+}
+
+const product = await getProductBySlug(slug);
+
+if (!product) {
+  return Astro.redirect("/404");
+}
+---
+
+<head>
+  <title>{product.name} | Medrent</title>
+  <meta name="description" content={product.shortDescription ?? ""} />
+</head>
+
+<section class="max-w-5xl mx-auto px-4 py-12">
+  <div class="grid gap-12 lg:grid-cols-2">
+    {product.coverImage && (
+      <img
+        src={product.coverImage}
+        alt={product.name}
+        class="w-full object-contain"
+      />
+    )}
+
+    <div>
+      <h1 class="text-3xl font-semibold mb-4">
+        {product.name}
+      </h1>
+
+      {product.shortDescription && (
+        <p class="text-gray-600 mb-6">
+          {product.shortDescription}
+        </p>
+      )}
+
+      {product.description && (
+        <div class="prose">
+          <p>{product.description}</p>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
