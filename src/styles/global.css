@@ -18,13 +18,16 @@
 /* CSS variables colors */
 :root {
   /* Brand */
-  --color-primary: #006764;      /* #006764 */
-  --color-secondary: #69D8D3;  /* #69D8D3 */
+  --color-primary: #006764;
+  --color-secondary: #69D8D3;
+  --color-surface-light: #EDF2F0;
+  
   --color-accent: #00827F;
   --color-green-dark:#3D4948;
   --color-secondary-light: #F5FAF9;
   --color-text-default: #171D1C;
   --color-gray: #BCC9C8;
+  --color-gray-dark: #6D7A78;
   --color-white: #FFFFFF;
   --color-primary-light: #87F4EF;
 

@@ -139,7 +139,7 @@ export const BRANDS = [
     name: "Ambu",
     logo: "Ambu.png",
     bgColor: "bg-[#FCE7EB]",
-    textColor: "text-[#006764]",
+    textColor: "text-[var(--color-primary)]",
     title: "Líder global en soluciones médicas de emergencia y monitoreo de pacientes.",
     description: "Ambu desarrolla tecnología innovadora para diagnóstico cardiorrespiratorio, anestesia y manejo de la vía aérea, garantizando seguridad, precisión y eficiencia en cada procedimiento. Su compromiso con la calidad y la innovación ha consolidado a Ambu como referente mundial en el cuidado clínico y hospitalario.",
     categories: [
@@ -161,7 +161,7 @@ export const BRANDS = [
     name: "Astar",
     logo: "Astar.png",
     bgColor: "bg-[#0A478C0D]",
-    textColor: "text-[#006764]",
+    textColor: "text-[var(--color-primary)]",
     title: " Innovación en rehabilitación, fisioterapia y medicina física.",
     description: "Astar es una marca europea especializada en el desarrollo de equipos médicos para terapia láser, ultrasonido, magnetoterapia y electroterapia. Su tecnología combina precisión, seguridad y eficacia clínica, ofreciendo soluciones avanzadas para la recuperación funcional de los pacientes. Con presencia internacional, Astar se ha consolidado como un referente en rehabilitación y fisioterapia, impulsando la evolución del tratamiento terapéutico en hospitales y clínicas.",
     categories: [

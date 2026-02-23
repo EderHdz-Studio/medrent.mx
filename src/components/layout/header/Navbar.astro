@@ -97,7 +97,7 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
               <style>
                 .marcasContainer {
                   scrollbar-width: thin;
-                  scrollbar-color: var(--color-primary) #FFF8F7;
+                  scrollbar-color: var( --color-surface-light) ;
                   overflow-y: auto;
                   overscroll-behavior: contain;
                 }
@@ -107,28 +107,208 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
                 }
 
                 .marcasContainer::-webkit-scrollbar-track {
-                  background: #FFF8F7;
+                  background: var(--color-surface-light);
                 }
 
                 .marcasContainer::-webkit-scrollbar-thumb {
                   background-color: var(--color-primary);
                   border-radius: 4px;
-                  border: 2px solid #FFF8F7;
+                  border: 2px solid var(--color-surface-light);
                 }
 
                 .marcaLink.active,
                 .marcaLink:active,
                 .marcaLink:focus {
-                  background: #FFF8F7 !important;
+                  background: var(--color-surface-light) !important;
                   border-radius: 4px !important;
                   color: var(--color-primary) !important;
                 }
               </style>
             </div>
+
+                       <!-- Dropdown Especialidades -->
+            <div x-data="{ 
+              especialidadesOpen: false,
+              activeItem: null,
+              activeAplicacion: null,
+              especialidades: []
+            }" 
+            x-init="
+              if ($el.dataset.especialidades) { 
+                especialidades = JSON.parse($el.dataset.especialidades); 
+                
+                // Obtener el path actual y extraer la especialidad
+                const currentPath = window.location.pathname;
+                const pathSegments = currentPath.split('/').filter(segment => segment);
+                
+                // Buscar especialidad en los segmentos de la URL
+                let especialidadEncontrada = null;
+                
+                if (pathSegments.length >= 2 && pathSegments[0] === 'especialidades') {
+                  const pathEspecialidad = pathSegments[1]; // 'vascular' en tu ejemplo
+                  
+                  // Buscar la especialidad que coincida con el Path
+                  especialidadEncontrada = especialidades.find(e => e.Path === pathEspecialidad);
+                }
+                
+                if (especialidadEncontrada) {
+                  // Si encontramos la especialidad en la URL
+                  activeItem = especialidadEncontrada.id;
+                  
+                  // También buscar si hay una aplicación específica en la URL
+                  if (pathSegments.length >= 3 && especialidadEncontrada.CatalogoAplicaciones) {
+                    const slugAplicacion = pathSegments[2]; // 'ultrasonido-vascular' en tu ejemplo
+                    const aplicacionEncontrada = especialidadEncontrada.CatalogoAplicaciones.find(a => a.Slug === slugAplicacion);
+                    
+                    if (aplicacionEncontrada) {
+                      activeAplicacion = aplicacionEncontrada.id;
+                    } else if (especialidadEncontrada.CatalogoAplicaciones.length > 0) {
+                      // Si no encuentra la aplicación específica, seleccionar la primera
+                      activeAplicacion = especialidadEncontrada.CatalogoAplicaciones[0].id;
+                    }
+                  } else if (especialidadEncontrada.CatalogoAplicaciones && especialidadEncontrada.CatalogoAplicaciones.length > 0) {
+                    // Si solo está la especialidad, seleccionar la primera aplicación
+                    activeAplicacion = especialidadEncontrada.CatalogoAplicaciones[0].id;
+                  }
+                } else {
+                  // No seleccionar ninguna especialidad por defecto cuando la URL no coincide.
+                  // activeItem y activeAplicacion se mantienen null hasta que el usuario seleccione.
+                }
+              }
+            "
+            data-especialidades={JSON.stringify(especialidades)}
+            class="relative">
+                <button 
+                    @click="especialidadesOpen = !especialidadesOpen" 
+                    :class="['flex items-center font-light focus:outline-none cursor-pointer', especialidadesOpen ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)]']"
+                >
+                    Especialidades
+                    <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': especialidadesOpen }" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                </button>
             
-            <a href="/especialidades" class="hover:underline hover:text-[var(--color-primary)]">Especialidades</a>
+                <!-- Menú especialidades - DINÁMICO -->
+                <div 
+                    x-show="especialidadesOpen"
+                    @click.away="especialidadesOpen = false; activeItem = null;"
+                    x-transition 
+                    :class="especialidadesOpen ? 'fixed left-0 w-full top-[100px] z-[100] bg-white border border-gray-200 shadow-lg py-6 px-8' : 'fixed left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
+                    style="border-bottom: 2px solid var(--color-primary);"
+                    id="EspecialidadesDropdownMenu"
+                >
+                    <div class="max-w-7xl mx-auto">
+                        <div class="flex gap-12">
+                            <!-- Columna izquierda - Especialidades -->
+                            <div class="w-1/2">
+                            <div class="space-y-6">
+                                <!-- Lista de especialidades -->
+                                <div>
+                                <ul class="space-y-4">
+                                    <template x-for="especialidad in especialidades" :key="especialidad.id">
+                                    <li>
+                                        <a :href="`/especialidades`" 
+                                        @click.prevent="activeItem = activeItem === especialidad.id ? null : especialidad.id"
+                                        :class="[
+                                            'transition-colors flex items-center justify-between gap-2 p-2 rounded cursor-pointer',
+                                            activeItem === especialidad.id ? 'bg-[var(--color-surface-light)] text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-white/50'
+                                        ]">
+                                        <div class="flex items-center gap-2">
+
+                                            
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM17 12C17 14.8 14.8 17 12 17C9.2 17 7 14.8 7 12C7 9.2 9.2 7 12 7C14.8 7 17 9.2 17 12Z" 
+                                                fill="currentColor"/>
+                                            </svg>
+                                            <span x-text="especialidad.Nombre"></span>
+                                    
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 19V5L19 12L8 19Z" 
+                                            fill="currentColor"/>
+                                        </svg>
+                                        </a>
+                                    </li>
+                                    </template>
+                                </ul>
+
+                                <!-- "Ver más" debajo de la lista -->
+                                <div>
+                                    <a href="/especialidades" 
+                                    class="transition-colors font-medium flex items-center gap-2 p-2 rounded hover:bg-white/50"
+                                    :class="activeItem === 'vermas' ? 'text-[var(--color-primary)]' : 'text-[#261819] hover:text-[var(--color-primary)]'"
+                                    @click="activeItem = 'vermas'"
+                                    style="justify-content: space-between; margin-top: 14px;">
+                                    <span>Ver más</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                        <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                            fill="currentColor"/>
+                                    </svg>
+                                    </a>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                    
+                            <!-- Columna derecha - CatalogoAplicaciones -->
+                            <div class="w-1/2">
+                            <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
+                                <template x-if="activeItem">
+                                <div>
+                                    <!-- Lista de aplicaciones clínicas -->
+                                    <ul class="space-y-2">
+                                    <template x-if="activeItem && activeItem !== 'vermas'"> 
+                                        <template x-for="aplicacion in especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones || []" 
+                                                :key="aplicacion.id">
+                                        <li>
+                                            <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.Path}/${aplicacion.Slug}`" 
+                                            @click="activeAplicacion = aplicacion.id"
+                                                :class="[
+                                                'transition-colors flex items-center justify-between gap-2 p-2 rounded cursor-pointer',
+                                                activeAplicacion === aplicacion.id ? 'bg-[var(--color-surface-light)] text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-white/50'
+                                                ]">
+                                            <div class="font-medium" x-text="aplicacion.AplicacionClinica"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                                <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                                fill="currentColor"/>
+                                            </a>
+                                        </li>
+                                        </template>
+                                    </template>
+                                    
+                                    <!-- Mensaje si no hay aplicaciones -->
+                                    <template x-if="(!especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones || especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones.length === 0)">
+                                        <li class="text-gray-500 italic p-2">
+                                        No hay aplicaciones clínicas disponibles para esta especialidad.
+                                        </li>
+                                    </template>
+                                    
+                                    <!-- "Ver más" del catálogo -->
+                                    <li>
+                                        <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.Path}`" 
+                                            class="text-[#261819] hover:text-[var(--color-primary)] transition-colors font-medium flex items-center gap-2 p-2 rounded hover:bg-white/50 group"
+                                        style="justify-content: space-between; text-decoration: none;">
+                                        <span>Ver más</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                            <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                                fill="currentColor"/>
+                                        </svg>
+                                        </a>
+                                    </li>
+                                    </ul>
+                                </div>
+                                </template>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- <a href="/especialidades" class="hover:underline hover:text-[var(--color-primary)]">Especialidades</a> -->
             <!-- <a href="/especialidades" class="hover:underline  hover:text-[var(--color-primary)]">Nuestras marcas</a> -->
-            <!-- <a href="/productos" class="hover:underline  hover:text-[var(--color-primary)]">Productos</a> -->
+            <a href="/productos" class="hover:underline  hover:text-[var(--color-primary)]">Productos</a>
             <a href="/financiamiento" class="hover:underline  hover:text-[var(--color-primary)]">Financiamiento</a>   
             <!-- <a href="/eventos" class="hover:underline  hover:text-[var(--color-primary)]">Eventos</a> -->
             <!-- <a href="/blog" class="hover:underline  hover:text-[var(--color-primary)]">Blog</a> -->
@@ -227,10 +407,10 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
 
             
             
-            <a href="/especialidades" class="py-6 text-[#261819] border-b border-[#8E6F73]">Especialidades</a>
+            <!-- <a href="/especialidades" class="py-6 text-[#261819] border-b border-[#8E6F73]">Especialidades</a> -->
             <a href="/acerca-de-nosotros" class="py-6 text-[#261819] border-b border-[#8E6F73]">Acerca de nosotros</a>
             
-            <!-- <a href="/productos" class="py-6 text-[#261819] border-b border-[#8E6F73]">Productos</a> -->
+            <a href="/productos" class="py-6 text-[#261819] border-b border-[#8E6F73]">Productos</a>
             <a href="/financiamiento" class="py-6 text-[#261819] border-b border-[#8E6F73]">Financiamiento</a>
             <!-- <a href="/servicio-tecnico" class="py-6 text-[#261819] border-b border-[#8E6F73]">Servicio Técnico</a> -->
             <!-- <a href="/blog" class="py-6 text-[#261819] border-b border-[#8E6F73]">Blog</a> -->
