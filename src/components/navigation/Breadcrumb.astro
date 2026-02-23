@@ -1,8 +1,8 @@
 ---
 const { items, textColor } = Astro.props;
 ---
-<nav class="max-w-7xl mx-auto px-8 py-2" aria-label="Breadcrumb">
-  <ol class="flex items-center space-x-2 text-sm uppercase font-kallisto">
+<nav class="max-w-7xl mx-auto px-8 py-2 absolute" aria-label="Breadcrumb">
+  <ol class="flex items-center space-x-2 text-sm uppercase ">
 
     {items.map((item, index) => {
       const isLast = index === items.length - 1;
