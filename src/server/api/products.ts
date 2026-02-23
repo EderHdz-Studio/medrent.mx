@@ -4,6 +4,7 @@ import type { Product } from "@lib/domain/product/types";
 
 const PLP_POPULATE = `
     ?populate[gallery]=true
+    &populate[brand]=true
 `.replace(/\s+/g, '');
 
 export async function getProducts(filters?: {
@@ -37,12 +38,13 @@ export async function getProducts(filters?: {
 const PDP_POPULATE = `
     &populate[gallery]=true
     &populate[documents]=true
-    &populate[benefit]=true
+    &populate[benefit][populate][icon]=true
     &populate[faqItem]=true
-    &populate[technicalSheet]=true
+    &populate[technicalSheet][populate][technicalFeature]=true
     &populate[technicalSpecifications]=true
-    &populate[relatedConsumables]=true
-    &populate[relatedProducts]=true
+    &populate[relatedConsumables][populate][gallery]=true
+    &populate[relatedProducts][populate][gallery]=true
+    &populate[relatedProducts][populate][brand]=true
     &populate[variants]=true
     &populate[subcategory]=true
     &populate[brand]=true

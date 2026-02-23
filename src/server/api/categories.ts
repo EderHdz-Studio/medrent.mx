@@ -2,9 +2,10 @@ import { strapiFetch } from "../strapiClient";
 
 export async function getCategories() {
   const res = await strapiFetch(
-    "/categories?fields[0]=name&fields[1]=slug"
+    "/categories?populate[subcategories][populate][image]=true&populate[heroImage]=true&populate[listImage]=true"
   );
 
+  return res.data;
   return res.data.map((c: any) => ({
     id: c.id,
     name: c?.name ?? "",
