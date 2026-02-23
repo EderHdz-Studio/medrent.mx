@@ -1,8 +1,9 @@
 ---
+import Layout from "@layouts/Layout.astro";
 import { getApplicationsByCategory } from "@server/api/applications";
 import { getCategories } from "@server/api/categories";
-
-const { category } = Astro.params;
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
 export async function getStaticPaths() {
   const categories = await getCategories();
@@ -12,17 +13,197 @@ export async function getStaticPaths() {
   }));
 }
 
-const applications = await getApplicationsByCategory(category);
+const { category } = Astro.params;
+const categories = await getCategories();
+
+// Buscar la categoría actual por slug
+const especialidad = Array.isArray(categories)
+  ? categories.find(item => item.slug === category)
+  : null;
+const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ?? ""}`;
 ---
 
-<h1>{category}</h1>
+<Layout>
+  <style>
+    body {
+      background: #F5FAF9;
+    }
+  </style>
+  <!-- Breadcrumb Schema dinámico -->
+  <BreadcrumbSchema
+    slot="head"
+    items={[
+      { name: 'Inicio', url: 'https://www.medrent.mx' },
+      { name: 'Especialidades', url: 'https://www.medrent.mx/especialidades' },
+      { name: especialidad?.name ?? "", url: canonical },
+    ]}
+  />
 
-<ul>
-  {applications.map((app) => (
-    <li>
-      <a href={`/especialidades/${category}/${app.slug}`}>
-        {app.name}
-      </a>
-    </li>
-  ))}
-</ul>
+
+  <div class="w-full max-w-7xl mx-auto flex flex-col ">
+      <!-- Hero Section de la Categoría -->
+    <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none relative">
+          
+      <!-- Breadcrumb sobre la imagen -->
+      <div class="absolute w-full z-2">
+        <Breadcrumb
+          textColor="text-white"
+          items={[
+            { name: "INICIO", href: "/" },
+            { name: "ESPECIALIDADES", href: "/especialidades" },
+            { name: especialidad?.name ?? "" } 
+          ]}
+        />
+      </div>
+        
+      <!-- Fila 1 -->
+      <div class="flex flex-col w-full h-auto rounded-b-[24px] md:rounded-none lg:flex-row mb-8">
+        <!-- Columna 1.2: Imagen (actual izquierda) -->
+        <div 
+          class="w-full h-[262px] min-h-[400px] relative overflow-hidden bg-cover bg-center md:rounded-none lg:rounded-bl-[24px]"
+          style={`background-image: url(${especialidad?.heroImage?.url})`}
+        ></div>
+
+        <!-- Columna 1.1: Texto (actual derecha) -->
+        <div class="w-full h-auto flex flex-col justify-center gap-2 z-10 bg-[var(--color-primary)] p-4 sm:p-6 md:p-8 rounded-b-[24px] md:rounded-b-[0_0_24px_24px] lg:rounded-b-none lg:rounded-br-[24px]">
+          <h1 class="font-bold  text-[28px] md:text-[36px] font-light text-white text-left w-full">
+              {(especialidad?.name || "categoria").toUpperCase()}
+          </h1>
+          <p class="text-[16px] md:text-[16px] text-left text-white">{especialidad?.heroDescription ?? ''}</p>
+          
+          <!-- Botones de navegación -->
+          {(() => {
+            const items = Array.isArray(categories) ? categories : [];
+            const currentIdx = items.findIndex(item => item.slug === category);
+            const prevIdx = currentIdx === 0 ? items.length - 1 : currentIdx - 1;
+            const nextIdx = currentIdx === items.length - 1 ? 0 : currentIdx + 1;
+            const prevItem = items[prevIdx];
+            const nextItem = items[nextIdx];
+            return (
+              <div class="flex items-center space-x-4 w-full justify-between sm:justify-start pt-4 md:py-4">
+                {/* Botón anterior */}
+                <a href={prevItem ? `/especialidades/${prevItem.slug}` : '#'} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2" style="background: rgba(255, 255, 255, 0.20);">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </a>
+                {/* Botón siguiente */}
+                <a href={nextItem ? `/especialidades/${nextItem.slug}` : '#'} class="flex items-center space-x-3 rounded-full cursor-pointer transition-opacity hover:opacity-80 pl-4 py-2 pr-2" style="background: rgba(255, 255, 255, 0.20);">
+                  <span class="text-white text-sm font-medium ">Siguiente especialidad</span>
+                  <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </a>
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+
+
+      {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).length > 0 && (
+        <section class="mb-16 bg-[#F5FAF9]">
+          <div class="space-y-[25px]">
+            {especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).map((aplicacion: any, index: number) => (
+              <div>
+              <div class={`flex flex-row-reverse sm:flex-row md:flex-row w-full rounded-lg gap-4 p-4 md:gap-6 md:p-6 lg:gap-6 lg:py-6 lg:px-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}> 
+                
+                {/* Columna de Texto */}
+                <div class="w-full md:w-1/2 flex flex-col justify-between md:px-6">
+                  <div>
+                    <p class=" text-[14px] font-medium text-[var(--color-primary)]">APLICACIÓN</p>
+                    
+                    <h3 class=" text-[24px] sm:text-[28px] font-light text-[#261819]">
+                      {aplicacion.name}
+                    </h3>
+                    
+                    <p class="text-[var(--color-text-default)] text-[16px] mb-6 leading-relaxed">
+                      {aplicacion.description ?? ''}
+                    </p>
+                    
+                                        
+                    {/* <div>
+                      <h4 class="font-medium text-[#212121] text-base">Equipos disponibles:</h4>
+                      <p class="text-[var(--color-primary)] text-[16px] italic font-normal leading-relaxed">
+                       {aplicacion.Equipos}
+                      </p>
+                    </div> */}
+                    
+                  </div>
+                  
+                  <a 
+                    href={`/especialidades/${category}/${aplicacion.slug}`}
+                    class="btnDesktop hidden sm:inline-flex items-center bg-[var(--color-primary)] text-white px-4 py-3 mt-8 rounded text-sm font-bold hover:bg-[var(--color-accent)]  transition-colors w-fit gap-2 self-start "
+                  >
+                    Ver productos
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M17.92 6.62C17.8185 6.37565 17.6243 6.18147 17.38 6.08C17.2598 6.02876 17.1307 6.00158 17 6H7C6.73478 6 6.48043 6.10536 6.29289 6.29289C6.10536 6.48043 6 6.73478 6 7C6 7.26522 6.10536 7.51957 6.29289 7.70711C6.48043 7.89464 6.73478 8 7 8H14.59L6.29 16.29C6.19627 16.383 6.12188 16.4936 6.07111 16.6154C6.02034 16.7373 5.9942 16.868 5.9942 17C5.9942 17.132 6.02034 17.2627 6.07111 17.3846C6.12188 17.5064 6.19627 17.617 6.29 17.71C6.38296 17.8037 6.49356 17.8781 6.61542 17.9289C6.73728 17.9797 6.86799 18.0058 7 18.0058C7.13201 18.0058 7.26272 17.9797 7.38458 17.9289C7.50644 17.8781 7.61704 17.8037 7.71 17.71L16 9.41V17C16 17.2652 16.1054 17.5196 16.2929 17.7071C16.4804 17.8946 16.7348 18 17 18C17.2652 18 17.5196 17.8946 17.7071 17.7071C17.8946 17.5196 18 17.2652 18 17V7C17.9984 6.86932 17.9712 6.74022 17.92 6.62Z" fill="white"/>
+                    </svg>
+                  </a>
+                </div>
+                {/* Columna de Imagen */}
+                <div class="w-auto md:w-1/2 relative overflow-hidden sm:rounded-2xl flex items-start md:items-center justify-center">
+                  {/* Imagen específica de la aplicación */}
+                  {/* {getAplicacionImagenUrl(aplicacion) ? ( */}
+                    <img
+                        src={ `${aplicacion?.image?.url}` }
+                        alt={aplicacion.name}
+                        class="object-cover block sm:hidden rounded-[8px]"
+                        style="width:118px;height:83px;"
+                    />
+                  {/* ) : null} */}
+                  
+                  {/* Imagen responsiva en tablet/desktop */}
+                  {/* {getAplicacionImagenUrl(aplicacion) ? ( */}
+                    <img
+                        src={ `${aplicacion?.image?.url}` }
+                        alt={aplicacion.name}
+                        class="object-cover hidden sm:block w-full h-full"
+                    />
+                  {/* ) : (
+                    <img
+                      src="/images/doctora.webp"
+                      alt={aplicacion.name}
+                      class="object-cover hidden sm:block w-full h-full"
+                    />
+                  )} */}
+                </div>
+
+              </div>
+              {/* Columna de Boton solo para mobile */}
+                {/* <div class="btnMobile block sm:hidden px-4">
+                    <a 
+                    href={`/especialidades/${categoria}/${aplicacion.slug}`}
+                    class="w-full inline-flex items-center justify-center bg-[#212121] text-white px-4 py-3 mt-4 rounded text-sm font-medium hover:bg-gray-800 transition-colors w-fit gap-2 self-start"
+                    >
+                    Saber más
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    </a>
+                </div> */}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+
+
+
+
+  <!-- <h1>{category}</h1>
+  ddddd
+  <ul>
+    {applications.map((app) => (
+      <li>
+        <a href={`/especialidades/${category}/${app.slug}`}>
+          {app.name}
+        </a>
+      </li>
+    ))}
+  </ul> -->
+
+</Layout>

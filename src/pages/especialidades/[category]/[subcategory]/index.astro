@@ -1,7 +1,14 @@
 ---
+import Layout from "@layouts/Layout.astro";
+
 import { getProducts } from "@server/api/products";
 import { getApplicationsByCategory } from "@server/api/applications";
 import { getCategories } from "@server/api/categories";
+
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import ProductGrid from "@components/product/ProductGrid.astro";
+import PLPLayout from "@components/product/PLPLayout.astro";
 
 export async function getStaticPaths() {
   const categories = await getCategories();
@@ -20,25 +27,48 @@ export async function getStaticPaths() {
       });
     }
   }
-
+console.log(paths)
   return paths;
 }
 
 const { category, subcategory } = Astro.params;
 
 const products = await getProducts({
-  category,
-  subcategory,
+  subcategory
 });
 ---
 
-<h1>{subcategory}</h1>
-{products.map((product) => (
-  <div key={product.id}>
-    <a href={`/productos/${product.slug}`}>
-      {product.name}
-    </a>
-  </div>
-))}
+ <Layout title="Productos">
+    <Fragment slot="head">
+      <BreadcrumbSchema
+      items={[
+          { name: 'Inicio', url: 'https://www.medrent.mx' },
+          { name: category.toUpperCase(), url: `https://www.medrent.mx/especialidades/${category}` },
+          { name: subcategory.toUpperCase(), url: `https://www.medrent.mx/especialidades/${category}/${subcategory}` },
+      ]}
+      />
+    </Fragment>
 
-<!-- reutiliza grid base -->
+
+  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">    
+      <div class="absolute inset-0 heroproductos">
+          <Breadcrumb
+          textColor="text-white"
+          items={[
+              { name: "INICIO", href: "/" },
+              { name: category.toUpperCase(), href: `/especialidades/${category}` },
+              { name: subcategory.toUpperCase(), href: `/especialidades/${category}/${subcategory}` }
+          ]}
+      />
+          <img src="/temp/HeroPLP.png" alt="Todos los productos" class="w-full h-full object-cover rounded-b-[24px]" />
+      </div>
+  </section>
+
+
+  <PLPLayout title={subcategory}>
+    <ProductGrid products={products} />
+  </PLPLayout>
+</Layout>
+
+
+
