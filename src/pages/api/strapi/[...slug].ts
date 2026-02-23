@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from "astro";
 
 const STRAPI_URL = import.meta.env.STRAPI_URL;
