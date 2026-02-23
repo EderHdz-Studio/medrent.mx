@@ -1,7 +1,13 @@
 ---
 Astro.response.headers.set("Cache-Control", "public, max-age=60");
-// import { getProductBySlug } from "@server/api/products";
+
 import { getProducts, getProductBySlug } from "@server/api/products";
+import Layout from "@layouts/Layout.astro";
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import ProductSlider from '@components/sections/ProductSlider.astro';
+import FichaTecnica from '@components/product/TechnicalSheet.astro';
+import GalleryPopup from '@components/product/GalleryPopup.astro';
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -22,39 +28,791 @@ const product = await getProductBySlug(slug);
 if (!product) {
   return Astro.redirect("/404");
 }
+
+console.log("Product data:", product);
+
 ---
-
-<head>
-  <title>{product.name} | Medrent</title>
-  <meta name="description" content={product.shortDescription ?? ""} />
-</head>
-
-<section class="max-w-5xl mx-auto px-4 py-12">
-  <div class="grid gap-12 lg:grid-cols-2">
-    {product.coverImage && (
-      <img
-        src={product.coverImage}
-        alt={product.name}
-        class="w-full object-contain"
+<Layout title={product.name} pageType="product">
+  <Fragment slot="head">
+      <BreadcrumbSchema
+      items={[
+          { name: 'Inicio', url: 'https://www.medrent.mx' },
+          { name: 'Productos', url: 'https://www.medrent.mx/productos' },
+      ]}
       />
-    )}
+  </Fragment>
+  <Breadcrumb
+    textColor="text-black"
+    items={[
+        { name: "INICIO", href: "/" },
+        { name: "PRODUCTOS", href: "/productos" },
+        { name: product.name.toUpperCase() }
+    ]}
+  />
+  
+  <!-- Contenido Principal del Producto -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
 
-    <div>
-      <h1 class="text-3xl font-semibold mb-4">
-        {product.name}
-      </h1>
+    <section class="max-w-7xl mx-auto px-4 py-6">
 
-      {product.shortDescription && (
-        <p class="text-gray-600 mb-6">
-          {product.shortDescription}
-        </p>
-      )}
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
 
-      {product.description && (
-        <div class="prose">
-          <p>{product.description}</p>
+        <!-- =========================
+          GALERÍA
+        ========================== -->
+        <!-- Galería de imágenes mobile tipo Slide (solo mobile) -->
+        <div class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start sm:hidden">
+          <div id="glider-slideimagenesProducto" class="glide px-0 gap-4 w-full gap-4 flex">
+            <div class="glide__track" data-glide-el="track">
+              <ul class="glide__slides">
+                {product.gallery && product.gallery.map((item: string, index: number) => {
+                  const isImage = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(item);
+                  const isVideo = /\.(mp4|webm|ogg)$/i.test(item);
+                  return (
+                    <div class="glide__slide flex-shrink-0 px-2" key={index}>
+                      {isImage ? (
+                        <img 
+                            src={item || '/images/Productos/default.webp'} 
+                            alt={product.name || 'Imagen del producto'} 
+                            class="w-full h-full object-cover transition-all duration-500 rounded-lg cursor-pointer" 
+                            loading="lazy" 
+                            decoding="async"
+                            id="main-image-mobile"
+                        />
+                      ) : isVideo ? (
+                        <video
+                          src={item || '/images/Productos/default.webp'}
+                          controls
+                          class="w-full h-auto object-contain transition-all duration-500 rounded-lg cursor-pointer"
+                          id="main-image-mobile"
+                          data-type="video"
+                        />
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </ul>
+            
+            </div>
+          </div>
         </div>
+
+        
+        <!-- Galería de Imágenes (solo tablet/desktop) -->
+        <div  id="galleryProducto" class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start hidden sm:flex">
+
+          <!-- Imagen Principal -->  
+          <div class="flex-1 aspect-squar bg-white rounded-lg overflow-hidden relative">
+            {product.isNew && (
+              <div class="absolute top-3 left-3 bg-[#611b2a] text-white text-[11px] font-semibold px-3 py-1 rounded-[2px] z-20 w-fit">
+                LANZAMIENTO
+                <span class="absolute -bottom-2 right-2 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-[#611b2a]"></span>
+              </div>    
+            )}
+            <div id="main-media-container" style="min-height: 400px; justify-content: center; display: flex; align-items: center; margin-bottom: 16px;">
+              {product.gallery.length > 0 ? (
+                <img
+                  src={product.gallery[0]}
+                  alt={product.name}
+                  class="w-full h-full object-contain max-h-[600px] rounded-lg"
+                  id="main-image-desktop"
+                />
+              ) : (
+                <div class="text-gray-400">Sin imagen</div>
+              )}
+            </div>
+
+
+          </div>
+
+          <!-- Miniaturas debajo de la imagen principal (tablet/desktop: 6 máx, overlay en la última) -->
+          {product?.gallery && product.gallery.length > 1 && (
+            <div class="relative w-full lg:w-24 flex-shrink-0 hidden sm:block py-6 lg:py-0">
+                <div class="flex flex-row lg:flex-col gap-3 w-full lg:w-24 max-h-[420px] lg:max-h-fit overflow-y-auto justify-center" id="thumbnails-scroll" style="scrollbar-width: none; -ms-overflow-style: none; justify-content: center;">
+                <style>
+                    #thumbnails-scroll::-webkit-scrollbar { display: none; }
+                </style>
+                {(() => {
+                  const total = product.gallery.length;
+                  const maxThumbnails = 6;
+                    return product.gallery.slice(0, maxThumbnails).map((imagen: string, index: number) => {
+                      const isImage = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(imagen);
+                      const isVideo = /\.(mp4|webm|ogg)$/i.test(imagen);
+                      // Si es la última visible y hay más, muestra el overlay '+N'
+                      if (index === maxThumbnails - 1 && total > maxThumbnails) {
+                        return (
+                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)} >
+                            <button
+                              class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)] opacity-20"
+                              style="min-height:80px; max-height:80px;"
+                              data-thumbnail={imagen}
+                              data-type={isImage ? 'image' : isVideo ? 'video' : 'other'}
+                              data-index={index}
+                              type="button"
+                            >
+                              {isImage ? (
+                                <img src={imagen} alt={`Miniatura ${index + 1}`} class="w-full h-full object-cover" />
+                              ) : isVideo ? (
+                                <video src={imagen} class="w-full h-full object-cover" />
+                              ) : null}
+                              <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white text-lg font-bold rounded">
+                                +{total - maxThumbnails + 1}
+                              </div>
+                            </button>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)} >
+                          <button
+                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
+                            style="min-height:80px; max-height:80px;"
+                            data-thumbnail={imagen}
+                            data-type={isImage ? 'image' : isVideo ? 'video' : 'other'}
+                            data-index={index}
+                            type="button"
+                          >
+                            {isImage ? (
+                              <img src={imagen} alt={`Miniatura ${index + 1}`} class="w-full h-full object-cover" />
+                            ) : isVideo ? (
+                              <video src={imagen} class="w-full h-full object-cover" />
+                            ) : null}
+                          </button>
+                        </div>
+                      );
+                    });
+                })()}
+                {/* GalleryPopup debe estar fuera del mapeo para que window.openGalleryPopup funcione siempre */}
+                {/* {Array.isArray(product?.gallery) && product.gallery.length > 6 && (
+                    <GalleryPopup gallery={product.gallery} startIndex={6} />
+                )} */}
+
+                  <GalleryPopup gallery={product.gallery} />
+
+                </div>
+            </div>
+          )}
+        </div>
+          
+
+
+        <!-- =========================
+            INFO PRODUCTO
+        ========================== -->
+        <div class="space-y-6 lg:px-6 gap-2 flex flex-col ">
+
+          {product.brand && (
+            <a
+              href={`/nuestras-marcas/${product.brand.slug}`}
+              class="uppercase text-[var(--color-primary)] hover:underline text-sm m-0"
+            >
+              {product.brand.name}
+            </a>
+          )}
+
+          <h1 class="text-3xl font-bold text-[var(--color-text-default)] uppercase m-0">
+            {product.name}
+          </h1>
+
+          {product.description && (
+            <p class="text-lg text-[var(--color-text-default)] leading-relaxed">
+              {product.description}
+            </p>
+          )}
+
+          <!-- Acciones -->
+          <div class="flex flex-col sm:flex-row gap-4 m-0">
+            <button 
+                id="open-event-popup"
+                class="w-full sm:w-1/2 text-white rounded px-4 py-4  text-sm font-bold bg-[var(--color-primary)] hover:bg-[var(--color-accent)] transition-colors cursor-pointer border-none flex justify-center items-center gap-2"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 20 16" fill="none">
+                    <path d="M2 16C1.45 16 0.975 15.8083 0.575 15.425C0.191667 15.025 0 14.55 0 14V2C0 1.45 0.191667 0.983334 0.575 0.599999C0.975 0.2 1.45 0 2 0H18C18.55 0 19.0167 0.2 19.4 0.599999C19.8 0.983334 20 1.45 20 2V14C20 14.55 19.8 15.025 19.4 15.425C19.0167 15.8083 18.55 16 18 16H2ZM10 9L18 4V2L10 7L2 2V4L10 9Z" fill="white"/>
+                </svg>
+                Solicitar cotización
+            </button>
+            <a 
+                id="open-demo-whatsapp"
+                class="w-full sm:w-1/2 flex justify-center items-center rounded border border-[var(--color-primary)] bg-[var(--color-secondary-light)] px-4 py-3 gap-1 text-[var(--color-primary)]  text-[14px] font-bold text-center hover:bg-[var(--color-accent)] transition-colors cursor-pointer hover:text-white group"
+                href="https://wa.me/525559854347" target="_blank" rel="noopener noreferrer"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="currentColor" class="transition-colors text-[#1E824C] group-hover:text-white">
+                <path d="M9.00074 1.5C13.143 1.5 16.5007 4.85775 16.5007 9C16.5007 13.1423 13.143 16.5 9.00074 16.5C7.67531 16.5023 6.37318 16.1515 5.22824 15.4838L1.50374 16.5L2.51774 12.774C1.84946 11.6287 1.49842 10.326 1.50074 9C1.50074 4.85775 4.85849 1.5 9.00074 1.5ZM6.44474 5.475L6.29474 5.481C6.19776 5.48768 6.103 5.51315 6.01574 5.556C5.93443 5.60213 5.86017 5.65972 5.79524 5.727C5.70524 5.81175 5.65424 5.88525 5.59949 5.9565C5.32209 6.31718 5.17272 6.75998 5.17499 7.215C5.17649 7.5825 5.27249 7.94025 5.42249 8.27475C5.72924 8.95125 6.23399 9.6675 6.89999 10.3312C7.06049 10.491 7.21799 10.6515 7.38749 10.8007C8.21507 11.5293 9.2012 12.0547 10.2675 12.3353L10.6935 12.4005C10.8322 12.408 10.971 12.3975 11.1105 12.3907C11.3289 12.3792 11.5421 12.3201 11.7352 12.2175C11.8334 12.1668 11.9292 12.1117 12.0225 12.0525C12.0225 12.0525 12.0542 12.031 12.1162 11.985C12.2175 11.91 12.2797 11.8568 12.3637 11.769C12.4267 11.704 12.4792 11.6285 12.5212 11.5425C12.5797 11.4202 12.6382 11.187 12.6622 10.9928C12.6802 10.8442 12.675 10.7633 12.6727 10.713C12.6697 10.6328 12.603 10.5495 12.5302 10.5142L12.0937 10.3185C12.0937 10.3185 11.4412 10.0343 11.0422 9.85275C11.0005 9.83457 10.9557 9.82415 10.9102 9.822C10.8589 9.81663 10.807 9.82236 10.7581 9.83879C10.7092 9.85523 10.6644 9.88198 10.6267 9.91725C10.623 9.91575 10.5727 9.9585 10.0305 10.6155C9.99937 10.6573 9.9565 10.6889 9.90735 10.7063C9.85819 10.7237 9.80498 10.726 9.75449 10.713C9.70561 10.7 9.65774 10.6834 9.61124 10.6635C9.51824 10.6245 9.48599 10.6095 9.42224 10.5825C8.99165 10.3949 8.59307 10.1411 8.24099 9.83025C8.14649 9.74775 8.05874 9.65775 7.96874 9.57075C7.6737 9.28816 7.41656 8.96849 7.20374 8.61975L7.15949 8.5485C7.12819 8.50035 7.10252 8.44876 7.08299 8.39475C7.05449 8.2845 7.12874 8.196 7.12874 8.196C7.12874 8.196 7.31099 7.9965 7.39574 7.8885C7.47824 7.7835 7.54799 7.6815 7.59299 7.60875C7.68149 7.46625 7.70924 7.32 7.66274 7.20675C7.45274 6.69375 7.23574 6.1835 7.01174 5.676C6.96749 5.5755 6.83624 5.5035 6.71699 5.48925C6.67649 5.48425 6.63599 5.48025 6.59549 5.47725C6.49479 5.47147 6.39381 5.47248 6.29324 5.48025L6.44474 5.475Z" fill="currentColor"/>
+                </svg>
+                Agenda tu DEMO
+            </a>
+          </div>
+
+          <!-- Beneficios -->
+          {product?.benefit && product.benefit.length > 0 && (
+            <div class="p-6 space-y-6">
+                {product.benefit.map((benefit: any) => (
+                <div class="rounded-lg flex items-start gap-4">
+                    {/* Icono */}
+                    {benefit.icon?.url && (
+                    <div class="flex-shrink-0  rounded-full bg-[#E3FFFC] p-4">
+                        <img
+                        src={benefit.icon.url}
+                        alt={benefit.benefit}
+                        class="w-6 h-6 object-contain"
+                        />
+                    </div>
+                    )}
+                    {/* Contenido */}
+                    <div class="flex-1">
+                    <h3 class="font-lato text-[16px] font-bold text-[var(--color-primary)]">
+                      {benefit.benefit}
+                    </h3>
+                    <p class="font-lato text-[16px] font-normal text-[var(--color-green-dark)]">
+                      {benefit.description}
+                    </p>
+                    </div>
+                </div>
+                ))}
+            </div>
+          )}
+
+          <!-- Preguntas Frecuentes -->
+          {product?.faqItem && product.faqItem.length > 0 && (
+            <div>
+              <h3 class=" text-[28px] font-bold text-[#261819]">
+                Preguntas frecuentes
+              </h3>
+            
+              <div class="space-y-4" x-data="{ openItems: [] }">
+                {product.faqItem.map((faq: any, index: number) => {
+                  const itemIndex = index + 1;
+                  return (
+                    <div class="group px-2 py-4 relative overflow-hidden m-0" style="border-bottom: 1px solid var(--color-primary);">
+                      <div class="faq-hover-fill-effect"></div>
+                      <div class="relative z-10">
+                          <div class="flex items-center justify-between gap-4">
+                              <div 
+                                  class="cursor-pointer flex-1" 
+                                  x-on:click={`openItems.includes(${itemIndex}) ? openItems = openItems.filter(item => item !== ${itemIndex}) : openItems.push(${itemIndex})`}
+                              >
+                                  <h4 style="font-family: Lato; font-size: 16px; font-style: normal; color: #261819;" class="cursor-pointer font-bold ">
+                                      {itemIndex}. {faq.question}
+                                  </h4>
+                              </div>
+                              <button
+                                  aria-label="Abrir" 
+                                  x-on:click.stop={`openItems.includes(${itemIndex}) ? openItems = openItems.filter(item => item !== ${itemIndex}) : openItems.push(${itemIndex})`}
+                                  :class={`openItems.includes(${itemIndex}) ? 'bg-transparent text-[var(--color-primary)]' : 'bg-transparent text-[var(--color-primary)]'`}
+                                  class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-all duration-300 border-none flex-shrink-0"
+                              >
+                                  <span 
+                                      class="inline-block transform transition-transform duration-300"
+                                      :class={`openItems.includes(${itemIndex}) ? '' : 'rotate-45'`}
+                                  >
+                                      ✕
+                                  </span>
+                              </button>
+                          </div>
+                          
+                          <div 
+                              x-ref={`content${itemIndex}`}
+                              x-bind:style={`openItems.includes(${itemIndex}) ? 'max-height:' + $refs['content' + ${itemIndex}].scrollHeight + 'px' : 'max-height: 0px'`}
+                              class="transition-all duration-500 ease-in-out overflow-hidden"
+                          >
+                              <p style="font-family: Lato; font-size: 16px; font-style: italic;" class="mt-4 pl-6 text-[var(--color-gray-dark)]">
+                                  {faq.answer}
+                              </p>
+                          </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+      
+      <!-- Especificacion Técnica -->
+      {product?.technicalSpecifications && product.technicalSpecifications.length > 0 && (
+        <section class="max-w-7xl mx-auto py-8">
+          <div class="flex flex-col" x-data="{ openTechItems: [] }">
+            <h2 class=" text-[28px] font-bold ">
+              Especificaciones técnicas
+            </h2>
+            
+            {product.technicalSpecifications.map((item: any, index: number) => {
+              const itemIndex = index + 1;
+              return (
+                <div 
+                  class="group py-4 px-2 relative overflow-hidden rounded-[2px] " 
+                  style="border-bottom: 0.5px solid var(--color-primary);"
+                >
+              
+                  <div 
+                    class="absolute inset-0 bg-[#EDF2F0] transform translate-y-full cursor pointer md:group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-[2px] hover:text-white"
+                    x-bind:class={`{'translate-y-0': openTechItems.includes(${itemIndex})}`}
+                  ></div>
+                  
+                  <div class="relative z-10">
+                    <div class="flex items-start md:items-center justify-between gap-4">
+                      <div 
+                        class="flex items-start gap-2 cursor-pointer" 
+                        x-on:click={`openTechItems.includes(${itemIndex}) ? openTechItems = openTechItems.filter(i => i !== ${itemIndex}) : openTechItems.push(${itemIndex})`}
+                      >
+                        <span 
+                          class="font-light  text-[16px] pt-[2px] transition-colors duration-300 text-[var(--color-primary)]"
+                        >
+                          {String(itemIndex).padStart(2, '0')}
+                        </span>
+                        <h2 
+                          class="text-[16px] font-bold transition-colors duration-300"
+                        >
+                          {item.title}
+                        </h2>
+                      </div>
+                      <button
+                        aria-label="Abrir" 
+                        x-on:click={`openTechItems.includes(${itemIndex}) ? openTechItems = openTechItems.filter(i => i !== ${itemIndex}) : openTechItems.push(${itemIndex})`}
+                        x-bind:class={`{'text-[var(--color-primary)]': openTechItems.includes(${itemIndex}), 'bg-transparent text-[var(--color-primary)]': !openTechItems.includes(${itemIndex})}`}
+                        class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-300 border-none relative z-20"
+                      >
+                        <span 
+                          class="inline-block transform transition-transform duration-300 text-[20px] font-light"
+                          x-bind:class={`{'': openTechItems.includes(${itemIndex}), 'rotate-45': !openTechItems.includes(${itemIndex})}`}
+                        >
+                          ✕
+                        </span>
+                      </button>
+                    </div>
+                    <div 
+                      x-ref={`techContent${itemIndex}`}
+                      x-bind:style={`openTechItems.includes(${itemIndex}) ? 'max-height: ' + $refs['techContent${itemIndex}'].scrollHeight + 'px' : 'max-height: 0px'`}
+                      class="transition-all duration-500 ease-in-out overflow-hidden"
+                    >
+                      <div class="mt-4 px-2">
+                        {item.gallerypecificacion?.url ? (
+                          <div class="flex gap-4 items-start">
+                            <div class="flex-shrink-0 w-[30%] flex items-center justify-center relative z-10">
+                              <div class="w-60 h-60">
+                                <img
+                                  src={buildImageUrl(item.title.url)}
+                                  alt={item.title}
+                                  class="w-full h-full object-contain rounded"
+                                />
+                              </div>
+                            </div>
+                            <div class="flex-1">
+                              <p 
+                                class="text-[16px] font-medium mb-4 transition-colors duration-300 text-[var(--color-gray-dark)]"
+                                style="font-family: Lato;"
+                              >
+                                {item.description}
+                              </p>
+                              
+                              {item.relatedAccessories && item.relatedAccessories.length > 0 && (
+                                <div>
+                                  <h5 
+                                    class="font-bold text-[16px] mb-2 transition-colors duration-300"
+                                    style="font-family: Lato;"
+                                  >
+                                    Accesorios relacionados:
+                                  </h5>
+                                  <ul class="list-disc list-inside space-y-1">
+                                    {item.relatedAccessories.map((accesorio: any) => (
+                                      <li 
+                                        class="text-[16px] font-medium transition-colors duration-300"
+                                        style="font-family: Lato;"
+                                      >
+                                        {accesorio.accessory}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <p 
+                              class="text-[16px] font-medium mb-4 transition-colors duration-300 text-[var(--color-gray-dark)]"
+                              style="font-family: Lato;"
+                            >
+                              {item.description}
+                            </p>
+                            
+                            {item.relatedAccessories && item.relatedAccessories.length > 0 && (
+                              <div>
+                                <h5 
+                                  class="font-bold text-[16px] mb-2 transition-colors duration-300"
+                                  style="font-family: Lato;"
+                                >
+                                  Accesorios relacionados:
+                                </h5>
+                                <ul class="list-disc list-inside space-y-1">
+                                  {item.relatedAccessories.map((accesorio: any) => (
+                                    <li 
+                                      class="text-[16px] font-medium transition-colors duration-300"
+                                      style="font-family: Lato;"
+                                    >
+                                      {accesorio.accessory}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       )}
-    </div>
-  </div>
-</section>
+
+
+      <!-- Consumibles -->
+      <ProductSlider
+        data={product?.relatedConsumables} 
+        title="Consumibles" 
+        prefixId="Consumibles"
+      />
+
+      <FichaTecnica data={product?.technicalSheet} archivoPDF={product?.documents} />
+
+      
+      <!-- Consumibles -->
+      <ProductSlider
+        data={product?.relatedProducts} 
+        title="Productos relacionados" 
+        prefixId="ProductosRelacionados"
+      />
+
+
+    </section>
+
+    <!-- =========================
+        SCRIPT SEGURO SSR
+    ========================== -->
+
+    <script>
+    if (typeof window !== "undefined") {
+
+      document.querySelectorAll('[data-share-toggle]').forEach((toggleBtn) => {
+
+        const container = toggleBtn.closest('.relative')
+        if (!container) return
+
+        const closeBtn = container.querySelector('[data-share-close]')
+        const actions = container.querySelector('[data-share-actions]')
+        const tooltip = container.querySelector('[data-copy-tooltip]')
+        const copyBtn = container.querySelector('[data-copy-url]')
+        const facebook = container.querySelector('[data-share-facebook]')
+        const linkedin = container.querySelector('[data-share-linkedin]')
+
+        const url = encodeURIComponent(window.location.href)
+
+        if (facebook) {
+          facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`
+        }
+
+        if (linkedin) {
+          linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`
+        }
+
+        toggleBtn.addEventListener('click', () => {
+          toggleBtn.classList.add('opacity-0', 'pointer-events-none')
+          actions?.classList.remove('opacity-0', 'pointer-events-none')
+          actions?.classList.add('opacity-100')
+        })
+
+        closeBtn?.addEventListener('click', () => {
+          toggleBtn.classList.remove('opacity-0', 'pointer-events-none')
+          actions?.classList.add('opacity-0', 'pointer-events-none')
+          actions?.classList.remove('opacity-100')
+        })
+
+        copyBtn?.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(window.location.href)
+          tooltip?.classList.remove('opacity-0')
+          tooltip?.classList.add('opacity-100')
+
+          setTimeout(() => {
+            tooltip?.classList.add('opacity-0')
+            tooltip?.classList.remove('opacity-100')
+          }, 1500)
+        })
+
+      })
+
+    }
+    </script>
+
+
+    
+    <script is:inline>
+
+      
+    document.addEventListener('DOMContentLoaded', () => {
+        const slideimagenesProducto = document.querySelector('#glider-slideimagenesProducto');
+        const counterMobile = document.getElementById('gallery-counter-mobile');
+        if (slideimagenesProducto) {
+            // @ts-ignore
+            const sliderPromociones = new Glide(slideimagenesProducto, {
+                rewind: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                draggable: true,
+                duration: .5,
+                scrollLock: true,
+                // arrows: {
+                //     prev: '#prev-btn-promociones',
+                //     next: '#next-btn-promociones'
+                // },
+            });
+            sliderPromociones.mount();
+            // Actualizar contador al inicializar y al cambiar de slide
+            // function updateMobileCounter() {
+            //     if (!counterMobile) return;
+            //     const total = sliderPromociones.slides.length;
+            //     const actual = sliderPromociones.slide + 1;
+            //     counterMobile.textContent = `${actual} / ${total}`;
+            // }
+            // slideimagenesProducto.addEventListener('glider-slide-visible', updateMobileCounter);
+            // // Inicializar contador
+            // setTimeout(updateMobileCounter, 100);
+        }
+    });
+</script>
+
+  </main>
+  
+
+
+  
+<script>
+  // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
+  document.addEventListener('DOMContentLoaded', function() {
+    const thumbnails = document.querySelectorAll('[data-thumbnail]');
+    const mainMediaContainer = document.getElementById('main-media-container');
+    const thumbnailsScroll = document.getElementById('thumbnails-scroll');
+    const scrollDownBtn = document.getElementById('scroll-down-thumbnails');
+    const scrollUpBtn = document.getElementById('scroll-up-thumbnails');
+    
+    thumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', function() {
+        const newSrc = this.dataset.thumbnail;
+        const type = this.dataset.type;
+        if (mainMediaContainer && newSrc) {
+          // Actualizar el contenido del contenedor principal
+          if (type === 'image') {
+            mainMediaContainer.innerHTML = `<img src='${newSrc}' alt='' class='w-full h-full object-contain max-h-[600px]' id='main-image' data-type='image' />`;
+          } else if (type === 'video') {
+            mainMediaContainer.innerHTML = `<video src='${newSrc}' controls class='w-full h-full object-contain max-h-[600px]' id='main-image' data-type='video'></video>`;
+          }
+          // Actualizar estilos de selección
+          thumbnails.forEach(thumb => {
+            thumb.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]';
+          });
+          // Marcar como seleccionado el thumbnail actual
+          this.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border-3 border-[var(--color-primary)]';
+        }
+      });
+    });
+
+    // Scroll hacia abajo en la galería de miniaturas (5 miniaturas)
+    if (scrollDownBtn && thumbnailsScroll) {
+      scrollDownBtn.addEventListener('click', function() {
+        const thumbnailHeight = 80 + 12; // 80px alto + 12px gap
+        thumbnailsScroll.scrollBy({ top: thumbnailHeight * 5, behavior: 'smooth' });
+      });
+    }
+    // Scroll hacia arriba en la galería de miniaturas (5 miniaturas)
+    if (scrollUpBtn && thumbnailsScroll) {
+      scrollUpBtn.addEventListener('click', function() {
+        const thumbnailHeight = 80 + 12;
+        thumbnailsScroll.scrollBy({ top: -thumbnailHeight * 5, behavior: 'smooth' });
+      });
+    }  
+  });
+</script>  
+
+
+
+
+<script is:inline>
+    // Efecto de zoom: click en Buscar activa el zoom, mousemove sobre la imagen mueve el zoom, click en la imagen lo desactiva
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     const buscarBtn = document.querySelector('button[title="Buscar"]');
+    //     // Solo aplica zoom en desktop
+    //     const mainImage = () => document.getElementById('main-image-desktop');
+    //     let zoomActive = false;
+    //     if (buscarBtn) {
+    //         buscarBtn.addEventListener('click', function(e) {
+    //             e.preventDefault();
+    //             const img = mainImage();
+    //             if (!img || img.tagName !== 'IMG') return;
+    //             zoomActive = true;
+    //             img.classList.add('zoomed');
+    //         });
+    //     }
+    //     // Mousemove sobre la imagen mueve el zoom
+    //     document.addEventListener('mousemove', function(e) {
+    //         if (!zoomActive) return;
+    //         const img = mainImage();
+    //         if (!img || img.tagName !== 'IMG') return;
+    //         // Solo si el mouse está sobre la imagen
+    //         const rect = img.getBoundingClientRect();
+    //         if (
+    //             e.clientX < rect.left || e.clientX > rect.right ||
+    //             e.clientY < rect.top || e.clientY > rect.bottom
+    //         ) return;
+    //         const x = ((e.clientX - rect.left) / rect.width) * 100;
+    //         const y = ((e.clientY - rect.top) / rect.height) * 100;
+    //         img.style.transformOrigin = `${x}% ${y}%`;
+    //     });
+    //     // Click en la imagen desactiva el zoom
+    //     document.addEventListener('click', function(e) {
+    //         if (!zoomActive) return;
+    //         const img = mainImage();
+    //         if (!img || img.tagName !== 'IMG') return;
+    //         const rect = img.getBoundingClientRect();
+    //         if (
+    //             e.clientX >= rect.left && e.clientX <= rect.right &&
+    //             e.clientY >= rect.top && e.clientY <= rect.bottom
+    //         ) {
+    //             img.classList.remove('zoomed');
+    //             img.style.transformOrigin = '';
+    //             zoomActive = false;
+    //         }
+    //     });
+    // });
+    // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
+    document.addEventListener('DOMContentLoaded', function() {
+        // Miniaturas: cambiar imagen principal al hacer clic y resaltar la seleccionada
+        const thumbnails = document.querySelectorAll('#thumbnails-scroll button[data-index]');
+        // Desktop/Tablet main image
+        let mainImage = document.getElementById('main-image-desktop');
+        // Al cargar, marcar la primera miniatura como seleccionada
+        if (thumbnails.length) {
+            thumbnails.forEach(b => {
+                b.style.borderColor = '';
+                b.style.borderWidth = '';
+            });
+            thumbnails[0].style.borderColor = '#006764';
+            thumbnails[0].style.borderWidth = '3px';
+        }
+        thumbnails.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Quitar borde de seleccion a todas
+                thumbnails.forEach(b => {
+                    b.style.borderColor = '';
+                    b.style.borderWidth = '';
+                });
+                // Agregar borde de seleccion al actual
+                this.style.borderColor = '#006764';
+                this.style.borderWidth = '3px';
+                const type = this.getAttribute('data-type');
+                const src = this.getAttribute('data-thumbnail');
+                // Reemplazar el nodo principal por el tipo correcto (img o video)
+                const container = document.getElementById('main-media-container');
+                if (!container) return;
+                if (type === 'image') {
+                    if (mainImage && mainImage.tagName === 'IMG') {
+                        mainImage.src = src;
+                        mainImage.setAttribute('data-type', 'image');
+                        mainImage.classList.remove('hidden');
+                    } else {
+                        // Si el actual es video, reemplazar por img
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.alt = '';
+                        img.className = 'w-full h-full object-contain max-h-[600px] rounded-lg';
+                        img.id = 'main-image-desktop';
+                        img.setAttribute('data-type', 'image');
+                        container.innerHTML = '';
+                        container.appendChild(img);
+                        mainImage = img;
+                    }
+                } else if (type === 'video') {
+                    if (mainImage && mainImage.tagName === 'VIDEO') {
+                        mainImage.src = src;
+                        mainImage.setAttribute('data-type', 'video');
+                        mainImage.classList.remove('hidden');
+                    } else {
+                        // Si el actual es img, reemplazar por video
+                        const video = document.createElement('video');
+                        video.src = src;
+                        video.controls = true;
+                        video.className = 'w-full h-full object-contain max-h-[600px] rounded-lg';
+                        video.id = 'main-image-desktop';
+                        video.setAttribute('data-type', 'video');
+                        container.innerHTML = '';
+                        container.appendChild(video);
+                        mainImage = video;
+                    }
+                }
+            });
+        });
+
+
+        const btnsVerPopUpImagenes = document.querySelectorAll('.btnVerPopUpImagenes');
+        btnsVerPopUpImagenes.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const overlay = document.getElementById('gallery-popup-overlay');
+                if (overlay) overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                // Obtener imágenes desde data-imagenes (array de strings)
+                let images = [];
+                try {
+                  images = this.getAttribute('data-imagenes') ? JSON.parse(this.getAttribute('data-imagenes')) : [];
+                  if (!Array.isArray(images)) images = [];
+
+                  
+                } catch (err) {
+                  images = [];
+                }
+                // Recuperar el índice de la miniatura con +N
+                const index = this.querySelector('button')?.getAttribute('data-index');
+                const startIndex = index ? parseInt(index, 10) : 6;
+                openGalleryPopup(images, startIndex);
+            });
+        });
+    });
+</script>
+
+
+
+
+
+<style>
+  /* Efecto de fondo hover */
+  .faq-hover-fill-effect {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #EDF2F0;
+      transform: scaleY(0);
+      transform-origin: bottom center;
+      transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+      z-index: 1;
+      border-radius: 2px;
+  }
+
+  @media (min-width: 768px) {
+      .group:hover .faq-hover-fill-effect {
+          transform: scaleY(1);
+      }
+  }
+
+  /* Asegurar que el contenido esté por encima */
+  .relative.z-10 {
+      position: relative;
+      z-index: 10;
+  }
+</style>
+
+
+</Layout>

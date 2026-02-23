@@ -1,0 +1,439 @@
+<!-- Popup Galería de Imágenes y Videos tipo newsletter -->
+<div id="gallery-popup-overlay" class="fixed inset-0 z-[9999] hidden">
+  <!-- Fondo con blur y gradiente -->
+  <div 
+    id="gallery-blurred-background" 
+    class="absolute inset-0 transition-all duration-300"
+    style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%); filter: blur(8px);">
+  </div>
+  <!-- Popup Content -->
+  <div class="relative z-[10000] flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto">
+    <button id="gallery-prev" class="cursor-pointer group relative left-0 -translate-y-1/2 h-14 px-4 py-2 rounded-full bg-[#212121] text-white flex items-center justify-center z-[10001] mr-8 hover:bg-[#333]" aria-label="Anterior">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="transition-transform duration-200 ease-in-out group-hover:scale-110">
+            <path d="M16.9999 11H9.4099L12.7099 7.71C12.8982 7.5217 13.004 7.2663 13.004 7C13.004 6.7337 12.8982 6.47831 12.7099 6.29C12.5216 6.1017 12.2662 5.99591 11.9999 5.99591C11.7336 5.99591 11.4782 6.1017 11.2899 6.29L6.2899 11.29C6.19886 11.3851 6.12749 11.4973 6.0799 11.62C5.97988 11.8635 5.97988 12.1365 6.0799 12.38C6.12749 12.5028 6.19886 12.6149 6.2899 12.71L11.2899 17.71C11.3829 17.8037 11.4935 17.8781 11.6153 17.9289C11.7372 17.9797 11.8679 18.0058 11.9999 18.0058C12.1319 18.0058 12.2626 17.9797 12.3845 17.9289C12.5063 17.8781 12.6169 17.8037 12.7099 17.71C12.8036 17.617 12.878 17.5064 12.9288 17.3846C12.9796 17.2627 13.0057 17.132 13.0057 17C13.0057 16.868 12.9796 16.7373 12.9288 16.6154C12.878 16.4936 12.8036 16.383 12.7099 16.29L9.4099 13H16.9999C17.2651 13 17.5195 12.8946 17.707 12.7071C17.8945 12.5196 17.9999 12.2652 17.9999 12C17.9999 11.7348 17.8945 11.4804 17.707 11.2929C17.5195 11.1054 17.2651 11 16.9999 11Z" fill="white"/>
+        </svg>
+    </button>
+
+    <div id="ImageGalery" class="rounded-lg shadow-xl max-w-4xl w-full overflow-auto relative h-auto lg:h-auto flex flex-col items-center justify-center z-[10000]" style="width: auto;">
+      <!-- Botón cerrar -->
+      <button id="close-gallery-popup" type="button" class="cursor-pointer absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(33,33,33,0.95)] text-white z-[10001] group hover:bg-[#000] hover:scale-110 transition-all duration-200" >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="transition-transform duration-200 ease-in-out">
+            <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" class="fill-white"/>
+          </svg>
+      </button>
+      
+      <!-- Contenedor multimedia principal -->
+      <div class="flex flex-col items-center justify-center w-auto h-auto p-2">
+        <!-- Contenedor para imagen o video -->
+        <div id="gallery-media-container" class="relative w-full h-full">
+          <!-- Imagen -->
+          <img id="gallery-main-image" src="https://inspiring-delight-e03825eb6a.media.strapiapp.com/Cardiovit_AT_102_G2_25_6f83a50577.webp" alt="Imagen galería" class="w-full h-full object-contain rounded-lg hidden" style="max-width: 600px !important; width: auto;" />
+          
+          <!-- Video con playsinline para móviles -->
+          <video 
+            id="gallery-main-video" 
+            controls 
+            playsinline
+            webkit-playsinline
+            class="w-full h-full object-contain rounded-lg hidden"
+            style="background: #FFF; padding: 60px; box-sizing: border-box;">
+            Tu navegador no soporta la reproducción de video.
+          </video>
+        </div>
+        
+        <span id="gallery-counter" class="absolute bottom-4 left-4 px-4 py-2 rounded-full bg-[rgba(0,0,0,0.75)] text-white font-medium text-[16px] z-[10001] backdrop-blur-sm" >
+        </span>
+      </div>
+    </div>
+    
+    <button id="gallery-next" class="cursor-pointer group relative right-0 -translate-y-1/2 h-14 px-4 py-2 rounded-full bg-[#212121] text-white flex items-center justify-center z-[10001] ml-8 hover:bg-[#333]" aria-label="Siguiente">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="transition-transform duration-200 ease-in-out group-hover:scale-110">
+            <path d="M17.92 11.62C17.8724 11.4973 17.801 11.3851 17.71 11.29L12.71 6.29C12.6168 6.19676 12.5061 6.1228 12.3842 6.07234C12.2624 6.02188 12.1319 5.99591 12 5.99591C11.7337 5.99591 11.4783 6.1017 11.29 6.29C11.1968 6.38324 11.1228 6.49393 11.0723 6.61575C11.0219 6.73758 10.9959 6.86814 10.9959 7C10.9959 7.2663 11.1017 7.5217 11.29 7.71L14.59 11H7C6.73478 11 6.48043 11.1054 6.29289 11.2929C6.10536 11.4804 6 11.7348 6 12C6 12.2652 6.10536 12.5196 6.29289 12.7071C6.48043 12.8946 6.73478 13 7 13H14.59L11.29 16.29C11.1963 16.383 11.1219 16.4936 11.0711 16.6154C11.0203 16.7373 10.9942 16.868 10.9942 17C10.9942 17.132 11.0203 17.2627 11.0711 17.3846C11.1219 17.5064 11.1963 17.617 11.29 17.71C11.383 17.8037 11.4936 17.8781 11.6154 17.9289C11.7373 17.9797 11.868 18.0058 12 18.0058C12.132 18.0058 12.2627 17.9797 12.3846 17.9289C12.5064 17.8781 12.617 17.8037 12.71 17.71L17.71 12.71C17.801 12.6149 17.8724 12.5028 17.92 12.38C18.02 12.1365 18.02 11.8635 17.92 11.62Z" fill="white"/>
+        </svg>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+    // Variables globales
+    let isManualFullscreen = false;
+    let videoElement = null;
+    
+    // Funciones globales para el fullscreen manual
+    function enterManualFullscreen() {
+      if (!videoElement) {
+        videoElement = document.getElementById('gallery-main-video');
+        if (!videoElement) return;
+      }
+      
+      isManualFullscreen = true;
+      
+      // Guardar estado original
+      videoElement.dataset.originalParent = videoElement.parentNode.id;
+      videoElement.dataset.originalStyles = JSON.stringify({
+        position: videoElement.style.position,
+        width: videoElement.style.width,
+        height: videoElement.style.height,
+        top: videoElement.style.top,
+        left: videoElement.style.left,
+        zIndex: videoElement.style.zIndex,
+        padding: videoElement.style.padding,
+        background: videoElement.style.background
+      });
+      
+      // Aplicar estilos de pantalla completa MANUAL
+      videoElement.style.position = 'fixed';
+      videoElement.style.top = '0';
+      videoElement.style.left = '0';
+      videoElement.style.width = '100vw';
+      videoElement.style.height = '100vh';
+      videoElement.style.zIndex = '99999';
+      videoElement.style.padding = '0';
+      videoElement.style.background = '#000';
+      videoElement.style.margin = '0';
+      videoElement.style.border = 'none';
+      
+      // Ocultar TODOS los elementos del popup
+      document.querySelectorAll('#gallery-popup-overlay > *').forEach(el => {
+        if (el !== videoElement) {
+          el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.opacity = '0';
+        }
+      });
+      
+      // Ocultar controles específicos
+      ['#gallery-prev', '#gallery-next', '#close-gallery-popup', '#gallery-counter', '#gallery-blurred-background'].forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) el.style.display = 'none';
+      });
+      
+      // Agregar clase para CSS
+      document.body.classList.add('video-fullscreen-manual');
+      videoElement.classList.add('manual-fullscreen-active');
+      
+      console.log('Fullscreen manual ACTIVADO');
+    }
+    
+    function exitManualFullscreen() {
+      if (!videoElement) {
+        videoElement = document.getElementById('gallery-main-video');
+        if (!videoElement) return;
+      }
+      
+      isManualFullscreen = false;
+      
+      // Restaurar estilos originales
+      if (videoElement.dataset.originalStyles) {
+        const originalStyles = JSON.parse(videoElement.dataset.originalStyles);
+        Object.keys(originalStyles).forEach(key => {
+          videoElement.style[key] = originalStyles[key];
+        });
+      } else {
+        // Valores por defecto
+        videoElement.style.position = '';
+        videoElement.style.top = '';
+        videoElement.style.left = '';
+        videoElement.style.width = '';
+        videoElement.style.height = '';
+        videoElement.style.zIndex = '';
+        videoElement.style.padding = '60px';
+        videoElement.style.background = '#FFF';
+        videoElement.style.margin = '0';
+        videoElement.style.border = 'none';
+      }
+      
+      // Mostrar TODOS los elementos del popup
+      document.querySelectorAll('#gallery-popup-overlay > *').forEach(el => {
+        el.style.display = '';
+        el.style.visibility = '';
+        el.style.opacity = '';
+      });
+      
+      // Mostrar controles específicos
+      ['#gallery-prev', '#gallery-next', '#close-gallery-popup', '#gallery-counter', '#gallery-blurred-background'].forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) el.style.display = '';
+      });
+      
+      // Remover clases
+      document.body.classList.remove('video-fullscreen-manual');
+      videoElement.classList.remove('manual-fullscreen-active');
+      
+      console.log('Fullscreen manual DESACTIVADO');
+    }
+    
+    function toggleManualFullscreen() {
+      if (!videoElement) {
+        videoElement = document.getElementById('gallery-main-video');
+        if (!videoElement) return;
+      }
+      
+      if (!isManualFullscreen) {
+        enterManualFullscreen();
+      } else {
+        exitManualFullscreen();
+      }
+    }
+    
+    // Hacer funciones globales
+    window.exitManualFullscreen = exitManualFullscreen;
+    window.enterManualFullscreen = enterManualFullscreen;
+    window.toggleManualFullscreen = toggleManualFullscreen;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const closeBtn = document.getElementById('close-gallery-popup');
+      const overlay = document.getElementById('gallery-popup-overlay');
+      videoElement = document.getElementById('gallery-main-video');
+      
+      // 1. DETECTAR CLICK EN BOTÓN DE PANTALLA COMPLETA DEL VIDEO
+      videoElement?.addEventListener('click', function(e) {
+        // Verificar si el clic fue en el botón de pantalla completa
+        const fullscreenBtn = e.target.closest('.fullscreen-button, [aria-label*="full"], [title*="full"]');
+        if (fullscreenBtn || e.target.classList.contains('fullscreen-button')) {
+          console.log('Botón de pantalla completa clickeado');
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Forzar fullscreen MANUALMENTE
+          toggleManualFullscreen();
+        }
+      });
+      
+      // 2. DETECTAR EL EVENTO nativo de fullscreen del video
+      videoElement?.addEventListener('webkitbeginfullscreen', function() {
+        console.log('iOS comenzó fullscreen nativo');
+        // En iOS, podemos intentar manejar esto
+        setTimeout(toggleManualFullscreen, 100);
+      });
+      
+      videoElement?.addEventListener('webkitendfullscreen', function() {
+        console.log('iOS terminó fullscreen nativo');
+        setTimeout(exitManualFullscreen, 100);
+      });
+      
+      // 3. ESCUCHAR TECLA ESC PARA SALIR
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isManualFullscreen) {
+          exitManualFullscreen();
+        }
+      });
+      
+      // 4. ESCUCHAR CLICK EN VIDEO PARA SALIR (doble-tap en móvil)
+      videoElement?.addEventListener('dblclick', function() {
+        if (isManualFullscreen) {
+          exitManualFullscreen();
+        }
+      });
+      
+      // 5. DETECTAR ROTACIÓN EN MÓVILES
+      window.addEventListener('orientationchange', function() {
+        if (isManualFullscreen) {
+          // Re-aplicar estilos para nueva orientación
+          videoElement.style.width = '100vw';
+          videoElement.style.height = '100vh';
+        }
+      });
+      
+      // 6. CERRAR POPUP (también sale de fullscreen)
+      function closePopup() {
+        if (overlay) {
+          if (isManualFullscreen) {
+            exitManualFullscreen();
+          }
+          
+          overlay.classList.add('hidden');
+          document.body.classList.remove('popup-open');
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.width = '';
+          
+          if (videoElement) {
+            videoElement.pause();
+            videoElement.currentTime = 0;
+          }
+          
+          document.documentElement.style.paddingRight = '';
+        }
+      }
+      
+      closeBtn?.addEventListener('click', closePopup);
+      
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
+          closePopup();
+        }
+      });
+      
+      overlay?.addEventListener('click', function(e) {
+        if (e.target === overlay || e.target.id === 'gallery-blurred-background') {
+          closePopup();
+        }
+      });
+    });
+
+    function openGalleryPopup(mediaItems, indexMedia = 0) {
+      const overlay = document.getElementById('gallery-popup-overlay');
+      const imageElement = document.getElementById('gallery-main-image');
+      videoElement = document.getElementById('gallery-main-video');
+      const prevBtn = document.getElementById('gallery-prev');
+      const nextBtn = document.getElementById('gallery-next');
+      const counter = document.getElementById('gallery-counter');
+      let current = indexMedia;
+      
+      // Resetear estado de fullscreen manual
+      isManualFullscreen = false;
+      if (videoElement) {
+        videoElement.classList.remove('manual-fullscreen-active');
+        document.body.classList.remove('video-fullscreen-manual');
+      }
+
+      function isVideoUrl(url) {
+        if (!url) return false;
+        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv'];
+        const urlLower = typeof url === 'string' ? url.toLowerCase() : '';
+        return videoExtensions.some(ext => urlLower.includes(ext));
+      }
+
+      function updateMedia() {
+        if (!mediaItems.length || !imageElement || !videoElement || !counter || !prevBtn || !nextBtn) return;
+
+        const currentItem = mediaItems[current];
+        if (!currentItem) return;
+
+        const isVideo = isVideoUrl(currentItem);
+
+        imageElement.classList.add('hidden');
+        videoElement.classList.add('hidden');
+
+        if (isVideo) {
+          videoElement.src = currentItem;
+          videoElement.classList.remove('hidden');
+          // Configurar estilos iniciales
+          videoElement.style.position = '';
+          videoElement.style.top = '';
+          videoElement.style.left = '';
+          videoElement.style.width = '';
+          videoElement.style.height = '';
+          videoElement.style.zIndex = '';
+          videoElement.style.padding = '60px';
+          videoElement.style.background = '#FFF';
+          videoElement.style.margin = '0';
+          videoElement.style.border = 'none';
+        } else {
+          imageElement.src = currentItem;
+          imageElement.alt = 'Imagen galería';
+          imageElement.classList.remove('hidden');
+        }
+
+        counter.textContent = (current + 1) + ' / ' + mediaItems.length;
+      }
+
+      prevBtn.replaceWith(prevBtn.cloneNode(true));
+      nextBtn.replaceWith(nextBtn.cloneNode(true));
+      
+      const newPrevBtn = document.getElementById('gallery-prev');
+      const newNextBtn = document.getElementById('gallery-next');
+      
+      newPrevBtn.addEventListener('click', function() {
+        if (mediaItems.length === 0) return;
+        
+        // Salir de fullscreen manual si está activo
+        if (isManualFullscreen) {
+          exitManualFullscreen();
+        }
+        
+        videoElement.pause();
+        videoElement.currentTime = 0;
+        
+        if (current === 0) {
+          current = mediaItems.length - 1;
+        } else {
+          current--;
+        }
+        updateMedia();
+      });
+      
+      newNextBtn.addEventListener('click', function() {
+        if (mediaItems.length === 0) return;
+        
+        // Salir de fullscreen manual si está activo
+        if (isManualFullscreen) {
+          exitManualFullscreen();
+        }
+        
+        videoElement.pause();
+        videoElement.currentTime = 0;
+        
+        if (current === mediaItems.length - 1) {
+          current = 0;
+        } else {
+          current++;
+        }
+        updateMedia();
+      });
+      
+      updateMedia();
+      
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${window.scrollY}px`;
+        document.body.style.width = '100%';
+        document.body.classList.add('popup-open');
+        
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        if (scrollbarWidth > 0) {
+          document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
+        }
+      }
+    }
+</script>
+
+<style>
+  /* Estilos para fullscreen manual */
+  body.video-fullscreen-manual #gallery-popup-overlay {
+    background: transparent !important;
+  }
+  
+  body.video-fullscreen-manual #gallery-popup-overlay > *:not(#gallery-main-video) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+  
+  video.manual-fullscreen-active {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #000 !important;
+    border: none !important;
+  }
+  
+  /* Estilos normales del popup */
+  .popup-open #gallery-popup-overlay {
+    z-index: 9999 !important;
+  }
+  
+  .popup-open #gallery-popup-overlay > * {
+    z-index: 10000 !important;
+  }
+  
+  body.popup-open > *:not(#gallery-popup-overlay) {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
+  
+  #gallery-popup-overlay,
+  #gallery-popup-overlay * {
+    pointer-events: auto !important;
+  }
+</style>
