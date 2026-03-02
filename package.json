@@ -10,9 +10,15 @@
   },
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.9",
+    "@astrojs/react": "^4.4.2",
     "@astrojs/vercel": "^9.0.2",
     "@glidejs/glide": "^3.7.1",
-    "astro": "^5.15.9"
+    "@strapi/blocks-react-renderer": "^1.0.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^5.15.9",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",

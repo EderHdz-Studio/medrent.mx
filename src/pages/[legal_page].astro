@@ -1,0 +1,89 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { strapiFetch } from "@server/strapiClient";
+import { BlocksRenderer } from '@strapi/blocks-react-renderer';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+
+export async function getStaticPaths() {
+  const res = await strapiFetch("/legal-content?populate[legalPages][populate]=imageHero");
+  const mainPublishedAt = res.data.publishedAt;
+  
+  return res.data.legalPages.map((page) => ({
+    params: { legal_page: page.slug },
+    props: { 
+      pageData: page,
+      mainPublishedAt: mainPublishedAt
+    }
+  }));
+}
+
+const { pageData, mainPublishedAt } = Astro.props;
+
+const { 
+  title, 
+  content, 
+  imageHero 
+} = pageData || {};
+
+//console.log('pageData:', JSON.stringify(pageData, null, 2));
+---
+
+<Layout title={title}>
+  <Fragment slot="head">
+    <BreadcrumbSchema
+      items={[
+        { name: 'Inicio', url: 'https://www.medrent.mx' },
+        { name: title, url: `https://www.medrent.mx/${pageData?.slug}` },
+      ]}
+    />
+  </Fragment>
+
+  <div class="absolute w-full z-2">
+    <Breadcrumb
+      textColor="#171D1C"
+      items={[
+        { name: "INICIO", href: "/" },
+        { name: title }
+      ]}
+    />
+  </div>
+  <section class="w-full relative bg-[#F5FAF9]">
+    <div class="w-full">
+      {imageHero && (
+        <img 
+          src={imageHero.url} 
+          alt={title} 
+          class="w-full h-[300px] object-cover"
+        />
+      )}
+      
+      <div class="absolute inset-0"></div>
+
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="text-center text-[#171D1C]">
+          <h1 class="font-lato font-normal text-[28px] md:text-[32px]">
+            {title}
+          </h1>
+          <p class="mt-2 text-[#3D4948] font-lato text-sm">
+            Última actualización: {mainPublishedAt ? new Date(mainPublishedAt).toLocaleDateString('es-MX', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }) : 'Fecha no disponible'}
+          </p>
+        </div>
+      </div>
+    </div>
+</section>
+
+  <section class="max-w-7xl mx-auto px-4 py-12 text-[#261819] font-lato space-y-6 text-sm md:text-base leading-relaxed">
+    <div>
+      {content ? (
+        <BlocksRenderer content={content} />
+      ) : (
+        <p>Cargando contenido...</p> 
+      )}
+    </div>
+  </section>
+</Layout>
