@@ -1,74 +1,104 @@
 ---
+export const prerender = false;
+
 import Layout from "@layouts/Layout.astro";
+import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
+import Breadcrumb from "@components/navigation/Breadcrumb.astro";
+import PLPLayout from "@components/product/PLPLayout.astro";
+import ProductGrid from "@components/product/ProductGrid.astro";
+import SidebarFilters from "@components/product/SidebarFilters.astro";
 
 import { getProducts } from "@server/api/products";
-import { getApplicationsByCategory } from "@server/api/applications";
+import { getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
+import { getAllSubcategories } from "@server/api/subcategories";
 
-import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
-import Breadcrumb from '@components/navigation/Breadcrumb.astro';
-import ProductGrid from "@components/product/ProductGrid.astro";
-import PLPLayout from "@components/product/PLPLayout.astro";
-
-export async function getStaticPaths() {
-  const categories = await getCategories();
-
-  const paths = [];
-
-  for (const category of categories) {
-    const subcategory = await getApplicationsByCategory(category.slug);
-
-    for (const app of subcategory) {
-      paths.push({
-        params: {
-          category: category.slug,
-          subcategory: app.slug,
-        },
-      });
-    }
-  }
-console.log(paths)
-  return paths;
-}
+/* ---------------- ROUTE PARAMS ---------------- */
 
 const { category, subcategory } = Astro.params;
 
+/* ---------------- QUERY PARAMS ---------------- */
+
+const url = new URL(Astro.request.url);
+
+const brandQuery = url.searchParams.get("brand")?.split(",") || [];
+const categoryQuery = url.searchParams.get("category")?.split(",") || [];
+const subcategoryQuery =
+  url.searchParams.get("subcategory")?.split(",") || [];
+
+/* Siempre incluir contexto base */
+if (category && !categoryQuery.includes(category)) {
+  categoryQuery.push(category);
+}
+
+if (subcategory && !subcategoryQuery.includes(subcategory)) {
+  subcategoryQuery.push(subcategory);
+}
+
+/* ---------------- FETCH DATA ---------------- */
+
 const products = await getProducts({
-  subcategory
+  brands: brandQuery,
+  categories: categoryQuery,
+  subcategories: subcategoryQuery,
 });
+
+const brandsData = await getBrands();
+const categoriesData = await getCategories();
+const subcategoriesData = await getAllSubcategories();
 ---
 
- <Layout title="Productos">
-    <Fragment slot="head">
-      <BreadcrumbSchema
+<Layout title={subcategory}>
+  <Fragment slot="head">
+    <BreadcrumbSchema
       items={[
-          { name: 'Inicio', url: 'https://www.medrent.mx' },
-          { name: category.toUpperCase(), url: `https://www.medrent.mx/especialidades/${category}` },
-          { name: subcategory.toUpperCase(), url: `https://www.medrent.mx/especialidades/${category}/${subcategory}` },
+        { name: "Inicio", url: "https://www.medrent.mx" },
+        {
+          name: category,
+          url: `https://www.medrent.mx/especialidades/${category}`,
+        },
+        {
+          name: subcategory,
+          url: `https://www.medrent.mx/especialidades/${category}/${subcategory}`,
+        },
       ]}
+    />
+  </Fragment>
+
+  <!-- HERO -->
+  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">
+    <div class="absolute inset-0 heroproductos">
+      <Breadcrumb
+        textColor="text-white"
+        items={[
+          { name: "INICIO", href: "/" },
+          {
+            name: category.toUpperCase(),
+            href: `/especialidades/${category}`,
+          },
+          {
+            name: subcategory.toUpperCase(),
+          },
+        ]}
+      />
+      <img
+        src="/temp/HeroPLP.png"
+        alt={subcategory}
+        class="w-full h-full object-cover rounded-b-[24px]"
+      />
+    </div>
+  </section>
+
+  <!-- PLP -->
+  <PLPLayout title={subcategory}>
+    <Fragment slot="filters">
+      <SidebarFilters
+        brands={brandsData}
+        categories={categoriesData}
+        subcategories={subcategoriesData}
       />
     </Fragment>
 
-
-  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">    
-      <div class="absolute inset-0 heroproductos">
-          <Breadcrumb
-          textColor="text-white"
-          items={[
-              { name: "INICIO", href: "/" },
-              { name: category.toUpperCase(), href: `/especialidades/${category}` },
-              { name: subcategory.toUpperCase(), href: `/especialidades/${category}/${subcategory}` }
-          ]}
-      />
-          <img src="/temp/HeroPLP.png" alt="Todos los productos" class="w-full h-full object-cover rounded-b-[24px]" />
-      </div>
-  </section>
-
-
-  <PLPLayout title={subcategory}>
     <ProductGrid products={products} />
   </PLPLayout>
 </Layout>
-
-
-
