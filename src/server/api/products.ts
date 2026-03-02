@@ -51,3 +51,29 @@ export async function getProducts(filters?: {
 
   return res.data.map(mapStrapiProduct);
 }
+
+const PDP_POPULATE = `
+    &populate[gallery]=true
+    &populate[documents]=true
+    &populate[benefit][populate][icon]=true
+    &populate[faqItem]=true
+    &populate[technicalSheet][populate][technicalFeature]=true
+    &populate[technicalSpecifications]=true
+    &populate[relatedConsumables][populate][gallery]=true
+    &populate[relatedProducts][populate][gallery]=true
+    &populate[relatedProducts][populate][brand]=true
+    &populate[variants]=true
+    &populate[subcategory]=true
+    &populate[brand]=true
+`.replace(/\s+/g, '');
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const res = await strapiFetch(
+    `/products?filters[slug][$eq]=${slug}${PDP_POPULATE}`
+  );
+
+  if (!res.data.length) return null;
+
+//   return res.data[0];
+  return mapStrapiProduct(res.data[0]);
+}
