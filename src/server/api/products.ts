@@ -2,10 +2,6 @@ import { strapiFetch } from "../strapiClient";
 import { mapStrapiProduct } from "@lib/domain/product/mapper";
 import type { Product } from "@lib/domain/product/types";
 
-const PLP_POPULATE = `
-    ?populate[gallery]=true
-    &populate[brand]=true
-`.replace(/\s+/g, '');
 export async function getProducts(filters?: {
   brands?: string[];
   categories?: string[];
@@ -13,6 +9,14 @@ export async function getProducts(filters?: {
 }): Promise<Product[]> {
 
   const params = new URLSearchParams();
+
+  /* ---------------- POPULATE ---------------- */
+
+  params.append("populate[gallery]", "true");
+  params.append("populate[brand]", "true");
+  params.append("populate[subcategory][populate][category]", "true");
+
+  /* ---------------- FILTERS ---------------- */
 
   filters?.brands?.forEach((brand, index) => {
     params.append(
@@ -35,8 +39,13 @@ export async function getProducts(filters?: {
     );
   });
 
-  const queryString = params.toString();
-  const url = `/products${PLP_POPULATE}${queryString ? `&${queryString}` : ""}`;
+  /* ---------------- OPTIONAL: ONLY ACTIVE ---------------- */
+
+  params.append("filters[isActive][$eq]", "true");
+
+  /* ---------------- BUILD URL ---------------- */
+
+  const url = `/products?${params.toString()}`;
 
   const res = await strapiFetch(url);
 
