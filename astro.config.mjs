@@ -3,9 +3,11 @@ import tailwind from '@tailwindcss/vite';
 import alpinejs from "@astrojs/alpinejs";
 import vercel from '@astrojs/vercel';
 
+import react from '@astrojs/react';
+
 export default defineConfig({
   site: 'https://medrent.mx',
-  integrations: [alpinejs()],
+  integrations: [alpinejs(), react()],
   vite: {
     plugins: [tailwind()],
     resolve: {
