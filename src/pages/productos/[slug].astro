@@ -8,6 +8,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ProductSlider from '@components/sections/ProductSlider.astro';
 import FichaTecnica from '@components/product/TechnicalSheet.astro';
 import GalleryPopup from '@components/product/GalleryPopUp.astro';
+import PopUpSolicitarCotizacion from '@components/popup/popUpSolicitarCotizacion.astro';
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -551,8 +552,6 @@ console.log("Product data:", product);
 
     
     <script is:inline>
-
-      
     document.addEventListener('DOMContentLoaded', () => {
         const slideimagenesProducto = document.querySelector('#glider-slideimagenesProducto');
         const counterMobile = document.getElementById('gallery-counter-mobile');
@@ -583,7 +582,7 @@ console.log("Product data:", product);
             // setTimeout(updateMobileCounter, 100);
         }
     });
-</script>
+    </script>
 
   </main>
   
@@ -781,9 +780,27 @@ console.log("Product data:", product);
     });
 </script>
 
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    const openBtn = document.getElementById('open-event-popup');
+    
+    if (openBtn) {
+      openBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Disparar un evento personalizado que escuche el popup
+        document.dispatchEvent(new CustomEvent('open-event-popup'));
+      });
+    }
+  });
+</script>
 
 
-
+<PopUpSolicitarCotizacion 
+  imagesForHero={product.gallery || []}
+  productData={product}
+  aplicacionData={product.aplicacion}
+  categoriaData={product.categoria}
+/>
 
 <style>
   /* Efecto de fondo hover */

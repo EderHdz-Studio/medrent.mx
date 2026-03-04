@@ -58,7 +58,7 @@ import ProductCard from '@components/product/ProductCard.astro';
   }
 </script> -->
 
-<script  type="module">
+<script type="module">
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-prefixid]').forEach((el) => {
         const prefixId = el.dataset.prefixid;
@@ -72,30 +72,30 @@ document.addEventListener('DOMContentLoaded', () => {
             hoverpause: true,
             startAt: 0,
             breakpoints: {
-              1024: { perView: 4 },
-              920: { perView: 3 },
-              640: { perView: 2 },
-              400: { perView: 1 }
+                1024: { perView: 4 },
+                920: { perView: 3 },
+                640: { perView: 2 },
+                400: { perView: 1 }
             }
         });
 
-
-
-
-      // Función para obtener el número de cards visibles según el ancho de pantalla
-      function getSlidesToShow() {
-        const width = window.innerWidth;
-        if (width <= 400) return 1;
-        if (width <= 999) return 2;
-        return 4;
-      }
-      // Actualiza el contador
-      const contador = document.getElementById(`contador-${prefixId}`);
-      const controls = document.getElementById(`controls-${prefixId}`);
+        // Función para obtener el número de cards visibles según el ancho de pantalla
+        function getSlidesToShow() {
+            const width = window.innerWidth;
+            if (width <= 400) return 1;
+            if (width <= 999) return 2;
+            return 4;
+        }
+        
+        // Actualiza el contador
+        const contador = document.getElementById(`contador-${prefixId}`);
+        const controls = document.getElementById(`controls-${prefixId}`);
+        
         function updateContador() {
-            if (contador && glider) {
-                // Alterna la clase order-4 en controles según el ancho de pantalla
-                if (controls) {
+            if (!glider || !glider.slides || !contador) return;
+            
+            // Alterna la clase order-4 en controles según el ancho de pantalla
+            if (controls) {
                 if (window.innerWidth < 1000) {
                     controls.classList.add('order-4');
                     controls.style.flexWrap = 'wrap';
@@ -107,20 +107,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     controls.style.width = '';
                     controls.style.justifyContent = '';
                 }
-                }
-                const slidesToShow = getSlidesToShow();
-                const total = glider.slides.length;
-                const start = glider.slide + 1;
-                let end = glider.slide + slidesToShow;
-                if (end > total) end = total;
-                contador.textContent = `${slidesToShow > 0 ?  + end : ''} / ${total}`;
-                // Mostrar controles solo si hay más cards que las visibles
-                if (controls) {
-                    if (total > slidesToShow) {
+            }
+            
+            const slidesToShow = getSlidesToShow();
+            const total = glider.slides.length;
+            const start = glider.slide + 1;
+            let end = glider.slide + slidesToShow;
+            if (end > total) end = total;
+            
+            contador.textContent = `${slidesToShow > 0 ? start + ' - ' + end : ''} / ${total}`;
+            
+            // Mostrar controles solo si hay más cards que las visibles
+            if (controls) {
+                if (total > slidesToShow) {
                     controls.style.display = '';
-                    } else {
+                } else {
                     controls.style.display = 'none';
-                    }
                 }
             }
         }
@@ -130,11 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('glider-animated', updateContador);
         el.addEventListener('glider-refresh', updateContador);
         window.addEventListener('resize', updateContador);
-        // Reajusta controles al cambiar tamaño de pantalla
         window.addEventListener('orientationchange', updateContador);
+        
         glider.mount();
-
-
     });
-  });
+});
 </script>

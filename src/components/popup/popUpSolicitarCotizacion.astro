@@ -1,0 +1,674 @@
+---
+const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.props;
+console.log('imagesForHero:', JSON.stringify(imagesForHero, null, 2));
+---
+
+<!-- Popup de Cotización estilo eventos -->
+<div id="event-popup-overlay" class="fixed inset-0 z-50 hidden">
+    <!-- Background with blur and gradient -->
+    <div 
+        id="event-blurred-background" 
+        class="absolute inset-0 transition-all duration-300"
+        style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%); filter: blur(8px);"
+    ></div>
+    <!-- Popup Content -->
+    <div class="relative z-10 flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto rounded-2xl">
+        <div id="PopupContent" class="bg-white rounded-xl shadow-2xl border-3 border-[#006764] max-w-4xl w-auto overflow-auto relative h-[85%] md:h-[85%] lg:h-auto flex justify-center mx-auto align-center">
+            <!-- Botón cerrar en esquina superior derecha del popup -->
+            <button id="close-event-popup" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none border-none cursor-pointer z-10 bg-black p-2 lg:bg-transparent lg:p-0 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" class="fill-white lg:fill-gray-400"/>
+                </svg>
+            </button>
+            <!-- Contenido del popup -->
+            <div class="flex flex-col lg:flex-row relative" id="popup-content-container">
+
+               <!-- Imagen izquierda que cubre toda la altura -->
+                <div id="ImagenPopup" class="lg:w-1/2 relative max-h-[350px] lg:max-h-none">
+                  
+                  <!-- Mobile/Tablet: background image -->
+                  <div
+                    class="block lg:hidden w-full h-64 min-h-[350px] bg-center bg-no-repeat"
+                    style={`background-image: url('${imagesForHero?.[0] || '/images/Productos/default.webp'}'); background-size: cover;`}
+                    aria-label="Cotización MedRent"
+                  ></div>
+                  
+                  <!-- Desktop: img tag -->
+                  <img
+                    id="event-popup-image"
+                    src={imagesForHero?.[0] || '/images/Productos/default.webp'}
+                    alt="Cotización MedRent"
+                    class="hidden lg:block w-full h-full object-cover min-h-[500px] lg:static"
+                  />
+                </div>
+                
+                <!-- Contenido derecha -->
+                <div id="ContenidoPopup" class="lg:w-1/2 p-4 lg:p-8 bg-[#F5FAF9] flex flex-col min-h-[500px]">
+                    <!-- Formulario -->
+                    <form id="event-benefits-form" class="space-y-6 mt-6 flex-1 flex-col">
+                        <div class="relative">
+                            <label class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Nombre completo*</label>
+                            <input id="event-name" name="name" type="text" placeholder="Ej: Dra. Carolina Ávila" required class="w-full border-[#3D4948] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] focus:bg-[#F5FAF9] transition-colors duration-300" />
+                        </div>
+                        <div class="relative">
+                            <label class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Correo electrónico*</label>
+                            <input id="event-email" name="email" type="email" placeholder="Ej: carolina.avila@hospitalcardio.mx" required class="w-full border-[#3D4948] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] focus:bg-[#F5FAF9] transition-colors duration-300" />
+                        </div>
+
+                        <!-- ========== CAMPO DE TELÉFONO ========== -->
+                        <div class="relative" id="event-phone-group">
+                          <label class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Teléfono de contacto*</label>
+                          <input 
+                            id="event-phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="Ej. +52 55 1234 5678"
+                            required
+                            class="w-full border-[#5A3A36] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#3D4948] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] focus:bg-[#F5FAF9] transition-colors duration-300 pr-10"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                          />
+                        </div>
+
+                        <div class="relative">
+                          <label for="specialty" class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Especialidad médica*</label>
+                          
+                          <select name="specialty" id="event-specialty" required class="w-full border-[#3D4948] border-2 focus:border-2 appearance-none rounded-[4px] px-4 py-3 text-[#A0A0A0] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] transition-colors duration-300 pr-10 cursor-pointer" 
+                              onchange="this.classList.remove('text-[#A0A0A0]')">
+                              <option value="">¿Cuál es tu especialidad médica?</option>
+                              <option value="Alergología">Neurocirugía</option>
+                              <option value="Angiología">Neurofisiología</option>
+                              <option value="Cardiología">Neuromodulación</option>
+                              <option value="Cardiología Intervencionista Pediátrica">Rehabilitación</option>
+                              <option value="Cardiología clínica">Neurovascular</option>
+                              <option value="Cardiología deportiva">Otra</option>
+                          </select>
+
+                          <!-- Flechita SVG -->
+                          <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                              <svg class="w-4 h-4 text-[#5A3A36]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                              </svg>
+                          </div>
+                        </div>
+                        
+                        <input type="hidden" name="unidades_de_negocios" value="LATTITUDE" />
+                        <input type="hidden" name="hs_all_assigned_business_unit_ids" value="2380506" />
+                        <input type="hidden" name="utm_term" />
+                        <input type="hidden" name="utm_medium" />
+                        <input type="hidden" name="utm_source" />
+                        <input type="hidden" name="utm_content" />
+                        <input type="hidden" name="utm_campaign" />
+                        <input type="hidden" name="definicion_de_necesidad" value="Compra Equipo Médico" />
+                        
+                        <div class="flex items-start gap-2">
+                            <input type="checkbox" id="event-aviso" required class="mt-1 border-[#5A3A36] text-[#5A3A36] focus:ring-[#5A3A36]" />
+                            <label for="event-aviso" class="text-sm text-[#212121]"> He leído y acepto el <a href="/aviso-de-privacidad" target="_blank" class="text-[#006764] underline">Aviso de Privacidad</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="bg-[#006764] text-white p-[16px] cursor-pointer m-0 rounded w-full font-bold hover:bg-[#006764] transition font-kallisto" aria-label="Recibir asesoría personalizada">
+                          <span id="submit-btn-content">
+                            Recibir asesoría personalizada
+                          </span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Msj success or error -->
+                <div id="event-status" class="bg-[#F5FAF9] p-8 text-center mt-2 text-sm w-full flex-1 flex items-center justify-center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script define:vars={{
+    productAnalytics: {
+      name: productData?.NombreProducto || 'Producto no disponible',
+      brand: productData?.Marca || 'Marca no disponible',
+      category: aplicacionData?.AplicacionClinica || categoriaData?.Nombre || 'Categoría no disponible',
+      variant: productData?.DescripcionCorta || 'Variante no disponible',
+      currency: 'MXN'
+    }
+  }}>
+
+// Popup de cotización (solo lógica necesaria y sin duplicados)
+document.addEventListener('DOMContentLoaded', function() {
+  // Elementos principales
+  const popupContentContainer = document.getElementById('popup-content-container');
+  const popupOverlay = document.getElementById('event-popup-overlay');
+  const closeBtn = document.getElementById('close-event-popup');
+  const mainContent = document.querySelector('main');
+  const bodyElement = document.body;
+  const popupImage = document.getElementById('event-popup-image');
+  const status = document.getElementById('event-status');
+  const form = document.getElementById('event-benefits-form');
+  const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+  
+  // ===== TODOS LOS INPUTS =====
+  const nameInput = document.getElementById('event-name');
+  const emailInput = document.getElementById('event-email');
+  const phoneInput = document.getElementById('event-phone');
+  const selectInput = document.getElementById('event-specialty');
+  const termsInput = document.getElementById('event-aviso');
+
+  // Elementos del popup - MUY IMPORTANTE: Define estas variables aquí
+  const imagenPopup = document.getElementById('ImagenPopup');
+  const popupContent = document.getElementById('PopupContent');
+  const contenedor = document.getElementById('ContenidoPopup');
+
+  // Abrir popup
+  function openPopup() {
+    if (popupOverlay && mainContent) {
+      if (popupImage) popupImage.alt = 'Cotización MedRent';
+      mainContent.style.filter = 'blur(8px)';
+      popupOverlay.classList.remove('hidden');
+      bodyElement.style.overflow = 'hidden';
+    }
+  }
+
+  // Cerrar popup
+  function closePopup() {
+    if (popupOverlay && mainContent) {
+      mainContent.style.filter = 'none';
+      popupOverlay.classList.add('hidden');
+      bodyElement.style.overflow = 'auto';
+      
+      if (typeof window.resetToForm === 'function') {
+        window.resetToForm();
+      }
+    
+      document.getElementById('contentSuccess')?.remove();
+    }
+  }
+
+  window.resetToForm = function() {
+    console.log('resetToForm called');
+
+    toggleCloseButton(true);
+    
+    if (popupContentContainer) {
+      popupContentContainer.style.display = 'flex';
+      popupContentContainer.style.flexDirection = 'col lg:flex-row';
+    }
+    
+    if (imagenPopup) { imagenPopup.style.display = 'flex'; }
+    if (contenedor) { contenedor.style.display = 'flex'; }
+    if (form) { form.style.display = 'flex';}
+      
+    if (status) {
+      status.style.display = 'none';
+    }
+  };
+
+  // Función para controlar la visibilidad del botón cerrar
+  function toggleCloseButton(show) {
+    if (closeBtn) {
+      if (!show) {
+        closeBtn.style.display = 'none';
+      } else {
+        closeBtn.style.display = '';
+      }
+    }
+  }
+
+  // Función para mostrar mensajes de éxito/error
+  function showFormMessage(type) {
+    if (!status) return;
+
+    // btn pop up ocultar con status
+    toggleCloseButton(false);
+
+    if (popupContentContainer) popupContentContainer.style.display = 'flex';
+    if (imagenPopup) imagenPopup.style.display = 'none';
+    if (contenedor) contenedor.style.display = 'none';
+    
+    // Status
+    status.style.display = 'flex';
+    status.innerHTML = '';
+    
+    if (type === 'success') {
+      status.innerHTML = `
+        <div class="w-full max-w-md mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px]">
+          <button onclick="resetToForm()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none border-none cursor-pointer z-10 bg-transparent p-2 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171D1C"/>
+            </svg>
+          </button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="104" height="104" viewBox="0 0 104 104" fill="none" class="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24">
+            <mask id="mask0_417_41507" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="104" height="104">
+              <path d="M104 0H0V104H104V0Z" fill="white"/>
+            </mask>
+            <g mask="url(#mask0_417_41507)">
+              <path d="M91 52C91 73.541 73.541 91 52 91C30.459 91 13 73.541 13 52C13 30.459 30.459 13 52 13C73.541 13 91 30.459 91 52Z" stroke="#006764" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M39 55.25L48.75 65L65 42.25" stroke="#006764" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </svg>
+
+          <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center font-lato">SOLICITUD ENVIADA</p>
+          <p class="text-[#171D1C] text-center font-lato text-lg md:text-xl lg:text-2xl font-bold leading-6 md:leading-8">Gracias por tu interés en nuestros equipos.</p>
+          <p class="text-[#171D1C] font-400 text-sm md:text-base lg:text-xl text-center font-lato">Uno de nuestros asesores se pondrá en contacto contigo muy pronto para ofrecerte la mejor opción según tus necesidades médicas.</p>
+          <p class="text-[#6D7A78] text-xs md:text-sm text-center font-lato">
+            Mientras tanto, puedes explorar más productos o especialidades en 
+            <a href="/productos" class="text-[#006764] underline hover:no-underline">
+              nuestro catálogo
+            </a>
+          </p>
+        </div>
+      `;
+    } else {
+      status.innerHTML = `
+        <div class="w-full max-w-md mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px]">
+          <button onclick="resetToForm()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none border-none cursor-pointer z-10 bg-transparent p-2 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171D1C"/>
+            </svg>
+          </button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="89" height="89" viewBox="0 0 89 89" fill="none" class="w-16 h-16 md:w-20 md:h-20">
+            <path d="M64.8958 49.1725C69.1907 49.2079 73.3646 47.7512 76.7048 45.0512C80.045 42.3512 82.3443 38.5753 83.2099 34.3685C84.0755 30.1616 83.4539 25.7847 81.4511 21.9853C79.4483 18.1858 76.1886 15.1995 72.2287 13.5364C68.2688 11.8732 63.8543 11.6364 59.7391 12.8663C55.624 14.0962 52.0635 16.7166 49.6657 20.2799C47.2678 23.8432 46.1814 28.1285 46.592 32.4038C47.0025 36.6791 48.8846 40.6793 51.9167 43.7212C55.3582 47.1739 60.0211 49.1323 64.8958 49.1725ZM72.7575 38.4925C71.1325 40.1045 69.0497 41.1761 66.7933 41.561C64.5369 41.9459 62.2167 41.6255 60.1492 40.6433L74.9825 25.81C75.9723 27.8937 76.2899 30.2337 75.8913 32.5059C75.4927 34.778 74.3975 36.8701 72.7575 38.4925ZM57.0342 22.7692C59.1185 20.6822 61.9463 19.5084 64.8958 19.5058C66.5409 19.5211 68.162 19.9011 69.6425 20.6183L54.8092 35.4517C53.8193 33.3679 53.5018 31.028 53.9004 28.7558C54.299 26.4836 55.3941 24.3915 57.0342 22.7692ZM76.0208 52.8808C75.0373 52.8808 74.0941 53.2715 73.3986 53.967C72.7032 54.6624 72.3125 55.6056 72.3125 56.5892V71.4225C72.3125 72.406 71.9218 73.3492 71.2264 74.0447C70.5309 74.7401 69.5877 75.1308 68.6042 75.1308H16.6875C15.704 75.1308 14.7608 74.7401 14.0653 74.0447C13.3699 73.3492 12.9792 72.406 12.9792 71.4225V35.8596L34.7842 57.6646C36.8594 59.7425 39.6721 60.9155 42.6087 60.9279C44.102 60.9318 45.5808 60.635 46.957 60.0552C48.3331 59.4755 49.5784 58.6246 50.6188 57.5533C51.2871 56.8618 51.6608 55.9377 51.6608 54.976C51.6608 54.0143 51.2871 53.0902 50.6188 52.3987C50.2734 52.0455 49.8609 51.7649 49.4056 51.5733C48.9503 51.3817 48.4613 51.283 47.9673 51.283C47.4733 51.283 46.9843 51.3817 46.529 51.5733C46.0736 51.7649 45.6612 52.0455 45.3158 52.3987C44.6226 53.0782 43.6907 53.4588 42.72 53.4588C41.7493 53.4588 40.8174 53.0782 40.1242 52.3987L18.2079 30.6308H35.2292C36.2127 30.6308 37.1559 30.2401 37.8514 29.5447C38.5468 28.8492 38.9375 27.906 38.9375 26.9225C38.9375 25.939 38.5468 24.9958 37.8514 24.3003C37.1559 23.6049 36.2127 23.2142 35.2292 23.2142H16.6875C13.737 23.2142 10.9073 24.3863 8.82094 26.4726C6.7346 28.5589 5.5625 31.3886 5.5625 34.3392V71.4225C5.5625 74.373 6.7346 77.2027 8.82094 79.2891C10.9073 81.3754 13.737 82.5475 16.6875 82.5475H68.6042C71.5547 82.5475 74.3844 81.3754 76.4707 79.2891C78.5571 77.2027 79.7292 74.373 79.7292 71.4225V56.5892C79.7292 55.6056 79.3385 54.6624 78.643 53.967C77.9476 53.2715 77.0043 52.8808 76.0208 52.8808Z" fill="#006764"/>
+          </svg>
+          <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center">No fue posible enviar la solicitud</p>
+          <p class="text-gray-600 text-xs md:text-sm text-center">Estamos teniendo un inconveniente temporal.</p>
+          <p class="text-gray-600 text-xs md:text-sm text-center">Por favor, intenta nuevamente en unos momentos o vuelve a enviar el formulario.</p>
+        </div>
+      `;
+    }
+  }
+
+  // Listeners
+  document.addEventListener('open-event-popup', openPopup);
+  closeBtn?.addEventListener('click', closePopup);
+  
+  popupOverlay?.addEventListener('click', function(e) {
+    if (e.target === popupOverlay) closePopup();
+  });
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !popupOverlay?.classList.contains('hidden')) closePopup();
+  });
+
+  // Capturar UTM de la URL y asignar a inputs
+  if (form) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmFields = [
+      'utm_term',
+      'utm_medium',
+      'utm_source',
+      'utm_content',
+      'utm_campaign',
+    ];
+    utmFields.forEach((field) => {
+      const value = urlParams.get(field) || '';
+      const input = form.querySelector(`input[name="${field}"]`);
+      if (input) input.value = value;
+    });
+  }
+
+  // ===== VALIDACIÓN DE NOMBRE =====
+  if (nameInput) {
+    function validateName() {
+      if (!nameInput || !nameInput.parentElement) return true;
+      const label = nameInput.parentElement.querySelector('label');
+      const isValid = nameInput.value.trim().length >= 3;
+      
+      if (isValid) {
+        nameInput.style.setProperty('border', '3px solid #006764', 'important');
+        if (label) label.style.background = '#3D4948';
+      } else {
+        nameInput.style.setProperty('border', '2px solid #3D4948', 'important');
+        if (label) label.style.background = '#3D4948';
+      }
+      
+      return isValid;
+    }
+
+    nameInput.addEventListener('input', function() {
+      validateName();
+      checkAll();
+    });
+
+    nameInput.addEventListener('blur', validateName);
+  }
+
+  // ===== VALIDACIÓN DE EMAIL =====
+  if (emailInput) {
+    function validateEmail() {
+      if (!emailInput || !emailInput.parentElement) return true;
+      const label = emailInput.parentElement.querySelector('label');
+      const value = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isValid = emailRegex.test(value);
+      
+      if (isValid) {
+        emailInput.style.setProperty('border', '3px solid #006764', 'important');
+        if (label) label.style.background = '#3D4948';
+      } else {
+        emailInput.style.setProperty('border', '2px solid #3D4948', 'important');
+        if (label) label.style.background = '#3D4948';
+      }
+      
+      return isValid;
+    }
+
+    emailInput.addEventListener('input', function() {
+      validateEmail();
+      checkAll();
+    });
+
+    emailInput.addEventListener('blur', validateEmail);
+  }
+
+  // ===== VALIDACIÓN DE TELÉFONO =====
+  if (phoneInput) {
+    function validatePhone() {
+      if (!phoneInput || !phoneInput.parentElement) return true;
+      const label = phoneInput.parentElement.querySelector('label');
+      const isValid = phoneInput.value.trim().length > 0;
+      
+      phoneInput.style.setProperty('border', isValid ? '3px solid #006764' : '2px solid #3D4948', 'important');
+      if (label) label.style.background = isValid ? '#3D4948' : '#3D4948';
+      
+      return isValid;
+    }
+
+    phoneInput.addEventListener('input', function() {
+      validatePhone();
+      checkAll();
+    });
+  }
+
+  // ===== VALIDACIÓN DE ESPECIALIDAD =====
+  if (selectInput) {
+    function validateSelect() {
+      if (!selectInput || !selectInput.parentElement) return true;
+      const label = selectInput.parentElement.querySelector('label');
+      const isValid = selectInput.value && selectInput.value !== '';
+      
+      if (isValid) {
+        selectInput.classList.remove('text-[#A0A0A0]');
+        selectInput.style.setProperty('border', '3px solid #006764', 'important');
+        if (label) label.style.background = '#3D4948';
+      } else {
+        selectInput.style.setProperty('border', '2px solid #171D1C', 'important');
+        if (label) label.style.background = '#3D4948';
+      }
+      
+      return isValid;
+    }
+
+    selectInput.addEventListener('change', function() {
+      validateSelect();
+      checkAll();
+    });
+
+    selectInput.addEventListener('click', function() {
+      validateSelect();
+    });
+  }
+
+  // ===== VALIDACIÓN DE CHECKBOX =====
+  if (termsInput) {
+    function validateTerms() {
+      return termsInput.checked;
+    }
+
+    termsInput.addEventListener('change', function() {
+      checkAll();
+    });
+  }
+
+  // ===== FUNCIÓN PARA VERIFICAR TODOS LOS CAMPOS =====
+  function checkAll() {
+    // Si los inputs no existen, los consideramos válidos
+    const nameValid = !nameInput || validateName();
+    const emailValid = !emailInput || validateEmail();
+    const phoneValid = !phoneInput || validatePhone();
+    const selectValid = !selectInput || validateSelect();
+    const termsValid = !termsInput || validateTerms();
+    
+    const allValid = nameValid && emailValid && phoneValid && selectValid && termsValid;
+    
+    if (submitBtn) {
+      submitBtn.disabled = !allValid;
+    }
+    
+    return allValid;
+  }
+
+  // ===== ESTADOS INICIALES =====
+  if (submitBtn) submitBtn.disabled = true;
+
+  // Establecer colores iniciales
+  if (nameInput) {
+    nameInput.style.border = '';
+    const nameLabel = nameInput.parentElement.querySelector('label');
+    if (nameLabel) nameLabel.style.background = '#171D1C';
+  }
+
+  if (emailInput) {
+    emailInput.style.border = '';
+    const emailLabel = emailInput.parentElement.querySelector('label');
+    if (emailLabel) emailLabel.style.background = '#171D1C';
+  }
+
+  if (phoneInput) {
+    phoneInput.style.border = '';
+    const phoneLabel = phoneInput.parentElement.querySelector('label');
+    if (phoneLabel) phoneLabel.style.background = '#171D1C';
+  }
+
+  if (selectInput) {
+    selectInput.style.border = '';
+    const selectLabel = selectInput.parentElement.querySelector('label');
+    if (selectLabel) selectLabel.style.background = '#171D1C';
+  }
+
+  // ===== ENVÍO DEL FORMULARIO =====
+  if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        console.log('Form submitted!');
+        console.log('Status element:', status);
+
+        form.style.display = 'none';
+
+        showFormMessage('success');
+        setTimeout(() => {
+          if (status) {
+            status.innerHTML = '';
+            status.style.display = 'none';
+          }
+          form.style.display = 'block';
+          form.reset();
+        }, 38000);
+        
+        return;
+
+        // Ocultar el formulario inmediatamente
+        if (form) form.style.display = 'none';
+
+        // Construir los datos manualmente
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        if (data.hasOwnProperty(key)) {
+          if (!Array.isArray(data[key])) {
+            data[key] = [data[key]];
+          }
+          data[key].push(value);
+        } else {
+          data[key] = value;
+        }
+      });
+
+      // NORMALIZAR: quitar espacios del teléfono antes de enviar
+      if (phoneInput) {
+        const normalizedPhone = phoneInput.value.replace(/\s/g, '');
+        data.phone = normalizedPhone;
+      }
+
+      try {
+        const jsonBody = JSON.stringify(data);
+        console.log("Objeto de datos a enviar:", data);
+        console.log("JSON string enviado:", jsonBody);
+
+        const response = await fetch("https://kunz-app.com/hubspot.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: jsonBody,
+        });
+
+        if (response.ok) {
+          // Mostrar mensaje de éxito
+          showFormMessage('success');
+          
+          // Enviar evento al dataLayer
+          sendDataLayerEvent('form_lead_submit', {
+            currency: productAnalytics.currency,
+            value: 1,
+            item_name: productAnalytics.name,
+            item_brand: productAnalytics.brand,
+            item_aplication: productAnalytics.category,
+            item_variant: productAnalytics.variant,
+            quantity: 1
+          }, {
+            category: 'Ecommerce',
+            action: 'Add to Cart',
+            label: productAnalytics.name
+          });
+
+          form.reset();
+          setTimeout(closePopup, 4000);
+          
+        } else {
+          const resData = await response.json();
+          if (resData.category === 'CONFLICT') {
+            // Tratar como éxito si ya existía
+            showFormMessage('success');
+            form.reset();
+            setTimeout(closePopup, 4000);
+          } else {
+            // Mostrar mensaje de error
+            showFormMessage('error');
+            console.error("Error response:", resData);
+          }
+        }
+
+      } catch (error) {
+        console.error("Network error:", error);
+        showFormMessage('error');
+      }
+    });
+  }
+
+
+  // Función para enviar evento al dataLayer
+  function sendDataLayerEvent(eventName, ecommerceData, eventClassification) {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const utmData = {
+        source: urlParams.get('utm_source') || '(direct)',
+        medium: urlParams.get('utm_medium') || '(direct)',
+        campaign: urlParams.get('utm_campaign') || '(not set)',
+        term: urlParams.get('utm_term') || '(not set)',
+        content: urlParams.get('utm_content') || '(not set)'
+      };
+
+      const pageData = {
+        url: window.location.href,
+        path: window.location.pathname,
+        title: document.title,
+        referrer: document.referrer || '(direct)'
+      };
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': eventName,
+        'ecommerce': ecommerceData,
+        'event_data': eventClassification,
+        'tracking': {
+          'utm': utmData,
+          'page': pageData
+        }
+      });
+
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log(`🔍 Data Layer - ${eventName} Event:`, {
+          event: eventName,
+          ecommerce: ecommerceData,
+          event_data: eventClassification,
+          tracking: { utm: utmData, page: pageData }
+        });
+      }
+    } catch (error) {
+      console.error(`Error enviando evento ${eventName} al data layer:`, error);
+    }
+  }
+
+  // ===== TRANSICIONES DE COLOR PARA LOS LABELS =====
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .relative label {
+      transition: background-color 0.2s ease;
+    }
+    
+    input, select {
+      transition: border-color 0.2s ease, background-color 0.3s ease !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // ===== VALIDACIÓN INICIAL =====
+  checkAll();
+});
+</script>
+
+<style>
+  /* Eliminar fondo azul de autocomplete para todos los inputs y selects */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus,
+  select:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px white inset !important;
+      box-shadow: 0 0 0 1000px white inset !important;
+      -webkit-text-fill-color: #212121 !important;
+      background-color: white !important;
+      background: white !important;
+      transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Para Firefox */
+  input:autofill,
+  select:autofill {
+      background-color: white !important;
+      background: white !important;
+  }
+
+   /* btn styles disabled*/
+  button[type="submit"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    background-color: #3D4948 !important;
+  }
+  
+  button[type="submit"]:not(:disabled):hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  #ContenidoPopup {
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+  }
+
+  #event-status {
+    display: none;
+    width: 100%;
+    flex: 1;
+  }
+</style>
