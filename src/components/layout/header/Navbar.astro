@@ -1,24 +1,46 @@
 ---
 const { site } = Astro.props;
-import { ESPECIALTIES } from "@lib/site.ts";
 import { strapiFetch } from "@server/strapiClient";
 
-const especialidades = ESPECIALTIES;
-const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
-
 let marcasNavData: any[] = [];
+  try {
+    const response = await strapiFetch("/brands?populate=*");
+    //console.log('Respuesta de Strapi:', response);
+    marcasNavData = response?.data || [];
+    
+    //console.log('Marcas', marcasNavData);
+  } catch (error) {
+    //console.error('Error al cargar marcas:', error.message);
+    marcasNavData = [];
+  }
 
-try {
-  const response = await strapiFetch("/brands?populate=*");
-  //console.log('Respuesta de Strapi:', response);
-  marcasNavData = response?.data || [];
-  
-  console.log('Marcas', marcasNavData);
-} catch (error) {
-  //console.error('Error al cargar marcas:', error.message);
-  marcasNavData = [];
-}
+
+let categoriesData: any[] = [];
+  try {
+    const response = await strapiFetch("/categories?populate=*");
+    //console.log('Respuesta de Strapi:', response);
+    categoriesData = response?.data || [];
+    
+    //console.log('especialidades', categoriesData);
+  } catch (error) {
+    //console.error('Error al cargar especialidades:', error.message);
+    categoriesData = [];
+  }
+
+const especialidades = categoriesData;
+
+let subcategoriasData: any[] = [];
+  try {
+    const response = await strapiFetch("/subcategories?populate=*");
+    subcategoriasData = response?.data || [];
+    //console.log('subcategorias', subcategoriasData);
+  } catch (error) {
+    //console.error('Error al cargar subcategorías:', error.message);
+    subcategoriasData = [];
+  }
+
 ---
+
 <!-- Navbar -->
 <nav class="bg-white shadow" x-data="{ open: false }">
   <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-3 md:py-3">
@@ -100,8 +122,8 @@ try {
               {/* Ver más */}
               <a 
                 href={`/nuestras-marcas`} 
-                class="marcaLink group flex items-center justify-between gap-2 rounded transition-colors p-2 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer">
-              
+                class="marcaLink group flex items-center justify-between gap-2 rounded transition-colors p-2 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer"
+              >
                 <label class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">Ver más</label>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">
@@ -122,6 +144,7 @@ try {
         x-init="
           if ($el.dataset.especialidades) { 
             especialidades = JSON.parse($el.dataset.especialidades); 
+            console.log('Especialidades parseadas:', especialidades);
             
             // Obtener el path actual y extraer la especialidad
             const currentPath = window.location.pathname;
@@ -142,19 +165,19 @@ try {
               activeItem = especialidadEncontrada.id;
               
               // También buscar si hay una aplicación específica en la URL
-              if (pathSegments.length >= 3 && especialidadEncontrada.CatalogoAplicaciones) {
+              if (pathSegments.length >= 3 && especialidadEncontrada.subcategories) {
                 const slugAplicacion = pathSegments[2]; // 'ultrasonido-vascular' en tu ejemplo
-                const aplicacionEncontrada = especialidadEncontrada.CatalogoAplicaciones.find(a => a.Slug === slugAplicacion);
+                const aplicacionEncontrada = especialidadEncontrada.subcategories.find(a => a.Slug === slugAplicacion);
                 
                 if (aplicacionEncontrada) {
                   activeAplicacion = aplicacionEncontrada.id;
-                } else if (especialidadEncontrada.CatalogoAplicaciones.length > 0) {
+                } else if (especialidadEncontrada.subcategories.length > 0) {
                   // Si no encuentra la aplicación específica, seleccionar la primera
-                  activeAplicacion = especialidadEncontrada.CatalogoAplicaciones[0].id;
+                  activeAplicacion = especialidadEncontrada.subcategories[0].id;
                 }
-              } else if (especialidadEncontrada.CatalogoAplicaciones && especialidadEncontrada.CatalogoAplicaciones.length > 0) {
+              } else if (especialidadEncontrada.subcategories && especialidadEncontrada.subcategories.length > 0) {
                 // Si solo está la especialidad, seleccionar la primera aplicación
-                activeAplicacion = especialidadEncontrada.CatalogoAplicaciones[0].id;
+                activeAplicacion = especialidadEncontrada.subcategories[0].id;
               }
             } else {
               // No seleccionar ninguna especialidad por defecto cuando la URL no coincide.
@@ -162,7 +185,7 @@ try {
             }
           }
         "
-        data-especialidades={JSON.stringify(especialidades)}
+        data-especialidades={JSON.stringify(categoriesData)}
         class="relative">
           <button 
               @click="especialidadesOpen = !especialidadesOpen" 
@@ -193,7 +216,7 @@ try {
                       <ul class="space-y-4">
                         <template x-for="especialidad in especialidades" :key="especialidad.id">
                           <li>
-                            <a :href="`/especialidades`" 
+                            <a :href="`/especialidades/${especialidad.slug}`" 
                               @click.prevent="activeItem = activeItem === especialidad.id ? null : especialidad.id"
                               :class="[
                                 'transition-colors flex items-center justify-between gap-2 p-2 rounded cursor-pointer',
@@ -205,7 +228,7 @@ try {
                                   <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM17 12C17 14.8 14.8 17 12 17C9.2 17 7 14.8 7 12C7 9.2 9.2 7 12 7C14.8 7 17 9.2 17 12Z" 
                                   fill="currentColor"/>
                                 </svg>
-                                <span x-text="especialidad.Nombre"></span>
+                                <span x-text="especialidad.name"></span>
                               </div>
                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                   <path d="M8 19V5L19 12L8 19Z" 
@@ -235,7 +258,7 @@ try {
                   </div>
                 </div>
           
-                  <!-- Columna derecha - CatalogoAplicaciones -->
+                  <!-- Columna derecha - subcategories -->
                   <div class="w-1/2">
                     <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
                       <template x-if="activeItem">
@@ -243,17 +266,17 @@ try {
                           <!-- Lista de aplicaciones clínicas -->
                           <ul class="space-y-2">
                             <template x-if="activeItem && activeItem !== 'vermas'"> 
-                              <template x-for="aplicacion in especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones || []" 
+                              <template x-for="aplicacion in especialidades.find(e => e.id === activeItem)?.subcategories || []" 
                                         :key="aplicacion.id">
                                 <li>
-                                  <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.Path}/${aplicacion.Slug}`" 
+                                  <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}/${aplicacion.slug}`" 
                                     @click="activeAplicacion = aplicacion.id"
                                       :class="[
                                         'transition-colors flex items-center justify-between gap-2 p-2 rounded cursor-pointer',
                                         activeAplicacion === aplicacion.id ? 'bg-[var(--color-surface-light)] text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-white/50'
                                       ]"
                                   >
-                                  <div class="font-medium" x-text="aplicacion.AplicacionClinica"></div>
+                                  <div class="font-medium" x-text="aplicacion.name"></div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
                                       <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
                                       fill="currentColor"/>
@@ -263,7 +286,7 @@ try {
                             </template>
                             
                             <!-- Mensaje si no hay aplicaciones -->
-                            <template x-if="(!especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones || especialidades.find(e => e.id === activeItem)?.CatalogoAplicaciones.length === 0)">
+                            <template x-if="(!especialidades.find(e => e.id === activeItem)?.subcategories || especialidades.find(e => e.id === activeItem)?.subcategories.length === 0)">
                               <li class="text-gray-500 italic p-2">
                                 No hay aplicaciones clínicas disponibles para esta especialidad.
                               </li>
@@ -271,7 +294,7 @@ try {
                             
                             <!-- "Ver más" del catálogo -->
                             <li>
-                              <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.Path}`" 
+                              <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}`" 
                                 class="text-[#261819] hover:text-[var(--color-primary)] transition-colors font-medium flex items-center gap-2 p-2 rounded hover:bg-white/50 group"
                                 style="justify-content: space-between; text-decoration: none;">
                                 <span>Ver más</span>
@@ -354,7 +377,7 @@ try {
         </div>
       </div>
 
-      <!-- MARCAS REDISEÑO MOBILE -->
+      <!-- MARCAS MOBILE -->
       <div x-data="{ marcasMobileOpen: false }">
         <a @click="marcasMobileOpen = !marcasMobileOpen" :class="marcasMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
           <span>Nuestras marcas</span>
@@ -390,6 +413,153 @@ try {
           </a>
         </div>
       </div> 
+
+      <!-- ESPECIALIDADES MOBILE -->
+      <div class="especialidades-container" x-data="{ 
+        especialidadesMobileOpen: false,
+        vistaActual: 'lista-especialidades',
+        activeAplicacion: null,
+        activeItem: null,
+        especialidadesData: [] 
+      }" 
+        x-effect="document.querySelectorAll('#mobileMenuLinks > *:not(.especialidades-container)').forEach(el => el.style.display = (vistaActual === 'catalogo-aplicaciones') ? 'none' : '')"
+      
+        data-especialidades={JSON.stringify(categoriesData || [])}
+        x-init="(() => {
+            try {
+              especialidadesData = JSON.parse($el.dataset.especialidades || '[]');
+            } catch (e) {
+              console.error('Error parsing especialidades data:', e);
+              especialidadesData = [];
+            }
+            <!-- console.log('Datos cargados (mobile):', especialidadesData); -->
+          })()">
+        
+          <a x-show="vistaActual !== 'catalogo-aplicaciones'" @click="especialidadesMobileOpen = !especialidadesMobileOpen" 
+              :class="especialidadesMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
+              <span>Especialidades</span>
+              <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': especialidadesMobileOpen && vistaActual === 'lista-especialidades' }" 
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+          </a>
+        
+        <div x-show="especialidadesMobileOpen" x-transition class="relative w-full" style="position: relative; min-height: 300px;">
+          
+          <!-- Vista de lista de especialidades -->
+          <div x-show="vistaActual === 'lista-especialidades'" 
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-100 transform translate-x-0"
+                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-x-0"
+                x-transition:leave-end="opacity-0 transform -translate-x-full"
+                class="grid grid-cols-1 gap-4 w-full pt-4">
+            
+            {especialidades?.map((especialidad) => (
+                <a
+                href="#"
+                @click.prevent={`activeItem = ${especialidad.id}; vistaActual = 'catalogo-aplicaciones';`}
+                :class={`activeItem === ${especialidad.id} 
+                ? 'bg-[#FFF8F7] text-[var(--color-primary)] rounded-[4px]' 
+                : 'bg-[#FFF] text-gray-700'`}
+                class="especialidadLink flex flex-row items-center hover:text-[var(--color-primary)] justify-between gap-2 rounded hover:bg-[#FFF8F7] text-[#261819] transition-colors min-w-[140px] group min-h-[80px] md:min-h-[120px] w-full px-4">
+                  <!-- SVG + Texto juntos -->
+                  <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM17 12C17 14.8 14.8 17 12 17C9.2 17 7 14.8 7 12C7 9.2 9.2 7 12 7C14.8 7 17 9.2 17 12Z" fill="currentColor"/>
+                    </svg>
+
+                    <label class="bg-white bg-opacity-80 px-2 py-1 rounded group-hover:text-[var(--color-primary)] cursor-pointer">{especialidad.name}</label>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 19V5L19 12L8 19Z" fill="currentColor"/>
+                  </svg>
+              </a>
+            ))}
+            
+            <a href="/especialidades" 
+                class="especialidadLink flex items-center gap-2 p-4 text-gray-700 transition-colors min-w-[140px] justify-between" 
+                style="text-decoration: none!important;">
+              <label class="cursor-pointer" style="text-decoration: none!important; color:oklch(37.3% 0.034 259.733);">Ver más</label>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#171D1C"/>
+              </svg>
+            </a>
+          </div>
+          
+          <!-- Vista de catálogo de aplicaciones -->
+                <div x-show="vistaActual === 'catalogo-aplicaciones'" 
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-x-full"
+                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-x-0"
+                x-transition:leave-end="opacity-0 transform translate-x-full"
+                class="absolute top-0 left-0 w-full bg-white pt-4" 
+                style="position: absolute; top: 0; left: 0; height: 100%;">
+            
+            <!-- Botón Regresar -->
+            <div :class="vistaActual !== 'catalogo-aplicaciones' ? 'mb-4 px-4' : ''">
+              <button @click="
+                vistaActual = 'lista-especialidades';
+                document.getElementById('mobileMenuLinks').style.transform = 'translateX(0)';
+                activeItem = null;
+                activeAplicacion = null;
+              " 
+                class="flex items-center gap-2 text-[#261819] transition-colors mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="transform rotate-180">
+                  <path d="M8 19V5L19 12L8 19Z" fill="currentColor"/>
+                </svg>
+                <span class="font-medium">Regresar</span>
+              </button>
+              
+              <!-- Contenedor dinámico para aplicaciones -->
+              <div>
+                <!-- Mostrar si hay aplicaciones -->
+                <div x-show="activeItem && especialidadesData.find(e => e.id == activeItem)?.subcategories?.length > 0">
+                  <div class="space-y-3">
+                    <template x-for="aplicacion in especialidadesData.find(e => e.id == activeItem)?.subcategories || []" :key="aplicacion.id">
+                      <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug || ''}/${aplicacion.slug}`"
+                          @click="activeAplicacion = aplicacion.id"
+                          :class="
+                          activeAplicacion == aplicacion.id 
+                            ? 'flex items-center justify-between p-3 rounded-lg bg-[#FFF8F7] text-[var(--color-primary)]' 
+                            : 'flex items-center justify-between p-3 rounded-lg text-[#261819]'
+                          ">
+                        <div x-text="aplicacion.name || aplicacion.AplicacionClinica || 'Aplicación'"></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                          <path d="M8 19V5L19 12L8 19Z" fill="currentColor"/>
+                        </svg>
+                      </a>
+                    </template>
+                  </div>
+                  
+                  <!-- Enlace para ver más -->
+                  <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug || ''}`" 
+                      class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-[#261819] mt-4">
+                    <div class="font-medium">Ver todas las aplicaciones</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="#171D1C"/>
+                    </svg>
+                  </a>
+                </div>
+                
+                <!-- Mostrar si NO hay aplicaciones -->
+                <div x-show="activeItem && (!especialidadesData.find(e => e.id == activeItem)?.subcategories || especialidadesData.find(e => e.id == activeItem)?.subcategories?.length === 0)">
+                  <div class="text-center py-8 text-gray-500">
+                    <p>No hay aplicaciones disponibles para esta especialidad.</p>
+                      <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug || ''}`" 
+                        class="inline-block mt-4 text-[var(--color-primary)] font-medium hover:underline">
+                      Ver especialidad
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       
 
       <!-- <a href="/especialidades" class="py-6 text-[#261819] border-b border-[#8E6F73]">Especialidades</a> -->
