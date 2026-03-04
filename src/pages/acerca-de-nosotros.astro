@@ -136,21 +136,24 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
                     Fundada en  <strong>1960</strong> bajo  <strong>Laboratorios Mexicanos Colliere.</strong>
                 </p>
             </div>
-            <!-- Botón pendientes para -->
-            <!-- <a
-            href="/productos"
-            class="bg-white border border-[var(--color-primary)] text-[var(--color-primary)] py-3 px-4 m-0 rounded font-bold transition cursor-pointer flex justify-center gap-2 hover:bg-[var(--color-primary)] hover:text-white"
-            aria-label="Explora nuestro catálogo"
-            >
-                Explora nuestro catálogo
-            </a> -->
-            <a
-            href="/nuestras-marcas"
-            class="bg-white border border-[var(--color-primary)] text-[var(--color-primary)] py-3 px-4 m-0 rounded font-bold transition cursor-pointer flex justify-center gap-2 hover:bg-[var(--color-primary)] hover:text-white lg:hidden"
-            aria-label="Explora nuestro catálogo"
-            >
-               Marcas especializadas
-            </a>
+
+            <!-- Botón -->
+            <div class="flex flex-col sm:flex-row md:flex-row lg:flex-row w-full items-center justify-between gap-6">
+                <a
+                    href="/productos"
+                    class="w-full sm:w-1/2 bg-[#006764] border border-[var(--color-primary)] text-[#FFF] py-3 px-4 m-0 rounded font-bold transition cursor-pointer flex justify-center gap-2 hover:bg-[var(--color-primary)] hover:text-white lg:hidden"
+                    aria-label="Explora nuestro catálogo"
+                >
+                    Ver equipos disponibles
+                </a>
+                <a
+                    href="/nuestras-marcas"
+                    class="w-full sm:w-1/2 bg-white border border-[var(--color-primary)] text-[var(--color-primary)] py-3 px-4 m-0 rounded font-bold transition cursor-pointer flex justify-center gap-2 hover:bg-[var(--color-primary)] hover:text-white lg:hidden"
+                    aria-label="Explora nuestro catálogo"
+                >
+                Marcas especializadas
+                </a>
+            </div>
         </div>
     </section>
 
