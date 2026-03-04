@@ -3,7 +3,7 @@
 ---
 
 <div class="relative form-phone">
-  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs z-[9999] phone-label">
+  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs phone-label">
     Teléfono de contacto*
   </label>
 
@@ -68,6 +68,29 @@
 				background: var(--color-primary) !important;
 				border-radius: 4px !important;
 			}
+
+      .form-phone {
+        position: relative;
+        z-index: 1;
+      }
+
+      .phone-label {
+        position: absolute;
+        z-index: 30 !important;
+        background-color: var(--color-green-dark);
+        opacity: 1;
+        isolation: isolate;
+      }
+
+      .phone-wrapper {
+        position: relative;
+        z-index: 20;
+      }
+
+      .phone-input {
+        position: relative;
+        z-index: 25;
+      }
 
 		</style>
 	
