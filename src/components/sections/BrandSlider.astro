@@ -5,14 +5,12 @@ let marcasData: any[] = [];
 
 try {
   const response = await strapiFetch("/brands?populate=*");
-  console.log('Respuesta de Strapi:', response);
-  
-  // Asignamos los datos correctamente
+  //console.log('Respuesta de Strapi:', response);
   marcasData = response?.data || [];
   
   console.log('Marcas', marcasData);
 } catch (error) {
-  console.error('Error al cargar marcas:', error.message);
+  //console.error('Error al cargar marcas:', error.message);
   marcasData = [];
 }
 ---
