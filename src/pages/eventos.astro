@@ -5,6 +5,12 @@ import Layout from "@layouts/Layout.astro";
 import { strapiFetch } from "@server/strapiClient";
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
 
+import BaseForm from "@components/forms/BaseForm.astro";
+import FormField from "@components/forms/FormField.astro";
+import CheckboxField from "@components/forms/CheckboxField.astro";
+import SubmitButton from "@components/forms/SubmitButton.astro";
+
+
 // import { buildImageUrl } from '../lib/utils.js';
 // import SliderPromociones from '../components/sliderPromociones.astro';
 // import Code from '@components/js.astro';
@@ -412,52 +418,35 @@ const eventDays = [11, 14];
                             Descripción del evento
                         </p>
                         
-                        
-                        <!-- Columna 2: Formulario -->
-                        <form id="events-form" class="space-y-8  rounded">
 
-                            <!-- Inputs visibles con label flotante -->
-                            <div class="relative">
-                                <label class="absolute -top-3 left-3 bg-[#5A4043] px-2 text-sm text-[#FFF] rounded-xs">Nombre completo*</label>
-                                <input name="name" type="text" placeholder="Ej: Dra. Carolina Ávila" required class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 bg-white" />
-                            </div>
 
-                            <div class="relative">
-                                <label class="absolute -top-3 left-3 bg-[#5A4043] px-2 text-sm text-[#FFF] rounded-xs">Correo electrónico*</label>
-                                <input name="email" type="email" placeholder="Ej: carolina.avila@hospitalcardio.mx" required class="w-full border border-[#5A3A36] px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 bg-white" />
-                            </div>
-                                
-                            <!-- Inputs ocultos -->
-                            <input type="hidden" name="unidades_de_negocios" value="MedRent" />
-                            <input type="hidden" name="hs_all_assigned_business_unit_ids" value="2380506" />
-                            <input type="hidden" name="utm_term" />
-                            <input type="hidden" name="utm_medium" />
-                            <input type="hidden" name="utm_source" />
-                            <input type="hidden" name="utm_content" />
-                            <input type="hidden" name="utm_campaign" />
-                            <input type="hidden" name="definicion_de_necesidad" value="Información sobre eventos y congresos" />
-                        
-                            <!-- Checkbox -->
-                            <div class="flex items-start gap-2">
-                                <input
-                                type="checkbox"
-                                id="aviso"
-                                required
-                                class="mt-1 border-[#5A3A36] text-[#5A3A36] focus:ring-[#5A3A36]"
-                                />
-                                <label for="aviso" class="text-sm text-[#212121]">
-                                He leído y acepto el
-                                <a href="/aviso-de-privacidad" target="_blank" class="text-[#00827F] underline">
-                                    Aviso de Privacidad
-                                </a>
-                                </label>
-                            </div>
-                        
-                            <!-- Botón -->
-                            <button type="submit" class="bg-[#006764] text-white p-[16px] cursor-pointer m-0 rounded w-full font-bold hover:bg-[#006764] transition font-lato"  aria-label="Acceder a mis beneficios">
-                                Acceder a mis beneficios
-                            </button>
-                        </form>
+                        <BaseForm id="events-form" class="space-y-8  rounded">
+                            <FormField
+                            label="Nombre completo"
+                            name="name"
+                            placeholder="Ej: Dra. Carolina Ávila"
+                            />
+                            <FormField
+                            label="Correo electrónico"
+                            name="email"
+                            type="email"
+                            placeholder="Ej: carolina.avila@hospitalcardio.mx"
+                            />
+                            <CheckboxField
+                            id="aviso"
+                            label="He leído y acepto el"
+                            link="/aviso-de-privacidad"
+                            />
+                            <SubmitButton text="Acceder a mis beneficios"></SubmitButton>
+                        </BaseForm>
+
+                        <script type="module">
+                            import { initForm } from "/scripts/formValidator.js";
+
+                            document.addEventListener("DOMContentLoaded", () => {
+                                initForm("events-form");
+                            });
+                        </script>    
                     </div>
                 </div>
 
@@ -503,6 +492,9 @@ const eventDays = [11, 14];
             if (form) {
                 form.style.display = 'block';
                 form.reset();
+                document.querySelector('.form-container').classList.remove('hidden');
+                document.querySelector('.form-success').classList.add('hidden');
+                document.querySelector('.form-error').classList.add('hidden');
             }
             
             // Restaurar columnas
@@ -630,22 +622,22 @@ const eventDays = [11, 14];
         });
         
         // Envío del formulario
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                form.style.display = 'none';
-                showFormMessage('success');
+        // if (form) {
+        //     form.addEventListener('submit', async (e) => {
+        //         e.preventDefault();
+        //         form.style.display = 'none';
+        //         showFormMessage('success');
                 
-                setTimeout(() => {
-                    if (status) {
-                        status.innerHTML = '';
-                        status.style.display = 'none';
-                    }
-                    form.style.display = 'block';
-                    form.reset();
-                }, 38000);
-            });
-        }
+        //         setTimeout(() => {
+        //             if (status) {
+        //                 status.innerHTML = '';
+        //                 status.style.display = 'none';
+        //             }
+        //             form.style.display = 'block';
+        //             form.reset();
+        //         }, 38000);
+        //     });
+        // }
         
         // CALENDARIO
         
