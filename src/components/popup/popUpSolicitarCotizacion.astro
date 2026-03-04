@@ -1,4 +1,12 @@
 ---
+import BaseForm from "@components/forms/BaseForm.astro";
+import FormField from "@components/forms/FormField.astro";
+import PhoneField from "@components/forms/PhoneField.astro";
+import SelectField from "@components/forms/SelectField.astro";
+import SubmitButton from "@components/forms/SubmitButton.astro";
+// Si necesitas el checkbox, también:
+import CheckboxField from "@components/forms/CheckboxField.astro";
+
 const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.props;
 console.log('imagesForHero:', JSON.stringify(imagesForHero, null, 2));
 ---
@@ -44,77 +52,40 @@ console.log('imagesForHero:', JSON.stringify(imagesForHero, null, 2));
                 
                 <!-- Contenido derecha -->
                 <div id="ContenidoPopup" class="lg:w-1/2 p-4 lg:p-8 bg-[#F5FAF9] flex flex-col min-h-[500px]">
-                    <!-- Formulario -->
-                    <form id="event-benefits-form" class="space-y-6 mt-6 flex-1 flex-col">
-                        <div class="relative">
-                            <label class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Nombre completo*</label>
-                            <input id="event-name" name="name" type="text" placeholder="Ej: Dra. Carolina Ávila" required class="w-full border-[#3D4948] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] focus:bg-[#F5FAF9] transition-colors duration-300" />
-                        </div>
-                        <div class="relative">
-                            <label class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Correo electrónico*</label>
-                            <input id="event-email" name="email" type="email" placeholder="Ej: carolina.avila@hospitalcardio.mx" required class="w-full border-[#3D4948] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] focus:bg-[#F5FAF9] transition-colors duration-300" />
-                        </div>
-
-                        <!-- ========== CAMPO DE TELÉFONO ========== -->
-                        <div class="relative" id="event-phone-group">
-                          <label class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Teléfono de contacto*</label>
-                          <input 
-                            id="event-phone"
-                            name="phone"
-                            type="tel"
-                            placeholder="Ej. +52 55 1234 5678"
-                            required
-                            class="w-full border-[#5A3A36] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#3D4948] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] focus:bg-[#F5FAF9] transition-colors duration-300 pr-10"
-                            inputmode="numeric"
-                            autocomplete="tel"
-                          />
-                        </div>
-
-                        <div class="relative">
-                          <label for="specialty" class="absolute -top-3 left-3 bg-[#3D4948] px-2 text-sm text-[#FFF] rounded-xs">Especialidad médica*</label>
-                          
-                          <select name="specialty" id="event-specialty" required class="w-full border-[#3D4948] border-2 focus:border-2 appearance-none rounded-[4px] px-4 py-3 text-[#A0A0A0] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#F5FAF9] transition-colors duration-300 pr-10 cursor-pointer" 
-                              onchange="this.classList.remove('text-[#A0A0A0]')">
-                              <option value="">¿Cuál es tu especialidad médica?</option>
-                              <option value="Alergología">Neurocirugía</option>
-                              <option value="Angiología">Neurofisiología</option>
-                              <option value="Cardiología">Neuromodulación</option>
-                              <option value="Cardiología Intervencionista Pediátrica">Rehabilitación</option>
-                              <option value="Cardiología clínica">Neurovascular</option>
-                              <option value="Cardiología deportiva">Otra</option>
-                          </select>
-
-                          <!-- Flechita SVG -->
-                          <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                              <svg class="w-4 h-4 text-[#5A3A36]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                              </svg>
-                          </div>
-                        </div>
-                        
-                        <input type="hidden" name="unidades_de_negocios" value="LATTITUDE" />
-                        <input type="hidden" name="hs_all_assigned_business_unit_ids" value="2380506" />
-                        <input type="hidden" name="utm_term" />
-                        <input type="hidden" name="utm_medium" />
-                        <input type="hidden" name="utm_source" />
-                        <input type="hidden" name="utm_content" />
-                        <input type="hidden" name="utm_campaign" />
-                        <input type="hidden" name="definicion_de_necesidad" value="Compra Equipo Médico" />
-                        
-                        <div class="flex items-start gap-2">
-                            <input type="checkbox" id="event-aviso" required class="mt-1 border-[#5A3A36] text-[#5A3A36] focus:ring-[#5A3A36]" />
-                            <label for="event-aviso" class="text-sm text-[#212121]"> He leído y acepto el <a href="/aviso-de-privacidad" target="_blank" class="text-[#006764] underline">Aviso de Privacidad</a>
-                            </label>
-                        </div>
-                        
-                        <button type="submit" class="bg-[#006764] text-white p-[16px] cursor-pointer m-0 rounded w-full font-bold hover:bg-[#006764] transition font-kallisto" aria-label="Recibir asesoría personalizada">
-                          <span id="submit-btn-content">
-                            Recibir asesoría personalizada
-                          </span>
-                        </button>
-                    </form>
+                  <!-- Nuevo formulario con BaseForm y componentes reutilizables -->
+                  <BaseForm id="pdp-form" class="space-y-6 mt-6 flex-1 flex-col">
+                    <FormField
+                      label="Nombre completo"
+                      name="name"
+                      placeholder="Ej: Dra. Carolina Ávila"
+                    />
+                    <FormField
+                      label="Correo electrónico"
+                      name="email"
+                      type="email"
+                      placeholder="Ej: carolina.avila@hospitalcardio.mx"
+                    />
+                    <PhoneField />
+                    <SelectField
+                      label="Especialidad médica"
+                      name="specialty"
+                      options={["Neurocirugía", "Neurofisiología", "Neuromodulación", "Rehabilitación", "Neurovascular", "Otra"]}
+                    />                  
+                    <CheckboxField
+                      id="aviso"
+                      label="He leído y acepto el"
+                      link="/aviso-de-privacidad"
+                    />
+                    <SubmitButton text="Recibir asesoría personalizada"></SubmitButton>
+                  </BaseForm>
                 </div>
+                <script type="module">
+                    import { initForm } from "/scripts/formValidator.js";
 
+                    document.addEventListener("DOMContentLoaded", () => {
+                        initForm("pdp-form");
+                    });
+                </script>
                 <!-- Msj success or error -->
                 <div id="event-status" class="bg-[#F5FAF9] p-8 text-center mt-2 text-sm w-full flex-1 flex items-center justify-center"></div>
             </div>

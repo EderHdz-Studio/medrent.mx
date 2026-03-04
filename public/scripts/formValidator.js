@@ -391,7 +391,7 @@ if (phoneWrapper) {
     });
 
     // Static fields for HubSpot (add/update as needed)
-    data["unidades_de_negocios"] = "LATTITUDE";
+    data["unidades_de_negocios"] = "MEDRENT";
     data["hs_all_assigned_business_unit_ids"] = "0";
     data["definicion_de_necesidad"] = "Compra Equipo Médico";
 
@@ -399,6 +399,9 @@ if (phoneWrapper) {
     const minWait = ms => new Promise(res => setTimeout(res, ms));
     let responseOk = false;
     let errorOccurred = false;
+
+    console.log("Submitting form with data:", data);
+    return;
 
     try {
       const fetchPromise = fetch("/api/contact", {
@@ -411,18 +414,24 @@ if (phoneWrapper) {
           setState("error");
           console.log("Response 400:", response);
         } else if (response.status === 409) {
+          console.log("Response 409:", response);
+
           form.reset();
           setState("success");
         } else if (response.ok) {
+          console.log("Response 200:", response);
+
           form.reset();
           setState("success");
         } else {
+          console.log("Response error:", response);
+
           setState("error");
         }
         return response;
       }).catch(error => {
         errorOccurred = true;
-        throw error;
+        console.error("Fetch error:", error);
       });
       await Promise.all([fetchPromise, minWait(1200)]); // 1.2 segundos mínimo
     } catch (error) {
