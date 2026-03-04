@@ -1,39 +1,60 @@
 ---
-import { BRANDS } from '@lib/site';
-const brands = BRANDS;
----
-<section class="max-w-7xl mx-auto  py-16">
-    <div class="text-center p-6">
-        <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center ">NUESTRAS MARCAS</h3>
-        <h2 class=" text-[24px] font-bold font-bold text-[var(--color-text-default)] tracking-tight">
-            ¡Representamos marcas líderes a nivel mundial¡
-        </h2>
-        <p class="text-[var(--color-green-dark)] text-base tracking-[0.5px] ">Trabajamos directamente con las mejores marcas para ofrecer equipos confiables, duraderos y clínicamente validados</p>
-    </div>
+import { strapiFetch } from "@server/strapiClient";
 
-    <div class="relative w-full overflow-hidden">
-      <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent"></div>
-      <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent"></div>
+let marcasData: any[] = [];
+
+try {
+  const response = await strapiFetch("/brands?populate=*");
+  console.log('Respuesta de Strapi:', response);
+  
+  // Asignamos los datos correctamente
+  marcasData = response?.data || [];
+  
+  console.log('Marcas', marcasData);
+} catch (error) {
+  console.error('Error al cargar marcas:', error.message);
+  marcasData = [];
+}
+---
+
+<section class="max-w-7xl mx-auto py-16">
+  <div class="text-center p-6">
+    <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center">
+      NUESTRAS MARCAS
+    </h3>
+    <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight">
+      ¡Representamos marcas líderes a nivel mundial!
+    </h2>
+    <p class="text-[var(--color-green-dark)] text-base tracking-[0.5px]">
+      Trabajamos directamente con las mejores marcas para ofrecer equipos confiables, duraderos y clínicamente validados
+    </p>
+  </div>
+
+  <div class="relative w-full overflow-hidden">
+    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent"></div>
+    
+     {marcasData.length > 0 ? (
       <div class="glide" id="BrandSlider">
         <div class="glide__track" data-glide-el="track">
           <ul class="glide__slides">
-           {brands.map((brand) => (
-                <li class="glide__slide flex justify-center items-center p-6" style="width: 158px;">
-                <a href="nuestras-marcas/" class="hover-scale-img block">
-                    <img
-                    src={brand ? `/temp/marcas/${brand.logo}` : '/temp/categorias/default-logo.png'}
-                    alt={brand.name}
+            {marcasData.map((brand) => (
+              <li class="glide__slide flex justify-center items-center p-6" style="width: 158px;">
+                <a href={'nuestras-marcas/' + brand.slug || '#'} class="hover-scale-img block">
+                  <img 
+                    src={brand.logo?.url} 
+                    alt={brand.name} 
                     class="h-[40px] w-auto object-contain"
-                    loading="lazy"
+                    loading="lazy" 
                     decoding="async"
-                    />
+                  />
                 </a>
-                </li>
+              </li>
             ))}
           </ul>
         </div>
 
-        <!-- <div data-glide-el="controls">
+        {/* <div data-glide-el="controls">
           <button data-glide-dir="<" aria-label="Anterior" class="group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black lg:hidden">
             <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
               <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
@@ -44,28 +65,37 @@ const brands = BRANDS;
               <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
             </svg>
           </button>
-        </div> -->
-      </div>
-    </div>
+        </div> */}
 
+      </div>
+    ) : (
+      <p class="text-center text-gray-500">No hay marcas disponibles</p>
+    )}
+  </div>
 </section>
 
 
-<script type="module">
-  const slider = document.querySelector('#BrandSlider');
 
-  if (slider) {
-    new Glide(slider, {
-      type: 'carousel',
-      perView: 8,
-      gap: 0,
-      autoplay: 2000,
-      hoverpause: true,
-      rewind: false,
-      breakpoints: {
-        1024: { perView: 4 },
-        640: { perView: 2 }
-      }
-    }).mount();
-  }
+<script>
+  (async function() {
+    const Glide = (await import('@glidejs/glide')).default;
+    
+    const slider = document.querySelector('#BrandSlider');
+    
+    if (slider) {
+      new Glide(slider, {
+        type: 'carousel',
+        perView: 8,
+        gap: 0,
+        autoplay: 2000,
+        animationDuration: 500,
+        animationTimingFunc: 'linear',
+        hoverpause: true,
+        breakpoints: {
+          1024: { perView: 4 },
+          640: { perView: 2 }
+        }
+      }).mount();
+    }
+  })();
 </script>
