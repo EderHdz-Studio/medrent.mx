@@ -401,6 +401,7 @@ if (phoneWrapper) {
     const minWait = ms => new Promise(res => setTimeout(res, ms));
     let responseOk = false;
     let errorOccurred = false;
+    let responseHubspot = 'error';
 
     console.log("Submitting form with data:", data);
 
@@ -416,19 +417,18 @@ if (phoneWrapper) {
           console.log("Response 400:", response);
         } else if (response.status === 409) {
           console.log("Response 409:", response);
-
           form.reset();
           setState("success");
         } else if (response.ok) {
           console.log("Response 200:", response);
-
           form.reset();
           setState("success");
         } else {
           console.log("Response error:", response);
-
           setState("error");
         }
+
+        sendFormEvent({ formId: formId, status: response.status });
         return response;
       }).catch(error => {
         errorOccurred = true;
@@ -494,4 +494,60 @@ if (phoneWrapper) {
 // console.log("Dropdown:", dropdown);
 
   // No ejecutar validaciones al cargar la página. Solo tras interacción del usuario.
+}
+
+
+function sendFormEvent({ formId, status }) {
+  const pathname = window.location.pathname;
+  const pageTitle = document.title;
+  formId == 'events-form'  && document.querySelector('#event-popup-title') ? eventName = document.querySelector('#event-popup-title').textContent : eventName = '';
+
+  // Valores de formulario
+  const full_name = document.querySelector('input[name="name"]')?.value || '';
+  const email = document.querySelector('input[name="email"]')?.value || '';
+  const phone = document.querySelector('input[name="phone"]')?.value || '';
+  const institution = document.querySelector('input[name="lugar_de_trabajo"]')?.value || '';
+  const medical_specialty = document.querySelector('select[name="specialty"]')?.value || '';
+  const state = document.querySelector('input[name="estado_mx"]')?.value || '';
+  const discovery_channel = document.querySelector('input[name="por_qu_medio_nos_conociste"]')?.value || '';
+  const product_interest = document.querySelector('input[name="multi_equipo__lattitude_"]')?.value || '';
+  const message = document.querySelector('textarea[name="message"]')?.value || '';
+
+  // Checkboxes de equipo
+  const equipoInteres = Array.from(document.querySelectorAll('input[name="equipoInteres[]"]:checked'));
+  const valoresStr = equipoInteres.length > 0 ? equipoInteres.map(cb => cb.value).join(",") : '';
+
+  // Obtener datos de tracking desde la función
+  const tracking = getTrackingData();
+
+  // Construir objeto de evento
+  const dataEventForm = {
+    event: "generate_lead",
+    event_data: {
+      category: "Form Interaction",
+      action: "Lead Generation",
+      label: "Submit - " + pathname,
+      page: pageTitle
+    },
+    form_submission: {
+      form_id: formId,
+      form_data: {
+        full_name: full_name,
+        email: email,
+        phone: phone,
+        institution: institution,
+        medical_specialty: medical_specialty,
+        state: state,
+        discovery_channel: discovery_channel,
+        product_interest: valoresStr || product_interest,
+        message: message,
+        eventName: eventName,
+        statusResponseHubspot: status || 'error'
+      }
+    },
+    tracking: tracking
+  };
+
+  // Enviar al dataLayer
+  window.dataLayer.push(dataEventForm);
 }
