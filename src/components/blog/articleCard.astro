@@ -14,8 +14,13 @@ import { formatDate } from '@lib/utils.js';
         </a>
         <p class="text-[var(--color-gray-dark)] text-[16px] font-lato ont-normal mb-4 line-clamp-3 flex-grow" style="max-height: 70px;">{article?.shortDescription}</p>
         <div class="flex items-end justify-between mt-auto">
-        <span class="text-xs text-[var(--color-gray-dark)] font-kallisto w-full flex">Por:&nbsp;
-            <a href={`/blog/autor/${article?.fullname?.slug}`} class="block text-xs text-[var(--color-primary)] cursor-pointer font-kallisto underline decoration-[var(--color-primary)]]">{article?.fullName?.fullName || 'Medrent'}</a>&nbsp;• {formatDate(article?.createdAt)}</span>
+        <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+            Por:&nbsp;
+            <a href={`/blog/autor/${article?.writer?.slug || 'team-medrent'}`} 
+            class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-kallisto">
+                {article?.writer?.fullName || 'Medrent'}
+            </a>&nbsp;• {formatDate(article?.createdAt)}
+        </span>
         </div>
     </div>
 </div>
