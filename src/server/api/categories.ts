@@ -2,7 +2,7 @@ import { strapiFetch } from "../strapiClient";
 
 export async function getCategories() {
   const res = await strapiFetch(
-    "/categories?populate[subcategories][populate][image]=true&populate[heroImage]=true&populate[listImage]=true"
+    "/categories?populate[subcategories][populate][image]=true&populate[subcategories][populate][products]=true&populate[heroImage]=true&populate[listImage]=true",
   );
 
   return res.data;
