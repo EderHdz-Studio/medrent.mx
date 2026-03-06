@@ -1,0 +1,213 @@
+---
+import Layout from '@layouts/Layout.astro';
+import ArticleCard from '@components/blog/articleCard.astro';
+import { formatDate } from '../../lib/utils.js';
+import { strapiFetch } from "@server/strapiClient";
+
+let articulosActivos = [];
+let categorias = [];
+
+try {
+  // 1. Usar strapiFetch DIRECTAMENTE como función (no strapiFetch.find)
+  const articulosAPI = await strapiFetch('/blog-articules-api?populate=*');
+
+    console.log('📊 Total artículos después del slice(4):', articulosActivos.slice(4).length);
+  // 2. LOG IMPORTANTE - Ver la estructura
+  console.log('✅ API Response completa:', articulosAPI);
+  
+  // 3. Verificar que data existe y es un array
+  if (articulosAPI.data && Array.isArray(articulosAPI.data)) {
+    // 4. Filtrar activos
+    articulosActivos = articulosAPI.data.filter(articulo => articulo.isActive === true);
+    
+    articulosActivos.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    console.log(`✅ Total artículos activos: ${articulosActivos.length}`);
+    
+    // 5. LOG IMPORTANTE - Ver el primer artículo completo
+    if (articulosActivos.length > 0) {
+      console.log('✅ Primer artículo (estructura completa):', articulosActivos[0]);
+    } else {
+      console.log('⚠️ No hay artículos activos');
+    }
+  } else {
+    console.error('❌ La API no devolvió un array en data:', articulosAPI);
+  }
+  
+} catch (error) {
+  console.error('❌ Error cargando artículos:', error);
+  articulosActivos = [];
+}
+
+// Cargar categorías
+// try {
+//   const categoriasData = await strapiFetch('/clasificacion-articulos?populate=*');
+//   if (categoriasData.data && Array.isArray(categoriasData.data)) {
+//     categorias = categoriasData.data;
+//     console.log('✅ Categorías cargadas:', categorias.length);
+//   }
+// } catch (error) {
+//   console.error('❌ Error cargando categorías:', error);
+//   categorias = [];
+// }
+---
+
+
+
+
+
+
+
+<Layout title="Blog | MedRent – Tecnología médica">
+  <Fragment slot="metas">
+    <title>Blog | MedRent – Tecnología médica</title>
+    <meta name="description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.medrent.mx/blog">
+    <meta property="og:title" content="Blog | MedRent – Tecnología médica" />
+    <meta property="og:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
+		<meta property="og:image" content="https://www.medrent.mx/images/og/home.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://www.medrent.mx/blog" />
+    <meta property="twitter:title" content="Blog | MedRent – Tecnología médica" />
+    <meta property="twitter:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
+    <meta property="twitter:image" content="https://www.medrent.mx/images/og/home.jpg">
+  </Fragment>
+  
+  <section class="max-w-[1280px] w-full flex flex-col items-center justify-center bg-[#F5FAF9] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
+    <div class="max-w-[1080px] w-full flex flex-col items-center gap-2 py-[32px] px-4 sm:px-[16px] md:px-[120px] md:py-[32px] sm:py-[32px] sm:px-[24px]">
+        <span class="text-xs font-bold text-[#006764] tracking-widest mb-2">BLOG</span>
+        <div class="w-full flex flex-col items-center">
+            <h1 class="text-center text-[#261819] font-lato text-[24px] md:text-[28px] font-bold">Innovación en Tecnología Médica y Neurodiagnóstico</h1>
+            <p class="text-center text-[#261819] font-lato text-[16px] font-medium">Explora artículos, guías y tendencias sobre diagnóstico médico, neurofisiología, cardiología y avances tecnológicos que transforman la práctica clínica en México.</p>
+        </div>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-6">
+    {articulosActivos.length > 0 ? (
+      <>
+        <section class="mb-12">
+        <div class="flex flex-col mb-6 w-full">
+            <span class="block md:hidden text-[#8C0032] font-lato text-[14px] font-medium m-0 p-0 mb-2" style="font-weight: 500; color: #8C0032;">{Math.min(4, articulosActivos.length)} ARTÍCULOS</span>
+            <div class="flex flex-col-reverse items-start w-full">
+            <h2 class="text-[#171D1C] font-lato text-[32px] font-light">Lo más nuevo</h2>
+            <span class="hidden md:inline-block text-[#00827F] font-lato text-[14px] font-medium mt-auto" style="font-weight: 500;">{Math.min(4, articulosActivos.length)} ARTÍCULOS</span>
+            </div>
+        </div>
+        
+        {/* SOLO los primeros 4 artículos (los más recientes) */}
+        {articulosActivos.slice(0, 4).length > 0 && (
+            <div class="flex flex-col gap-6">
+            {Array.from({ length: Math.ceil(Math.min(4, articulosActivos.length) / 2) }).map((_, rowIndex) => {
+                const firstIndex = rowIndex * 2;
+                const articulo1 = articulosActivos[firstIndex];
+                const articulo2 = articulosActivos[firstIndex + 1];
+                
+                // Solo procesar si estamos dentro de los primeros 4
+                if (firstIndex >= 4) return null;
+                
+                // Alternar entre 70/30 y 30/70 en cada fila
+                const isEvenRow = rowIndex % 2 === 0;
+                
+                return (
+                <div key={rowIndex} class="grid grid-cols-1 md:grid-cols-10 gap-6">
+                    {/* Primer artículo de la fila */}
+                    <div class={`${isEvenRow ? 'md:col-span-7' : 'md:col-span-3'} bg-[#F5FAF9] h-[100%] rounded-[16px] hover:shadow-md transition-all duration-300 overflow-hidden flex ${isEvenRow ? 'flex-col md:flex-row' : 'flex-col'} h-full relative`}>
+                    <div class={`${isEvenRow ? 'w-full md:w-1/2' : 'w-full'} h-64 md:h-48 relative overflow-hidden flex-shrink-0`}>
+                        <img 
+                        src={articulo1?.heroImage?.url || articulo1?.imagenDestacada?.url} 
+                        alt={articulo1?.mainTitle || articulo1?.titulo} 
+                        class="w-full h-full object-cover" 
+                        />
+                    </div>
+                    <div class={`${isEvenRow ? 'w-full md:w-1/2' : 'w-full'} p-6 flex flex-col flex-grow bg-[#F5FAF9]`}>
+                        <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[#006764]">
+                        {articulo1?.ClasificacionArticulo?.Clasificacion || articulo1?.categoria?.nombre}
+                        </span>
+                        <a href={`/blog/${articulo1?.slug}`}>
+                        <h3 class="text-[22px] font-light font-lato text-[#171D1C] mb-2 line-clamp-3 hover:text-[#006764] hover:underline decoration-[#006764]">
+                            {articulo1?.mainTitle || articulo1?.titulo}
+                        </h3>
+                        </a>
+                        <p class="text-[#6D7A78] text-[16px] font-lato font-normal mb-4 flex-grow">
+                        {articulo1?.articleDescription || articulo1?.descripcion}
+                        </p>
+                        <div class="flex items-end justify-between mt-auto">
+                        <span class="text-xs text-[#171D1C] font-lato w-full flex">
+                            Por:&nbsp;
+                            <a href={`/blog/autor/${articulo1?.writer?.slug}`} class="block text-xs text-[#006764] underline decoration-[#006764] cursor-pointer font-lato ">
+                            {articulo1?.writer?.fullName || 'MedRent'}
+                            </a>&nbsp;• {formatDate(articulo1?.createdAt)}
+                        </span>
+                        </div>
+                    </div>
+                    </div>
+
+                    {/* Segundo artículo de la fila (si existe) */}
+                    {articulo2 ? (
+                    <div class={`${isEvenRow ? 'md:col-span-3' : 'md:col-span-7'} bg-[#F5FAF9] rounded-[16px] hover:shadow-md transition-all duration-300 overflow-hidden flex ${!isEvenRow ? 'flex-col md:flex-row' : 'flex-col'} h-full relative`}>
+                        <div class={`${!isEvenRow ? 'w-full md:w-1/2' : 'w-full'} h-64 md:h-48 relative overflow-hidden flex-shrink-0`}>
+                        <img 
+                            src={articulo2?.heroImage?.url || articulo2?.imagenDestacada?.url} 
+                            alt={articulo2?.mainTitle || articulo2?.titulo} 
+                            class="w-full h-full object-cover" 
+                        />
+                        </div>
+                        <div class={`${!isEvenRow ? 'w-full md:w-1/2' : 'w-full'} p-6 flex flex-col flex-grow`}>
+                        <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[#006764]">
+                            {articulo2?.ClasificacionArticulo?.Clasificacion || articulo2?.categoria?.nombre}
+                        </span>
+                        <a href={`/blog/${articulo2?.slug}`}>
+                            <h3 class="text-[22px] font-light text-[#261819] font-lato mb-2 line-clamp-2 hover:text-[#006764] hover:underline decoration-[#006764]">
+                            {articulo2?.mainTitle || articulo2?.titulo}
+                            </h3>
+                        </a>
+                        <p class="text-[#8E6F73] text-[16px] font-normal mb-4 line-clamp-3 flex-grow" style="font-family: Lato;">
+                            {articulo2?.articleDescription || articulo2?.descripcion}
+                        </p>
+                        <div class="flex items-end justify-between mt-auto">
+                            <span class="text-xs text-[#8E6F73] font-lato w-full flex">
+                            Por:&nbsp;
+                            <a href={`/blog/autor/${articulo2?.writer?.slug}`} class="block text-xs text-[#006764] underline decoration-[#006764] cursor-pointer font-lato ">
+                                {articulo2?.writer?.fullName || 'MedRent'}
+                            </a>&nbsp;• {formatDate(articulo2?.createdAt)}
+                            </span>
+                        </div>
+                        </div>
+                    </div>
+                    ) : (
+                    // Si no hay segundo artículo, mostrar un espacio vacío
+                    <div class="md:col-span-3"></div>
+                    )}
+                </div>
+                );
+            })}
+            </div>
+        )}
+        </section>
+
+        {articulosActivos.length > 4 && (
+        <section>
+            <h2 class="text-[#261819] font-lato text-[28px] font-light mb-6">Últimas publicaciones</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {articulosActivos.slice(4).map((articulo) => (
+                <ArticleCard articulo={articulo} />
+            ))}
+            </div>
+        </section>
+        )}
+        
+      </>
+    ) : (
+      <div class="text-center py-12">
+        <p class="text-[#8C0032] font-lato text-xl">No hay artículos disponibles en este momento.</p>
+      </div>
+    )}
+  </main>
+  <!-- <NewsLetter /> -->
+</Layout>

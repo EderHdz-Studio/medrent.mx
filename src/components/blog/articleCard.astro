@@ -1,0 +1,23 @@
+<!-- ---
+// import { buildImageUrl } from '@lib/utils.js';
+const { articulo } = Astro.props;
+
+// import { formatDate } from '../lib/utils.js';
+---
+
+<div class="bg-white rounded-[16px] border border-[#E2BEC1] hover:bg-[#F8E6EA] hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative min-h-[500px]">
+    <div class="h-55 relative overflow-hidden flex-shrink-0">
+        <img src={article.heroImage.url} alt={article.mainTitle} class="w-full h-full object-cover" style="max-height:218px;" />
+    </div>
+    <div class="p-6 flex flex-col flex-grow">
+        <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[#B91247]">{article.specialty.specialty}</span>
+        <a href={`/blog/${article?.slug}`}>
+        <h3 class="text-[22px] font-light text-lg text-[#261819] mb-2 font-kallisto line-clamp-2 leading-7 hover:text-[#8C0032] hover:underline decoration-[#8C0032]">{articulo.TituloPrincipalArticulo}</h3>
+        </a>
+        <p class="text-[#8E6F73] text-[16px] font-normal mb-4 line-clamp-3 flex-grow" style="font-family: Lato; max-height: 70px;">{articulo.DescripcionCortaArticulo}</p>
+        <div class="flex items-end justify-between mt-auto">
+        <span class="text-xs text-[#8E6F73] font-kallisto w-full flex">Por:&nbsp;
+            <a href={`/blog/autor/${article?.writer.slug}`} class="block text-xs text-[#B91247] cursor-pointer font-kallisto underline decoration-[#8C0032]]">{articulo?.writer.fullName || 'Lattitude'}</a>&nbsp;• {formatDate(article.createdAt)}</span>
+        </div>
+    </div>
+</div> -->
