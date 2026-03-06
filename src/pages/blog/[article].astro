@@ -1,0 +1,65 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { strapiFetch } from "@server/strapiClient";
+import { formatDate } from '@lib/utils.js';
+import SocialMedia from '@components/blog/SocialMedia.astro';
+
+export async function getStaticPaths() {
+  const articles = await strapiFetch('/blog-articules-api?populate=*&sort=publishedAt:desc');
+  
+  return articles.data.map((page) => ({
+    params: { article: page.slug },
+    props: { 
+      article: page,
+
+    }
+  }));
+}
+const { article } = Astro.props as { article: any };
+---
+
+
+
+<Layout title="jkhvghjv" pageType="blog">
+  <Fragment slot="metas">
+    <!-- <meta id="description" content={pageDescription}>
+    <meta property="og:title" content={pageTitle}>
+    <meta property="og:description" content={pageDescription}>
+    <meta property="og:type" content="article">
+    <meta property="og:image" content={articulo?.ImagenHeroArticulo?.url ? buildImageUrl(articulo.ImagenHeroArticulo.url) : "/images/og/default.jpg"}>
+    <meta id="twitter:card" content="summary_large_image">
+    <meta id="twitter:title" content={pageTitle}>
+    <meta id="twitter:description" content={pageDescription}>
+    <meta id="twitter:image" content={articulo?.ImagenHeroArticulo?.url ? buildImageUrl(articulo.ImagenHeroArticulo.url) : "/images/og/default.jpg"}> -->
+  </Fragment>
+
+
+  <main class="max-w-7xl mx-auto ">
+   
+   <!-- Cabecera -->
+    <div class="w-full  p-4 md:py-6 md:px-4">
+      { article?.subcategory?.name ?? <p class="text-[#B91247] text-[12px]  font-kallisto uppercase">{article?.subcategory?.name}</p> }
+
+      <h1 class="font-light text-[32px] text-[#261819] font-kallisto ">{ article?.mainTitle }</h1>
+      { article?.articleDescription ?? <p class="text-[#8E6F73] text-[16px] font-normal">{article.articleDescription}</p> }
+
+      <div class="w-full my-6">
+        <p class="text-[#8E6F73] text-sm font-normal. italic"> •  { formatDate(article.createdAt) }</p>
+      </div>
+    </div>
+
+    {article?.heroImage?.url && (
+      <img
+        src={article.heroImage.url}
+        alt={article.heroImage.alt || 'Imagen del artículo'}
+        class="w-full h-auto rounded mb-6"
+      />
+    )}
+
+    <SocialMedia articulo={article} inline={true} class="px-4" clase="SocialMediaMobile" />
+
+  </main>
+
+
+</Layout>
+
