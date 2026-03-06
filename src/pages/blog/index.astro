@@ -14,29 +14,29 @@ try {
   articulosActivos = articulosAPI.data.filter((articulo: any) => articulo.isActive === true);
 
   console.log('articulosActivos')
-  // console.log(articulosActivos)
+  console.log(articulosActivos)
 
 } catch (error) {
   articulosActivos = [];
 }
 ---
 
-<Layout title="Blog | MedRent – Tecnología médica">
+<Layout title="Blog | Medrent – Tecnología médica">
   <Fragment slot="metas">
-    <title>Blog | MedRent – Tecnología médica</title>
+    <title>Blog | Medrent – Tecnología médica</title>
     <meta name="description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
     
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.medrent.mx/blog">
-    <meta property="og:title" content="Blog | MedRent – Tecnología médica" />
+    <meta property="og:title" content="Blog | Medrent – Tecnología médica" />
     <meta property="og:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
 		<meta property="og:image" content="https://www.medrent.mx/images/og/home.jpg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://www.medrent.mx/blog" />
-    <meta property="twitter:title" content="Blog | MedRent – Tecnología médica" />
+    <meta property="twitter:title" content="Blog | Medrent – Tecnología médica" />
     <meta property="twitter:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
     <meta property="twitter:image" content="https://www.medrent.mx/images/og/home.jpg">
   </Fragment>
@@ -75,7 +75,7 @@ try {
                 <a href={`/blog/${articulosActivos[0]?.slug}`}>
                   <h3 class="text-[28px] font-light font-kallisto text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
                 </a>
-                <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.articleDescription}</p>
+                <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
                 <div class="flex items-end justify-between mt-auto">
                   <span class="text-xs text-[var(--color-gray-dark)] font-kallisto w-full flex">
                     Por:&nbsp;<a href={`/blog/autor/${articulosActivos[0]?.writer?.name}`} class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-kallisto ">{articulosActivos[0]?.writer?.fullName || 'Medrent'}</a>&nbsp;• {formatDate(articulosActivos[0]?.createdAt)}</span>
@@ -89,7 +89,7 @@ try {
                   <div class="p-6 flex flex-col flex-grow">
                     <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulo?.subcategory?.name}</span>
                     <a href={`/blog/${articulo?.slug}`}>
-                      <h3 class="text-[22px] font-light text-lg text-[#261819] font-kallisto mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.TituloPrincipalArticulo}</h3>
+                      <h3 class="text-[22px] font-light text-lg text-[#261819] font-kallisto mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.title}</h3>
                     </a>
                     <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 line-clamp-3 flex-grow max-h-[68px]" style="font-family: Lato;">{articulo?.shortDescription}</p>
                     <div class="flex items-end justify-between mt-auto">
@@ -105,7 +105,7 @@ try {
 
         {articulosActivos.length > 3 && (
           <section>
-            <h2 class="text-[#261819] font-kallisto text-[28px] font-light mb-6 uppercase">Previos</h2>
+            <h2 class="text-[#261819] font-kallisto text-[28px] font-light mb-6 uppercase">Última publicación</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {articulosActivos.slice(3).map((articulo:any) => (
                 <ArticleCard article={articulo} />
