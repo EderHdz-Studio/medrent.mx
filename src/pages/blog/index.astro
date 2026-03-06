@@ -74,11 +74,28 @@ try {
                   <h3 class="text-[28px] font-light font-lato text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
                 </a>
                 <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
+                
+                
+                
+                
+                
+                
                 <div class="flex items-end justify-between mt-auto">
                   <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
-                    Por:&nbsp;<a href={`/blog/autor/${articulosActivos[0]?.fullName}`} class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">{articulosActivos[0]?.fullName}</a>&nbsp;• {formatDate(articulosActivos[0]?.createdAt)}
+                      Por:&nbsp;
+                      <a href={`/blog/autor/${articulosActivos[0]?.writer?.slug}`} 
+                        class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato">
+                          {articulosActivos[0]?.writer?.fullName || 'Medrent'}
+                      </a>&nbsp;• {formatDate(articulosActivos[0]?.createdAt)}
                   </span>
-                </div>
+              </div>
+
+
+
+
+
+
+
               </div>
             </div>
             
