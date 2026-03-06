@@ -1,0 +1,58 @@
+---
+let { articulo, inline=false, clase } = Astro.props;
+---
+<!-- Botones de redes sociales -->
+<section class:list={[
+    "gap-6",
+    "flex",
+    "mb-6",
+    inline ? "flex-row" : "flex-col",
+    inline ? "px-4" : "py-2",
+    clase
+]}>
+    <h2 class="text-lg font-bold text-[#261819] blogSubtitle">COMPARTIR</h2>
+
+    <div class="flex gap-4 ">
+        <a href="#" class="copiarLink bg-[#261819] hover:bg-[#B91247] text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors" title="Copiar enlace" aria-label="Copiar enlace">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 23 23" fill="white">
+            <path d="M20.7647 6.77862L19.2883 3.00304L15.5071 1.52197L9.35628 7.67747L11.037 11.037L7.6765 9.35633L1.521 15.5072L2.99742 19.2828L6.77857 20.7638L12.9341 14.6083L11.2534 11.2488L14.6139 12.9295L20.7647 6.77862ZM6.31985 18.5928L4.43114 17.8555L3.68828 15.9668L8.04328 11.6165L9.79457 12.4912L10.6693 14.2425L6.31985 18.5928ZM12.4911 9.79462L11.6164 8.04333L15.9659 3.69297L17.8546 4.43026L18.5928 6.31897L14.2424 10.6693L12.4911 9.79462Z" fill="white"/>
+            </svg>
+        </a>
+        
+         <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(Astro.request.url.toString())}&title=${encodeURIComponent(articulo?.mainTitle || '')}`} target="_blank" rel="noopener" aria-label="Compartir en LinkedIn" class="linkedin bg-[#261819] hover:bg-[#B91247] text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 40 40" fill="white">
+            <path d="M20 0C8.95417 0 0 8.95417 0 20C0 31.0458 8.95417 40 20 40C31.0458 40 40 31.0458 40 20C40 8.95417 31.0458 0 20 0ZM15.1042 28.2896H11.0542V15.2562H15.1042V28.2896ZM13.0542 13.6562C11.775 13.6562 10.9479 12.75 10.9479 11.6292C10.9479 10.4854 11.8 9.60625 13.1062 9.60625C14.4125 9.60625 15.2125 10.4854 15.2375 11.6292C15.2375 12.75 14.4125 13.6562 13.0542 13.6562ZM29.8958 28.2896H25.8458V21.0667C25.8458 19.3854 25.2583 18.2437 23.7938 18.2437C22.675 18.2437 22.0104 19.0167 21.7167 19.7604C21.6083 20.025 21.5812 20.4 21.5812 20.7729V28.2875H17.5292V19.4125C17.5292 17.7854 17.4771 16.425 17.4229 15.2542H20.9417L21.1271 17.0646H21.2083C21.7417 16.2146 23.0479 14.9604 25.2333 14.9604C27.8979 14.9604 29.8958 16.7458 29.8958 20.5833V28.2896Z" fill="white"/>
+            </svg>
+        </a>
+        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(Astro.request.url.toString())}`} target="_blank" rel="noopener" aria-label="Compartir en Facebook" class="facebook bg-[#261819] hover:bg-[#B91247] text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 40 40" fill="white">
+            <path d="M40 20C40 8.96 31.04 0 20 0C8.96 0 0 8.96 0 20C0 29.68 6.88 37.74 16 39.6V26H12V20H16V15C16 11.14 19.14 8 23 8H28V14H24C22.9 14 22 14.9 22 16V20H28V26H22V39.9C32.1 38.9 40 30.38 40 20Z" fill="white"/>
+            </svg>
+        </a>
+        <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.request.url.toString())}&text=${encodeURIComponent(articulo?.mainTitle || '')}`} target="_blank" rel="noopener" aria-label="Compartir en X" class="x bg-[#261819] hover:bg-[#B91247] text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 26 26" fill="none">
+            <path d="M6.71411 18.8572L11.8068 13.7657ZM18.857 6.71436L13.7655 11.8071ZM13.7655 11.8071L10.0862 6.71436H6.71411L11.8068 13.7657M13.7643 11.8059L18.857 18.8572H15.4837L11.8068 13.7657" fill="none"/>
+            <path d="M6.71411 18.8572L11.8068 13.7657M11.8068 13.7657L6.71411 6.71436H10.0862L13.7655 11.8071L18.857 6.71436M11.8068 13.7657L15.4837 18.8572H18.857L13.7643 11.8059" stroke="white" stroke-width="1.28571" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24.9285 12.7857C24.9285 19.4922 19.4922 24.9285 12.7857 24.9285C6.07918 24.9285 0.642822 19.4922 0.642822 12.7857C0.642822 6.07918 6.07918 0.642822 12.7857 0.642822C19.4922 0.642822 24.9285 6.07918 24.9285 12.7857Z" stroke="white" stroke-width="1.28571" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
+</section>
+
+<script is:inline>
+    if (typeof window !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.copiarLink').forEach(function(copiarBtn) {
+                copiarBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url).then(function() {
+                        
+                    }, function(err) {
+                        
+                    });
+                });
+            });
+        });
+    }
+</script>
