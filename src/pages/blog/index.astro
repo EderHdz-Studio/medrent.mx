@@ -8,7 +8,7 @@ let articulosActivos = [];
 
 try {
   // Traemos TODOS los artículos (sin filtrar en Strapi)
-  const articulosAPI = await strapiFetch('/blog-articules-api?populate=*&sort=publishedAt:desc');
+  const articulosAPI = await strapiFetch('/blog-articles?populate=*&sort=publishedAt:desc');
   
   // Filtramos en el frontend los ACTIVOS (isActive = true)
   articulosActivos = articulosAPI.data.filter((articulo: any) => articulo.isActive === true);
@@ -68,12 +68,12 @@ try {
           
             <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative md:col-span-2">
               <div class="h-75 relative overflow-hidden flex-shrink-0">
-                <img src={articulosActivos[0]?.heroImage?.url} alt={articulosActivos[0]?.mainTitle} class="w-full h-full object-cover" />
+                <img src={articulosActivos[0]?.heroImage?.url} alt={articulosActivos[0]?.title} class="w-full h-full object-cover" />
               </div>
               <div class="p-6 flex flex-col flex-grow min-h-[300px]">
                 <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulosActivos[0]?.subcategory?.name}</span>
                 <a href={`/blog/${articulosActivos[0]?.slug}`}>
-                  <h3 class="text-[28px] font-light font-kallisto text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.mainTitle}</h3>
+                  <h3 class="text-[28px] font-light font-kallisto text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
                 </a>
                 <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.articleDescription}</p>
                 <div class="flex items-end justify-between mt-auto">
