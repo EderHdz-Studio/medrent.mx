@@ -8,9 +8,8 @@ import SocialMedia from '@components/blog/SocialMedia.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 
 export async function getStaticPaths() {
-  const articles = await strapiFetch('/blog-articles?populate=*&sort=publishedAt:desc');
-  
-  return articles.data.map((page) => ({
+const articles = await strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true&populate[content][populate]=*');  
+return articles.data.map((page) => ({
     params: { article: page.slug },
     props: { 
       article: page,
@@ -90,7 +89,9 @@ try {
         alt={article.heroImage.alternativeText || 'Imagen del artículo'}
         class="w-full h-auto rounded mb-6"
       />
-    )}      
+    )} 
+    
+    <SocialMedia articulo={article} inline={true} class="px-4" clase="SocialMediaMobile" />
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Columna principal: Contenido del artículo -->
@@ -113,17 +114,25 @@ try {
                   return <BlocksRenderer content={blocks} />;
                 }
                 case 'blog.article-image': {
-                  return item.iframeVideoYoutube ? (
-                    <div class="my-6">
-                      <iframe
-                        src={item.iframeVideoYoutube}
-                        class="w-full aspect-video rounded"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                      />
-                    </div>
+                  return item.articleImage?.url ? (
+                    <img
+                      src={item.articleImage.url}
+                      alt={item.articleImage.alternativeText || 'Imagen del artículo'}
+                      class="w-full h-auto rounded mb-6"
+                    />
                   ) : null;
+                }
+                case 'blog.article-quote': {
+                  return (
+                    <div class="citaBlog">
+                      <p>"{item.quoteText}"</p>
+                      {item.authorName && (
+                        <div class="citaBlogAuthor">
+                          <span>{item.authorName}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
                 }
                 default:
                   return null;
@@ -133,18 +142,12 @@ try {
         }
         
         <section class="acreditadoPor flex items-center gap-4 p-4 pt-6" style="border-top: 0.5px dashed #8E6F73;">
-          {article?.writer?.image?.url && (
+          {article?.writer?.avatar?.url && (
             <img
-              src={article.writer.image.url}
+              src={article.writer.avatar.url}
               alt={article.writer.fullName || 'Autor'}
               class="w-20 h-20 rounded-full object-cover"
             />
-          )}
-          {/* Si no hay imagen, muestra un placeholder */}
-          {!article?.writer?.image?.url && (
-            <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
-              <span class="text-gray-400 text-xs">Sin foto</span>
-            </div>
           )}
           <div>
             <p class="font-lato text-[var(--color-primary)] text-xs font-medium leading-4 tracking-[0.5px]">
@@ -198,7 +201,7 @@ try {
           <div class="flex flex-col gap-4 md:gap-4" style="gap:16px;">
             {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
               articulosRelacionados.slice(0, 3).map((rel) => (
-                <div class="bg-white rounded-[16px] p-4 flex items-start gap-4 hover:bg-[#FFECED] min-h-[220px]" style="padding:16px; gap:16px;">
+                <div class="bg-white rounded-[16px] p-4 flex items-start gap-4 hover:bg-[var(--color-secondary-light)] min-h-[220px]" style="padding:16px; gap:16px;">
                   <div class="flex-shrink-0 w-20 h-20 rounded-[8px] overflow-hidden bg-[#F8E6EA] flex items-center justify-center">
                     {rel.heroImage?.url ? (
                       <img src={rel.heroImage.url} alt={rel.heroImage.alternativeText || 'Imagen del artículo'} class="object-cover w-20 h-20 rounded-[8px]" />
@@ -210,7 +213,7 @@ try {
                         {rel.subcategory?.name || ''}
                       </span>
                       <a href={`/blog/${rel.slug}`}>
-                        <h3 class="mb-1 text-[16px] font-light text-[#261819] hover:underline decoration-[#text-[var(--color-primary)]] hover:text-[#text-[var(--color-primary)]] not-italic font-lato cursor-pointer line-clamp-2">
+                        <h3 class="mb-1 text-[16px] font-light text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
                           {rel.title}
                         </h3>
                       </a>
@@ -245,10 +248,10 @@ try {
       </aside>
     </div>
 
-    <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6 lg:hidden">
-      <h2 class="text-lg font-bold text-[#261819] blogSubtitle mb-6">RELACIONADOS</h2>
+    <!-- <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6 lg:hidden">
+      <h2 class="text-lg font-bold text-[#261819] blogSubtitle mb-6">RELACIONADOS</h2> -->
       <!-- <SlideArticulos articulos={articulosRelacionados} /> -->
-    </section>
+    <!-- </section> -->
   </main>
   <!-- <NewsLetter /> -->
 </Layout>
