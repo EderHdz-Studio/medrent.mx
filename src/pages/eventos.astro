@@ -4,7 +4,6 @@ import 'dayjs/locale/es';
 import Layout from "@layouts/Layout.astro";
 import { strapiFetch } from "@server/strapiClient";
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
-
 import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
@@ -121,12 +120,12 @@ const eventDays = [11, 14];
                 
                 <!-- Columna izquierda - Contenido -->
                 <div class="lg:pr-8 flex flex-col items-start justify-center" style="height: -webkit-fill-available;">
-                    <h3 class="text-[14px] font-medium font-lato" style="color:var(--Schemes-Primary,#00827F);">EVENTOS</h3>
-                    <h2 class=" text-[28px] font-bold text-[#261819] leading-tight" style="font-family: Lato;">
+                    <h3 class="text-[14px] font-medium font-lato text-[var(--color-accent)];">EVENTOS</h3>
+                    <h2 class=" text-[28px] font-bold text-[#261819] leading-tight">
                        {data.title ? data.title : "Eventos médicos"}
                     </h2>
                     
-                    <p class="text-[16px] leading-[1.6] text-[#5A4043]" style="font-family: Lato;">
+                    <p class="text-[16px] leading-[1.6] text-[#5A4043]">
                         {data.description ? data.description : "Conoce los congresos, talleres y presentaciones donde Medrent comparte innovación y equipos líderes en diagnóstico y tratamiento."}
                     </p>
                 </div>
@@ -283,7 +282,7 @@ const eventDays = [11, 14];
                                                 }
                                                 
                                                 return (
-                                                    <article class="bg-white border border-[#00827F] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
+                                                    <article class="bg-white border border-[var(--color-accent)] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                         <div class="flex flex-col md:flex-row">
                                                             <div class="w-full md:w-1/2">
                                                                 <img
@@ -294,7 +293,7 @@ const eventDays = [11, 14];
                                                             </div>
                                                             <div class="w-full md:w-1/2 p-6 flex flex-col bg-[#F5FAF9]">
                                                                 <div class="flex-1">
-                                                                    <p class="text-[#00827F] font-lato text-[14px] uppercase font-medium mb-2">
+                                                                    <p class="text-[var(--color-accent)] font-lato text-[14px] uppercase font-medium mb-2">
                                                                         {evento.eventType}
                                                                     </p>
                                                                     <h3 class="text-[#261819] font-lato text-[20px] font-bold mb-1">
@@ -311,7 +310,7 @@ const eventDays = [11, 14];
                                                                             <path d="M17 19H7V21H17V19Z" fill="#3D4948"/>
                                                                         </svg>
                                                                         <span class="text-[#261819] text-[16px]">
-                                                                            <a href={evento.locationUrlMaps} target="_blank" class="hover:text-[#00827F] transition-colors">
+                                                                            <a href={evento.locationUrlMaps} target="_blank" class="hover:text-[var(--color-accent)] transition-colors">
                                                                                 {evento.locationLabel}
                                                                             </a>
                                                                         </span>
@@ -386,7 +385,7 @@ const eventDays = [11, 14];
                 <!-- Botón cerrar en esquina superior derecha del popup -->
                 <button 
                     id="close-event-popup"
-                    class="absolute top-4 right-4 text-white hover:text-gray-600 text-2xl leading-none bg-[#261819] border-none cursor-pointer z-10 px-2 py-1 rounded"
+                    class="absolute top-4 right-4 text-white text-2xl leading-none bg-[#261819] border-none cursor-pointer z-10 px-2 py-1 rounded"
                 >
                     ×
                 </button>
@@ -408,7 +407,7 @@ const eventDays = [11, 14];
 
                         <div class="mb-2" id="event-popup-text">
 
-                            <p class="text-[#00827F] font-lato text-[14px] uppercase font-medium mb-2"> EXCLUSIVIDAD MÉDICA </p>
+                            <p class="text-[var(--color-accent)] font-lato text-[14px] uppercase font-medium mb-2"> EXCLUSIVIDAD MÉDICA </p>
                             <!-- Título -->
                             <h2 id="event-popup-title" class="text-[#261819] font-lato text-[22px]  mb-4">
                                 Título del evento
