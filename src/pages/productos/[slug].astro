@@ -341,25 +341,26 @@ console.log("Product data:", product);
             
             {product.technicalSpecifications.map((item: any, index: number) => {
               const itemIndex = index + 1;
+              const isFirstItem = index === 0;
+              
               return (
                 <div 
-                  class="group py-4 px-2 relative overflow-hidden rounded-[2px] " 
+                  class="group py-4 px-2 relative overflow-hidden rounded-[2px]" 
                   style="border-bottom: 0.5px solid var(--color-primary);"
                 >
-              
                   <div 
-                    class="absolute inset-0 bg-[#EDF2F0] transform translate-y-full cursor pointer md:group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-[2px] hover:text-white"
-                    x-bind:class={`{'translate-y-0': openTechItems.includes(${itemIndex})}`}
+                    class="absolute inset-0 bg-[#EDF2F0] transform translate-y-full cursor-pointer md:group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-[2px] hover:text-white"
+                    x-bind:class={`{'translate-y-0 bg-white': openTechItems.includes(${itemIndex})}`}
                   ></div>
                   
                   <div class="relative z-10">
                     <div class="flex items-start md:items-center justify-between gap-4">
                       <div 
-                        class="flex items-start gap-2 cursor-pointer" 
+                        class="flex items-start gap-2 cursor-pointer flex-1" 
                         x-on:click={`openTechItems.includes(${itemIndex}) ? openTechItems = openTechItems.filter(i => i !== ${itemIndex}) : openTechItems.push(${itemIndex})`}
                       >
                         <span 
-                          class="font-light  text-[16px] pt-[2px] transition-colors duration-300 text-[var(--color-primary)]"
+                          class="font-light text-[16px] pt-[2px] transition-colors duration-300 text-[var(--color-primary)]"
                         >
                           {String(itemIndex).padStart(2, '0')}
                         </span>
@@ -372,7 +373,7 @@ console.log("Product data:", product);
                       <button
                         aria-label="Abrir" 
                         x-on:click={`openTechItems.includes(${itemIndex}) ? openTechItems = openTechItems.filter(i => i !== ${itemIndex}) : openTechItems.push(${itemIndex})`}
-                        x-bind:class={`{'text-[var(--color-primary)]': openTechItems.includes(${itemIndex}), 'bg-transparent text-[var(--color-primary)]': !openTechItems.includes(${itemIndex})}`}
+                        x-bind:class={`{'text-[var(--color-primary)] bg-[#F5FAF9]': openTechItems.includes(${itemIndex}), 'bg-transparent text-[var(--color-primary)]': !openTechItems.includes(${itemIndex})}`}
                         class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-300 border-none relative z-20"
                       >
                         <span 
@@ -383,67 +384,41 @@ console.log("Product data:", product);
                         </span>
                       </button>
                     </div>
+                    
                     <div 
                       x-ref={`techContent${itemIndex}`}
                       x-bind:style={`openTechItems.includes(${itemIndex}) ? 'max-height: ' + $refs['techContent${itemIndex}'].scrollHeight + 'px' : 'max-height: 0px'`}
                       class="transition-all duration-500 ease-in-out overflow-hidden"
                     >
                       <div class="mt-4 px-2">
-                        {item.gallerypecificacion?.url ? (
-                          <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 w-[30%] flex items-center justify-center relative z-10">
-                              <div class="w-60 h-60">
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                          {/* Imagen del producto - SOLO para el primer ítem */}
+                          {isFirstItem && product.gallery && product.gallery.length > 0 && (
+                            <div class="flex-shrink-0 w-full md:w-48 lg:w-64 flex items-center justify-center relative z-10">
+                              <div class="w-full h-48 md:h-40 lg:h-48">
                                 <img
-                                  src={buildImageUrl(item.title.url)}
-                                  alt={item.title}
-                                  class="w-full h-full object-contain rounded"
+                                  src={product.gallery[0]}
+                                  alt={product.name}
+                                  class="w-full h-full object-cover p-2"
                                 />
                               </div>
                             </div>
-                            <div class="flex-1">
-                              <p 
-                                class="text-[16px] font-medium mb-4 transition-colors duration-300 text-[var(--color-gray-dark)]"
-                                style="font-family: Lato;"
-                              >
-                                {item.description}
-                              </p>
-                              
-                              {item.relatedAccessories && item.relatedAccessories.length > 0 && (
-                                <div>
-                                  <h5 
-                                    class="font-bold text-[16px] mb-2 transition-colors duration-300"
-                                    style="font-family: Lato;"
-                                  >
-                                    Accesorios relacionados:
-                                  </h5>
-                                  <ul class="list-disc list-inside space-y-1">
-                                    {item.relatedAccessories.map((accesorio: any) => (
-                                      <li 
-                                        class="text-[16px] font-medium transition-colors duration-300"
-                                        style="font-family: Lato;"
-                                      >
-                                        {accesorio.accessory}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div>
+                          )}
+                          
+                          {/* Contenido de la especificación */}
+                          <div class="flex-1">
+                            {/* Descripción */}
                             <p 
                               class="text-[16px] font-medium mb-4 transition-colors duration-300 text-[var(--color-gray-dark)]"
-                              style="font-family: Lato;"
                             >
                               {item.description}
                             </p>
                             
+                            {/* Accesorios relacionados */}
                             {item.relatedAccessories && item.relatedAccessories.length > 0 && (
-                              <div>
+                              <div class="mt-4">
                                 <h5 
                                   class="font-bold text-[16px] mb-2 transition-colors duration-300"
-                                  style="font-family: Lato;"
                                 >
                                   Accesorios relacionados:
                                 </h5>
@@ -459,8 +434,21 @@ console.log("Product data:", product);
                                 </ul>
                               </div>
                             )}
+                            
+                            {/* Imagen específica de la especificación (si existe) */}
+                            {item.gallerypecificacion?.url && (
+                              <div class="mt-4 flex items-center justify-center md:justify-start">
+                                <div class="w-40 h-40">
+                                  <img
+                                    src={buildImageUrl(item.gallerypecificacion.url)}
+                                    alt={item.title}
+                                    class="w-full h-full object-contain rounded border border-gray-200 p-2"
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
