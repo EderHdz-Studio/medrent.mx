@@ -1,0 +1,139 @@
+---
+import Layout from '@layouts/Layout.astro';
+import ArticleCard from '@components/blog/ArticleCard.astro';
+import { formatDate } from '@lib/utils.js';
+import { strapiFetch } from "@server/strapiClient";
+
+let articulosActivos = [];
+
+try {
+  const articulosAPI = await strapiFetch('/blog-articles?populate=*&sort=publishedAt:desc');
+  
+  articulosActivos = articulosAPI.data.filter((articulo: any) => articulo.isActive === true);
+
+  console.log('articulosActivos')
+  console.log(articulosActivos)
+
+} catch (error) {
+  articulosActivos = [];
+}
+---
+
+<Layout title="Blog | Medrent – Tecnología médica">
+  <Fragment slot="metas">
+    <title>Blog | Medrent – Tecnología médica</title>
+    <meta name="description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.medrent.mx/blog">
+    <meta property="og:title" content="Blog | Medrent – Tecnología médica" />
+    <meta property="og:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
+		<meta property="og:image" content="https://www.medrent.mx/images/og/home.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://www.medrent.mx/blog" />
+    <meta property="twitter:title" content="Blog | Medrent – Tecnología médica" />
+    <meta property="twitter:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
+    <meta property="twitter:image" content="https://www.medrent.mx/images/og/home.jpg">
+  </Fragment>
+  
+  <section class="max-w-[1280px] w-full flex flex-col items-center justify-center bg-[#F5FAF9] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
+    <div class="max-w-[1080px] w-full flex flex-col items-center gap-2 py-[32px] px-4 sm:px-[16px] md:px-[120px] md:py-[32px] sm:py-[32px] sm:px-[24px]">
+        <span class="text-xs font-bold text-[#text-[var(--color-primary)]] tracking-widest mb-2">BLOG</span>
+        <div class="w-full flex flex-col items-center">
+            <h1 class="text-center text-[#261819] font-lato text-[24px] md:text-[28px] font-bold">Innovación en Tecnología Médica y Neurodiagnóstico</h1>
+            <p class="text-center text-[#261819] font-lato text-[16px] font-medium">Explora artículos, guías y tendencias sobre diagnóstico médico, neurofisiología, cardiología y avances tecnológicos que transforman la práctica clínica en México.</p>
+        </div>
+    </div>
+  </section>
+
+    <main class="max-w-7xl mx-auto px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-6">
+    {articulosActivos.length > 0 ? (
+      <>
+        <section class="mb-12">
+          <div class="flex flex-col mb-6 w-full">
+            <!-- Artículo count arriba del h2 solo en mobile, derecha en desktop -->
+            <span class="block md:hidden text-[var(--color-primary)] font-lato text-[14px] font-medium m-0 p-0 mb-2" style="font-weight: 500; color: var(--color-primary);">{articulosActivos.length} ARTÍCULOS</span>
+            <div class="flex items-center justify-between w-full">
+              <h2 class="text-[#261819] font-lato text-[28px] font-light uppercase">Lo más nuevo</h2>
+              <!-- Artículo count a la derecha en desktop -->
+              <span class="hidden md:inline-block text-[var(--color-primary)] font-lato text-[14px] font-medium px-3 py-1 mt-auto" style="font-weight: 500; color: var(--color-primary);">{articulosActivos.length} ARTÍCULOS</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+          
+            <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative md:col-span-2">
+              <div class="h-75 relative overflow-hidden flex-shrink-0">
+                <img src={articulosActivos[0]?.heroImage?.url} alt={articulosActivos[0]?.title} class="w-full h-full object-cover" />
+              </div>
+              <div class="p-6 flex flex-col flex-grow min-h-[300px]">
+                <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulosActivos[0]?.subcategory?.name}</span>
+                <a href={`/blog/${articulosActivos[0]?.slug}`}>
+                  <h3 class="text-[28px] font-light font-lato text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
+                </a>
+                <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
+                
+                
+                
+
+                  <div class="flex items-end justify-between mt-auto">
+                    <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+                        Por:&nbsp;
+                        <a href={`/blog/autor/${articulosActivos[0]?.writer?.slug}`} 
+                          class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato">
+                            {articulosActivos[0]?.writer?.fullName}
+                        </a>&nbsp;• {formatDate(articulosActivos[0]?.createdAt)}
+                    </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="w-full flex flex-col gap-6 sm:flex-row sm:gap-6 sm:w-full md:flex-col md:gap-6 md:col-span-1 md:w-full">
+              {articulosActivos.slice(1,3).map((articulo:any, idx:number) => (
+                <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative sm:w-1/2 md:w-full">
+                  <div class="p-6 flex flex-col flex-grow">
+                    <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulo?.subcategory?.name}</span>
+                    <a href={`/blog/${articulo?.slug}`}>
+                      <h3 class="text-[22px] font-light text-lg text-[#261819] font-lato mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.title}</h3>
+                    </a>
+                    <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 line-clamp-3 flex-grow max-h-[68px]" style="font-family: Lato;">{articulo?.shortDescription}</p>
+                    
+                    
+                    <div class="flex items-end justify-between mt-auto">
+                      <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+                        Por:&nbsp;
+                        <a href={`/blog/autor/${articulo?.writer?.slug}`} 
+                        class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">
+                          {articulo?.writer?.fullName}
+                        </a>
+                        &nbsp;• {formatDate(articulo?.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {articulosActivos.length > 3 && (
+          <section>
+            <h2 class="text-[#261819] font-lato text-[28px] font-light mb-6 uppercase">Última publicación</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {articulosActivos.slice(3).map((articulo:any) => (
+                <ArticleCard article={articulo} />
+              ))}
+            </div>
+          </section>
+        )}
+      </>
+    ) : (
+      <div class="text-center py-12">
+        <p class="text-[var(--color-primary)] font-lato text-xl">No hay artículos disponibles en este momento.</p>
+      </div>
+    )}
+  </main>
+  <!-- <NewsLetter /> -->
+</Layout>

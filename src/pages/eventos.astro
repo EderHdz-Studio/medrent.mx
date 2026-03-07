@@ -9,13 +9,12 @@ import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
+import NewBreadcrumb from '@components/newBreadcrumb.astro';
 
 
-// import { buildImageUrl } from '../lib/utils.js';
 // import SliderPromociones from '../components/sliderPromociones.astro';
 // import Code from '@components/js.astro';
 // import SlideArticulos from '@components/slideArticulos.astro';
-// import NewBreadcrumb from '@components/newBreadcrumb.astro';
 
 const breadcrumbData = [
   { name: 'INICIO', url: '/' },
@@ -58,7 +57,6 @@ dayjs.locale('es');
 
 // Obtener fecha actual
 const now = dayjs();
-// Formatear el mes en Title Case (solo la primera letra en mayúscula)
 const currentMonth = now.format('MMMM YYYY');
 const currentMonthTitleCase = currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1).toLowerCase();
 
@@ -115,7 +113,7 @@ const eventDays = [11, 14];
     <section class="w-full" style="background: linear-gradient(180deg, #D8E5E3 0%, #FFF 50%);">
         <!-- Breadcrumb -->
         <div class="pt-2 px-0 max-w-[1320px] mx-auto">
-            <!-- <NewBreadcrumb data={breadcrumbData} /> -->
+            <NewBreadcrumb data={breadcrumbData} />
         </div>
         
         <div class="max-w-[1320px] mx-auto px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-8">
@@ -158,7 +156,7 @@ const eventDays = [11, 14];
                 <!-- Columna izquierda - Calendario (45%) -->
                 <div class="lg:w-[45%] px-4 md:p-6 lg:p-6">
                     <div class="text-center font-sans" style="position: sticky; top: 120px;">
-                        <h2 class="font-kallisto text-[28px] text-[#261819] font-light text-left mb-4">
+                        <h2 class="font-lato text-[28px] text-[#261819] font-light text-left mb-4">
                             EVENTOS MedRent {now.year()}
                         </h2>
 
@@ -264,7 +262,7 @@ const eventDays = [11, 14];
                                 return (
                                     <div class="space-y-6" data-month={mesKey} data-event-days={JSON.stringify([...mesData.diasConEventos])}>
                                         {/* Título del mes */}
-                                        <h3 class="text-[#261819] font-kallisto text-[28px] font-light mb-4">
+                                        <h3 class="text-[#261819] font-lato text-[28px] font-light mb-4">
                                             {mesData.nombre}
                                         </h3>
                                         
@@ -296,13 +294,13 @@ const eventDays = [11, 14];
                                                             </div>
                                                             <div class="w-full md:w-1/2 p-6 flex flex-col bg-[#F5FAF9]">
                                                                 <div class="flex-1">
-                                                                    <p class="text-[#00827F] font-kallisto text-[14px] uppercase font-medium mb-2">
+                                                                    <p class="text-[#00827F] font-lato text-[14px] uppercase font-medium mb-2">
                                                                         {evento.eventType}
                                                                     </p>
-                                                                    <h3 class="text-[#261819] font-kallisto text-[20px] font-bold mb-1">
+                                                                    <h3 class="text-[#261819] font-lato text-[20px] font-bold mb-1">
                                                                         {evento.title}
                                                                     </h3>
-                                                                    {/* <p class="text-[#261819] font-kallisto text-[20px] mb-4">
+                                                                    {/* <p class="text-[#261819] font-lato text-[20px] mb-4">
                                                                         {evento.subtitle}
                                                                     </p> */}
                                                                     <div class="space-y-2">
@@ -410,9 +408,9 @@ const eventDays = [11, 14];
 
                         <div class="mb-2" id="event-popup-text">
 
-                            <p class="text-[#00827F] font-kallisto text-[14px] uppercase font-medium mb-2"> EXCLUSIVIDAD MÉDICA </p>
+                            <p class="text-[#00827F] font-lato text-[14px] uppercase font-medium mb-2"> EXCLUSIVIDAD MÉDICA </p>
                             <!-- Título -->
-                            <h2 id="event-popup-title" class="text-[#261819] font-kallisto text-[22px]  mb-4">
+                            <h2 id="event-popup-title" class="text-[#261819] font-lato text-[22px]  mb-4">
                                 Título del evento
                             </h2>
                             

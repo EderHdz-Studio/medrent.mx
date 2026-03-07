@@ -1,10 +1,6 @@
 import { extractDigits } from "./phoneUtils.js";
 
 export function initForm(formId) {
-
-
-
-
   const form = document.getElementById(formId);
   if (!form) return;
 
@@ -14,47 +10,51 @@ export function initForm(formId) {
 
   const nameInput = form.querySelector('[name="name"]');
   const emailInput = form.querySelector('[name="email"]');
-  const phoneWrapper = form.querySelector('.form-phone');
-  const phoneInput = phoneWrapper?.querySelector('.phone-input');
+  const phoneWrapper = form.querySelector(".form-phone");
+  const phoneInput = phoneWrapper?.querySelector(".phone-input");
   const selectInput = form.querySelector('select[name="specialty"]');
   const checkbox = form.querySelector('input[type="checkbox"]');
-  const submitBtn = form.querySelector('.submit-btn');
-  const otraEspecialidadInput = form.querySelector('[name="otras_especialidades"]');
+  const submitBtn = form.querySelector(".submit-btn");
+  const otraEspecialidadInput = form.querySelector(
+    '[name="otras_especialidades"]',
+  );
 
   // Guardar el texto original del botón para restaurarlo después
-  const originalSubmitText = submitBtn ? submitBtn.textContent : 'Enviar';
-  const status = form.querySelector('.status');
+  const originalSubmitText = submitBtn ? submitBtn.textContent : "Enviar";
+  const status = form.querySelector(".status");
 
   const primaryColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--color-primary').trim();
+    .getPropertyValue("--color-primary")
+    .trim();
 
   const greenDarkColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--color-green-dark').trim();
+    .getPropertyValue("--color-green-dark")
+    .trim();
 
   /* =============================
   SUBMIT CON MANEJO DE ESTADO
   ============================== */
-  const wrapper = form.closest('.form-wrapper');
-  const formContainer = wrapper?.querySelector('.form-container');
-  const successBox = wrapper?.querySelector('.form-success');
-  const errorBox = wrapper?.querySelector('.form-error');
-  const errorRetryBtn = errorBox?.querySelector('button.retry-btn');
+  const wrapper = form.closest(".form-wrapper");
+  const formContainer = wrapper?.querySelector(".form-container");
+  const successBox = wrapper?.querySelector(".form-success");
+  const errorBox = wrapper?.querySelector(".form-error");
+  const errorRetryBtn = errorBox?.querySelector("button.retry-btn");
 
   function setState(state) {
-    formContainer?.classList.add('hidden');
-    successBox?.classList.add('hidden');
-    errorBox?.classList.add('hidden');
+    formContainer?.classList.add("hidden");
+    successBox?.classList.add("hidden");
+    errorBox?.classList.add("hidden");
 
     if (state === "form") {
-      formContainer?.classList.remove('hidden');
+      formContainer?.classList.remove("hidden");
     }
 
     if (state === "success") {
-      successBox?.classList.remove('hidden');
+      successBox?.classList.remove("hidden");
     }
 
     if (state === "error") {
-      errorBox?.classList.remove('hidden');
+      errorBox?.classList.remove("hidden");
     }
   }
 
@@ -66,11 +66,10 @@ export function initForm(formId) {
     if (selectInput) setInitial(selectInput);
     if (checkbox) checkbox.checked = false;
     if (otraEspecialidadInput) setInitial(otraEspecialidadInput);
-
   }
 
   // Asegura que el formulario se muestre correctamente al dar click en el botón de reintentar
-  errorRetryBtn?.addEventListener('click', (e) => {
+  errorRetryBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     setTimeout(() => {
       setState("form");
@@ -79,7 +78,7 @@ export function initForm(formId) {
       validateAll();
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Agendar una DEMO';
+        submitBtn.innerHTML = "Agendar una DEMO";
       }
     }, 50); // pequeño delay para asegurar el cambio de estado
   });
@@ -89,53 +88,60 @@ export function initForm(formId) {
   ============================== */
 
   // Mensaje de ayuda para el input de teléfono
-  let phoneHelper = phoneWrapper?.querySelector('.phone-helper');
+  let phoneHelper = phoneWrapper?.querySelector(".phone-helper");
   if (!phoneHelper && phoneWrapper) {
-    phoneHelper = document.createElement('div');
-    phoneHelper.className = 'phone-helper text-[12px] mt-1 text-left text-[#171D1C]';
+    phoneHelper = document.createElement("div");
+    phoneHelper.className =
+      "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
     phoneWrapper.appendChild(phoneHelper);
   }
 
   function setInitial(input) {
-    input.style.removeProperty('outline');
-    input.style.removeProperty('background');
-    input.style.removeProperty('border');
-    const container = input.closest('.relative');
-    const label = container?.querySelector('label');
-    if (label) label.style.background = '#3D4948';
-    if (input.tagName === 'SELECT') {
-      input.classList.remove('success');
-      input.classList.remove('error');
+    input.style.removeProperty("outline");
+    input.style.removeProperty("background");
+    input.style.removeProperty("border");
+    const container = input.closest(".relative");
+    const label = container?.querySelector("label");
+    if (label) label.style.background = "#3D4948";
+    if (input.tagName === "SELECT") {
+      input.classList.remove("success");
+      input.classList.remove("error");
     }
     // Mensaje inicial para teléfono
     if (input === phoneInput && phoneHelper) {
       // phoneHelper.innerHTML = 'Incluye lada internacional. Ej.: +52 55 1234 5678';
-      phoneHelper.innerHTML = '';
-      phoneHelper.className = 'phone-helper text-[12px] mt-1 text-left text-[#171D1C]';
+      phoneHelper.innerHTML = "";
+      phoneHelper.className =
+        "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
     }
   }
 
   function setValid(input) {
     let label;
     if (input === phoneInput) {
-      label = phoneWrapper?.querySelector('.phone-label');
+      label = phoneWrapper?.querySelector(".phone-label");
     } else {
-      const container = input.closest('.relative');
-      label = container?.querySelector('label');
+      const container = input.closest(".relative");
+      label = container?.querySelector("label");
     }
-    input.style.setProperty('outline', `1px solid ${primaryColor}`, 'important');
-    input.style.setProperty('background', '#fff', 'important');
-    input.style.setProperty('border', `1px solid ${primaryColor}`, 'important');
+    input.style.setProperty(
+      "outline",
+      `1px solid ${primaryColor}`,
+      "important",
+    );
+    input.style.setProperty("background", "#fff", "important");
+    input.style.setProperty("border", `1px solid ${primaryColor}`, "important");
     if (label) label.style.background = primaryColor;
-    if (input.tagName === 'SELECT') {
-      input.classList.add('success');
-      input.classList.remove('error');
-      input.style.setProperty('color', '#171D1C', 'important');
+    if (input.tagName === "SELECT") {
+      input.classList.add("success");
+      input.classList.remove("error");
+      input.style.setProperty("color", "#171D1C", "important");
     }
     // Mensaje success para teléfono
     if (input === phoneInput && phoneHelper) {
-      phoneHelper.innerHTML = 'Número válido';
-      phoneHelper.className = 'phone-helper text-[12px] mt-1 text-left text-[#171D1C]';
+      phoneHelper.innerHTML = "Número válido";
+      phoneHelper.className =
+        "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
     }
   }
 
@@ -143,23 +149,25 @@ export function initForm(formId) {
     let label;
     if (input === phoneInput) {
       // Selecciona el label por clase dentro de .form-phone
-      label = phoneWrapper?.querySelector('.phone-label');
+      label = phoneWrapper?.querySelector(".phone-label");
     } else {
-      const container = input.closest('.relative');
-      label = container?.querySelector('label');
+      const container = input.closest(".relative");
+      label = container?.querySelector("label");
     }
-    input.style.setProperty('outline', '1px solid #BA1A1A', 'important');
-    input.style.setProperty('background', '#FFEDEA', 'important');
-    input.style.setProperty('border', '1px solid #BA1A1A', 'important');
-    if (label) label.style.background = '#BA1A1A';
-    if (input.tagName === 'SELECT') {
-      input.classList.add('error');
-      input.classList.remove('success');
+    input.style.setProperty("outline", "1px solid #BA1A1A", "important");
+    input.style.setProperty("background", "#FFEDEA", "important");
+    input.style.setProperty("border", "1px solid #BA1A1A", "important");
+    if (label) label.style.background = "#BA1A1A";
+    if (input.tagName === "SELECT") {
+      input.classList.add("error");
+      input.classList.remove("success");
     }
     // Mensaje error para teléfono
     if (input === phoneInput && phoneHelper) {
-      phoneHelper.innerHTML = '<strong>El número ingresado no tiene la cantidad correcta de dígitos.</strong><br>10 dígitos.';
-      phoneHelper.className = 'phone-helper text-[12px] mt-1 text-left text-[#171D1C]';
+      phoneHelper.innerHTML =
+        "<strong>El número ingresado no tiene la cantidad correcta de dígitos.</strong><br>10 dígitos.";
+      phoneHelper.className =
+        "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
     }
   }
 
@@ -169,7 +177,7 @@ export function initForm(formId) {
 
   function validateName() {
     if (!nameInput) return true;
-    if (nameInput.value.trim() === '') {
+    if (nameInput.value.trim() === "") {
       setInitial(nameInput);
       return false;
     }
@@ -185,7 +193,7 @@ export function initForm(formId) {
     if (!emailInput) return true;
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const value = emailInput.value.trim();
-    if (value === '') {
+    if (value === "") {
       setInitial(emailInput);
       return false;
     }
@@ -199,20 +207,20 @@ export function initForm(formId) {
   // Validación visual en focusout y autocomplete para email
   if (emailInput) {
     // Focus out
-    emailInput.addEventListener('blur', () => {
-      if (emailInput.value.trim() !== '') {
+    emailInput.addEventListener("blur", () => {
+      if (emailInput.value.trim() !== "") {
         validateEmail();
       }
     });
     // Autocomplete: disparar validación al cambiar valor
-    emailInput.addEventListener('change', () => {
-      if (emailInput.value.trim() !== '') {
+    emailInput.addEventListener("change", () => {
+      if (emailInput.value.trim() !== "") {
         validateEmail();
       }
     });
     // Para autofill de navegador
-    emailInput.addEventListener('input', () => {
-      if (emailInput.value.trim() !== '') {
+    emailInput.addEventListener("input", () => {
+      if (emailInput.value.trim() !== "") {
         validateEmail();
       }
     });
@@ -223,7 +231,7 @@ export function initForm(formId) {
     const value = phoneInput.value.trim();
     // Si solo tiene lada (+52, +1, etc) y nada más, es error visual
     const ladaRegex = /^\+\d{1,3}$/;
-    if (value === '') {
+    if (value === "") {
       setInitial(phoneInput);
       return false;
     }
@@ -233,7 +241,7 @@ export function initForm(formId) {
     }
     const digits = extractDigits(value);
     if (digits.length == 10) {
-    // if (digits.length >= 10) {
+      // if (digits.length >= 10) {
       setValid(phoneInput);
       return true;
     }
@@ -243,11 +251,11 @@ export function initForm(formId) {
 
   function validateSelect() {
     if (!selectInput) return true;
-    if (selectInput.value === '') {
+    if (selectInput.value === "") {
       setInitial(selectInput);
       return false;
     }
-    selectInput.classList.remove('text-[#A0A0A0]');
+    selectInput.classList.remove("text-[#A0A0A0]");
     setValid(selectInput);
     return true;
   }
@@ -256,7 +264,7 @@ export function initForm(formId) {
     if (!otraEspecialidadInput || !otraEspecialidadInput.required) {
       return true; // No validar si no existe o no es requerido
     }
-    if (otraEspecialidadInput.value.trim() === '') {
+    if (otraEspecialidadInput.value.trim() === "") {
       setInitial(otraEspecialidadInput);
       return false;
     }
@@ -268,12 +276,10 @@ export function initForm(formId) {
     return false;
   }
 
-
-
   // Validación visual en onchange para select
   if (selectInput) {
-    selectInput.addEventListener('change', () => {
-      if (selectInput.value && selectInput.value !== '') {
+    selectInput.addEventListener("change", () => {
+      if (selectInput.value && selectInput.value !== "") {
         setValid(selectInput);
       } else {
         setInitial(selectInput);
@@ -300,9 +306,9 @@ export function initForm(formId) {
       submitBtn.disabled = !valid;
 
       if (valid) {
-        submitBtn.classList.add('hover:bg-[#00827F]'); // color-accent
+        submitBtn.classList.add("hover:bg-[#00827F]"); // color-accent
       } else {
-        submitBtn.classList.remove('hover:bg-[#00827F]');
+        submitBtn.classList.remove("hover:bg-[#00827F]");
       }
     }
 
@@ -313,54 +319,54 @@ export function initForm(formId) {
      DROPDOWN TELÉFONO (LOCAL)
   ============================== */
 
-if (phoneWrapper) {
-  const phoneInput = phoneWrapper.querySelector('.phone-input');
-  const dropdown = phoneWrapper.querySelector('.country-dropdown');
+  if (phoneWrapper) {
+    const phoneInput = phoneWrapper.querySelector(".phone-input");
+    const dropdown = phoneWrapper.querySelector(".country-dropdown");
 
-  // if (phoneInput && dropdown) {
+    // if (phoneInput && dropdown) {
 
-  //   const openDropdown = () => dropdown.classList.remove('hidden');
-  //   const closeDropdown = () => dropdown.classList.add('hidden');
+    //   const openDropdown = () => dropdown.classList.remove('hidden');
+    //   const closeDropdown = () => dropdown.classList.add('hidden');
 
-  //   phoneInput.addEventListener('focus', openDropdown);
-  //   phoneInput.addEventListener('click', (e) => {
-  //     e.stopPropagation();
-  //     openDropdown();
-  //   });
+    //   phoneInput.addEventListener('focus', openDropdown);
+    //   phoneInput.addEventListener('click', (e) => {
+    //     e.stopPropagation();
+    //     openDropdown();
+    //   });
 
-  //   dropdown.querySelectorAll('.country-option').forEach(option => {
-  //     option.addEventListener('click', (e) => {
-  //       e.stopPropagation();
+    //   dropdown.querySelectorAll('.country-option').forEach(option => {
+    //     option.addEventListener('click', (e) => {
+    //       e.stopPropagation();
 
-  //       const code = option.dataset.code;
-  //       const current = phoneInput.value.replace(/^\+\d+\s*/, '');
+    //       const code = option.dataset.code;
+    //       const current = phoneInput.value.replace(/^\+\d+\s*/, '');
 
-  //       phoneInput.value = code + ' ' + current;
-  //       phoneInput.focus();
-  //       closeDropdown();
-  //       validateAll();
-  //     });
-  //   });
+    //       phoneInput.value = code + ' ' + current;
+    //       phoneInput.focus();
+    //       closeDropdown();
+    //       validateAll();
+    //     });
+    //   });
 
-  //   document.addEventListener('click', (e) => {
-  //     if (!phoneWrapper.contains(e.target)) {
-  //       closeDropdown();
-  //     }
-  //   });
-  // }
-}
+    //   document.addEventListener('click', (e) => {
+    //     if (!phoneWrapper.contains(e.target)) {
+    //       closeDropdown();
+    //     }
+    //   });
+    // }
+  }
 
   /* =============================
      FORMATO INPUT TELÉFONO
   ============================== */
 
   if (phoneInput) {
-    phoneInput.addEventListener('input', () => {
+    phoneInput.addEventListener("input", () => {
       let value = phoneInput.value;
 
       // Permitir solo números, espacios y un solo +
-      value = value.replace(/[^\d+ ]/g, '');
-      value = value.replace(/\++/g, '+');
+      value = value.replace(/[^\d+ ]/g, "");
+      value = value.replace(/\++/g, "+");
 
       phoneInput.value = value;
       validateAll();
@@ -372,25 +378,24 @@ if (phoneWrapper) {
   ============================== */
 
   // Validación visual individual para cada campo
-  nameInput?.addEventListener('input', validateName);
-  emailInput?.addEventListener('input', validateEmail);
-  phoneInput?.addEventListener('input', validatePhone);
-  selectInput?.addEventListener('change', validateSelect);
-  otraEspecialidadInput?.addEventListener('input', validateOtraEspecialidad);
+  nameInput?.addEventListener("input", validateName);
+  emailInput?.addEventListener("input", validateEmail);
+  phoneInput?.addEventListener("input", validatePhone);
+  selectInput?.addEventListener("change", validateSelect);
+  otraEspecialidadInput?.addEventListener("input", validateOtraEspecialidad);
 
-  checkbox?.addEventListener('change', validateCheckbox);
+  checkbox?.addEventListener("change", validateCheckbox);
 
   // Detectar autofill/autocomplete y disparar validación global
   // Esto cubre casos donde el navegador llena los campos y no dispara eventos individuales
-  form.addEventListener('input', validateAll);
-  form.addEventListener('change', validateAll);
-  form.addEventListener('focusin', validateAll);
-
+  form.addEventListener("input", validateAll);
+  form.addEventListener("change", validateAll);
+  form.addEventListener("focusin", validateAll);
 
   /* =============================
      SUBMIT
   ============================== */
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     if (!validateAll()) return;
@@ -423,10 +428,10 @@ if (phoneWrapper) {
     data["definicion_de_necesidad"] = "Compra Equipo Médico";
 
     // Tiempo mínimo de espera para mostrar el loader
-    const minWait = ms => new Promise(res => setTimeout(res, ms));
+    const minWait = (ms) => new Promise((res) => setTimeout(res, ms));
     let responseOk = false;
     let errorOccurred = false;
-    let responseHubspot = 'error';
+    let responseHubspot = "error";
 
     console.log("Submitting form with data:", data);
 
@@ -435,30 +440,32 @@ if (phoneWrapper) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      }).then(async response => {
-        // Manejo de status específicos
-        if (response.status === 400) {
-          setState("error");
-          console.log("Response 400:", response);
-        } else if (response.status === 409) {
-          console.log("Response 409:", response);
-          form.reset();
-          setState("success");
-        } else if (response.ok) {
-          console.log("Response 200:", response);
-          form.reset();
-          setState("success");
-        } else {
-          console.log("Response error:", response);
-          setState("error");
-        }
+      })
+        .then(async (response) => {
+          // Manejo de status específicos
+          if (response.status === 400) {
+            setState("error");
+            console.log("Response 400:", response);
+          } else if (response.status === 409) {
+            console.log("Response 409:", response);
+            form.reset();
+            setState("success");
+          } else if (response.ok) {
+            console.log("Response 200:", response);
+            form.reset();
+            setState("success");
+          } else {
+            console.log("Response error:", response);
+            setState("error");
+          }
 
-        sendFormEvent({ formId: formId, status: response.status });
-        return response;
-      }).catch(error => {
-        errorOccurred = true;
-        console.error("Fetch error:", error);
-      });
+          sendFormEvent({ formId: formId, status: response.status });
+          return response;
+        })
+        .catch((error) => {
+          errorOccurred = true;
+          console.error("Fetch error:", error);
+        });
       await Promise.all([fetchPromise, minWait(1200)]); // 1.2 segundos mínimo
     } catch (error) {
       console.error(error);
@@ -514,34 +521,46 @@ if (phoneWrapper) {
   /* =============================
      INICIALIZACIÓN
   ============================== */
-//     console.log("Form initialized:", formId);
-// console.log("Phone wrapper:", phoneWrapper);
-// console.log("Dropdown:", dropdown);
+  //     console.log("Form initialized:", formId);
+  // console.log("Phone wrapper:", phoneWrapper);
+  // console.log("Dropdown:", dropdown);
 
   // No ejecutar validaciones al cargar la página. Solo tras interacción del usuario.
 }
-
 
 function sendFormEvent({ formId, status }) {
   const pathname = window.location.pathname;
   const pageTitle = document.title;
   let eventName;
-  formId == 'events-form'  && document.querySelector('#event-popup-title') ? eventName = document.querySelector('#event-popup-title').textContent : eventName = '';
+  formId == "events-form" && document.querySelector("#event-popup-title")
+    ? (eventName = document.querySelector("#event-popup-title").textContent)
+    : (eventName = "");
 
   // Valores de formulario
-  const full_name = document.querySelector('input[name="name"]')?.value || '';
-  const email = document.querySelector('input[name="email"]')?.value || '';
-  const phone = document.querySelector('input[name="phone"]')?.value || '';
-  const institution = document.querySelector('input[name="lugar_de_trabajo"]')?.value || '';
-  const medical_specialty = document.querySelector('select[name="specialty"]')?.value || '';
-  const state = document.querySelector('select[name="estado_mx"]')?.value || '';
-  const discovery_channel = document.querySelector('input[name="por_qu_medio_nos_conociste"]')?.value || '';
-  const product_interest = document.querySelector('input[name="multi_equipo__lattitude_"]')?.value || '';
-  const message = document.querySelector('textarea[name="message"]')?.value || '';
+  const full_name = document.querySelector('input[name="name"]')?.value || "";
+  const email = document.querySelector('input[name="email"]')?.value || "";
+  const phone = document.querySelector('input[name="phone"]')?.value || "";
+  const institution =
+    document.querySelector('input[name="lugar_de_trabajo"]')?.value || "";
+  const medical_specialty =
+    document.querySelector('select[name="specialty"]')?.value || "";
+  const state = document.querySelector('select[name="estado_mx"]')?.value || "";
+  const discovery_channel =
+    document.querySelector('input[name="por_qu_medio_nos_conociste"]')?.value ||
+    "";
+  const product_interest =
+    document.querySelector('input[name="multi_equipo__medrent_"]')?.value || "";
+  const message =
+    document.querySelector('textarea[name="message"]')?.value || "";
 
   // Checkboxes de equipo
-  const equipoInteres = Array.from(document.querySelectorAll('input[name="equipoInteres[]"]:checked'));
-  const valoresStr = equipoInteres.length > 0 ? equipoInteres.map(cb => cb.value).join(",") : '';
+  const equipoInteres = Array.from(
+    document.querySelectorAll('input[name="equipoInteres[]"]:checked'),
+  );
+  const valoresStr =
+    equipoInteres.length > 0
+      ? equipoInteres.map((cb) => cb.value).join(",")
+      : "";
 
   // Obtener datos de tracking desde la función
   const tracking = getTrackingData();
@@ -553,7 +572,7 @@ function sendFormEvent({ formId, status }) {
       category: "Form Interaction",
       action: "Lead Generation",
       label: "Submit - " + pathname,
-      page: pageTitle
+      page: pageTitle,
     },
     form_submission: {
       form_id: formId,
@@ -568,10 +587,10 @@ function sendFormEvent({ formId, status }) {
         product_interest: valoresStr || product_interest,
         message: message,
         eventName: eventName,
-        statusResponseHubspot: status || 'error'
-      }
+        statusResponseHubspot: status || "error",
+      },
     },
-    tracking: tracking
+    tracking: tracking,
   };
 
   // Enviar al dataLayer

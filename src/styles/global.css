@@ -19,28 +19,27 @@
 :root {
   /* Brand */
   --color-primary: #006764;
-  --color-secondary: #69D8D3;
-  --color-surface-light: #EDF2F0;
-  
-  --color-accent: #00827F;
-  --color-green-dark:#3D4948;
-  --color-secondary-light: #F5FAF9;
-  --color-text-default: #171D1C;
-  --color-gray: #BCC9C8;
-  --color-gray-dark: #6D7A78;
-  --color-white: #FFFFFF;
-  --color-primary-light: #87F4EF;
+  --color-secondary: #69d8d3;
+  --color-surface-light: #edf2f0;
 
+  --color-accent: #00827f;
+  --color-green-dark: #3d4948;
+  --color-secondary-light: #f5faf9;
+  --color-text-default: #171d1c;
+  --color-gray: #bcc9c8;
+  --color-gray-dark: #6d7a78;
+  --color-white: #ffffff;
+  --color-primary-light: #87f4ef;
 
   /* Light surfaces */
   --color-surface-light: 245 250 249; /* #F5FAF9 */
-  --color-text-light: 15 20 20;       /* #0F1414 */
+  --color-text-light: 15 20 20; /* #0F1414 */
 
   /* Dark surfaces */
   --color-surface-dark: 15 20 20;
   --color-text-dark: 245 250 249;
 
-   --color-white: #FFF;
+  --color-white: #fff;
 
   --gradient-surface-dark:
     linear-gradient(
@@ -64,27 +63,27 @@
 body {
   font-family: "Lato", sans-serif;
 }
-html, body {
+html,
+body {
   height: 100%;
 }
 
-
 ::selection {
   background: var(--color-primary);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 ::-moz-selection {
   background: var(--color-primary);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .bg-black ::selection {
   background: var(--color-accent);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 .bg-black ::-moz-selection {
   background: var(--color-accent);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 select option:hover,
@@ -95,26 +94,23 @@ select option:focus {
   text-decoration-color: var(--color-primary) !important;
 }
 
-
 /* Scrollbar personalizado para SidebarFilters */
 .custom-scrollbar::-webkit-scrollbar {
   width: 18px;
-  background: var(--Schemes-On-Primary, #FFECED);
+  background: var(--Schemes-On-Primary, #69d8d3);
   border-radius: 16px;
 }
 
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #FFECED;
+  background: #69d8d3;
   border-radius: 16px;
   border: 2px solid #e0e0e0;
 }
 
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #B91247 #FFECED;
+  scrollbar-color: #69d8d3 #006764;
 }
-
 
 /* Ancho de la barra */
 .custom-scrollbar::-webkit-scrollbar {
@@ -130,10 +126,85 @@ select option:focus {
 /* Barra que se mueve */
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #b0124a; /* vino / magenta */
-  border-radius: 18px!important;
+  border-radius: 18px !important;
 }
 
 /* Hover (opcional, un poco más oscuro) */
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #8f0f3d;
+}
+
+/* Articulos del blog */
+.dinamicContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.blogSubtitle,
+.dinamicContent h2 {
+  font-family: Lato;
+  color: #261819;
+  font-size: 28px;
+  font-weight: 300;
+}
+.dinamicContent li strong,
+.dinamicContent p {
+  color: #261819;
+  font-family: Lato;
+  font-size: 16px;
+}
+.dinamicContent ol,
+.dinamicContent ul {
+  padding-left: 24px;
+  color: #261819;
+}
+.dinamicContent ul > li {
+  list-style-type: circle;
+  color: #261819;
+}
+.dinamicContent ol > li {
+  list-style-type: decimal;
+  margin-bottom: 16px;
+  color: #261819;
+}
+.dinamicContent div.citaBlog {
+  border-left: 6px solid #b91247;
+  padding: 24px;
+}
+div.citaBlogAuthor span,
+div.citaBlog p {
+  color: #8e6f73;
+  font-family: Lato;
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+@media (max-width: 1023px) {
+  /* Contenedores del blog */
+  .SocialMediaMobile,
+  .contentBlogContainer {
+    display: flex;
+  }
+  .articulosRelacionadosDesktop,
+  .SocialMediaDesktop,
+  .contentBlogAside {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .SocialMediaDesktop {
+    display: flex;
+  }
+  .SocialMediaMobile {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .blogSubtitle {
+    font-size: 20px;
+  }
 }
