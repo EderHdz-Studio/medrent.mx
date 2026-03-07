@@ -4,17 +4,15 @@ import 'dayjs/locale/es';
 import Layout from "@layouts/Layout.astro";
 import { strapiFetch } from "@server/strapiClient";
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
-
 import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import NewBreadcrumb from '@components/newBreadcrumb.astro';
-
+import SlideArticles from '@components/blog/slideArticles.astro';
 
 // import SliderPromociones from '../components/sliderPromociones.astro';
 // import Code from '@components/js.astro';
-// import SlideArticulos from '@components/slideArticulos.astro';
 
 const breadcrumbData = [
   { name: 'INICIO', url: '/' },
@@ -44,12 +42,18 @@ try {
 // }
 
 
-// let articulos = null;
-// try {
-//     const relacionados = await strapi.find(`articulos-blogs?sort=publishedAt:desc&populate[ImagenHeroArticulo]=true&populate[ClasificacionArticulo]=true&populate[Escritor]=true`, {meta: true});
-//     articulos = Array.isArray(relacionados) ? relacionados : (relacionados.data && relacionados.data);
-
-// } catch (e) {}
+let articulos = null;
+try {
+    const relacionados = await strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true');
+    
+    // La respuesta de strapiFetch probablemente ya viene como data
+    articulos = relacionados?.data || relacionados || [];
+    
+    console.log('Artículos cargados:', articulos);
+} catch (e) {
+    console.error('Error cargando artículos:', e);
+    articulos = [];
+}
 
 
 // Configurar dayjs en español
@@ -356,11 +360,18 @@ const eventDays = [11, 14];
 
     <!-- Slider de promociones -->
     <PromotionSlider />
+
+
+    <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
+        <span class="mb-2 uppercase text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
+        <h3 class=" mb-6 font-normal text-[28px] text-[#212121]">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
+        <SlideArticles articulos={articulos} />
+    </section>
     
 </Layout>
 
 <!-- Definir datos del popup -->
-<script define:vars={{ 
+<!-- <script define:vars={{ 
   popupData: {
     titulo: data.PopUpTitulo || 'Eventos MedRent',
     descripcion: data.PopUpDescripcion || 'Descubre nuestros eventos y accede a beneficios exclusivos.',
@@ -369,7 +380,7 @@ const eventDays = [11, 14];
 }}>
   // Hacer los datos disponibles globalmente
   window.popupData = popupData;
-</script>
+</script> -->
 
 <!-- Popup de Evento -->
 <div id="event-popup-overlay" class="fixed inset-0 z-50 hidden">
@@ -418,10 +429,8 @@ const eventDays = [11, 14];
                             <p id="event-popup-description" class="text-[#5A4043] text-[16px] leading-relaxed" style="font-family: Lato;">
                                 Descripción del evento
                             </p>
-
                         </div>
                         
-
 
                         <BaseForm id="events-form" class="space-y-8  rounded">
                             <FormField
