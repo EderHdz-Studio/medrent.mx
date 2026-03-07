@@ -3,6 +3,7 @@ import Layout from '@layouts/Layout.astro';
 import ArticleCard from '@components/blog/ArticleCard.astro';
 import { formatDate } from '@lib/utils.js';
 import { strapiFetch } from "@server/strapiClient";
+import Newsletter from '@components/Newsletter.astro';
 
 let articulosActivos = [];
 
@@ -135,5 +136,5 @@ try {
       </div>
     )}
   </main>
-  <!-- <NewsLetter /> -->
+  <Newsletter />
 </Layout>
