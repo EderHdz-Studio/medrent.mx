@@ -3,8 +3,8 @@ import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import { formatDate, buildImageUrl } from '@lib/utils.js';
 import SocialMedia from '@components/blog/SocialMedia.astro';
-import SlideArticles from '@components/blog/slideArticles.astro';
-// import Newsletter from '@components/Newsletter.astro';
+// import SlideArticulos from '@components/blog/SlideArticulos.astro';
+// import NewsLetter from '@components/blog/NewsLetter.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 
 export async function getStaticPaths() {
@@ -28,7 +28,7 @@ try {
     'populate': '*',
     'sort': 'publishedAt:desc',
     'pagination[limit]': '10',
-    'filters[slug][$ne]': article.slug,
+    'filters[slug][$ne]': article.slug, // Excluir el artículo actual
   });
 
   // Si tiene subcategoría, filtrar por ella
@@ -71,13 +71,13 @@ try {
       </h1>
       
       {article?.shortDescription && (
-        <p class="text-[var(--color-green-dark)] text-[16px] font-normal">
+        <p class="text-[#8E6F73] text-[16px] font-normal">
           {article.shortDescription}
         </p>
       )}
 
       <div class="w-full my-6">
-        <p class="text-[var(--color-green-dark)] text-sm font-normal italic">
+        <p class="text-[#8E6F73] text-sm font-normal italic">
           • {formatDate(article?.createdAt)}
         </p>
       </div>
@@ -96,11 +96,13 @@ try {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Columna principal: Contenido del artículo -->
       <div class="lg:col-span-8 dinamicContent p-4 md:py-6 md:px-4 contentBlog">
-          <div class="w-full py-0 px-0">
-            <h2 class="text-[var(--color-text-default)] font-lato text-[28px] font-bold leading-[36px]">
+          <div class="w-full py-4">
+            <h2 class="font-light text-[32px] text-[#171D1C] font-lato">
               Antecedentes
             </h2>
           </div>
+
+
 
         {Array.isArray(article?.content)
           ? article.content.map((item: any) => {
@@ -157,7 +159,7 @@ try {
             >
               {article?.writer?.fullName || 'Backoffice | Team Medrent'}
             </a>
-              <span class="text-[var(--color-gray-dark)] font-medium italic">
+              <span class="text-[#8E6F73] font-medium italic">
                 {" — "}{Array.isArray(articulosRelacionados) ? articulosRelacionados.length + 1 : 1} Artículo{Array.isArray(articulosRelacionados) && articulosRelacionados.length + 1 !== 1 ? 's' : ''}
               </span>
             <p class="text-[#5A4043] text-sm font-normal leading-5 tracking-[0.25px] mt-1">
@@ -174,7 +176,7 @@ try {
 
         <section class="flex-col gap-2 flex max-w-7xl mx-auto mb-6"> 
           <h2 class="text-lg font-bold text-[#261819] blogSubtitle">Suscríbete al blog</h2>
-          <p class="text-[14px] text-[var(--color-gray-dark)] max-w-xl mx-auto m-0">
+          <p class="text-[14px] text-[#8E6F73] max-w-xl mx-auto m-0">
             Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones exclusivas sobre nuestras soluciones.
           </p> 
           <form class="justify-center max-w-xl w-full mx-auto flex flex-col gap-4 pt-4"> 
@@ -195,7 +197,7 @@ try {
         </section>
 
         <section class="articulosRelacionadosDesktop flex gap-6 flex-col gap-6 mb-6">
-          <h2 class="text-[var(--color-text-default)] font-lato text-[28px] font-bold leading-[36px] blogSubtitle">Relacionados</h2>
+          <h2 class="text-lg font-bold text-[#261819] blogSubtitle">RELACIONADOS</h2>
           <div class="flex flex-col gap-4 md:gap-4" style="gap:16px;">
             {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
               articulosRelacionados.slice(0, 3).map((rel) => (
@@ -215,14 +217,14 @@ try {
                           {rel.title}
                         </h3>
                       </a>
-                      <p class="mb-1 text-[14px] text-[var(--color-gray-dark)] line-clamp-3">{rel.shortDescription}</p>
+                      <p class="mb-1 text-[14px] text-[#8E6F73] line-clamp-3">{rel.shortDescription}</p>
                     </div>
                     <div class="flex">
                       <span class="block text-xs text-[#261819] font-lato mt-2">Por: &nbsp;</span>
                       <a href={`/blog/autor/${rel.writer?.slug}`} class="block text-xs text-[#text-[var(--color-primary)]] underline decoration-[#text-[var(--color-primary)]] cursor-pointer font-lato mt-2">
                         {rel.writer?.fullName || 'Medrent'}
                       </a>
-                      <span class="block text-xs text-[var(--color-gray-dark)] font-lato mt-2">
+                      <span class="block text-xs text-[#8E6F73] font-lato mt-2">
                         &nbsp;• {formatDate(rel.createdAt)}
                       </span>
                     </div>
@@ -230,27 +232,26 @@ try {
                 </div>
               ))
             ) : (
-              <p class="text-[var(--color-gray-dark)]">Por el momento no hay artículos relacionados.</p>
+              <p class="text-[#8E6F73]">Por el momento no hay artículos relacionados.</p>
             )}
           </div>
 
-          <!-- {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
+          {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
             <a href="/blog" class="flex w-full justify-center cursor-pointer items-center gap-2 self-stretch rounded-[4px] border border-[#261819] text-black text-[14px] font-bold font-lato transition-colors hover:bg-black hover:text-white group" style="padding:14px 16px;">
               Ver más artículos
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
                 <path d="M11.92 5.62409C11.8724 5.50134 11.801 5.3892 11.71 5.29409L6.71 0.294092C6.61676 0.200853 6.50607 0.126893 6.38425 0.0764322C6.26243 0.0259719 6.13186 0 6 0C5.7337 0 5.4783 0.105788 5.29 0.294092C5.19676 0.38733 5.1228 0.498021 5.07234 0.619843C5.02188 0.741665 4.99591 0.872233 4.99591 1.00409C4.99591 1.27039 5.1017 1.52579 5.29 1.71409L8.59 5.00409H1C0.734784 5.00409 0.48043 5.10945 0.292893 5.29699C0.105357 5.48452 0 5.73888 0 6.00409C0 6.26931 0.105357 6.52366 0.292893 6.7112C0.48043 6.89873 0.734784 7.00409 1 7.00409H8.59L5.29 10.2941C5.19627 10.3871 5.12188 10.4977 5.07111 10.6195C5.02034 10.7414 4.9942 10.8721 4.9942 11.0041C4.9942 11.1361 5.02034 11.2668 5.07111 11.3887C5.12188 11.5105 5.19627 11.6211 5.29 11.7141C5.38296 11.8078 5.49356 11.8822 5.61542 11.933C5.73728 11.9838 5.86799 12.0099 6 12.0099C6.13201 12.0099 6.26272 11.9838 6.38458 11.933C6.50644 11.8822 6.61704 11.8078 6.71 11.7141L11.71 6.71409C11.801 6.61899 11.8724 6.50684 11.92 6.38409C12.02 6.14063 12.02 5.86755 11.92 5.62409Z" fill="#261819" class="transition-colors group-hover:fill-white"/>
               </svg>
             </a>
-          ) : null} -->
+          ) : null}
         </section>
       </aside>
     </div>
 
-    <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6 lg:hidden">
-      <h2 class="text-lg font-bold text-[#261819] blogSubtitle mb-6">RELACIONADOS</h2>
-      <!-- <SlideArticles articulos={articulosRelacionados} /> -->
-    </section>
-    
+    <!-- <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6 lg:hidden">
+      <h2 class="text-lg font-bold text-[#261819] blogSubtitle mb-6">RELACIONADOS</h2> -->
+      <!-- <SlideArticulos articulos={articulosRelacionados} /> -->
+    <!-- </section> -->
   </main>
-  <!-- <Newsletter /> -->
+  <!-- <NewsLetter /> -->
 </Layout>
