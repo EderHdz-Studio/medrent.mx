@@ -2,6 +2,8 @@
 interface Props {
   title?: string;
 }
+import Newsletter from '@components/Newsletter.astro';
+import PromotionSlider from '@components/sections/PromotionSlider.astro';
 ---
 
 <section class="max-w-7xl mx-auto px-4 py-12">
@@ -12,7 +14,6 @@ interface Props {
   )}
 
   <div class="flex flex-col lg:flex-row gap-8">
-
     <!-- SIDEBAR -->
     <aside class="lg:w-64 w-full">
       <slot name="filters" />
@@ -22,9 +23,15 @@ interface Props {
     <div class="flex-1">
       <slot />
     </div>
-
   </div>
 </section>
+
+
+<!-- Slider de promociones -->
+<PromotionSlider />
+
+<!-- Newsletter -->
+<Newsletter />
 
 <style>
   body { background-color: var(--color-secondary-light); }

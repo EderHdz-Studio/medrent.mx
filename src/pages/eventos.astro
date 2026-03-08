@@ -4,17 +4,15 @@ import 'dayjs/locale/es';
 import Layout from "@layouts/Layout.astro";
 import { strapiFetch } from "@server/strapiClient";
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
-
 import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import NewBreadcrumb from '@components/newBreadcrumb.astro';
-
+import SlideArticles from '@components/blog/slideArticles.astro';
 
 // import SliderPromociones from '../components/sliderPromociones.astro';
 // import Code from '@components/js.astro';
-// import SlideArticulos from '@components/slideArticulos.astro';
 
 const breadcrumbData = [
   { name: 'INICIO', url: '/' },
@@ -44,12 +42,18 @@ try {
 // }
 
 
-// let articulos = null;
-// try {
-//     const relacionados = await strapi.find(`articulos-blogs?sort=publishedAt:desc&populate[ImagenHeroArticulo]=true&populate[ClasificacionArticulo]=true&populate[Escritor]=true`, {meta: true});
-//     articulos = Array.isArray(relacionados) ? relacionados : (relacionados.data && relacionados.data);
-
-// } catch (e) {}
+let articulos = null;
+try {
+    const relacionados = await strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true');
+    
+    // La respuesta de strapiFetch probablemente ya viene como data
+    articulos = relacionados?.data || relacionados || [];
+    
+    console.log('Artículos cargados:', articulos);
+} catch (e) {
+    console.error('Error cargando artículos:', e);
+    articulos = [];
+}
 
 
 // Configurar dayjs en español
@@ -121,12 +125,12 @@ const eventDays = [11, 14];
                 
                 <!-- Columna izquierda - Contenido -->
                 <div class="lg:pr-8 flex flex-col items-start justify-center" style="height: -webkit-fill-available;">
-                    <h3 class="text-[14px] font-medium font-lato" style="color:var(--Schemes-Primary,#00827F);">EVENTOS</h3>
-                    <h2 class=" text-[28px] font-bold text-[#261819] leading-tight" style="font-family: Lato;">
+                    <h3 class="text-[14px] font-medium font-lato text-[var(--color-accent)];">EVENTOS</h3>
+                    <h2 class=" text-[28px] font-bold text-[#261819] leading-tight">
                        {data.title ? data.title : "Eventos médicos"}
                     </h2>
                     
-                    <p class="text-[16px] leading-[1.6] text-[#5A4043]" style="font-family: Lato;">
+                    <p class="text-[16px] leading-[1.6] text-[#5A4043]">
                         {data.description ? data.description : "Conoce los congresos, talleres y presentaciones donde Medrent comparte innovación y equipos líderes en diagnóstico y tratamiento."}
                     </p>
                 </div>
@@ -156,21 +160,21 @@ const eventDays = [11, 14];
                 <!-- Columna izquierda - Calendario (45%) -->
                 <div class="lg:w-[45%] px-4 md:p-6 lg:p-6">
                     <div class="text-center font-sans" style="position: sticky; top: 120px;">
-                        <h2 class="font-lato text-[28px] text-[#261819] font-light text-left mb-4">
+                        <h2 class="font-lato text-[28px] text-[#261819] font-500 text-left mb-4">
                             EVENTOS MedRent {now.year()}
                         </h2>
 
-                        <div class="bg-white rounded-2xl p-6 border border-gray-200" id="calendario-dinamico">
-                            <div class={`flex justify-between items-center${typeof window !== 'undefined' && (window.innerWidth >= 1024 || !(document.getElementById('calendario-dias')?.classList.contains('hidden'))) ? ' mb-6' : ''}`}>
-                                <button class="text-gray-400 hover:text-gray-600 hidden md:block">&lt;</button>
-                                <span
-                                    id="mes-actual"
-                                    class="text-center font-lato text-[16px] font-normal text-[#5A4043] cursor-pointer md:cursor-default"
-                                    onclick="if(window.innerWidth<1024){document.getElementById('calendario-dias').classList.toggle('hidden');}"
-                                >
+                        <div class="bg-[var(--color-secondary-light)] rounded-2xl p-6" id="calendario-dinamico">
+                            <div class="flex justify-between items-center...">
+                                <span id="mes-actual" class="...">
                                     {currentMonthTitleCase}
                                 </span>
-                                <button class="text-gray-400 hover:text-gray-600 hidden md:block">&gt;</button>
+                                
+                                <!-- Agrupa los botones aquí -->
+                                <div class="flex gap-8">
+                                    <button class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&lt;</button>
+                                    <button class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&gt;</button>
+                                </div>
                             </div>
                             <div id="calendario-dias" class="md:block hidden mt-4">
                                 <!-- Headers de días -->
@@ -283,7 +287,7 @@ const eventDays = [11, 14];
                                                 }
                                                 
                                                 return (
-                                                    <article class="bg-white border border-[#00827F] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
+                                                    <article class="bg-white border border-[var(--color-accent)] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                         <div class="flex flex-col md:flex-row">
                                                             <div class="w-full md:w-1/2">
                                                                 <img
@@ -294,7 +298,7 @@ const eventDays = [11, 14];
                                                             </div>
                                                             <div class="w-full md:w-1/2 p-6 flex flex-col bg-[#F5FAF9]">
                                                                 <div class="flex-1">
-                                                                    <p class="text-[#00827F] font-lato text-[14px] uppercase font-medium mb-2">
+                                                                    <p class="text-[var(--color-accent)] font-lato text-[14px] uppercase font-medium mb-2">
                                                                         {evento.eventType}
                                                                     </p>
                                                                     <h3 class="text-[#261819] font-lato text-[20px] font-bold mb-1">
@@ -311,7 +315,7 @@ const eventDays = [11, 14];
                                                                             <path d="M17 19H7V21H17V19Z" fill="#3D4948"/>
                                                                         </svg>
                                                                         <span class="text-[#261819] text-[16px]">
-                                                                            <a href={evento.locationUrlMaps} target="_blank" class="hover:text-[#00827F] transition-colors">
+                                                                            <a href={evento.locationUrlMaps} target="_blank" class="hover:text-[var(--color-accent)] transition-colors">
                                                                                 {evento.locationLabel}
                                                                             </a>
                                                                         </span>
@@ -356,11 +360,18 @@ const eventDays = [11, 14];
 
     <!-- Slider de promociones -->
     <PromotionSlider />
+
+
+    <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
+        <span class="mb-2 uppercase text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
+        <h3 class=" mb-6 font-normal text-[28px] text-[#212121]">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
+        <SlideArticles articulos={articulos} />
+    </section>
     
 </Layout>
 
 <!-- Definir datos del popup -->
-<script define:vars={{ 
+<!-- <script define:vars={{ 
   popupData: {
     titulo: data.PopUpTitulo || 'Eventos MedRent',
     descripcion: data.PopUpDescripcion || 'Descubre nuestros eventos y accede a beneficios exclusivos.',
@@ -369,7 +380,7 @@ const eventDays = [11, 14];
 }}>
   // Hacer los datos disponibles globalmente
   window.popupData = popupData;
-</script>
+</script> -->
 
 <!-- Popup de Evento -->
 <div id="event-popup-overlay" class="fixed inset-0 z-50 hidden">
@@ -378,7 +389,8 @@ const eventDays = [11, 14];
         id="event-blurred-background" 
         class="absolute inset-0 transition-all duration-300"
         style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%); filter: blur(8px);"
-    ></div>
+    >
+    </div>
     
     <!-- Popup Content -->
     <div id="PopupContent" class="relative z-10 flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto">
@@ -386,7 +398,7 @@ const eventDays = [11, 14];
                 <!-- Botón cerrar en esquina superior derecha del popup -->
                 <button 
                     id="close-event-popup"
-                    class="absolute top-4 right-4 text-white hover:text-gray-600 text-2xl leading-none bg-[#261819] border-none cursor-pointer z-10 px-2 py-1 rounded"
+                    class="absolute top-4 right-4 text-white text-2xl leading-none bg-[#261819] border-none cursor-pointer z-10 px-2 py-1 rounded"
                 >
                     ×
                 </button>
@@ -408,7 +420,7 @@ const eventDays = [11, 14];
 
                         <div class="mb-2" id="event-popup-text">
 
-                            <p class="text-[#00827F] font-lato text-[14px] uppercase font-medium mb-2"> EXCLUSIVIDAD MÉDICA </p>
+                            <p class="text-[var(--color-accent)] font-lato text-[14px] uppercase font-medium mb-2"> EXCLUSIVIDAD MÉDICA </p>
                             <!-- Título -->
                             <h2 id="event-popup-title" class="text-[#261819] font-lato text-[22px]  mb-4">
                                 Título del evento
@@ -418,10 +430,8 @@ const eventDays = [11, 14];
                             <p id="event-popup-description" class="text-[#5A4043] text-[16px] leading-relaxed" style="font-family: Lato;">
                                 Descripción del evento
                             </p>
-
                         </div>
                         
-
 
                         <BaseForm id="events-form" class="space-y-8  rounded">
                             <FormField
@@ -576,7 +586,7 @@ const eventDays = [11, 14];
                             <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center font-lato">REGISTRO COMPLETADO</p>
                             <p class="text-[#171D1C] text-center font-lato text-lg md:text-xl lg:text-2xl font-bold leading-6 md:leading-8">¡Tu acceso al programa está listo!</p>
                             <p class="text-[#171D1C] font-400 text-sm md:text-base lg:text-xl text-center font-lato">Gracias por registrarte. En breve recibirás un correo con tu código QR.</p>
-                            <p class="text-[#6D7A78] text-xs md:text-sm text-center font-lato">
+                            <p class="text-[var--color-gray-dark)] text-xs md:text-sm text-center font-lato">
                                 Mientras tanto, explora más en 
                                 <a href="/productos" class="text-[#006764] underline hover:no-underline">nuestro catálogo</a>
                             </p>

@@ -9,6 +9,7 @@ import ProductSlider from '@components/sections/ProductSlider.astro';
 import FichaTecnica from '@components/product/TechnicalSheet.astro';
 import GalleryPopup from '@components/product/GalleryPopUp.astro';
 import PopUpSolicitarCotizacion from '@components/popup/popUpSolicitarCotizacion.astro';
+import ButtonPDPSticky from "@components/buttonPDPSticky.astro";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -73,7 +74,7 @@ console.log("Product data:", product);
                     <div class="glide__slide flex-shrink-0 px-2" key={index}>
                       {isImage ? (
                         <img 
-                            src={item || '/images/Productos/default.webp'} 
+                            src={item} 
                             alt={product.name || 'Imagen del producto'} 
                             class="w-full h-full object-cover transition-all duration-500 rounded-lg cursor-pointer" 
                             loading="lazy" 
@@ -122,8 +123,6 @@ console.log("Product data:", product);
                 <div class="text-gray-400">Sin imagen</div>
               )}
             </div>
-
-
           </div>
 
           <!-- Miniaturas debajo de la imagen principal (tablet/desktop: 6 máx, overlay en la última) -->
@@ -194,7 +193,6 @@ console.log("Product data:", product);
             </div>
           )}
         </div>
-          
 
 
         <!-- =========================
@@ -275,7 +273,7 @@ console.log("Product data:", product);
 
           <!-- Preguntas Frecuentes -->
           {product?.faqItem && product.faqItem.length > 0 && (
-            <div>
+            <div id="preguntas-frecuentes">
               <h3 class=" text-[28px] font-bold text-[#261819]">
                 Preguntas frecuentes
               </h3>
@@ -467,7 +465,6 @@ console.log("Product data:", product);
         </section>
       )}
 
-
       <!-- Consumibles -->
       <ProductSlider
         data={product?.relatedConsumables} 
@@ -475,6 +472,21 @@ console.log("Product data:", product);
         prefixId="Consumibles"
       />
 
+      <!-- btn sticky -->
+      <ButtonPDPSticky
+        Images={product.gallery}
+        product={product.name}
+        brand={product.brand?.name}
+      />
+
+      <FichaTecnica data={product?.technicalSheet} archivoPDF={product?.documents} />
+      
+      <!-- Consumibles -->
+      <ProductSlider
+        data={product?.relatedProducts} 
+        title="Productos relacionados" 
+        prefixId="ProductosRelacionados"
+      />
     </section>
 
     <!-- =========================
@@ -572,8 +584,6 @@ console.log("Product data:", product);
   </main>
   
 
-
-  
 <script>
   // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
   document.addEventListener('DOMContentLoaded', function() {

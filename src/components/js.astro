@@ -1,0 +1,239 @@
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    function initCarousels() {
+      // @ts-ignore
+      if (typeof window.Glider !== 'function') {
+        setTimeout(initCarousels, 50);
+        return;
+      }
+
+      // Carrusel HERO - Ahora usa sistema de fade personalizado (ver hero.astro)
+      // const elHero = document.querySelector('#glider-hero'); - Comentado, no se usa Glider.js aquí
+
+       // Carrusel PROMOCIONES
+      const elPromociones = document.querySelector('#glider-promociones');
+        // Contador de promociones
+        const promocionesCounter = document.querySelector('#promociones-counter');
+      if (elPromociones) {
+        // @ts-ignore
+        const sliderPromociones = new Glider(elPromociones, {
+          rewind: true,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          draggable: true,
+          duration: .5,
+          arrows: {
+            prev: '#prev-btn-promociones',
+            next: '#next-btn-promociones'
+          },
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                duration: .5
+              }
+            },
+            {
+              breakpoint: 820,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                duration: .5
+              }
+            }
+          ]
+        });
+          // Actualiza el contador al inicializar y al cambiar de slide
+          function updatePromocionesCounter() {
+            if (promocionesCounter && sliderPromociones) {
+              const total = sliderPromociones.slides.length;
+              const actual = sliderPromociones.slide + 1;
+              promocionesCounter.textContent = `${actual} / ${total}`;
+            }
+          }
+          updatePromocionesCounter();
+          elPromociones.addEventListener('glider-slide-visible', updatePromocionesCounter);
+
+      }
+
+      // Carrusel ESPECIALIDADES
+      const elEspecialidades = document.querySelector('#glider-especialidades');
+      if (elEspecialidades) {
+        // @ts-ignore
+        const sliderEspecialidades = new Glider(elEspecialidades, {
+          rewind: true,
+          slidesToShow: 'auto',
+          slidesToScroll: 1,
+          draggable: true,
+          duration: 1,
+          // arrows: {
+          //   prev: '#prev-btn-especialidades',
+          //   next: '#next-btn-especialidades'
+          // },
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 'auto',
+                slidesToScroll: 1,
+                duration: 3
+              }
+            },
+            {
+              breakpoint: 820,
+              settings: {
+                slidesToShow: 'auto',
+                slidesToScroll: 1,
+                duration: 3
+              }
+            }
+          ]
+        });
+
+      }
+
+      
+      // Carrusel ESPECIALIDADES
+      const circleEspecialidades = document.querySelector('#glider-circleEspecialidades');
+      if (circleEspecialidades) {
+        // @ts-ignore
+        const sliderEspecialidades = new Glider(circleEspecialidades, {
+          rewind: true,
+          slidesToShow: 'auto',
+          slidesToScroll: 1,
+          draggable: true,
+          duration: 1,
+          // arrows: {
+          //   prev: '#prev-btn-especialidades',
+          //   next: '#next-btn-especialidades'
+          // },
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 'auto',
+                slidesToScroll: 1,
+                duration: 3
+              }
+            },
+            {
+              breakpoint: 820,
+              settings: {
+                slidesToShow: 'auto',
+                slidesToScroll: 1,
+                duration: 3
+              }
+            }
+          ]
+        });
+
+      }
+
+      // Carrusel MARCAS
+      const elMarcas = document.querySelector('#glider-marcas');
+      if (elMarcas) {
+        // @ts-ignore
+        new Glider(elMarcas, {
+          rewind: true,
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          draggable: true,
+          duration: 3,
+          arrows: {
+            prev: '#prev-btn-marcas',
+            next: '#next-btn-marcas'
+          },
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 5,
+                slidesToScroll: 1,
+                duration: 3
+              }
+            }
+          ]
+        });
+      }
+
+      // Carrusel REVIEWS
+      const elReviews = document.querySelector('#glider-reviews');
+      if (elReviews) {
+        // @ts-ignore
+        new Glider(elReviews, {
+          rewind: true,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          draggable: true,
+          duration: 3,
+          arrows: {
+            prev: '#prev-btn-reviews',
+            next: '#next-btn-reviews'
+          },
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                duration: 3
+              }
+            }
+          ]
+        });
+      }
+
+      // Carrusel AUTORES
+      const elAutores = document.querySelector('#glider-autores');
+        // Contador de autores
+        const autoresCounter = document.querySelector('#autores-counter');
+      if (elAutores) {
+        // @ts-ignore
+        const sliderAutores = new Glider(elAutores, {
+          rewind: true,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          draggable: true,
+          duration: .5,
+          arrows: {
+            prev: '#prev-btn-autores',
+            next: '#next-btn-autores'
+          },
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                duration: .5
+              }
+            },
+            {
+              breakpoint: 820,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                duration: .5
+              }
+            }
+          ]
+        });
+        // Actualiza el contador al inicializar y al cambiar de slide
+        function updateAutoresCounter() {
+          if (autoresCounter && sliderAutores) {
+            const total = sliderAutores.slides.length;
+            const actual = sliderAutores.slide + 1;
+            autoresCounter.textContent = `${actual} / ${total}`;
+          }
+        }
+        updateAutoresCounter();
+        elAutores.addEventListener('glider-slide-visible', updateAutoresCounter);
+
+      }
+    }
+
+    initCarousels();
+  });
+</script>

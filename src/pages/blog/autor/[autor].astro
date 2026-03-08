@@ -19,7 +19,6 @@ const breadcrumbData = [
 
 export async function getStaticPaths() {
   const authors = await strapiFetch('/writers?populate[articles][populate][heroImage]=true&populate[heroImage]=true&populate[articles][populate][writer]=true');
-  
 
   return authors.data.map((page) => ({
     params: { autor: page.slug },
@@ -102,4 +101,3 @@ const { author } = Astro.props as { author: any };
   </main>
 
 </Layout>
-

@@ -4,7 +4,7 @@ import { strapiFetch } from "@server/strapiClient";
 import { formatDate, buildImageUrl } from '@lib/utils.js';
 import SocialMedia from '@components/blog/SocialMedia.astro';
 // import SlideArticulos from '@components/blog/SlideArticulos.astro';
-// import NewsLetter from '@components/blog/NewsLetter.astro';
+import Newsletter from '@components/Newsletter.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 
 export async function getStaticPaths() {
@@ -253,5 +253,5 @@ try {
       <!-- <SlideArticulos articulos={articulosRelacionados} /> -->
     <!-- </section> -->
   </main>
-  <!-- <NewsLetter /> -->
+  <Newsletter />
 </Layout>
