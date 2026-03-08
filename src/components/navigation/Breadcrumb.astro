@@ -2,9 +2,8 @@
 const { items, textColor } = Astro.props;
 ---
 <div class="max-w-[1280px] w-full flex flex-col justify-start bg-[#000] mx-auto">
-  <nav class="max-w-[1280px] w-full flex flex-col justify-start mx-auto px-2 py-2 absolute" aria-label="Breadcrumb">
-    <ol class="flex items-center space-x-2 text-sm uppercase ">
-
+  <nav class="max-w-[1280px] w-full flex flex-col justify-start mx-auto px-4 py-2 absolute" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2 text-sm uppercase overflow-x-auto whitespace-nowrap scrollbar-hide touch-pan-x">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
@@ -27,7 +26,7 @@ const { items, textColor } = Astro.props;
             </li>
 
             {!isLast && (
-              <li class={index === items.length - 2 ? '' : 'opacity-70'}>
+              <li class={`${index === items.length - 2 ? '' : 'opacity-70'} flex-shrink-0`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path d="M10 7L15 12L10 17L10 7Z" fill={textColor === 'text-white' ? 'white' : 'black'}/>
                 </svg>
@@ -36,7 +35,17 @@ const { items, textColor } = Astro.props;
           </>
         );
       })}
-
     </ol>
   </nav>
 </div>
+
+<style>
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+</style>
