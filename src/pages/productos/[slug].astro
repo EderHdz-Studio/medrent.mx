@@ -100,7 +100,7 @@ console.log("Product data:", product);
 
         
         <!-- Galería de Imágenes (solo tablet/desktop) -->
-        <div  id="galleryProducto" class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start hidden sm:flex">
+        <div id="galleryProducto" class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start hidden sm:flex">
 
           <!-- Imagen Principal -->  
           <div class="flex-1 aspect-squar bg-white rounded-lg overflow-hidden relative">
@@ -328,8 +328,16 @@ console.log("Product data:", product);
             </div>
           )}
         </div>
-
       </div>
+
+      <!-- Consumibles -->
+      <ProductSlider
+        data={product?.relatedProducts} 
+        title="Productos relacionados" 
+        prefixId="ProductosRelacionados"
+      />
+
+      <FichaTecnica data={product?.technicalSheet} archivoPDF={product?.documents} />
       
       <!-- Especificacion Técnica -->
       {product?.technicalSpecifications && product.technicalSpecifications.length > 0 && (
@@ -466,17 +474,6 @@ console.log("Product data:", product);
         title="Consumibles" 
         prefixId="Consumibles"
       />
-
-      <FichaTecnica data={product?.technicalSheet} archivoPDF={product?.documents} />
-
-      
-      <!-- Consumibles -->
-      <ProductSlider
-        data={product?.relatedProducts} 
-        title="Productos relacionados" 
-        prefixId="ProductosRelacionados"
-      />
-
 
     </section>
 
