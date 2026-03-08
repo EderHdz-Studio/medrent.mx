@@ -69,8 +69,8 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
         ></div>
 
         <!-- Columna 1.1: Texto (actual derecha) -->
-        <div class="w-full h-auto flex flex-col justify-center gap-2 z-10 bg-[var(--color-primary)] p-4 sm:p-6 md:p-8 rounded-b-[24px] md:rounded-b-[0_0_24px_24px] lg:rounded-b-none lg:rounded-br-[24px]">
-          <h1 class="font-bold  text-[28px] md:text-[36px] font-light text-white text-left w-full">
+        <div class="w-full h-auto flex flex-col justify-center gap-2 z-10 bg-gradient-to-r from-[#00827F] to-[#007BB6] bg-[lightgray] p-4 sm:p-6 md:p-8 rounded-b-[24px] md:rounded-b-[0_0_24px_24px] lg:rounded-b-none lg:rounded-br-[24px]">
+          <h1 class="bg-gradient-to-r from-[#AFFFFA] to-[#6DCFFF] bg-clip-text text-transparent text-left w-full [text-shadow:0_20px_24px_rgba(49,48,48,0.10),0_8px_10px_rgba(49,48,48,0.04)] text-4xl font-bold">
               {(especialidad?.name || "categoria").toUpperCase()}
           </h1>
           <p class="text-[16px] md:text-[16px] text-left text-white">{especialidad?.heroDescription ?? ''}</p>
@@ -84,23 +84,25 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
             const prevItem = items[prevIdx];
             const nextItem = items[nextIdx];
             return (
-              <div class="flex items-center space-x-4 w-full justify-between sm:justify-start pt-4 md:py-4">
+              <div class="flex items-center space-x-4 w-full justify-center sm:justify-center md:justify-between lg:justify-start pt-4 md:py-4">
                 {/* Botón anterior */}
-                <a href={prevItem ? `/especialidades/${prevItem.slug}` : '#'} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2" style="background: rgba(255, 255, 255, 0.20);">
-                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                  </svg>
-                </a>
-                {/* Botón siguiente */}
-                <a href={nextItem ? `/especialidades/${nextItem.slug}` : '#'} class="flex items-center space-x-3 rounded-full cursor-pointer transition-opacity hover:opacity-80 pl-4 py-2 pr-2" style="background: rgba(255, 255, 255, 0.20);">
-                  <span class="text-white text-sm font-medium ">Siguiente especialidad</span>
-                  <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                    <svg class="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                <a href={prevItem ? `/especialidades/${prevItem.slug}` : '#'} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2 bg-white flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
                     </svg>
-                  </div>
                 </a>
-              </div>
+                
+                {/* Botón siguiente - con ancho responsive */}
+                <a href={nextItem ? `/especialidades/${nextItem.slug}` : '#'} 
+                  class="flex items-center justify-center space-x-3 rounded-full cursor-pointer transition-opacity hover:opacity-80 pl-4 py-2 pr-2 bg-white w-full sm:w-full lg:w-auto">
+                    <span class="text-[var(--color-primary)] text-sm font-medium whitespace-nowrap">Siguiente especialidad</span>
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
             );
           })()}
         </div>
