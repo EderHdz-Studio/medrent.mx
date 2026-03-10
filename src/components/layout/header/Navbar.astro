@@ -222,7 +222,7 @@ let subcategoriasData: any[] = [];
                               :class="[
                                 'transition-colors flex items-center justify-between gap-2 p-2 rounded-lg cursor-pointer',
                                 activeItem === especialidad.id
-                                  ? 'bg-[var(--color-secondary-light)] text-[var(--color-primary)]'
+                                  ? 'bg-[var(--color-secondary-light)] rounded-lg text-[var(--color-primary)]'
                                   : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-[var(--color-secondary-light)]'
                               ]"
                             >
@@ -443,7 +443,7 @@ let subcategoriasData: any[] = [];
           })()">
         
           <a x-show="vistaActual !== 'catalogo-aplicaciones'" @click="especialidadesMobileOpen = !especialidadesMobileOpen" 
-              :class="especialidadesMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
+              :class="especialidadesMobileOpen ? 'py-6 border-b bg-[var(--color-secondary-light)] rounded-lg border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
               <span>Especialidades</span>
               <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': especialidadesMobileOpen && vistaActual === 'lista-especialidades' }" 
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -538,7 +538,7 @@ let subcategoriasData: any[] = [];
                           @click="activeAplicacion = aplicacion.id"
                           :class="
                           activeAplicacion == aplicacion.id 
-                            ? 'flex items-center justify-between p-3 rounded-lg bg-[#FFF8F7] text-[var(--color-primary)]' 
+                            ? 'flex items-center justify-between p-3 bg-[var(--color-secondary-light)] rounded-lg' 
                             : 'flex items-center justify-between p-3 rounded-lg text-[#261819]'
                           ">
                         <div x-text="aplicacion.name || aplicacion.AplicacionClinica || 'Aplicación'"></div>
