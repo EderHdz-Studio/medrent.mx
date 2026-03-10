@@ -193,7 +193,7 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
                     @click.away="especialidadesOpen = false; activeItem = null;"
                     x-transition 
                     :class="especialidadesOpen ? 'fixed left-0 w-full top-[100px] z-[100] bg-white border border-gray-200 shadow-lg py-6 px-8' : 'fixed left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
-                    style="border-bottom: 2px solid #B91247;"
+                    style="border-bottom: 2px solid bg-[var(--color-primary)];"
                     id="EspecialidadesDropdownMenu"
                 >
                     <div class="max-w-7xl mx-auto">
@@ -382,7 +382,7 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
 
             <!-- MARCAS REDISEÑO MOBILE -->
             <div x-data="{ marcasMobileOpen: false }">
-              <a @click="marcasMobileOpen = !marcasMobileOpen" :class="marcasMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
+              <a @click="marcasMobileOpen = !marcasMobileOpen" :class="marcasMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[var(--color-gray-dark)]  flex items-center justify-between cursor-pointer text-[#261819]'">
                 <span>Nuestras marcas</span>
                 <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': marcasMobileOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
               </a>
@@ -427,7 +427,7 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
 
               
                 <a x-show="vistaActual !== 'catalogo-aplicaciones'" @click="especialidadesMobileOpen = !especialidadesMobileOpen" 
-                    :class="especialidadesMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[#8E6F73] flex items-center justify-between cursor-pointer text-[#261819]'">
+                    :class="especialidadesMobileOpen ? 'py-6 border-b border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[var(--color-gray-dark)]  flex items-center justify-between cursor-pointer text-[#261819]'">
                     <span>Especialidades</span>
                     <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': especialidadesMobileOpen && vistaActual === 'lista-especialidades' }" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -556,12 +556,12 @@ const aplicaciones = especialidades.flatMap(e => e.CatalogoAplicaciones || []);
             </div>
             
             
-            <a href="/acerca-de-nosotros" class="py-6 text-[#261819] border-b border-[#8E6F73]">Acerca de nosotros</a>
+            <a href="/acerca-de-nosotros" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Acerca de nosotros</a>
             
-            <!-- <a href="/productos" class="py-6 text-[#261819] border-b border-[#8E6F73]">Productos</a> -->
-            <a href="/financiamiento" class="py-6 text-[#261819] border-b border-[#8E6F73]">Financiamiento</a>
-            <!-- <a href="/servicio-tecnico" class="py-6 text-[#261819] border-b border-[#8E6F73]">Servicio Técnico</a> -->
-            <!-- <a href="/blog" class="py-6 text-[#261819] border-b border-[#8E6F73]">Blog</a> -->
+            <!-- <a href="/productos" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Productos</a> -->
+            <a href="/financiamiento" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Financiamiento</a>
+            <!-- <a href="/servicio-tecnico" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Servicio Técnico</a> -->
+            <!-- <a href="/blog" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Blog</a> -->
             <!-- <a href="/eventos" class="py-6 text-[#261819]">Eventos</a> -->
           </div>
           
