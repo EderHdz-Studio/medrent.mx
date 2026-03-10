@@ -113,7 +113,7 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
           <div class="space-y-[25px]">
             {especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).map((aplicacion: any, index: number) => (
               <div>
-              <div class={`flex flex-row-reverse sm:flex-row md:flex-row w-full rounded-lg gap-4 p-4 md:gap-6 md:p-6 lg:gap-6 lg:py-6 lg:px-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}> 
+              <div class={`flex flex-col-reverse sm:flex-row md:flex-row w-full rounded-lg gap-4 p-4 md:gap-6 md:p-6 lg:gap-6 lg:py-6 lg:px-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}> 
                 
                 {/* Columna de Texto */}
                 <div class="w-full md:w-1/2 flex flex-col justify-between md:px-6 justify-center align-center">
@@ -155,7 +155,7 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
                   
                   <a 
                     href={`/especialidades/${category}/${aplicacion.slug}`}
-                    class="btnDesktop hidden sm:inline-flex items-center bg-[var(--color-primary)] text-white px-4 py-3 mt-8 rounded text-sm font-bold hover:bg-[var(--color-accent)] transition-colors w-fit gap-2 self-start "
+                    class="btnDesktop flex w-full sm:inline-flex items-center justify-center sm:justify-start bg-[var(--color-primary)] text-white px-4 py-3 mt-8 rounded text-sm font-bold hover:bg-[var(--color-accent)] transition-colors gap-2 self-start sm:w-fit"
                   >
                     Ver productos
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
