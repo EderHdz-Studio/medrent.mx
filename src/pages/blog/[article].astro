@@ -149,22 +149,24 @@ try {
               class="w-20 h-20 rounded-full object-cover"
             />
           )}
-          <div>
-            <p class="font-lato text-[var(--color-primary)] text-xs font-medium leading-4 tracking-[0.5px]">
+          <div class="flex flex-col justify-center items-start gap-1">
+            <span class="text-[var(--color-primary)] font-lato text-xs font-medium leading-4 tracking-wide">
               ACREDITADO POR:
-            </p>
-            <a 
-              href={`/blog/autor/${article?.writer?.slug || 'team-medrent'}`}
-              class="text-[#261819] font-lato text-base font-bold leading-6 tracking-[0.15px] mt-1 hover:underline decoration-[var(--color-primary)]"
-            >
-              {article?.writer?.fullName || 'Backoffice | Team Medrent'}
-            </a>
-              <span class="text-[var(--color-primary)] font-medium italic">
+            </span>
+            <div class="flex items-center gap-2 mt-1 flex-wrap">
+              <a 
+                href={`/blog/autor/${article?.writer?.slug || 'team-medrent'}`}
+                class="text-[#261819] font-lato text-base font-bold leading-6 tracking-[0.15px] hover:underline decoration-[var(--color-primary)]"
+              >
+                {article?.writer?.fullName || 'Backoffice | Team Medrent'}
+              </a>
+              <span class="text-[var(--color-gray-dark)] font-medium italic">
                 {" — "}{Array.isArray(articulosRelacionados) ? articulosRelacionados.length + 1 : 1} Artículo{Array.isArray(articulosRelacionados) && articulosRelacionados.length + 1 !== 1 ? 's' : ''}
               </span>
-            <p class="text-[#5A4043] text-sm font-normal leading-5 tracking-[0.25px] mt-1">
+            </div>
+            <span class="text-[var(--color-green-dark)] font-lato text-sm font-normal leading-5 tracking-wide">
               {article?.writer?.shortDescription}
-            </p>
+            </span>
           </div>
         </section>
       </div>
@@ -236,14 +238,14 @@ try {
             )}
           </div>
 
-          {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
+          <!-- {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
             <a href="/blog" class="flex w-full justify-center cursor-pointer items-center gap-2 self-stretch rounded-[4px] border border-[#261819] text-black text-[14px] font-bold font-lato transition-colors hover:bg-black hover:text-white group" style="padding:14px 16px;">
               Ver más artículos
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
                 <path d="M11.92 5.62409C11.8724 5.50134 11.801 5.3892 11.71 5.29409L6.71 0.294092C6.61676 0.200853 6.50607 0.126893 6.38425 0.0764322C6.26243 0.0259719 6.13186 0 6 0C5.7337 0 5.4783 0.105788 5.29 0.294092C5.19676 0.38733 5.1228 0.498021 5.07234 0.619843C5.02188 0.741665 4.99591 0.872233 4.99591 1.00409C4.99591 1.27039 5.1017 1.52579 5.29 1.71409L8.59 5.00409H1C0.734784 5.00409 0.48043 5.10945 0.292893 5.29699C0.105357 5.48452 0 5.73888 0 6.00409C0 6.26931 0.105357 6.52366 0.292893 6.7112C0.48043 6.89873 0.734784 7.00409 1 7.00409H8.59L5.29 10.2941C5.19627 10.3871 5.12188 10.4977 5.07111 10.6195C5.02034 10.7414 4.9942 10.8721 4.9942 11.0041C4.9942 11.1361 5.02034 11.2668 5.07111 11.3887C5.12188 11.5105 5.19627 11.6211 5.29 11.7141C5.38296 11.8078 5.49356 11.8822 5.61542 11.933C5.73728 11.9838 5.86799 12.0099 6 12.0099C6.13201 12.0099 6.26272 11.9838 6.38458 11.933C6.50644 11.8822 6.61704 11.8078 6.71 11.7141L11.71 6.71409C11.801 6.61899 11.8724 6.50684 11.92 6.38409C12.02 6.14063 12.02 5.86755 11.92 5.62409Z" fill="#261819" class="transition-colors group-hover:fill-white"/>
               </svg>
             </a>
-          ) : null}
+          ) : null} -->
         </section>
       </aside>
     </div>
