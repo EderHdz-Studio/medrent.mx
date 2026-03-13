@@ -443,7 +443,7 @@ let subcategoriasData: any[] = [];
           })()">
         
           <a x-show="vistaActual !== 'catalogo-aplicaciones'" @click="especialidadesMobileOpen = !especialidadesMobileOpen" 
-              :class="especialidadesMobileOpen ? 'py-6 border-b bg-[var(--color-secondary-light)] rounded-lg border-[var(--color-primary)] flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[var(--color-gray-dark)]  flex items-center justify-between cursor-pointer text-[#261819]'">
+              :class="especialidadesMobileOpen ? 'py-6 border-b flex items-center justify-between cursor-pointer text-[var(--color-primary)]' : 'py-6 border-b border-[var(--color-gray-dark)] flex items-center justify-between cursor-pointer text-[#261819]'">
               <span>Especialidades</span>
               <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': especialidadesMobileOpen && vistaActual === 'lista-especialidades' }" 
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
