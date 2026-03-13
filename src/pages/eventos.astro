@@ -1,23 +1,19 @@
 ---
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-import Layout from "@layouts/Layout.astro";
+import Layout from '../layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
 import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
-import NewBreadcrumb from '@components/newBreadcrumb.astro';
 import SlideArticles from '@components/blog/slideArticles.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
 // import SliderPromociones from '../components/sliderPromociones.astro';
 // import Code from '@components/js.astro';
-
-const breadcrumbData = [
-  { name: 'INICIO', url: '/' },
-  { name: 'EVENTOS', url: '/eventos' }
-];
 
 let data: any = {};
 // let dataPromociones: any[] = [];
@@ -49,12 +45,11 @@ try {
     // La respuesta de strapiFetch probablemente ya viene como data
     articulos = relacionados?.data || relacionados || [];
     
-    console.log('Artículos cargados:', articulos);
+    //console.log('Artículos cargados:', articulos);
 } catch (e) {
-    console.error('Error cargando artículos:', e);
+    //console.error('Error cargando artículos:', e);
     articulos = [];
 }
-
 
 // Configurar dayjs en español
 dayjs.locale('es');
@@ -93,8 +88,8 @@ for (let i = 0; i < 42; i++) {
 const eventDays = [11, 14];
 ---
 <Layout title="Eventos | MedRent – Eventos médicos y de tecnología"> 
-    <Fragment slot="metas">
-        <title>Eventos | MedRent – Eventos médicos y de tecnología</title>
+    <!-- <Fragment slot="metas">
+        <title>Eventos | MedRent – Eventos médicos y de tecnología</title> -->
         <!-- <meta name="description" content="Mantente actualizado con los últimos avances en tecnología médica. Participamos en congresos, seminarios y eventos especializados donde compartimos conocimientos sobre equipos de diagnóstico cardiovascular y respiratorio." /> --> 
     
         <!-- Open Graph -->
@@ -111,21 +106,36 @@ const eventDays = [11, 14];
         <meta property="twitter:url" content="https://www.medrent.mx/eventos">
         <meta property="twitter:image" content="https://www.medrent.mx/images/og/home.jpg">
         <meta property="twitter:title" content="Eventos | MedRent – Eventos médicos y de tecnología" /> -->
-    </Fragment>
+    <!-- </Fragment> -->
+
+
+        <Fragment slot="head">
+            <BreadcrumbSchema
+            items={[
+                { name: 'Inicio', url: 'https://www.medrent.mx' },
+                { name: 'Eventos', url: 'https://www.medrent.mx/eventos' },
+            ]}
+            />
+        </Fragment>
+
+    <div class="absolute w-full z-2">
+        <Breadcrumb
+        textColor="text-dark"
+        items={[
+            { name: "INICIO", href: "/" },
+            { name: "EVENTOS" }
+        ]}
+        />
+    </div>
 
     <!-- Sección de Eventos -->
     <section class="w-full" style="background: linear-gradient(180deg, #D8E5E3 0%, #FFF 50%);">
-        <!-- Breadcrumb -->
-        <div class="pt-2 px-0 max-w-[1320px] mx-auto">
-            <NewBreadcrumb data={breadcrumbData} />
-        </div>
-        
         <div class="max-w-[1320px] mx-auto px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-6 items-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-6 items-center mt-8">
                 
                 <!-- Columna izquierda - Contenido -->
-                <div class="lg:pr-8 flex flex-col items-start justify-center" style="height: -webkit-fill-available;">
-                    <h3 class="text-[14px] font-medium font-lato text-[var(--color-accent)];">EVENTOS</h3>
+                <div class="lg:pr-8 flex flex-col items-start justify-center gap-2" style="height: -webkit-fill-available;">
+                    <h3 class="text-[14px] font-lato text-[var(--color-primary)] font-bold">EVENTOS</h3>
                     <h2 class=" text-[28px] font-bold text-[#261819] leading-tight">
                        {data.title ? data.title : "Eventos médicos"}
                     </h2>
@@ -363,7 +373,7 @@ const eventDays = [11, 14];
 
 
     <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
-        <span class="mb-2 uppercase text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
+        <span class="mb-2 uppercase text-[12px] font-bold leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
         <h3 class=" mb-6 font-normal text-[28px] text-[#212121]">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
         <SlideArticles articulos={articulos} />
     </section>
