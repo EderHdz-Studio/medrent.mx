@@ -4,6 +4,8 @@ import ArticleCard from '@components/blog/articleCard.astro';
 import { formatDate } from '@lib/utils.js';
 import { strapiFetch } from "@server/strapiClient";
 import Newsletter from '@components/FormNewsletter.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
 let articulosActivos = [];
 
@@ -21,24 +23,42 @@ try {
 ---
 
 <Layout title="Blog | Medrent – Tecnología médica">
-  <Fragment slot="metas">
-    <title>Blog | Medrent – Tecnología médica</title>
+  <!-- <Fragment slot="metas"> -->
+    <!-- <title>Blog | Medrent – Tecnología médica</title>
     <meta name="description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
-    
+     -->
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <!-- <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.medrent.mx/blog">
     <meta property="og:title" content="Blog | Medrent – Tecnología médica" />
     <meta property="og:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
-		<meta property="og:image" content="https://www.medrent.mx/images/og/home.jpg">
+		<meta property="og:image" content="https://www.medrent.mx/images/og/home.jpg"> -->
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
+    <!-- <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://www.medrent.mx/blog" />
     <meta property="twitter:title" content="Blog | Medrent – Tecnología médica" />
     <meta property="twitter:description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
-    <meta property="twitter:image" content="https://www.medrent.mx/images/og/home.jpg">
-  </Fragment>
+    <meta property="twitter:image" content="https://www.medrent.mx/images/og/home.jpg"> -->
+
+    <Fragment slot="head">
+        <BreadcrumbSchema
+        items={[
+            { name: 'Inicio', url: 'https://www.medrent.mx' },
+            { name: 'Blog', url: 'https://www.medrent.mx/blog' },
+        ]}
+        />
+    </Fragment>
+
+    <div class="absolute w-full z-2">
+        <Breadcrumb
+        textColor="text-dark"
+        items={[
+            { name: "INICIO", href: "/" },
+            { name: "BLOG" }
+        ]}
+        />
+    </div>
   
   <section class="max-w-[1280px] w-full flex flex-col items-center justify-center bg-[#F5FAF9] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
     <div class="max-w-[1080px] w-full flex flex-col items-center gap-2 py-[32px] px-4 sm:px-[16px] md:px-[120px] md:py-[32px] sm:py-[32px] sm:px-[24px]">
