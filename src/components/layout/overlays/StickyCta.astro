@@ -9,9 +9,9 @@ const hideButton = isPDP || isEspecialidadCuartoNivel || isMarcaProducto;
 
 
 {!hideButton && (
-<div id="BtnWhatsappDemo" class="fixed bottom-0 w-full md:w-[1280px] max-w-full z-50 px-0 md:px-0 pb-[env(safe-area-inset-bottom)] md:pb-0">
+<div id="BtnWhatsappDemo" class="fixed bottom-0 w-full md:w-[1280px] max-w-full z-50 px-0 md:px-0">
     <!-- Contenedor principal -->
-    <div class="w-full md:w-auto bg-black rounded-t-[8px] md:rounded-t-[8px] md:rounded-b-none p-3 md:p-4 md:px-8 flex justify-center md:justify-between md:items-center pb-[max(12px,env(safe-area-inset-bottom))] md:pb-0">
+    <div class="w-full md:w-auto bg-black rounded-t-[8px] md:rounded-t-[8px] md:rounded-b-none p-4 md:px-8 md:py-4 flex justify-center md:justify-between md:items-center">
       <!-- Texto de apoyo solo visible en tablet y desktop -->
       <div class="hidden md:flex flex-col gap-1">
         <h3 class="m-0 text-[var(--Schemes-On-Primary,#FFF)] font-lato text-sm font-bold leading-[20px] tracking-[0.25px]">
@@ -31,7 +31,7 @@ const hideButton = isPDP || isEspecialidadCuartoNivel || isMarcaProducto;
         Agenda tu DEMO
       </a>
     </div>
-  </div>
+</div>
 )}
 
 
@@ -52,13 +52,13 @@ const hideButton = isPDP || isEspecialidadCuartoNivel || isMarcaProducto;
 
 /* Asegurar respetar safe area */
 #BtnWhatsappDemo > div {
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  padding-bottom: 16px;
 }
 
 /* Para navegadores que no soportan env() */
 @supports not (padding-bottom: env(safe-area-inset-bottom)) {
   #BtnWhatsappDemo {
-    padding-bottom: 12px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 }
 </style>
