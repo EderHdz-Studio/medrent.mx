@@ -71,14 +71,14 @@ try {
       </h1>
       
       {article?.shortDescription && (
-        <p class="text-[var(--color-primary)] text-[16px] font-normal">
+        <p class="text-[var(--color-green-dark)] text-[16px] font-normal">
           {article.shortDescription}
         </p>
       )}
 
       <div class="w-full my-6">
-        <p class="text-[var(--color-primary)] text-sm font-normal italic">
-          • {formatDate(article?.createdAt)}
+        <p class="text-[--color-green-dark)] text-sm font-normal italic">
+          - {formatDate(article?.createdAt)}
         </p>
       </div>
     </div>
@@ -96,14 +96,6 @@ try {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Columna principal: Contenido del artículo -->
       <div class="lg:col-span-8 dinamicContent p-4 md:py-6 md:px-4 contentBlog">
-          <div class="w-full py-4">
-            <h2 class="font-light text-[32px] text-[#171D1C] font-lato">
-              Antecedentes
-            </h2>
-          </div>
-
-
-
         {Array.isArray(article?.content)
           ? article.content.map((item: any) => {
               switch (item?.__component) {
@@ -178,7 +170,7 @@ try {
 
         <section class="flex-col gap-2 flex max-w-7xl mx-auto mb-6"> 
           <h2 class="text-lg font-bold text-[#261819] blogSubtitle">Suscríbete al blog</h2>
-          <p class="text-[14px] text-[var(--color-primary)] max-w-xl mx-auto m-0">
+          <p class="text-[14px] text-[var(--color-gray-dark)] max-w-xl mx-auto m-0">
             Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones exclusivas sobre nuestras soluciones.
           </p> 
           <form class="justify-center max-w-xl w-full mx-auto flex flex-col gap-4 pt-4"> 
@@ -192,7 +184,7 @@ try {
             <div class="flex items-center justify-start w-full gap-2 text-sm text-[#3b2a2a]"> 
               <input type="checkbox" id="privacy" class="w-4 h-4 accent-[#2c1b1b]" required=""> 
               <label for="privacy" class="cursor-pointer">He leído y acepto el 
-                <a href="/aviso-de-privacidad" class="underline text-[#text-[var(--color-primary)]]"> Aviso de Privacidad</a> 
+                <a href="/aviso-de-privacidad" class="underline text-[var(--color-primary)]"> Aviso de Privacidad</a> 
               </label> 
             </div> 
           </form> 
@@ -215,19 +207,19 @@ try {
                         {rel.subcategory?.name || ''}
                       </span>
                       <a href={`/blog/${rel.slug}`}>
-                        <h3 class="mb-1 text-[16px] font-light text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
+                        <h3 class="mb-1 text-[16px] font-light text-[#261819] hover:text-[var(--color-text-default)] hover:underline decoration-[var(--color-text-default)] not-italic font-lato cursor-pointer line-clamp-2">
                           {rel.title}
                         </h3>
                       </a>
-                      <p class="mb-1 text-[14px] text-[var(--color-primary)] line-clamp-3">{rel.shortDescription}</p>
+                      <p class="mb-1 text-[14px] text-[var(--color-gray-dark)] line-clamp-3">{rel.shortDescription}</p>
                     </div>
                     <div class="flex">
                       <span class="block text-xs text-[#261819] font-lato mt-2">Por: &nbsp;</span>
-                      <a href={`/blog/autor/${rel.writer?.slug}`} class="block text-xs text-[#text-[var(--color-primary)]] underline decoration-[#text-[var(--color-primary)]] cursor-pointer font-lato mt-2">
+                      <a href={`/blog/autor/${rel.writer?.slug}`} class="block text-xs text-[var(--color-primary)] underline cursor-pointer font-lato mt-2">
                         {rel.writer?.fullName || 'Medrent'}
                       </a>
                       <span class="block text-xs text-[var(--color-primary)] font-lato mt-2">
-                        &nbsp;• {formatDate(rel.createdAt)}
+                        &nbsp; - {formatDate(rel.createdAt)}
                       </span>
                     </div>
                   </div>
