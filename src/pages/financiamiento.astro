@@ -6,7 +6,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
 <Layout
@@ -23,8 +23,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
         ]}
         id={breadcrumbId}
         />
-        <script type="application/ld+json">
-          {JSON.stringify({
+        <script type="application/ld+json" set:html={
+          JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
               {
@@ -57,8 +57,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                 "termsOfService": `${baseUrl}/condiciones-de-uso`,
               },
             ],
-          })}
-        </script>
+          })
+        }/>
     </Fragment>
 
     <div class="absolute w-full z-2">
@@ -85,12 +85,12 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
                         <div class="w-full flex flex-col items-center justify-center space-y-6 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 order-1 relative">
                             <div class="w-full space-y-6">
-                                <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</h3>
+                                <p class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</p>
 
                                 <div class="text-[16px] md:text-[16px] text-left m-0">
-                                    <p class="text-[28px] md:text-[24px] text-left">
-                                        <strong>Korum Capital: Tecnología médica al alcance de tu práctica&nbsp;</strong>
-                                    </p>
+                                    <h1 class="text-[28px] md:text-[24px] text-left font-bold">
+                                        Korum Capital: Tecnología médica al alcance de tu práctica
+                                    </h1>
                                     <br>
                                     <p>Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
                                 </div>
@@ -446,7 +446,7 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
         script.defer = true;
         document.head.appendChild(script);
     }
-</script>
+}/>
 
 <style>
     [x-cloak] { display: none !important; }

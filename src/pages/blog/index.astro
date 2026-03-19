@@ -24,7 +24,7 @@ try {
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
 <Layout
@@ -59,8 +59,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
         ]}
         id={breadcrumbId}
         />
-        <script type="application/ld+json">
-          {(() => {
+        <script type="application/ld+json" set:html={
+          (() => {
             const posts = Array.isArray(articulosActivos) ? articulosActivos.slice(0, 12) : [];
             const postlistId = `${canonicalUrl}#postlist`;
             const itemListElement = posts.map((p: any, index: number) => {
@@ -118,8 +118,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                 },
               ],
             });
-          })()}
-        </script>
+          })()
+        }/>
     </Fragment>
 
     <div class="absolute w-full z-2">

@@ -29,7 +29,7 @@ const pageSlug = pageDataSafe.slug ?? "";
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = imageHero?.url || logoUrl;
 const isPrivacy = pageSlug === "aviso-de-privacidad";
 const schemaType = isPrivacy ? "PrivacyPolicy" : "TermsOfService";
@@ -66,8 +66,8 @@ const pageDescription =
       ]}
       id={breadcrumbId}
     />
-    <script type="application/ld+json">
-      {JSON.stringify({
+    <script type="application/ld+json" set:html={
+      JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
           {
@@ -85,8 +85,8 @@ const pageDescription =
               : undefined,
           },
         ],
-      })}
-    </script>
+      })
+    }/>
   </Fragment>
 
   <div class="absolute w-full z-2">

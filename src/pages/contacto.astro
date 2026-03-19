@@ -17,7 +17,7 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 
 ---
 
@@ -36,8 +36,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
         ]}
         id={breadcrumbId}
         />
-        <script type="application/ld+json">
-          {JSON.stringify({
+        <script type="application/ld+json" set:html={
+          JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
               {
@@ -57,8 +57,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                 },
               },
             ],
-          })}
-        </script>
+          })
+        }/>
     </Fragment>
 
     <Breadcrumb
@@ -73,12 +73,12 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
         
         <!-- Columna 1: Encabezado -->
         <div class="p-4 md:p-6 lg:pt-20 lg:pr-[103px] lg:pb-6 lg:pl-[135px]">
-            <h3 class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase mt-8">
+            <p class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase mt-8">
                 Contacto
-            </h3>
-            <h2 class="font-normal md:text-[28px] text-[28px]">
+            </p>
+            <h1 class="font-normal md:text-[28px] text-[28px]">
                 Agenda una DEMO con nuestro equipo técnico y nuestros especialistas de producto.
-            </h2>
+            </h1>
             <p
                 class="text-[#212121] md:text-[16px] text-[16px] text-[#5A4043] mt-2 text-pretty"
             >
@@ -246,7 +246,7 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
             document.addEventListener("DOMContentLoaded", () => {
                 initForm("contact-form");
             });
-        </script>
+        }/>
     </section>
 
     <!--  FOOTER CONTACTO -->

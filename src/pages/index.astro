@@ -71,7 +71,7 @@ const marcas = [
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 <Layout
   title="MedRent México | Tecnología médica y financiamiento sin enganche"
@@ -87,8 +87,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                 { name: "Inicio", url: `${baseUrl}/` },
             ]}
         />
-        <script type="application/ld+json">
-            {JSON.stringify({
+        <script type="application/ld+json" set:html={
+            JSON.stringify({
                 "@context": "https://schema.org",
                 "@graph": [
                     {
@@ -109,8 +109,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                         },
                     },
                 ],
-            })}
-        </script>
+            })
+        }/>
     </Fragment>
 
     <!-- Sección de contacto -->

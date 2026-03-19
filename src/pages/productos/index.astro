@@ -37,7 +37,7 @@ const subcategoriesData = await getAllSubcategories();
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 ---
 
@@ -55,8 +55,8 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
       ]}
       id={breadcrumbId}
     />
-    <script type="application/ld+json">
-      {(() => {
+    <script type="application/ld+json" set:html={
+      (() => {
         const slice = Array.isArray(products) ? products.slice(0, 12) : [];
         const itemListElement = slice.map((p: any, index: number) => {
           const slug = p?.slug;
@@ -117,8 +117,8 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
             },
           ],
         });
-      })()}
-    </script>
+      })()
+    }/>
   </Fragment>
 
   <!-- HERO -->

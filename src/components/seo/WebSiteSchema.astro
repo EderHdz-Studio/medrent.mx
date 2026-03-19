@@ -18,6 +18,4 @@ const jsonLd = {
   },
 };
 ---
-<script type="application/ld+json">
-  {JSON.stringify(jsonLd)}
-</script>
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

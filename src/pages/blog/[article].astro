@@ -26,7 +26,7 @@ const { article } = Astro.props as { article: any };
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = article?.heroImage?.url || logoUrl;
 const authorSlug = article?.writer?.slug || 'team-medrent';
 const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;
@@ -74,8 +74,8 @@ try {
         { name: article?.title || "Artículo", url: canonicalUrl },
       ]}
     />
-    <script type="application/ld+json">
-      {JSON.stringify({
+    <script type="application/ld+json" set:html={
+      JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
           {
@@ -126,8 +126,8 @@ try {
             inLanguage: "es-MX",
           },
         ],
-      })}
-    </script>
+      })
+    }/>
   </Fragment>
 
   <Fragment slot="metas">

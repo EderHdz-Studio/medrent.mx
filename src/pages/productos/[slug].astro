@@ -34,7 +34,7 @@ if (!product) {
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl =
   Array.isArray(product.gallery) && product.gallery.length > 0
     ? product.gallery[0]
@@ -74,8 +74,8 @@ console.log("Product data:", product);
       ]}
       id={breadcrumbId}
       />
-      <script type="application/ld+json">
-        {JSON.stringify({
+      <script type="application/ld+json" set:html={
+        JSON.stringify({
           "@context": "https://schema.org",
           "@graph": [
             {
@@ -130,8 +130,8 @@ console.log("Product data:", product);
                 ]
               : []),
           ],
-        })}
-      </script>
+        })
+      }/>
   </Fragment>
   <Breadcrumb
     textColor="text-black"
@@ -222,7 +222,7 @@ console.log("Product data:", product);
                 <style>
                     #thumbnails-scroll::-webkit-scrollbar { display: none; }
                 </style>
-                {(() => {
+                (() => {
                   const total = product.gallery.length;
                   const maxThumbnails = 6;
                     return product.gallery.slice(0, maxThumbnails).map((imagen: string, index: number) => {
@@ -231,7 +231,7 @@ console.log("Product data:", product);
                       // Si es la última visible y hay más, muestra el overlay '+N'
                       if (index === maxThumbnails - 1 && total > maxThumbnails) {
                         return (
-                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)} >
+                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes=JSON.stringify(product.gallery)} >
                             <button
                               class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)] opacity-20"
                               style="min-height:80px; max-height:80px;"
@@ -253,7 +253,7 @@ console.log("Product data:", product);
                         );
                       }
                       return (
-                        <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)} >
+                        <div class="relative w-20 h-20 " data-gallery=JSON.stringify(product.gallery)} >
                           <button
                             class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
                             style="min-height:80px; max-height:80px;"
@@ -271,7 +271,7 @@ console.log("Product data:", product);
                         </div>
                       );
                     });
-                })()}
+                })()
                 {/* GalleryPopup debe estar fuera del mapeo para que window.openGalleryPopup funcione siempre */}
                 {/* {Array.isArray(product?.gallery) && product.gallery.length > 6 && (
                     <GalleryPopup gallery={product.gallery} startIndex={6} />
@@ -632,7 +632,7 @@ console.log("Product data:", product);
       })
 
     }
-    </script>
+    }/>
 
 
     

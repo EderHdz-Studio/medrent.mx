@@ -90,7 +90,7 @@ const eventDays = [11, 14];
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 ---
 <Layout
@@ -128,8 +128,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             ]}
             id={breadcrumbId}
             />
-            <script type="application/ld+json">
-              {(() => {
+            <script type="application/ld+json" set:html={
+              (() => {
                 const eventosList = Array.isArray(data?.events) ? data.events : [];
                 const slice = eventosList.slice(0, 12);
                 const itemListElement = slice.map((evento: any, index: number) => {
@@ -210,8 +210,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                     },
                   ],
                 });
-              })()}
-            </script>
+              })()
+            }/>
         </Fragment>
 
     <div class="absolute w-full z-2">
@@ -231,10 +231,10 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 
                 <!-- Columna izquierda - Contenido -->
                 <div class="lg:pr-8 flex flex-col items-start justify-center gap-2" style="height: -webkit-fill-available;">
-                    <h3 class="text-[14px] font-lato text-[var(--color-primary)] font-bold">EVENTOS</h3>
-                    <h2 class=" text-[28px] font-bold text-[#261819] leading-tight">
+                    <p class="text-[14px] font-lato text-[var(--color-primary)] font-bold">EVENTOS</p>
+                    <h1 class="text-[28px] font-bold text-[#261819] leading-tight">
                        {data.title ? data.title : "Eventos médicos"}
-                    </h2>
+                    </h1>
                     
                     <p class="text-[16px] leading-[1.6] text-[#5A4043]">
                         {data.description ? data.description : "Conoce los congresos, talleres y presentaciones donde Medrent comparte innovación y equipos líderes en diagnóstico y tratamiento."}

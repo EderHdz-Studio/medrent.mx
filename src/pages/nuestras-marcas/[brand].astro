@@ -52,7 +52,7 @@ const pageKeywords = `${brandName}; equipo médico; MedRent`;
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 const brandUrl = `${baseUrl}/nuestras-marcas/${brandName}`;
 const brandId = `${brandUrl}#brand`;
@@ -76,8 +76,8 @@ const brandId = `${brandUrl}#brand`;
       ]}
       id={breadcrumbId}
     />
-    <script type="application/ld+json">
-      {(() => {
+    <script type="application/ld+json" set:html={
+      (() => {
         const list = Array.isArray(products) ? products.slice(0, 12) : [];
         const itemListId = `${canonicalUrl}#itemlist`;
         const itemListElement = list.map((p: any, index: number) => {
@@ -139,8 +139,8 @@ const brandId = `${brandUrl}#brand`;
             },
           ],
         });
-      })()}
-    </script>
+      })()
+    }/>
   </Fragment>
 
   <!-- HERO -->

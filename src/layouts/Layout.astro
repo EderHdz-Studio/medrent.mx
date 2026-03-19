@@ -14,11 +14,12 @@ const {
   ogSiteName = "MedRent",
   ogLocale = "es_MX",
   twitterCard = "summary_large_image",
+  twitterSite = "@MedRent_MX",
   twitterTitle,
   twitterDescription,
   twitterImage,
 } = Astro.props;
-const siteOrigin = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const siteOrigin = Astro.url?.origin ?? (Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx");
 const resolvedTitle = title ?? "MedRent México | Tecnología médica y financiamiento sin enganche";
 const resolvedDescription =
   description ??
@@ -26,7 +27,7 @@ const resolvedDescription =
 const resolvedOgTitle = ogTitle ?? resolvedTitle;
 const resolvedOgDescription = ogDescription ?? resolvedDescription;
 const resolvedOgUrl = ogUrl ?? canonical;
-const resolvedOgImage = ogImage ?? `${siteOrigin}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const resolvedOgImage = ogImage ?? `${siteOrigin}/favicon-512.png`;
 const resolvedTwitterTitle = twitterTitle ?? resolvedOgTitle;
 const resolvedTwitterDescription = twitterDescription ?? resolvedOgDescription;
 const resolvedTwitterImage = twitterImage ?? resolvedOgImage;
@@ -77,6 +78,7 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <meta property="og:locale" content={ogLocale} />
 
     <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:site" content={twitterSite} />
     <meta name="twitter:title" content={resolvedTwitterTitle} />
     <meta name="twitter:description" content={resolvedTwitterDescription} />
     <meta name="twitter:image" content={resolvedTwitterImage} />

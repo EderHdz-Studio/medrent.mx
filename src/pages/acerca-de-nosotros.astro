@@ -10,7 +10,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
 <Layout
@@ -27,8 +27,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
         ]}
         id={breadcrumbId}
         />
-        <script type="application/ld+json">
-          {JSON.stringify({
+        <script type="application/ld+json" set:html={
+          JSON.stringify({
             "@context": "https://schema.org",
             "@graph": [
               {
@@ -48,8 +48,8 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                 },
               },
             ],
-          })}
-        </script>
+          })
+        }/>
     </Fragment>
 
     <div class="absolute w-full z-2">
@@ -65,10 +65,10 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
     <section aria-labelledby="about-hero-title" class="max-w-[1280px] w-full flex flex-col justify-start bg-[#000] min-h-[350px] mx-auto" style="border-radius:0 0 24px 24px;"> 
         <div class="w-full flex flex-col gap-4 py-[32px] px-4 mt-9 sm:px-[16px] md:px-[135px] md:py-[32px] sm:py-[32px] sm:px-[24px] m-auto"> 
             <div class="text-left flex flex-col gap-4">
-                <h2 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase mt-8"> LÍDERES EN TECNOLOGÍA MÉDICA</h2>
-                <h1 class=" text-[24px] font-bold font-bold text-[var(--color-white)] tracking-tight">
+                <h1 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase mt-8">LÍDERES EN TECNOLOGÍA MÉDICA</h1>
+                <h2 class="text-[24px] font-bold text-[var(--color-white)] tracking-tight">
                     DISTRIBUIMOS LAS MEJORES MARCAS DE EQUIPO MÉDICO
-                </h1>
+                </h2>
                 <p class="text-[var(--color-gray)] text-base tracking-[0.5px] ">Contamos el respaldo de más de 50 años de experiencia en el mercado de distribución de equipo médico.</p>
             </div>
             <a
@@ -260,7 +260,7 @@ const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
                 }
             }).mount();
         }
-    </script>
+    }/>
 
 
 

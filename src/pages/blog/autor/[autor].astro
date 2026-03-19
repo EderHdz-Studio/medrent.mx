@@ -37,7 +37,7 @@ const { author } = Astro.props as { author: any };
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/wp-content/uploads/2023/07/MedRent-Logo.jpg`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 const authorHeroImageUrl = author?.heroImage?.url || logoUrl;
 const authorSlug = author?.slug || "autor";
 const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;
@@ -60,8 +60,8 @@ const postlistId = `${canonicalUrl}#postlist`;
         { name: author?.fullName || "Autor", url: canonicalUrl },
       ]}
     />
-    <script type="application/ld+json">
-      {(() => {
+    <script type="application/ld+json" set:html={
+      (() => {
         const articles = Array.isArray(author?.articles) ? author.articles : [];
         const slice = articles.slice(0, 10);
         const itemListElement = slice.map((a: any, index: number) => {
@@ -137,8 +137,8 @@ const postlistId = `${canonicalUrl}#postlist`;
             },
           ],
         });
-      })()}
-    </script>
+      })()
+    }/>
   </Fragment>
 
   <Fragment slot="metas">
