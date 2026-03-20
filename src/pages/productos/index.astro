@@ -5,7 +5,7 @@ import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
 import Breadcrumb from "@components/navigation/Breadcrumb.astro";
 import PLPLayout from "@components/product/PLPLayout.astro";
-import ProductGrid from "@components/product/ProductGrid.astro";
+import PLPProductsSection from "@components/product/PLPProductsSection.astro";
 import SidebarFilters from "@components/product/SidebarFilters.astro";
 
 import { getProducts } from "@server/api/products";
@@ -17,10 +17,18 @@ import { getAllSubcategories } from "@server/api/subcategories";
 
 const url = new URL(Astro.request.url);
 
-const brandQuery = url.searchParams.get("brand")?.split(",") || [];
-const categoryQuery = url.searchParams.get("category")?.split(",") || [];
-const subcategoryQuery =
-  url.searchParams.get("subcategory")?.split(",") || [];
+const parseFilterParam = (key: string) => {
+  const values = url.searchParams
+    .getAll(key)
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return [...new Set(values)];
+};
+
+const brandQuery = parseFilterParam("brand");
+const categoryQuery = parseFilterParam("category");
+const subcategoryQuery = parseFilterParam("subcategory");
 
 /* ---------------- FETCH DATA ---------------- */
 
@@ -39,6 +47,10 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
+const totalProducts = products.length;
+const seoPlpTitle = "MEDRENT";
+const seoPlpDescription =
+  "Tecnología médica confiable para diagnóstico, terapia y rehabilitación. MedRent acerca soluciones clínicas de marcas líderes para optimizar la práctica médica y mejorar resultados terapéuticos en todo México.";
 ---
 
 <Layout
@@ -122,26 +134,36 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
   </Fragment>
 
   <!-- HERO -->
-  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">
+  <section class="relative w-full h-[140px] overflow-hidden">
     <div class="absolute inset-0 heroproductos">
-      <Breadcrumb
-        textColor="text-white"
-        items={[
-          { name: "INICIO", href: "/" },
-          { name: "PRODUCTOS" },
-        ]}
-      />
       <img
         src="/temp/HeroPLP.png"
         alt="Todos los productos"
-        class="w-full h-full object-cover rounded-b-[24px]"
+        class="absolute inset-0 w-full h-full object-cover rounded-b-[24px]"
       />
+      <div class="relative z-10">
+        <Breadcrumb
+          textColor="text-white"
+          items={[
+            { name: "INICIO", href: "/" },
+            { name: "PRODUCTOS" },
+          ]}
+        />
+      </div>
     </div>
   </section>
 
   <!-- PLP -->
-  <PLPLayout title="Productos">
+  <PLPLayout seoTitle={seoPlpTitle} seoDescription={seoPlpDescription}>
     <Fragment slot="filters">
+      <div class="mb-6 self-stretch">
+        <h1 class="font-lato text-[28px] font-bold leading-[36px] bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent">
+          Todos los productos
+        </h1>
+        <p class="font-lato text-[22px] font-normal leading-[28px] bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent">
+          {totalProducts} Equipos disponibles
+        </p>
+      </div>
       <SidebarFilters
         brands={brandsData}
         categories={categoriesData}
@@ -149,6 +171,6 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
       />
     </Fragment>
 
-    <ProductGrid products={products} />
+    <PLPProductsSection products={products} />
   </PLPLayout>
 </Layout>
