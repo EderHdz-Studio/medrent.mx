@@ -58,17 +58,106 @@ import ProductCard from '@components/product/ProductCard.astro';
   }
 </script> -->
 
-<script type="module">
+<!-- <script type="module">
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-prefixid]').forEach((el) => {
         const prefixId = el.dataset.prefixid;
 
         const glider = new Glide(el, {
-            rewind: false,
-            type: 'slider',
+            rewind: true,
+            type: 'carousel',
             perView: 4,
             gap: 16,
             autoplay: 2000,
+            hoverpause: true,
+            startAt: 0,
+            breakpoints: {
+                1024: { perView: 4 },
+                920: { perView: 3 },
+                640: { perView: 2 },
+                400: { perView: 1 }
+            }
+        });
+
+        // Función para obtener el número de cards visibles según el ancho de pantalla
+        function getSlidesToShow() {
+            const width = window.innerWidth;
+            if (width <= 400) return 1;
+            if (width <= 999) return 2;
+            return 4;
+        }
+        
+        // Actualiza el contador
+        const contador = document.getElementById(`contador-${prefixId}`);
+        const controls = document.getElementById(`controls-${prefixId}`);
+        
+        function updateContador() {
+            if (!glider || !glider.slides || !contador) return;
+            
+            // Alterna la clase order-4 en controles según el ancho de pantalla
+            if (controls) {
+                if (window.innerWidth < 1000) {
+                    controls.classList.add('order-4');
+                    controls.style.flexWrap = 'wrap';
+                    controls.style.width = '100%';
+                    controls.style.justifyContent = 'center';
+                } else {
+                    controls.classList.remove('order-4');
+                    controls.style.flexWrap = '';
+                    controls.style.width = '';
+                    controls.style.justifyContent = '';
+                }
+            }
+            
+            const slidesToShow = getSlidesToShow();
+            const total = glider.slides.length;
+            const start = glider.slide + 1;
+            let end = glider.slide + slidesToShow;
+            if (end > total) end = total;
+            
+            contador.textContent = `${slidesToShow > 0 ? start + ' - ' + end : ''} / ${total}`;
+            
+            // Mostrar controles solo si hay más cards que las visibles
+            if (controls) {
+                if (total > slidesToShow) {
+                    controls.style.display = '';
+                } else {
+                    controls.style.display = 'none';
+                }
+            }
+        }
+        
+        updateContador();
+        el.addEventListener('glider-slide-visible', updateContador);
+        el.addEventListener('glider-animated', updateContador);
+        el.addEventListener('glider-refresh', updateContador);
+        window.addEventListener('resize', updateContador);
+        window.addEventListener('orientationchange', updateContador);
+        
+        glider.mount();
+    });
+});
+</script> -->
+
+
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-prefixid]').forEach((el) => {
+        const prefixId = el.dataset.prefixid;
+        
+        // Contar cuántos productos hay
+        const slides = el.querySelectorAll('.glide__slide');
+        const totalProducts = slides.length;
+        
+        // Configuración condicional según cantidad de productos
+        const isMoreThan4 = totalProducts > 4;
+        
+        const glider = new Glide(el, {
+            rewind: isMoreThan4,           // Solo true si hay más de 4
+            type: isMoreThan4 ? 'carousel' : 'slider',  // Carousel solo si hay más de 4
+            perView: 4,
+            gap: 16,
+            autoplay: isMoreThan4 ? 2000 : false,  // Autoplay solo si hay más de 4
             hoverpause: true,
             startAt: 0,
             breakpoints: {
