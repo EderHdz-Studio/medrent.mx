@@ -15,33 +15,56 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import ImageResponsive from "@components/media/ImageResponsive.astro";
 import { buildClassificationTagByArticleKeyMap } from "@lib/blog/classification";
 
-let articulosRelacionados = null;
+let articulosRelacionados: any[] = [];
 let marcasData = [];
 let promotionsData = [];
 let classificationTagByArticleKey = new Map<string, string>();
-try {
-    const [relacionados, brandsResp, promotionsResp, clsRes] = await Promise.all([
-        strapiFetch(
-          '/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true&populate[articleClassification]=true&populate[subcategory]=true',
-        ),
-        strapiFetch("/brands?populate=*"),
-        strapiFetch("/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc"),
-        strapiFetch(
-          "/article-classifications?pagination[pageSize]=100&sort=tag:asc&populate[articles]=true",
-        ).catch(() => ({ data: [] })),
-    ]);
 
-    articulosRelacionados = relacionados?.data || relacionados || [];
-    marcasData = Array.isArray(brandsResp?.data) ? brandsResp.data : [];
-    promotionsData = Array.isArray(promotionsResp?.data) ? promotionsResp.data : [];
-    classificationTagByArticleKey = buildClassificationTagByArticleKeyMap(
-      Array.isArray(clsRes?.data) ? clsRes.data : [],
-    );
+try {
+  const [brandsResp, promotionsResp, clsRes] = await Promise.all([
+    strapiFetch("/brands?populate=*"),
+    strapiFetch(
+      "/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc",
+    ),
+    strapiFetch(
+      "/article-classifications?pagination[pageSize]=100&sort=tag:asc&populate[articles]=true",
+    ).catch(() => ({ data: [] })),
+  ]);
+  marcasData = Array.isArray(brandsResp?.data) ? brandsResp.data : [];
+  promotionsData = Array.isArray(promotionsResp?.data) ? promotionsResp.data : [];
+  classificationTagByArticleKey = buildClassificationTagByArticleKeyMap(
+    Array.isArray(clsRes?.data) ? clsRes.data : [],
+  );
 } catch (e) {
-    console.error('Error cargando artículos:', e);
+  console.error("Error cargando marcas o promociones:", e);
+  marcasData = [];
+  promotionsData = [];
+}
+
+/**
+ * Populate mínimo (válido en Strapi actual). `articleClassification` / `subcategory` pueden dar 400;
+ * el fallback repuebla todo si hiciera falta.
+ */
+try {
+  const articulosAPI = await strapiFetch(
+    "/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true",
+  );
+  const raw = articulosAPI?.data ?? articulosAPI ?? [];
+  articulosRelacionados = Array.isArray(raw)
+    ? raw.filter((a: any) => a.isActive === true)
+    : [];
+} catch (e) {
+  console.error("Error blog-articles (home, primario):", e);
+  try {
+    const fallback = await strapiFetch("/blog-articles?populate=*&sort=publishedAt:desc");
+    const raw = fallback?.data ?? [];
+    articulosRelacionados = Array.isArray(raw)
+      ? raw.filter((a: any) => a.isActive === true)
+      : [];
+  } catch (e2) {
+    console.error("Error blog-articles (home, fallback):", e2);
     articulosRelacionados = [];
-    marcasData = [];
-    promotionsData = [];
+  }
 }
 
 
