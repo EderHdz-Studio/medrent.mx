@@ -18,16 +18,25 @@ import {
 let articulosActivos: any[] = [];
 let clasificacionesCms: any[] = [];
 
+/** Populate mínimo válido; tags de clasificación vienen de `/article-classifications` abajo. */
 try {
   const articulosAPI = await strapiFetch(
-    '/blog-articles?populate[heroImage]=true&populate[writer][populate][avatar]=true&populate[articleClassification]=true&populate[subcategory]=true&sort=publishedAt:desc',
+    "/blog-articles?populate[heroImage]=true&populate[writer][populate][avatar]=true&sort=publishedAt:desc",
   );
-  articulosActivos = articulosAPI.data.filter((articulo: any) => articulo.isActive === true);
-} catch {
+  const raw = articulosAPI?.data ?? articulosAPI ?? [];
+  articulosActivos = Array.isArray(raw)
+    ? raw.filter((articulo: any) => articulo.isActive === true)
+    : [];
+} catch (e) {
+  console.error("Error blog-articles (índice, primario):", e);
   try {
-    const fallback = await strapiFetch('/blog-articles?populate=*&sort=publishedAt:desc');
-    articulosActivos = fallback.data.filter((articulo: any) => articulo.isActive === true);
-  } catch {
+    const fallback = await strapiFetch("/blog-articles?populate=*&sort=publishedAt:desc");
+    const raw = fallback?.data ?? [];
+    articulosActivos = Array.isArray(raw)
+      ? raw.filter((articulo: any) => articulo.isActive === true)
+      : [];
+  } catch (e2) {
+    console.error("Error blog-articles (índice, fallback):", e2);
     articulosActivos = [];
   }
 }
