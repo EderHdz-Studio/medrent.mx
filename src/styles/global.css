@@ -227,6 +227,31 @@ select:autofill {
   color: var(--color-green-dark) !important;
 }
 
+/* Scrollbar personalizada para el dropdown */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: var(--color-secondary-light);
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Para Firefox */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-secondary-light);
+}
+
 @media (max-width: 1023px) {
   /* Contenedores del blog */
   .SocialMediaMobile,
