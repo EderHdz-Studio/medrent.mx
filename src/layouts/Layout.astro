@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css"; 
+import "lenis/dist/lenis.css";
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const {
   title,
@@ -31,6 +32,7 @@ const resolvedOgImage = ogImage ?? `${siteOrigin}/favicon-512.png`;
 const resolvedTwitterTitle = twitterTitle ?? resolvedOgTitle;
 const resolvedTwitterDescription = twitterDescription ?? resolvedOgDescription;
 const resolvedTwitterImage = twitterImage ?? resolvedOgImage;
+const isLocalEnv = Astro.url.hostname === "localhost" || Astro.url.hostname === "127.0.0.1";
 
 import { SITE } from '@lib/site';
 const site = SITE;
@@ -63,8 +65,11 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="preload" href="/fonts/Lato-Regular.ttf" as="font" type="font/ttf">
-    <link rel="preload" href="/fonts/Lato-Bold.ttf" as="font" type="font/ttf">
+    <link rel="preload" href="/fonts/Lato-Regular.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/fonts/Lato-Bold.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    {!isLocalEnv && <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>}
+    <link rel="dns-prefetch" href="//media.strapiapp.com">
 
     <!-- 5. Metas dinámicos (OG, description, etc.) -->
     <meta name="description" content={resolvedDescription} />
@@ -95,41 +100,68 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
 
     <!-- 8. CSS externo -->
       <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css"
+      onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+    </noscript>
       <!-- Optional Theme stylesheet | https://github.com/glidejs/glide/dist/css/glide.theme.min.css -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.js" defer></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.css">
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css"
+      onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+    </noscript>
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.css"
+      onload="this.onload=null;this.rel='stylesheet'"
+    >
+    <noscript>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.css">
+    </noscript>
 
     <!-- 9. Scripts que deben cargarse temprano (GTM) -->
-    <!-- Google Tag Manager -->
-    <script is:inline>
-      (function(w,d,s,l,i){
-        w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-PH4DRF6B');
-    </script>
-    <!-- End Google Tag Manager -->
+    {!isLocalEnv && (
+      <>
+        <!-- Google Tag Manager -->
+        <script is:inline>
+          (function(w,d,s,l,i){
+            w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-PH4DRF6B');
+        </script>
+        <!-- End Google Tag Manager -->
+        <script src="/scripts/setEventsDataLayer.js" defer></script>
+      </>
+    )}
 
-    <script src="/scripts/setEventsDataLayer.js" defer></script>
-
-    <!-- 10. JS externos (defer siempre que sea posible) -->
-    <!-- Glide JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/glide.min.js" defer></script>
-    
   </head>
   
-  <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript>
-      <iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-PH4DRF6B"
-        height="0"
-        width="0"
-        style="display:none;visibility:hidden">
-      </iframe>
-    </noscript>
-    <!-- End Google Tag Manager (noscript) -->
+  <body class="template-typography">
+    {!isLocalEnv && (
+      <>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-PH4DRF6B"
+            title="Google Tag Manager"
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden">
+          </iframe>
+        </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+      </>
+    )}
     
     <!-- Header fixed -->
     <div class="fixed top-0 left-0 w-full z-[100]">
@@ -145,6 +177,8 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <StickyCta />
 
     <Footer site={site}/>
+
+    <script type="module" src="/src/scripts/initLenis.ts"></script>
     
   </body>
 </html>

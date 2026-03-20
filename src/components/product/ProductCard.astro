@@ -5,13 +5,12 @@ interface Props {
   product: Product;
 }
 const { product } = Astro.props;
-console.log("Fetched product:", product); // Agrega este log para verificar los datos obtenidos
 ---
 <style>
     .productCard:hover{ box-shadow: 7px 11px 13px 0 rgba(33, 46, 56, 0.09), 2px 3px 7px 0 rgba(33, 46, 56, 0.10);}
 </style>
 
-<div class="glide__slide productCard bg-white rounded-[16px] border border-[var(--color-gray)] hover:border-[var(--color-primary)] hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col h-full">
+<div class="productCard bg-white rounded-[16px] border border-[var(--color-gray)] hover:border-[var(--color-primary)] hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col h-full">
     <div class="w-full max-[447px]:h-70 min-[448px]:max-[519px]:h-70 min-[520px]:h-60 relative overflow-hidden flex-shrink-0">
 
         {product.isNew && (

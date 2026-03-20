@@ -4,18 +4,24 @@ import ArticleCard from '@components/blog/articleCard.astro';
 //console.log('Artículos cargados:', articulos);
 ---
 
-<div id="glider-articulosRelacionados" class="glider" style="flex-basis: 100%;">
-{articulos && articulos.map((articulo: any, index: number) => (
-    <div class="glider-slide flex-shrink-0 h-full" style="height:100%">
-        <div class="group rounded-[16px] overflow-hidden relative flex-shrink-0 h-full min-h-[340px] flex flex-col" style="height:100%">
-            <ArticleCard article={articulo} />
-        </div>
+<div class="w-full">
+  <div id="blog-vitrina-articulos" data-prefixid="BlogArticulos" data-total-items={String(articulos?.length || 0)} class="glide js-blog-slider w-full">
+    <div class="glide__track" data-glide-el="track">
+      <ul class="glide__slides">
+        {articulos && articulos.map((articulo: any) => (
+          <li class="glide__slide h-full">
+            <div class="group rounded-[16px] overflow-hidden relative h-full min-h-[340px] flex flex-col">
+              <ArticleCard article={articulo} />
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
-))}
+  </div>
 </div>
 
-<div class="flex flex-row justify-between items-center mt-6">
-    <a href={ '/blog'} class="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] flex justify-center cursor-pointer items-center gap-2 self-stretch px-4 py-[14px] rounded-[4px] text-white text-base transition-colors group text-[14px] h-fit" >
+<div class="flex flex-row justify-between items-center gap-4 mt-6 flex-nowrap">
+    <a href={ '/blog'} class="medrent-btn-primary h-fit shrink-0 group" >
       <span class="hidden min-[440px]:inline">Ver más artículos</span>
       <span class="inline min-[440px]:hidden">Ver más</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -23,92 +29,111 @@ import ArticleCard from '@components/blog/articleCard.astro';
       </svg>
     </a>
 
-    <div class="flex items-center gap-[24px] border-[var(--color-primary)] border-2 rounded-full flex px-4 py-3 justify-center items-center gap-6">
-      <div id="controls-articulosRelacionados" class="botones-glider flex justify-start gap-4 w-full md:w-auto">
-        <button id="prev-btn-articulosRelacionados" aria-label="Anterior"  class="prevBtn group flex items-center justify-center w-[56px] h-[32px] text-black transition-colors cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
+    <div id="controls-BlogArticulos" class="flex items-center gap-4 justify-center shrink-0">
+        <button id="prev-btn-BlogArticulos" aria-label="Anterior" class="prevBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black">
+          <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
+            <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
           </svg>
         </button>
-        <span id="contador-articulosRelacionados" class="eventos-label text-black text-center font-kallisto text-[16px] font-light tracking-[2.5px]">1/{articulos?.length || 0}</span>
-        <button id="next-btn-articulosRelacionados" aria-label="Siguiente" class="nextBtn group flex items-center justify-center w-[56px] h-[32px] transition-colors cursor-pointer">
-         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+        <span id="contador-BlogArticulos" class="font-semibold text-base min-w-[72px] text-center">1 / 1</span>
+        <button id="next-btn-BlogArticulos" aria-label="Siguiente" class="nextBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black">
+         <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
+          <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
         </svg>
         </button>
-      </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const el = document.getElementById('glider-articulosRelacionados');
-        if (!el) return;
+const initBlogSliders = async () => {
+  const { default: Glide } = await import('@glidejs/glide');
+  document.querySelectorAll('.js-blog-slider[data-prefixid]').forEach((el) => {
+    if (el.dataset.mounted === 'true') return;
+    el.dataset.mounted = 'true';
 
-        const glider = new Glider(el, {
-          rewind: true,
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          draggable: true,
-          duration: .5,
-          arrows: {
-            prev: '#prev-btn-articulosRelacionados',
-            next: '#next-btn-articulosRelacionados'
-          },
-          responsive: [
-            { breakpoint: 0, settings: { slidesToShow: 1 } },
-            { breakpoint: 768, settings: { slidesToShow: 2 } },
-            { breakpoint: 1024, settings: { slidesToShow: 3 } }
-          ]
-        });
-        
-        function getSlidesToShow() {
-          const width = window.innerWidth;
-          if (width < 768) return 1;
-          if (width < 1024) return 2;
-          return 3;
-        }
-        
-        const contador = document.getElementById('contador-articulosRelacionados');
-        const controls = document.getElementById('controls-articulosRelacionados');
-        
-        function updateContador() {
-          if (contador && glider) {
-            if (controls) {
-              if (window.innerWidth < 1000) {
-                controls.classList.add('order-4');
-                controls.style.flexWrap = 'wrap';
-                controls.style.width = '100%';
-                controls.style.justifyContent = 'center';
-              } else {
-                controls.classList.remove('order-4');
-                controls.style.flexWrap = '';
-                controls.style.width = '';
-                controls.style.justifyContent = '';
-              }
-            }
-            
-            const total = glider.slides.length;
-            const slideActual = glider.slide + 1;
-            
-            contador.textContent = `${slideActual} / ${total}`;
-            
-            if (controls) {
-              const slidesToShow = getSlidesToShow();
-              if (total > slidesToShow) {
-                controls.style.display = '';
-              } else {
-                controls.style.display = 'none';
-              }
-            }
-          }
-        }
-        
-        updateContador();
-        el.addEventListener('glider-slide-visible', updateContador);
-        el.addEventListener('glider-animated', updateContador);
-        el.addEventListener('glider-refresh', updateContador);
-        window.addEventListener('resize', updateContador);
-        window.addEventListener('orientationchange', updateContador);
+    const prefixId = el.dataset.prefixid;
+    const totalItems = Number(el.dataset.totalItems || 0);
+    const isDesktop = window.innerWidth >= 1024;
+    const glider = new Glide(el, {
+      rewind: false,
+      type: 'slider',
+      bound: true,
+      perView: 3,
+      gap: 24,
+      dragThreshold: isDesktop ? false : 80,
+      swipeThreshold: isDesktop ? false : 80,
+      startAt: 0,
+      breakpoints: {
+        1024: { perView: 2, gap: 16 },
+        768: { perView: 1, gap: 12 }
+      }
     });
+
+    const contador = document.getElementById(`contador-${prefixId}`);
+    const controls = document.getElementById(`controls-${prefixId}`);
+    const prevBtn = document.getElementById(`prev-btn-${prefixId}`);
+    const nextBtn = document.getElementById(`next-btn-${prefixId}`);
+
+    function getSlidesToShow() {
+      const width = window.innerWidth;
+      if (width < 768) return 1;
+      if (width < 1024) return 2;
+      return 3;
+    }
+
+    function updateContador() {
+      if (!contador) return;
+      const total = totalItems;
+      const slidesToShow = getSlidesToShow();
+      const totalPages = Math.max(1, Math.ceil(total / slidesToShow));
+      const currentIndex = glider.index;
+      const lastStart = Math.max(0, total - slidesToShow);
+      const currentPage = currentIndex >= lastStart
+        ? totalPages
+        : Math.min(totalPages, Math.floor(currentIndex / slidesToShow) + 1);
+      contador.textContent = `${currentPage} / ${totalPages}`;
+
+      if (controls) {
+        const isMobileViewport = window.innerWidth < 768;
+        const shouldShowControls = isMobileViewport
+          ? total > 1
+          : total > slidesToShow;
+        controls.style.display = shouldShowControls ? '' : 'none';
+      }
+    }
+
+    prevBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      const perView = getSlidesToShow();
+      const target = Math.max(0, glider.index - perView);
+      glider.go(`=${target}`);
+    });
+
+    nextBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      const perView = getSlidesToShow();
+      const total = totalItems;
+      const lastStart = Math.max(0, total - perView);
+      const target = Math.min(lastStart, glider.index + perView);
+      glider.go(`=${target}`);
+    });
+
+    glider.on('run.after', updateContador);
+    glider.on('mount.after', updateContador);
+    window.addEventListener('resize', updateContador);
+    window.addEventListener('orientationchange', updateContador);
+    glider.mount();
+    updateContador();
+  });
+};
+
+const safeInitBlogSlider = () => {
+  initBlogSliders().catch(() => {});
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', safeInitBlogSlider, { once: true });
+} else {
+  safeInitBlogSlider();
+}
 </script>

@@ -5,7 +5,7 @@ const { Images, product, brand } = Astro.props;
 <div
     id="sticky-cotizacion"
     class="justify-between fixed bottom-0 z-50 flex flex-col items-start w-full max-w-full gap-4 transition-opacity transition-transform duration-700 ease-in-out rounded-t-lg opacity-0 pointer-events-none sm:items-center sm:flex-row sm:w-[768px] md:w-[1280px]"
-    style="padding: 16px 32px; background: #00201F; box-shadow: 0 20px 24px -4px rgba(49,48,48,0.10), 0 6px 8px -4px rgba(49,48,48,0.04); border-radius: 8px 8px 0 0;"
+    style="background: #00201F; box-shadow: 0 20px 24px -4px rgba(49,48,48,0.10), 0 6px 8px -4px rgba(49,48,48,0.04); border-radius: 8px 8px 0 0;"
 >
 
     <div id="sticky-cotizacion-info" class="flex gap-4">
@@ -75,6 +75,7 @@ const { Images, product, brand } = Astro.props;
         right: 0;
         margin-left: auto;
         margin-right: auto;
+        padding: 16px;
         opacity: 0;
         pointer-events: none;
         transform: translateY(100%);
@@ -95,6 +96,16 @@ const { Images, product, brand } = Astro.props;
             padding: 16px;
         }
     }
+    @media (min-width: 768px) {
+        #sticky-cotizacion {
+            padding: 16px 24px;
+        }
+    }
+    @media (min-width: 1280px) {
+        #sticky-cotizacion {
+            padding: 16px 32px;
+        }
+    }
 </style>
 
 
@@ -107,9 +118,6 @@ window.addEventListener("load", function () {
     var stickyInfo = document.getElementById('sticky-cotizacion-info');
     var mainBtn = document.getElementById('open-event-popup');
     var demoBtn = document.getElementById('open-demo-whatsapp');
-    // Buscar el contenedor de Preguntas Frecuentes
-    var preguntasFrecuentes = document.getElementById('preguntas-frecuentes');
-
     if (!sticky || !stickyDemoBtn || !stickyInfo) return;
 
     function isMobile() {
@@ -128,35 +136,16 @@ window.addEventListener("load", function () {
         }
 
         scrollTimeout = setTimeout(function() {
-            if (isMobile()) {
-                // MOBILE:
-                var mainBtn = document.getElementById('open-event-popup');
-                var demoBtn = document.getElementById('open-demo-whatsapp');
-                
-                if (mainBtn && demoBtn) {
-                    var mainBtnPassed = mainBtn.getBoundingClientRect().bottom < 0;
-                    var demoBtnPassed = demoBtn.getBoundingClientRect().bottom < 0;
-                    
-                    // Si AMBOS botones ya no son visibles, mostrar sticky
-                    if (mainBtnPassed && demoBtnPassed) {
-                        sticky.classList.add('is-visible');
-                    } else {
-                        sticky.classList.remove('is-visible');
-                    }
-                }
-            } else {
-                // DESKTOP Y TABLET
-                if (!preguntasFrecuentes) return;
-                
-                var rect = preguntasFrecuentes.getBoundingClientRect();
-                var visible = rect.bottom > 0 && rect.top < window.innerHeight;
-                
-                if (visible) {
-                    sticky.classList.remove('is-visible');
-                } else {
-                    sticky.classList.add('is-visible');
-                }
-            }
+            // MISMA LÓGICA PARA MOBILE/TABLET/DESKTOP:
+            // mostrar sticky cuando ambos CTAs principales ya salieron del viewport.
+            var mainBtn = document.getElementById('open-event-popup');
+            var demoBtn = document.getElementById('open-demo-whatsapp');
+            var mainBtnPassed = mainBtn ? mainBtn.getBoundingClientRect().bottom < 0 : false;
+            var demoBtnPassed = demoBtn ? demoBtn.getBoundingClientRect().bottom < 0 : false;
+            var shouldShow = mainBtnPassed && demoBtnPassed;
+
+            if (shouldShow) sticky.classList.add('is-visible');
+            else sticky.classList.remove('is-visible');
         }, 100); 
     }
 
