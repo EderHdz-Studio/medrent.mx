@@ -62,10 +62,14 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
         />
     </div>
     
-    <section aria-labelledby="about-hero-title" class="max-w-[1280px] w-full flex flex-col justify-start bg-[#000] min-h-[350px] mx-auto" style="border-radius:0 0 24px 24px;"> 
-        <div class="w-full flex flex-col gap-4 py-[32px] px-4 mt-9 sm:px-[16px] md:px-[135px] md:py-[32px] sm:py-[32px] sm:px-[24px] m-auto"> 
+    <section aria-labelledby="about-hero-title" class="w-full flex flex-col justify-start min-h-[350px] overflow-hidden relative" style="border-radius:0 0 24px 24px;"> 
+        <div class="about-hero-bg" aria-hidden="true">
+            <span class="about-hero-orb about-hero-orb-a"></span>
+            <span class="about-hero-orb about-hero-orb-b"></span>
+        </div>
+        <div class="w-full max-w-7xl mx-auto flex flex-col gap-4 py-[32px] px-4 mt-9 sm:px-6 lg:px-[135px] md:py-[32px] sm:py-[32px] relative z-10"> 
             <div class="text-left flex flex-col gap-4">
-                <h1 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase mt-8">LÍDERES EN TECNOLOGÍA MÉDICA</h1>
+                <h1 class="mt-8 uppercase font-lato font-bold text-[14px] leading-[20px] tracking-[0.1px] text-[var(--color-secondary)]">LÍDERES EN TECNOLOGÍA MÉDICA</h1>
                 <h2 class="text-[24px] font-bold text-[var(--color-white)] tracking-tight">
                     DISTRIBUIMOS LAS MEJORES MARCAS DE EQUIPO MÉDICO
                 </h2>
@@ -191,25 +195,21 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
         </div>
     </section>
 
-    <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
-        <div class="glide" id="MetricsSlider">
-            <div class="glide__track" data-glide-el="track">
-                <ul class="glide__slides">
-                    { metrics.map((metric) => (
-                        <li class="rounded-[16px] py-8 px-6 text-center bg-[#87F4EF]" style="white-space: normal;">
-                            <div class="flex flex-col h-full justify-center gap-2">
-                                <span class="text-4xl font-bold text-gray-900 tracking-[0.5px]">
-                                    {metric.value}
-                                </span>
-                                <p class="text-base font-base text-gray-700 tracking-[0.5px] uppercase w-auto">
-                                    {metric.label}
-                                </p>
-                            </div>
-                        </li>
-                    )) }
-                </ul>
-            </div>
-        </div>
+    <section class="py-6 px-4 md:px-8 max-w-7xl mx-auto flex flex-col gap-6 metrics-section-safe">
+        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 metrics-slides">
+            { metrics.map((metric) => (
+                <li class="rounded-[16px] text-center bg-[#87F4EF] metrics-slide-item" style="white-space: normal;">
+                    <div class="flex flex-col h-full justify-center gap-2 py-8 px-6">
+                        <span class="text-4xl font-bold text-gray-900 tracking-[0.5px]">
+                            {metric.value}
+                        </span>
+                        <p class="text-base font-base text-gray-700 tracking-[0.5px] uppercase w-auto">
+                            {metric.label}
+                        </p>
+                    </div>
+                </li>
+            )) }
+        </ul>
     </section>
 
     <section aria-labelledby="mission-values-title" style="background: linear-gradient(180deg, #FFF 0%, var(--Schemes-Primary-Fixed, #87F4EF) 50%);">
@@ -239,32 +239,110 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
             </div>
         </div>
     </section>
-    <script type="module">
-        const slider = document.querySelector('#MetricsSlider');
-        if (!slider) {
-            // noop
-        } else {
-            (async () => {
-                const { default: Glide } = await import('@glidejs/glide');
-                new Glide(slider, {
-                    type: 'carousel',
-                    perView: 5,
-                    gap: 24,
-                    autoplay: 2000,
-                    hoverpause: true,
-                    rewind: false,
-                    breakpoints: {
-                        1024: {
-                            perView: 3
-                        },
-                        640: {
-                            perView: 1
-                        }
-                    }
-                }).mount();
-            })().catch(() => {});
+    <style>
+      .metrics-slide-item {
+        align-self: stretch;
+      }
+
+      .metrics-section-safe {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+      }
+
+      .about-hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 95% 8%, rgba(135, 244, 239, 0.42) 0%, rgba(135, 244, 239, 0.22) 12%, rgba(135, 244, 239, 0) 32%),
+          radial-gradient(circle at 5% 95%, rgba(135, 244, 239, 0.5) 0%, rgba(135, 244, 239, 0.22) 16%, rgba(135, 244, 239, 0) 36%),
+          radial-gradient(120% 160% at 50% 50%, #1f6f87 0%, #1c6278 45%, #1f5f86 100%);
+        background-size: 200% 200%, 200% 200%, 130% 130%;
+        animation: heroGradientShift 14s linear infinite;
+      }
+
+      .about-hero-orb {
+        position: absolute;
+        pointer-events: none;
+        display: block;
+      }
+
+      .about-hero-orb-a {
+        inset: -30%;
+        background: radial-gradient(50% 45% at 30% 48%, rgba(105, 216, 211, 0.32) 0%, rgba(105, 216, 211, 0.12) 36%, rgba(105, 216, 211, 0) 70%);
+        opacity: 0.75;
+        will-change: transform;
+        animation: heroOrbA 9s ease-in-out infinite alternate;
+      }
+
+      .about-hero-orb-b {
+        inset: -30%;
+        background: radial-gradient(52% 46% at 72% 56%, rgba(0, 130, 127, 0.28) 0%, rgba(0, 130, 127, 0.08) 34%, rgba(0, 130, 127, 0) 72%);
+        opacity: 0.65;
+        will-change: transform;
+        animation: heroOrbB 11s ease-in-out infinite alternate;
+      }
+
+      @keyframes heroGradientShift {
+        0% {
+          background-position: 100% 0%, 0% 100%, 0% 40%;
         }
-    </script>
+        25% {
+          background-position: 75% 18%, 20% 82%, 55% 52%;
+        }
+        50% {
+          background-position: 45% 40%, 55% 60%, 100% 58%;
+        }
+        75% {
+          background-position: 20% 75%, 80% 18%, 42% 44%;
+        }
+        100% {
+          background-position: 0% 100%, 100% 0%, 0% 60%;
+        }
+      }
+
+      @keyframes heroOrbA {
+        0% {
+          transform: translate(-8%, 6%) scale(1);
+        }
+        100% {
+          transform: translate(14%, -10%) scale(1.18);
+        }
+      }
+
+      @keyframes heroOrbB {
+        0% {
+          transform: translate(8%, -7%) scale(1);
+        }
+        100% {
+          transform: translate(-12%, 11%) scale(1.16);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .about-hero-bg,
+        .about-hero-orb-a,
+        .about-hero-orb-b {
+          animation: none;
+        }
+      }
+
+      @media (max-width: 1023px) {
+        .about-hero-bg {
+          animation: none;
+          background-size: 100% 100%, 100% 100%, 100% 100%;
+        }
+
+        .about-hero-orb-b {
+          display: none;
+        }
+
+        .about-hero-orb-a {
+          animation-duration: 14s;
+          opacity: 0.55;
+        }
+      }
+    </style>
 
 
 
