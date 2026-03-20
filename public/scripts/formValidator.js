@@ -12,10 +12,10 @@ export function initForm(formId) {
   const emailInput = form.querySelector('[name="email"]');
   const phoneWrapper = form.querySelector(".form-phone");
   const phoneInput = phoneWrapper?.querySelector(".phone-input");
-  const selectInput = form.querySelector('select[name="specialty"]');
+  const selectInput = form.querySelector('input[name="specialty"]');
   const checkbox = form.querySelector('input[type="checkbox"]');
   const submitBtn = form.querySelector(".submit-btn");
-  const estadoInput = form.querySelector('[name="estado_mx"]');
+  const estadoInput = form.querySelector('input[name="estado_mx"]');
   const messageInput = form.querySelector('[name="message"]');
   const institutionInput = form.querySelector('[name="lugar_de_trabajo"]');
   const discoveryChannelInput = form.querySelector(
@@ -48,11 +48,51 @@ export function initForm(formId) {
 
   function validateEstado() {
     if (!estadoInput) return true;
-    if (estadoInput.value === "") {
+    const value = estadoInput.value;
+
+    // Buscar el botón visual
+    const estadoContainer = estadoInput.closest(".relative");
+    const estadoBtn = estadoContainer?.querySelector("#estado-btn");
+    const estadoSelectedSpan = estadoContainer?.querySelector(
+      "#estado-seleccionado",
+    );
+    const estadoLabel = estadoContainer?.querySelector("label");
+
+    if (value === "") {
       setInitial(estadoInput);
+      // Resetear
+      if (estadoBtn) estadoBtn.style.border = "";
+      if (estadoSelectedSpan) {
+        estadoSelectedSpan.classList.remove("text-[var(--color-green-dark)]");
+        estadoSelectedSpan.classList.add("text-[#A0A0A0]");
+      }
+      if (estadoLabel) estadoLabel.style.background = "#3D4948";
       return false;
     }
+
     setValid(estadoInput);
+
+    // Aplicar estilos al botón - ESTO ES LO QUE CAMBIA EL BORDER
+    if (estadoBtn) {
+      estadoBtn.style.setProperty(
+        "border",
+        `2px solid ${primaryColor}`,
+        "important",
+      );
+      estadoBtn.style.setProperty(
+        "background",
+        "var(--color-secondary-light)",
+        "important",
+      );
+    }
+
+    if (estadoSelectedSpan) {
+      estadoSelectedSpan.classList.remove("text-[#A0A0A0]");
+      estadoSelectedSpan.classList.add("text-[var(--color-green-dark)]");
+    }
+
+    if (estadoLabel) estadoLabel.style.background = primaryColor;
+
     return true;
   }
 
@@ -210,6 +250,28 @@ export function initForm(formId) {
       "var(--color-secondary-light)",
       "important",
     );
+
+    if (input.name === "specialty") {
+      const container = input.closest(".form-select");
+      const selectBtn = container?.querySelector(".select-btn");
+      if (selectBtn) {
+        selectBtn.style.setProperty(
+          "border",
+          `1px solid ${primaryColor}`,
+          "important",
+        );
+        selectBtn.style.setProperty(
+          "outline",
+          `1px solid ${primaryColor}`,
+          "important",
+        );
+        selectBtn.style.setProperty(
+          "background",
+          "var(--color-secondary-light)",
+          "important",
+        );
+      }
+    }
     input.style.setProperty("border", `1px solid ${primaryColor}`, "important");
     if (label) label.style.background = primaryColor;
     if (input.tagName === "SELECT") {
@@ -627,8 +689,8 @@ function sendFormEvent({ formId, status }) {
   const institution =
     document.querySelector('input[name="lugar_de_trabajo"]')?.value || "";
   const medical_specialty =
-    document.querySelector('select[name="specialty"]')?.value || "";
-  const state = document.querySelector('select[name="estado_mx"]')?.value || "";
+    document.querySelector('input[name="specialty"]')?.value || "";
+  const state = document.querySelector('input[name="estado_mx"]')?.value || "";
   const discovery_channel =
     document.querySelector('input[name="por_qu_medio_nos_conociste"]')?.value ||
     "";
