@@ -1,17 +1,23 @@
 ---
-const { items } = Astro.props;
+const { items, id } = Astro.props as { items: Array<{ name: string; url: string }>; id?: string };
 // items = [{ name: string, url: string }]
+
+const list = Array.isArray(items)
+  ? items.filter((item) => item?.name && item?.url)
+  : [];
 ---
 
-<script type="application/ld+json">
-{JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": items.map((item, index) => ({
-    "@type": "ListItem",
-    "position": index + 1,
-    "name": item.name,
-    "item": item.url
-  }))
-})}
-</script>
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    ...(id ? { "@id": id } : {}),
+    "itemListElement": list.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": item.url,
+    })),
+  })}
+/>

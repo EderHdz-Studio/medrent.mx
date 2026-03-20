@@ -1,7 +1,43 @@
+---
+import ImageResponsive from "@components/media/ImageResponsive.astro";
+
+type PromoSlide = {
+  id: number;
+  title?: string;
+  url?: string;
+  utmParams?: string | null;
+  isActive?: boolean;
+  displayOrder?: number | null;
+  desktopImage?: any;
+  mobileImage?: any;
+};
+
+const { promotionsData = [] } = Astro.props as { promotionsData?: PromoSlide[] };
+const promotions = Array.isArray(promotionsData)
+  ? promotionsData
+      .filter((item: PromoSlide) => item?.isActive)
+      .sort((a: PromoSlide, b: PromoSlide) => {
+        const aOrder = a?.displayOrder ?? Number.MAX_SAFE_INTEGER;
+        const bOrder = b?.displayOrder ?? Number.MAX_SAFE_INTEGER;
+        return aOrder - bOrder;
+      })
+  : [];
+
+function buildPromotionHref(item: PromoSlide) {
+  const base = (item?.url || "#").trim();
+  const utm = (item?.utmParams || "").trim();
+
+  if (!utm) return base;
+
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}${utm.replace(/^\?/, "")}`;
+}
+---
 <!-- Sección slider de promociones -->
-<section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
+{promotions.length > 0 && (
+<section class="py-6 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
     <div class="text-center ">
-        <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight text-left">
+        <h2 class="type-h3 font-bold text-[var(--color-text-default)] tracking-tight text-left">
             Nuestras promociones
         </h2>
     </div>
@@ -9,32 +45,83 @@
     <div class="glide" id="PromotionSlider">
         <div class="glide__track" data-glide-el="track">
             <ul class="glide__slides">
-                <li class="glide__slide flex flex-col items-center justify-center  bg-white rounded shadow " >
-                    <img src="/temp/promociones/image 1.png" alt="Promoción 1" class="h-full w-auto object-contain" />
-                </li>
+                {promotions.map((promo) => (
+                  <li class="glide__slide">
+                    <a
+                      href={buildPromotionHref(promo)}
+                      class="block rounded overflow-hidden"
+                      target={promo.url?.startsWith("http") ? "_self" : undefined}
+                    >
+                      <ImageResponsive
+                        image={promo.mobileImage || promo.desktopImage}
+                        alt={promo.mobileImage?.alternativeText || promo.desktopImage?.alternativeText || promo.title || "Promoción"}
+                        class="block w-full h-auto object-cover md:hidden"
+                        sizes="100vw"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <ImageResponsive
+                        image={promo.desktopImage || promo.mobileImage}
+                        alt={promo.desktopImage?.alternativeText || promo.mobileImage?.alternativeText || promo.title || "Promoción"}
+                        class="hidden w-full h-auto object-cover md:block"
+                        sizes="(min-width: 1024px) 80vw, 100vw"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+                  </li>
+                ))}
             </ul>
         </div>
     </div>
 </section>
+)}
 
 <script type="module">
   const slider = document.querySelector('#PromotionSlider');
+  if (!slider || slider.dataset.mounted === 'true') {
+    // noop
+  } else {
+    const mount = async () => {
+      if (slider.dataset.mounted === 'true') return;
+      const { default: Glide } = await import('@glidejs/glide');
+      new Glide(slider, {
+        type: 'slider',
+        perView: 1,
+        gap: 0,
+        hoverpause: true,
+        breakpoints: {
+          1024: {
+            perView: 1
+          },
+          640: {
+            perView: 1
+          }
+        }
+      }).mount();
+      slider.dataset.mounted = 'true';
+    };
 
-  if (slider) {
-    new Glide(slider, {
-    type: 'slider',
-    perView: 1,
-    gap: 0,
-    hoverpause: true,
-    breakpoints: {
-      1024: {
-        perView: 1
-      },
-      640: {
-        perView: 1
+    const scheduleMount = () => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => mount().catch(() => {}));
+      } else {
+        setTimeout(() => mount().catch(() => {}), 0);
       }
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        const isVisible = entries.some((entry) => entry.isIntersecting);
+        if (isVisible) {
+          observer.disconnect();
+          scheduleMount();
+        }
+      }, { rootMargin: '300px 0px' });
+      observer.observe(slider);
+    } else {
+      scheduleMount();
     }
-    }).mount();
   }
 </script>
 

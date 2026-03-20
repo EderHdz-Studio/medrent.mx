@@ -1,0 +1,75 @@
+---
+type StrapiFormat = {
+  url?: string;
+  width?: number;
+  height?: number;
+};
+
+type StrapiImage = {
+  url?: string;
+  alternativeText?: string | null;
+  width?: number;
+  height?: number;
+  formats?: Record<string, StrapiFormat>;
+};
+
+const {
+  image,
+  src,
+  alt = "",
+  class: className = "",
+  sizes = "100vw",
+  loading = "lazy",
+  decoding = "async",
+  fetchpriority,
+  width,
+  height,
+  ...rest
+} = Astro.props as {
+  image?: StrapiImage;
+  src?: string;
+  alt?: string;
+  class?: string;
+  sizes?: string;
+  loading?: "lazy" | "eager";
+  decoding?: "async" | "sync" | "auto";
+  fetchpriority?: "high" | "low" | "auto";
+  width?: number;
+  height?: number;
+  [key: string]: any;
+};
+
+const imageUrl = src ?? image?.url ?? "";
+const resolvedAlt = alt || image?.alternativeText || "";
+const resolvedWidth = width ?? image?.width;
+const resolvedHeight = height ?? image?.height;
+
+const formats = image?.formats ? Object.values(image.formats) : [];
+const srcsetCandidates = formats
+  .filter((f) => f.url && f.width)
+  .sort((a, b) => (a.width ?? 0) - (b.width ?? 0))
+  .map((f) => `${f.url} ${f.width}w`);
+
+if (imageUrl) {
+  srcsetCandidates.push(`${imageUrl} ${resolvedWidth ?? 1920}w`);
+}
+
+const srcset = srcsetCandidates.join(", ");
+---
+{
+  imageUrl && (
+    <img
+      src={imageUrl}
+      srcset={srcset || undefined}
+      sizes={srcset ? sizes : undefined}
+      alt={resolvedAlt}
+      width={resolvedWidth}
+      height={resolvedHeight}
+      loading={loading}
+      decoding={decoding}
+      fetchpriority={fetchpriority}
+      class={className}
+      {...rest}
+    />
+  )
+}

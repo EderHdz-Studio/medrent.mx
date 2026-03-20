@@ -5,7 +5,7 @@ import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
 import Breadcrumb from "@components/navigation/Breadcrumb.astro";
 import PLPLayout from "@components/product/PLPLayout.astro";
-import ProductGrid from "@components/product/ProductGrid.astro";
+import PLPProductsSection from "@components/product/PLPProductsSection.astro";
 import SidebarFilters from "@components/product/SidebarFilters.astro";
 
 import { getProducts } from "@server/api/products";
@@ -17,10 +17,18 @@ import { getAllSubcategories } from "@server/api/subcategories";
 
 const url = new URL(Astro.request.url);
 
-const brandQuery = url.searchParams.get("brand")?.split(",") || [];
-const categoryQuery = url.searchParams.get("category")?.split(",") || [];
-const subcategoryQuery =
-  url.searchParams.get("subcategory")?.split(",") || [];
+const parseFilterParam = (key: string) => {
+  const values = url.searchParams
+    .getAll(key)
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return [...new Set(values)];
+};
+
+const brandQuery = parseFilterParam("brand");
+const categoryQuery = parseFilterParam("category");
+const subcategoryQuery = parseFilterParam("subcategory");
 
 /* ---------------- FETCH DATA ---------------- */
 
@@ -33,39 +41,129 @@ const products = await getProducts({
 const brandsData = await getBrands();
 const categoriesData = await getCategories();
 const subcategoriesData = await getAllSubcategories();
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
+const totalProducts = products.length;
+const seoPlpTitle = "MEDRENT";
+const seoPlpDescription =
+  "Tecnología médica confiable para diagnóstico, terapia y rehabilitación. MedRent acerca soluciones clínicas de marcas líderes para optimizar la práctica médica y mejorar resultados terapéuticos en todo México.";
 ---
 
-<Layout title="Productos">
+<Layout
+  title="Catálogo de productos | Equipos médicos y consumibles | MedRent"
+  description="Explora equipos por especialidad, aplicación y marca. Tecnología médica con soporte, instalación y opciones de financiamiento."
+  keywords="catálogo equipo médico; productos médicos; consumibles; MedRent"
+  ogImage={heroImageUrl}
+>
   <Fragment slot="head">
     <BreadcrumbSchema
       items={[
-        { name: "Inicio", url: "https://www.medrent.mx" },
-        { name: "Productos", url: "https://www.medrent.mx/productos" },
+        { name: "Inicio", url: `${baseUrl}/` },
+        { name: "Productos", url: `${baseUrl}/productos` },
       ]}
+      id={breadcrumbId}
     />
+    <script type="application/ld+json" set:html={
+      (() => {
+        const slice = Array.isArray(products) ? products.slice(0, 12) : [];
+        const itemListElement = slice.map((p, index) => {
+          const slug = p?.slug;
+          const pdpUrl = slug ? `${baseUrl}/productos/${slug}` : canonicalUrl;
+          const imageUrl = Array.isArray(p?.gallery) ? p.gallery[0] : undefined;
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": ["MedicalDevice", "Product"],
+              "@id": `${pdpUrl}#product`,
+              name: p?.name || "Producto",
+              url: pdpUrl,
+              image: imageUrl ? [imageUrl] : undefined,
+            },
+          };
+        });
+
+        return JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": `${canonicalUrl}#webpage`,
+              url: canonicalUrl,
+              name: "Productos | Equipos médicos y consumibles | MedRent",
+              description:
+                "Explora equipos por especialidad, aplicación y marca. Tecnología médica con soporte, instalación y opciones de financiamiento.",
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              breadcrumb: { "@id": breadcrumbId },
+              mainEntity: { "@id": `${canonicalUrl}#itemlist` },
+              primaryImageOfPage: {
+                "@type": "ImageObject",
+                url: heroImageUrl,
+              },
+            },
+            {
+              "@type": "CollectionPage",
+              "@id": `${canonicalUrl}#collection`,
+              url: canonicalUrl,
+              name: "Productos | Equipos médicos y consumibles | MedRent",
+              description:
+                "Explora equipos por especialidad, aplicación y marca. Tecnología médica con soporte, instalación y opciones de financiamiento.",
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              mainEntity: { "@id": `${canonicalUrl}#itemlist` },
+            },
+            {
+              "@type": "ItemList",
+              "@id": `${canonicalUrl}#itemlist`,
+              name: "Productos — listado",
+              itemListOrder:
+                "https://schema.org/ItemListOrderAscending",
+              itemListElement,
+            },
+          ],
+        });
+      })()
+    }></script>
   </Fragment>
 
   <!-- HERO -->
-  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">
+  <section class="relative w-full h-[140px] overflow-hidden">
     <div class="absolute inset-0 heroproductos">
-      <Breadcrumb
-        textColor="text-white"
-        items={[
-          { name: "INICIO", href: "/" },
-          { name: "PRODUCTOS" },
-        ]}
-      />
       <img
         src="/temp/HeroPLP.png"
         alt="Todos los productos"
-        class="w-full h-full object-cover rounded-b-[24px]"
+        class="absolute inset-0 w-full h-full object-cover rounded-b-[24px]"
       />
+      <div class="relative z-10">
+        <Breadcrumb
+          textColor="text-white"
+          items={[
+            { name: "INICIO", href: "/" },
+            { name: "PRODUCTOS" },
+          ]}
+        />
+      </div>
     </div>
   </section>
 
   <!-- PLP -->
-  <PLPLayout title="Productos">
+  <PLPLayout seoTitle={seoPlpTitle} seoDescription={seoPlpDescription}>
     <Fragment slot="filters">
+      <div class="mb-6 self-stretch">
+        <h1 class="font-lato text-[28px] font-bold leading-[36px] bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent">
+          Todos los productos
+        </h1>
+        <p class="font-lato text-[22px] font-normal leading-[28px] bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent">
+          {totalProducts} Equipos disponibles
+        </p>
+      </div>
       <SidebarFilters
         brands={brandsData}
         categories={categoriesData}
@@ -73,6 +171,6 @@ const subcategoriesData = await getAllSubcategories();
       />
     </Fragment>
 
-    <ProductGrid products={products} />
+    <PLPProductsSection products={products} />
   </PLPLayout>
 </Layout>

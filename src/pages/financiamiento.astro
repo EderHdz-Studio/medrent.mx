@@ -2,21 +2,68 @@
 import Layout from "@layouts/Layout.astro"
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
-<Layout title="Financiamiento" description="Conoce las opciones de financiamiento que Medrent tiene para ti. Facilidades de pago, créditos y más para adquirir tu equipo médico.">
+<Layout
+  title="Financiamiento Korum Capital | Equipos médicos sin enganche | MedRent"
+  description="Adquiere tecnología médica con planes flexibles, tasas preferenciales y aprobación ágil. Acompañamiento biomédico e instalación."
+  keywords="financiamiento equipo médico; Korum Capital; sin enganche; renta equipo médico"
+  ogImage={logoUrl}
+>
     <Fragment slot="head">
         <BreadcrumbSchema
         items={[
-            { name: 'Inicio', url: 'https://www.medrent.mx' },
-            { name: 'Financiamiento', url: 'https://www.medrent.mx/financiamiento' },
+            { name: 'Inicio', url: `${baseUrl}/` },
+            { name: 'Financiamiento', url: `${baseUrl}/financiamiento` },
         ]}
+        id={breadcrumbId}
         />
+        <script type="application/ld+json" set:html={
+          JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebPage",
+                "@id": `${canonicalUrl}#webpage`,
+                "url": canonicalUrl,
+                "name": "Financiamiento Korum Capital | Equipos médicos sin enganche | MedRent",
+                "description":
+                  "Adquiere tecnología médica con planes flexibles, tasas preferenciales y aprobación ágil. Acompañamiento biomédico e instalación.",
+                "isPartOf": { "@id": `${baseUrl}/#website` },
+                "about": { "@id": `${baseUrl}/#organization` },
+                "inLanguage": "es-MX",
+                "breadcrumb": { "@id": breadcrumbId },
+                "primaryImageOfPage": {
+                  "@type": "ImageObject",
+                  "url": logoUrl,
+                },
+                "mainEntity": { "@id": `${canonicalUrl}#service` },
+              },
+              {
+                "@type": ["Service", "FinancialService"],
+                "@id": `${canonicalUrl}#service`,
+                "name": "Financiamiento para tecnología médica",
+                "description":
+                  "Adquiere tecnología médica con planes flexibles, tasas preferenciales y aprobación ágil. Acompañamiento biomédico e instalación.",
+                "provider": { "@id": `${baseUrl}/#organization` },
+                "areaServed": { "@type": "Country", "identifier": "MX" },
+                "serviceType":
+                  "Financiamiento, arrendamiento y planes de pago para tecnología médica (según aprobación)",
+                "termsOfService": `${baseUrl}/condiciones-de-uso`,
+              },
+            ],
+          })
+        }></script>
     </Fragment>
 
     <div class="absolute w-full z-2">
         <Breadcrumb
-        textColor="text-black"
+        textColor="text-white lg:text-black"
         items={[
             { name: "INICIO", href: "/" },
             { name: "FINANCIAMIENTO" }
@@ -31,19 +78,26 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
                     <!-- Layout responsive: mobile = imagen full width arriba, texto abajo -->
                     <!-- En mobile/tablet: Imagen full width primero (arriba) -->
                     <div class="w-full block lg:hidden">
-                        <img src="/temp/FinanciamientoMobile.png" alt="SOMOS MEDRENT" class="w-full h-[50vh] object-cover" loading="lazy" decoding="async">
+                        <img
+                          src="/temp/FinanciamientoMobile.png"
+                          alt="SOMOS MEDRENT"
+                          class="w-full h-auto object-cover object-center"
+                          style="aspect-ratio: 344 / 583;"
+                          loading="lazy"
+                          decoding="async"
+                        >
                     </div>
                     <!-- Layout para desktop y contenido -->
                     <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
                         <div class="w-full flex flex-col items-center justify-center space-y-6 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 order-1 relative">
                             <div class="w-full space-y-6">
-                                <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</h3>
+                                <p class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</p>
 
                                 <div class="text-[16px] md:text-[16px] text-left m-0">
-                                    <p class="text-[28px] md:text-[24px] text-left">
-                                        <strong>Korum Capital: Tecnología médica al alcance de tu práctica&nbsp;</strong>
-                                    </p>
+                                    <h1 class="text-[28px] md:text-[24px] text-left font-bold">
+                                        Korum Capital: Tecnología médica al alcance de tu práctica
+                                    </h1>
                                     <br>
                                     <p>Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
                                 </div>
@@ -213,7 +267,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
                         x-bind:style="openTechItems.includes(1) ? 'max-height: ' + $refs.techContent1.scrollHeight + 'px; opacity: 1;' : 'max-height: 0px; opacity: 0;'"
                         class="transition-all duration-500 ease-in-out overflow-hidden"
                         >
-                        <p class="text-[#4A5568] leading-relaxed mt-4">
+                        <p class="text-on-surface-variant leading-relaxed mt-4">
                             Nuestros especialistas evalúan el rendimiento de tus equipos médicos para garantizar precisión y continuidad operativa. Asesoramos en la actualización o sustitución tecnológica para mantener tu infraestructura siempre al día.
                         </p>
                         </div>
@@ -279,7 +333,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
                         x-bind:style="openTechItems.includes(2) ? 'max-height: ' + $refs.techContent2.scrollHeight + 'px; opacity: 1;' : 'max-height: 0px; opacity: 0;'"
                         class="transition-all duration-500 ease-in-out overflow-hidden"
                         >
-                        <p class="text-[#4A5568] leading-relaxed mt-4">
+                        <p class="text-on-surface-variant leading-relaxed mt-4">
                             Atendemos hospitales, clínicas y consultorios en todo el país, asegurando la entrega, instalación y mantenimiento de equipos con la misma calidad y tiempos óptimos en cualquier región de México.
                         </p>
                         </div>
@@ -345,7 +399,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
                             x-bind:style="openTechItems.includes(3) ? 'max-height: ' + $refs.techContent3.scrollHeight + 'px; opacity: 1;' : 'max-height: 0px; opacity: 0;'"
                             class="transition-all duration-500 ease-in-out overflow-hidden"
                         >
-                            <p class="text-[#4A5568] leading-relaxed mt-4">
+                            <p class="text-on-surface-variant leading-relaxed mt-4">
                             Ofrecemos acompañamiento permanente antes, durante y después de la instalación. Nuestro equipo técnico y comercial brinda orientación personalizada para maximizar el valor y desempeño de tu inversión médica.
                             </p>
                         </div>
@@ -393,7 +447,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
 <!-- Script para Alpine -->
 <script>
-    if (typeof Alpine === 'undefined') {
+    if (typeof window !== 'undefined' && typeof (window as any).Alpine === 'undefined') {
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js';
         script.defer = true;

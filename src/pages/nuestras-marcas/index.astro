@@ -5,19 +5,94 @@ import Layout from '../../layouts/Layout.astro';
 // const brands = BRANDS;
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import ImageResponsive from '@components/media/ImageResponsive.astro';
 
 import { strapiFetch } from "@server/strapiClient";
 const brands = await strapiFetch("/brands?populate=*");
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
-<Layout title="MedRent - Nuestras marcas">
+<Layout
+  title="Marcas de equipo médico | Partners globales | MedRent México"
+  description="Conoce nuestros aliados globales en tecnología médica. Marcas líderes con soporte y acompañamiento para clínicas, hospitales y especialistas."
+  keywords="marcas equipo médico; Cadwell; Deymed; Esaote; Neuroelectrics; MedRent"
+  ogImage={logoUrl}
+>
     <Fragment slot="head">
         <BreadcrumbSchema
         items={[
-            { name: 'Inicio', url: 'https://www.medrent.mx' },
-            { name: 'Nuestras marcas', url: 'https://www.medrent.mx/nuestras-marcas' },
+            { name: 'Inicio', url: `${baseUrl}/` },
+            { name: 'Nuestras marcas', url: `${baseUrl}/nuestras-marcas` },
         ]}
+        id={breadcrumbId}
         />
+        <script type="application/ld+json" set:html={
+          (() => {
+            const list = Array.isArray(brands?.data) ? brands.data.slice(0, 12) : [];
+            const itemListElement = list.map((b, index) => {
+              const brandUrl = `${baseUrl}/nuestras-marcas/${b?.slug || ""}`;
+              const brandId = `${brandUrl}#brand`;
+              const imageUrl = b?.logo?.url;
+              return {
+                "@type": "ListItem",
+                position: index + 1,
+                item: {
+                  "@type": "Brand",
+                  "@id": brandId,
+                  name: b?.name || "Marca",
+                  url: brandUrl,
+                  image: imageUrl ? [imageUrl] : undefined,
+                },
+                url: brandUrl,
+              };
+            });
+
+            return JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebPage",
+                  "@id": `${canonicalUrl}#webpage`,
+                  url: canonicalUrl,
+                  name: "Nuestras marcas - MedRent",
+                  description:
+                    "Listado de marcas globales de tecnología médica representadas por MedRent con soporte y acompañamiento.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  about: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  breadcrumb: { "@id": breadcrumbId },
+                  mainEntity: { "@id": `${canonicalUrl}#brandlist` },
+                  primaryImageOfPage: {
+                    "@type": "ImageObject",
+                    url: logoUrl,
+                  },
+                },
+                {
+                  "@type": "CollectionPage",
+                  "@id": `${canonicalUrl}#brandlist`,
+                  url: canonicalUrl,
+                  name: "Nuestras marcas - MedRent",
+                  description:
+                    "Listado de marcas globales de tecnología médica representadas por MedRent en neurofisiología, neuromodulación, neurocirugía, neurovascular y rehabilitación.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  about: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                },
+                {
+                  "@type": "ItemList",
+                  "@id": `${canonicalUrl}#brandlist-itemlist`,
+                  name: "Marcas — listado",
+                  itemListOrder: "https://schema.org/ItemListOrderAscending",
+                  itemListElement,
+                },
+              ],
+            });
+          })()
+        }></script>
     </Fragment>
 
     <div class="absolute w-full z-2">
@@ -38,14 +113,22 @@ const brands = await strapiFetch("/brands?populate=*");
                     <!-- Layout responsive: mobile = imagen full width arriba, texto abajo -->
                     <!-- En mobile/tablet: Imagen full width primero (arriba) -->
                     <div class="w-full block lg:hidden">
-                        <img src="/temp/marcas/HeroBrandsMobile.png" alt="SOMOS MEDRENT" class="w-full h-[50vh] object-cover" loading="lazy" decoding="async">
+                        <ImageResponsive
+                          src="/temp/marcas/HeroBrandsMobile.png"
+                          alt="SOMOS MEDRENT"
+                          class="w-full h-[50vh] object-cover"
+                          sizes="100vw"
+                          loading="eager"
+                          decoding="async"
+                          fetchpriority="high"
+                        />
                     </div>
                     <!-- Layout para desktop y contenido -->
                     <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
                         <div class="w-full flex flex-col items-center justify-center space-y-6 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 order-1 relative">
                             <div class="w-full space-y-6">
-                                <h3 class="text-[var(--color-accent)] font-bold text-[28px] text-left m-0">Partners tecnológicos</h3>
+                                <h1 class="text-[var(--color-accent)] font-bold text-[28px] text-left m-0">Partners tecnológicos</h1>
 
                                 <div class="text-left m-0">
                                     <p class="text-[16px] text-left">
@@ -60,7 +143,15 @@ const brands = await strapiFetch("/brands?populate=*");
                         </div>
                         <!-- En desktop: Imagen derecha (oculta en mobile) -->
                         <div class="hidden lg:flex flex-1 items-center justify-center relative w-full h-full order-2">
-                            <img src="/temp/marcas/HeroBrands.png" alt="SOMOS MEDRENT" class="w-full h-auto lg:h-[524px] object-cover z-10" loading="lazy" decoding="async">
+                            <ImageResponsive
+                              src="/temp/marcas/HeroBrands.png"
+                              alt="SOMOS MEDRENT"
+                              class="w-full h-auto lg:h-[524px] object-cover z-10"
+                              sizes="(min-width: 1024px) 50vw, 100vw"
+                              loading="eager"
+                              decoding="async"
+                              fetchpriority="high"
+                            />
                         </div>
                     </div>
                 </div>
@@ -72,10 +163,14 @@ const brands = await strapiFetch("/brands?populate=*");
         <section class="max-w-7xl mx-auto px-4 py-16 space-y-12">
             {/* Logo con fondo */}
             <div class={`min-h-[424px] rounded-2xl p-8 flex flex-col justify-center items-center bg-[${brand.primaryColor}]`}>
-                <img
-                    src={brand.logo?.url ?? "/images/default-logo.webp"}
-                    class="w-full max-w-[500px] h-auto"
-                    alt={brand.name}
+                <ImageResponsive
+                  image={brand.logo}
+                  src={brand.logo?.url ?? "/images/default-logo.webp"}
+                  class="w-full max-w-[500px] h-auto"
+                  alt={brand.name}
+                  sizes="(min-width: 1024px) 500px, 90vw"
+                  loading="lazy"
+                  decoding="async"
                 />
             </div>
 

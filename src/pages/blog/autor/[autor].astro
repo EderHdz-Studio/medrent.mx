@@ -3,37 +3,144 @@ import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import ArticleCard from '@components/blog/articleCard.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
-import NewBreadcrumb from '@components/newBreadcrumb.astro';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 
 
 // import { formatDate } from '@lib/utils.js';
 // import SocialMedia from '@components/blog/SocialMedia.astro';
 
 const breadcrumbData = [
-  
-  { name: 'INICIO', url: '/' },
-  { name: 'BLOG', url: '/blog' },
-  { name: 'ARTÍCULO', url: '' }
+  { name: "INICIO", href: "/" },
+  { name: "BLOG", href: "/blog" },
+  { name: "ARTICULO" },
 ];
 
 
 export async function getStaticPaths() {
-  const authors = await strapiFetch('/writers?populate[articles][populate][heroImage]=true&populate[heroImage]=true&populate[articles][populate][writer]=true');
+  const authors = await strapiFetch(
+    "/writers?populate[articles][populate][heroImage]=true&populate[heroImage]=true&populate[articles][populate][writer]=true",
+  );
 
-  return authors.data.map((page) => ({
+  return authors.data.map((page: any) => ({
     params: { autor: page.slug },
-    props: { 
+    props: {
       author: {
         ...page,
         articles: Array.isArray(page.articles) ? page.articles : [],
       },
-    }
+    },
   }));
 }
 const { author } = Astro.props as { author: any };
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const authorHeroImageUrl = author?.heroImage?.url || logoUrl;
+const authorSlug = author?.slug || "autor";
+const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;
+const postlistId = `${canonicalUrl}#postlist`;
 ---
 
-<Layout title="Blog" pageType="blog">
+<Layout
+  title={`${author?.fullName || "Autor"} | Autor en Blog MedRent`}
+  description={author?.shortDescription || "Perfil de autor del Blog MedRent con artículos de tecnología médica."}
+  keywords={`${author?.fullName || "autor"}; blog MedRent; tecnología médica`}
+  pageType="blog"
+  ogImage={authorHeroImageUrl}
+>
+  <Fragment slot="head">
+    <BreadcrumbSchema
+      id={breadcrumbId}
+      items={[
+        { name: "Inicio", url: `${baseUrl}/` },
+        { name: "Blog", url: `${baseUrl}/blog` },
+        { name: author?.fullName || "Autor", url: canonicalUrl },
+      ]}
+    />
+    <script type="application/ld+json" set:html={
+      (() => {
+        const articles = Array.isArray(author?.articles) ? author.articles : [];
+        const slice = articles.slice(0, 10);
+        const itemListElement = slice.map((a, index) => {
+          const postUrl = a?.slug ? `${baseUrl}/blog/${a.slug}` : canonicalUrl;
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            url: postUrl,
+            item: {
+              "@type": "BlogPosting",
+              "@id": `${postUrl}#post`,
+              headline: a?.title || "Blog MedRent",
+              datePublished: a?.createdAt,
+            },
+          };
+        });
+
+        return JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": `${canonicalUrl}#webpage`,
+              url: canonicalUrl,
+              name: `${author?.fullName || "Autor"} | Autor en Blog MedRent`,
+              description:
+                author?.shortDescription ||
+                "Perfil de autor del Blog MedRent con artículos de tecnología médica.",
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              breadcrumb: { "@id": breadcrumbId },
+              mainEntity: { "@id": personId },
+              primaryImageOfPage: {
+                "@type": "ImageObject",
+                url: authorHeroImageUrl,
+              },
+            },
+            {
+              "@type": "Person",
+              "@id": personId,
+              name: author?.fullName || "Autor",
+              description: author?.shortDescription,
+              image: author?.heroImage?.url
+                ? {
+                    "@type": "ImageObject",
+                    url: author?.heroImage?.url,
+                  }
+                : undefined,
+              url: canonicalUrl,
+              worksFor: { "@id": `${baseUrl}/#organization` },
+            },
+            {
+              "@type": "ProfilePage",
+              "@id": `${canonicalUrl}#profile`,
+              url: canonicalUrl,
+              name: `${author?.fullName || "Autor"} — Autor`,
+              description: author?.shortDescription,
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              publisher: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              breadcrumb: { "@id": breadcrumbId },
+              mainEntity: { "@id": personId },
+            },
+            {
+              "@type": "ItemList",
+              "@id": postlistId,
+              name: `Artículos de ${author?.fullName || "Autor"}`,
+              itemListOrder:
+                "https://schema.org/ItemListOrderDescending",
+              numberOfItems: slice.length,
+              itemListElement,
+            },
+          ],
+        });
+      })()
+    }></script>
+  </Fragment>
+
   <Fragment slot="metas">
     <!-- <meta id="description" content={pageDescription}>
     <meta property="og:title" content={pageTitle}>
@@ -49,7 +156,7 @@ const { author } = Astro.props as { author: any };
  <section class="heroAutor max-w-[1280px] w-full flex flex-col items-center justify-center bg-[var(--color-secondary-light)] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
     <div class="containerHero w-full flex flex-col md:flex-row items-center gap-6 pt-16 px-4 sm:px-6 md:px-8 pb-4 md:pb-6 lg:py-16 lg:px-8">
       <div class="breadcrumb-fixed-wrapper max-w-7xl px-4" style="position:absolute;top:0;left:0;width:100%;z-index:30;pointer-events:auto;">
-        <NewBreadcrumb data={breadcrumbData} />
+        <Breadcrumb items={breadcrumbData} textColor="text-white" />
       </div>
 
       <style>
@@ -77,7 +184,7 @@ const { author } = Astro.props as { author: any };
       <section>
         <h2 class="text-[#261819] font-lato text-[28px] font-light mb-4 md:mb-6 mt-4 md:mt-0 uppercase">{author.articles.length} Artículos</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {author.articles.map((articulo:any) => (
+          {author.articles.map((articulo) => (
             // console.log(articulo)
             <ArticleCard article={articulo} />
           ))}

@@ -23,11 +23,20 @@ const especialidad = Array.isArray(categories)
   : null;
 const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ?? ""}`;
 
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = canonical;
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+
 // console.log('Datos de especialidad:', especialidad);
 // console.log('Subcategorías:', especialidad?.subcategories);
 ---
 
-<Layout>
+<Layout
+  title={`${especialidad?.name ?? "Especialidad"} | Aplicaciones clínicas y tecnología médica | MedRent`}
+  description={especialidad?.heroDescription ?? "Tecnología médica para diagnóstico, terapia y rehabilitación con soporte especializado de MedRent."}
+  keywords={`${especialidad?.name ?? "especialidad"}; tecnología médica; equipos médicos; MedRent`}
+>
   <style>
     body {
       background: #F5FAF9;
@@ -38,11 +47,79 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
   <BreadcrumbSchema
     slot="head"
     items={[
-      { name: 'Inicio', url: 'https://www.medrent.mx' },
-      { name: 'Especialidades', url: 'https://www.medrent.mx/especialidades' },
-      { name: especialidad?.name ?? "", url: canonical },
+      { name: 'Inicio', url: `${baseUrl}/` },
+      { name: 'Especialidades', url: `${baseUrl}/especialidades` },
+      { name: especialidad?.name ?? "", url: canonicalUrl },
     ]}
+    id={breadcrumbId}
   />
+
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={
+      (() => {
+        const subs = Array.isArray(especialidad?.subcategories)
+          ? especialidad.subcategories.filter((s) => s?.slug)
+          : [];
+        const specialtyId = `${canonicalUrl}#specialty`;
+        const listId = `${canonicalUrl}#applications`;
+        const itemListElement = subs.slice(0, 12).map((s, index) => {
+          const subSlug = s?.slug;
+          const subUrl = `${baseUrl}/especialidades/${especialidad?.slug ?? ""}/${subSlug}`;
+          const subName = s?.name ?? s?.Nombre ?? s?.title ?? "Aplicación";
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": "MedicalSpecialty",
+              "@id": `${subUrl}#specialty`,
+              name: subName,
+              url: subUrl,
+            },
+            url: subUrl,
+          };
+        });
+
+        return JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": `${canonicalUrl}#webpage`,
+              url: canonicalUrl,
+              name: `${especialidad?.name ?? "Especialidad"} | Aplicaciones clínicas y tecnología médica | MedRent`,
+              description:
+                especialidad?.heroDescription ||
+                "Tecnología médica para diagnóstico, terapia y rehabilitación con soporte especializado de MedRent.",
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              breadcrumb: { "@id": breadcrumbId },
+              mainEntity: { "@id": listId },
+              primaryImageOfPage: {
+                "@type": "ImageObject",
+                url: especialidad?.heroImage?.url || logoUrl,
+              },
+            },
+            {
+              "@type": "MedicalSpecialty",
+              "@id": specialtyId,
+              name: especialidad?.name ?? "Especialidad",
+              url: canonicalUrl,
+              description: especialidad?.heroDescription,
+              relevantSpecialty: { "@id": `${baseUrl}/#organization` },
+            },
+            {
+              "@type": "ItemList",
+              "@id": listId,
+              name: `${especialidad?.name ?? "Especialidad"} — aplicaciones clínicas`,
+              itemListOrder: "https://schema.org/ItemListOrderAscending",
+              itemListElement,
+            },
+          ],
+        });
+      })()
+    }></script>
+  </Fragment>
 
   <div class="w-full max-w-7xl mx-auto flex flex-col ">
     <!-- Hero Section de la Categoría -->
@@ -108,10 +185,10 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
         </div>
       </div>
 
-      {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).length > 0 && (
+      {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion) => aplicacion.slug).length > 0 && (
         <section class="mb-16 bg-[#F5FAF9]">
           <div class="space-y-[25px]">
-            {especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).map((aplicacion: any, index: number) => (
+            {especialidad.subcategories.filter((aplicacion) => aplicacion.slug).map((aplicacion, index) => (
               <div>
               <div class={`flex flex-col-reverse sm:flex-row md:flex-row w-full rounded-lg gap-4 p-4 md:gap-6 md:p-6 lg:gap-6 lg:py-6 lg:px-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}> 
                 

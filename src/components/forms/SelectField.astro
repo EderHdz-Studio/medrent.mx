@@ -1,19 +1,24 @@
 ---
 // src/components/forms/SelectField.astro
 const { label, name, options = [] } = Astro.props;
+const selectId = `${name}-select`;
+const helperTextId = `${name}-placeholder`;
+const otherId = `${name}-other`;
 ---
 
 <div class="relative form-select">
-  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
+  <label for={selectId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
     {label}*
   </label>
 
   <select
+    id={selectId}
     name={name}
     required
-    class="w-full border border-[var(--color-green-dark)] border-2 appearance-none rounded-[4px] px-4 py-3 text-[#A0A0A0] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] transition-colors duration-300 pr-10 cursor-pointer"
+    aria-describedby={helperTextId}
+    class="w-full border border-[var(--color-green-dark)] border-2 appearance-none rounded-[4px] px-4 py-3 text-[#212121] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] transition-colors duration-300 pr-10 cursor-pointer"
   >
-    <option value="">¿Cuál es tu especialidad médica?</option>
+    <option id={helperTextId} value="" selected disabled>¿Cuál es tu especialidad médica?</option>
     {options.map(option => (
       <option value={option}>{option}</option>
     ))}
@@ -22,11 +27,12 @@ const { label, name, options = [] } = Astro.props;
 
 
 <div class="relative form-field hidden"  id="otraEspecialidad">
-  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
+  <label for={otherId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
     ¿Otra especialidad? Escribe aquí
   </label>
 
   <input
+    id={otherId}
     name="otras_especialidades"
     type="text"
     placeholder="Escribe aquí tu especialidad"

@@ -11,19 +11,30 @@ import PhoneField from "@components/forms/PhoneField.astro";
 import SelectField from "@components/forms/SelectField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import ImageResponsive from "@components/media/ImageResponsive.astro";
 
 
 let articulosRelacionados = null;
+let marcasData = [];
+let promotionsData = [];
 try {
-    const relacionados = await strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true');
+    const [relacionados, brandsResp, promotionsResp] = await Promise.all([
+        strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true'),
+        strapiFetch("/brands?populate=*"),
+        strapiFetch("/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc"),
+    ]);
     
     // La respuesta de strapiFetch probablemente ya viene como data
     articulosRelacionados = relacionados?.data || relacionados || [];
+    marcasData = Array.isArray(brandsResp?.data) ? brandsResp.data : [];
+    promotionsData = Array.isArray(promotionsResp?.data) ? promotionsResp.data : [];
     
-    console.log('Artículos cargados:', articulosRelacionados);
 } catch (e) {
     console.error('Error cargando artículos:', e);
     articulosRelacionados = [];
+    marcasData = [];
+    promotionsData = [];
 }
 
 
@@ -66,24 +77,67 @@ const marcas = [
         iconImage: '/temp/categorias/img - especialidad-5.png',
     },
 ];
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
-<Layout title="Med Rent - Distribuimos las mejores marcas de equipo médico">
+<Layout
+  title="MedRent México | Tecnología médica y financiamiento sin enganche"
+  description="Equipos médicos para neurodiagnóstico, neuromodulación, rehabilitación y ultrasonido con soporte y asesoría. Agenda tu demo."
+  keywords="equipo médico México; financiamiento equipo médico; neurodiagnóstico; neuromodulación; rehabilitación; ultrasonido"
+  ogImage={logoUrl}
+>
+
+    <Fragment slot="head">
+        <BreadcrumbSchema
+            id={breadcrumbId}
+            items={[
+                { name: "Inicio", url: `${baseUrl}/` },
+            ]}
+        />
+        <script type="application/ld+json" set:html={
+            JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": [
+                    {
+                        "@type": "WebPage",
+                        "@id": `${canonicalUrl}#webpage`,
+                        url: canonicalUrl,
+                        name:
+                            "MedRent México | Tecnología médica y financiamiento sin enganche",
+                        description:
+                            "Equipos médicos para neurodiagnóstico, neuromodulación, rehabilitación y ultrasonido con soporte y asesoría. Agenda tu demo.",
+                        isPartOf: { "@id": `${baseUrl}/#website` },
+                        about: { "@id": `${baseUrl}/#organization` },
+                        inLanguage: "es-MX",
+                        breadcrumb: { "@id": breadcrumbId },
+                        primaryImageOfPage: {
+                            "@type": "ImageObject",
+                            url: logoUrl,
+                        },
+                    },
+                ],
+            })
+        }></script>
+    </Fragment>
 
     <!-- Sección de contacto -->
     <section class="max-w-7xl mx-auto grid md:grid-cols-2 gap-6 rounded-a-[24px] pt-6 pr-4 pb-0 pl-4 md:py-6 md:px-6 lg:px-[135px] lg:py-6">
         <!-- Columna 1: Encabezado -->
         <div class="space-y-2 p-0 md:pt-16 md:pb-16 md:px-0 lg:pt-[100px] lg:pb-6 lg:px-6 xl:px-6 2xl:px-6">
-            <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase "> SOMOS MEDRENT</h3>
-            <h1 class="font-normal md:text-[28px] text-[28px]  mb-6">
+            <h1 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase "> SOMOS MEDRENT</h1>
+            <h2 class="font-normal md:text-[28px] text-[28px]  mb-6">
                 {dataHome.TituloContacto || 'La tecnología del futuro, hoy en tu consultorio gracias a MedRent. Financiamiento sin enganche.'}
-            </h1>
+            </h2>
             <p class="text-[#212121] md:text-[16px] text-[16px] text-[var(--color-green-dark)] mt-2 text-pretty">
                 
                 {dataHome.DescripcionContacto ? (
                     <BlocksRenderer content={dataHome.DescripcionContacto} />
                 ) : (
                     <>
-                        <span class="font-light">En MedRent no solo distribuimos equipos, impulsamos tu crecimiento profesional. Déjanos asesorarte para encontrar la solución tecnológica perfecta para transformar la vida de tus pacientes.</strong>
+                        <span class="font-light">En MedRent no solo distribuimos equipos, impulsamos tu crecimiento profesional. Déjanos asesorarte para encontrar la solución tecnológica perfecta para transformar la vida de tus pacientes.</span>
                     </>
                 )}
             </p>
@@ -132,177 +186,35 @@ const marcas = [
             </BaseForm>
         </div>
         <script type="module">
-            import { initForm } from "/scripts/formValidator.js";
-
             document.addEventListener("DOMContentLoaded", () => {
-                initForm("home-form");
+                const formId = "home-form";
+                const form = document.getElementById(formId);
+                if (!form) return;
+
+                let mounted = false;
+                const mountValidation = async () => {
+                    if (mounted) return;
+                    mounted = true;
+                    const { initForm } = await import("/scripts/formValidator.js");
+                    initForm(formId);
+                };
+
+                const onFirstInteraction = () => {
+                    form.removeEventListener("focusin", onFirstInteraction);
+                    form.removeEventListener("input", onFirstInteraction);
+                    mountValidation().catch(() => {});
+                };
+
+                form.addEventListener("focusin", onFirstInteraction, { once: true });
+                form.addEventListener("input", onFirstInteraction, { once: true });
             });
         </script>
         
-        <!-- <form id="home-form" class="space-y-6 p-0 pt-8 pb-8 md:pt-16 md:pb-16 md:px-0 lg:pt-[100px] lg:pb-6 lg:px-6 xl:px-6 2xl:px-6 rounded">
-            <div class="relative">
-                <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs" style="background: #3D4948!important;">Nombre completo*</label>
-                <input name="name" type="text" placeholder="Ej: Dra. Carolina Ávila" required class="w-full border border-[var(--color-green-dark)] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300" />
-            </div>
-
-            <div class="relative">
-                <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">Correo electrónico*</label>
-                <input name="email" type="email" placeholder="Ej: carolina.avila@hospitalneuro.mx" required class="w-full border border-[var(--color-green-dark)] border-2 focus:border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300" />
-            </div>
-
-
-		<div class="relative">
-			<label class="absolute -top-3 left-3 bg-[#5A4043] px-2 text-sm text-[#FFF] rounded-xs z-[9999]">Teléfono de contacto*</label>
-			
-			<div style="position: relative;">
-				<input
-					id="phone"
-					name="phone"
-					type="tel"
-					placeholder="Ej. +52 55 1234 5678"
-					required
-					class="w-full border-[#5A3A36] border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#5A4043] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[#ECE0E0] focus:bg-[#FFECED] transition-colors duration-300"
-					inputmode="numeric"
-					autocomplete="off"
-				/>
-				
-				<div id="country-dropdown" class="absolute left-0 w-full hidden" style="top: 100%; z-index: 10000;">
-					<div class="border-2 border-[#8C0032] border-t-0 rounded-b-[4px] bg-white shadow-[0_12px_16px_-4px_rgba(49,48,48,0.10),0_4px_6px_-2px_rgba(49,48,48,0.05)]" 
-						style="max-height: 170px; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
-						
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+52">MX — México +52</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+1">US — Estados Unidos +1</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+57">CO — Colombia +57</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+56">CL — Chile +56</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+51">PE — Perú +51</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+34">ES — España +34</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+1">CA — Canadá +1</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+54">AR — Argentina +54</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+58">VE — Venezuela +58</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+593">EC — Ecuador +593</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+502">GT — Guatemala +502</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+506">CR — Costa Rica +506</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+507">PA — Panamá +507</div>
-						<div class="country-option px-4 py-2 hover:bg-[#FFECED] cursor-pointer" data-code="+503">SV — El Salvador +503</div>
-					</div>
-				</div>
-			</div>
-
-			<span id="phone-success-icon" style="display:none; position:absolute; right:10px; top:26%; transform:translateY(-50%);">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-				<path d="M9.99301 19.421L3.28601 12.58L4.71401 11.18L10.007 16.579L19.293 7.293L20.707 8.707L9.99301 19.421Z" fill="#261819"/>
-				</svg>
-			</span>
-		</div>
-        	<style>
-		    select::-webkit-inner-spin-button,
-			select::-webkit-outer-spin-button,
-			select::-webkit-search-cancel-button,
-			select::-webkit-search-decoration,
-			select::-webkit-search-results-button,
-			select::-webkit-search-results-decoration,
-			select::-ms-expand  {
-				display: none;
-			}
-
-			#country-dropdown > div {
-				max-height: 170px !important;
-				overflow-y: auto !important;
-				-webkit-overflow-scrolling: touch !important;
-				overscroll-behavior: contain !important;
-			}
-
-			#country-dropdown > div::-webkit-scrollbar {
-				width: 8px !important;
-				display: block !important;
-			}
-			#country-dropdown > div::-webkit-scrollbar-track {
-				background: #FFD9DD !important;
-			}
-			#country-dropdown > div::-webkit-scrollbar-thumb {
-				background: bg-[var(--color-primary)] !important;
-				border-radius: 4px !important;
-			}
-
-		</style>
-
-
-            <div class="relative">
-                <label for="specialty" class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
-                Especialidad médica*
-                </label>
-            
-                <select
-                    name="specialty"
-                    id="specialty"
-                    required
-                    class="w-full border border-[var(--color-green-dark)] border-2 focus:border-2 appearance-none rounded-[4px] px-4 py-3 text-[#A0A0A0] focus:outline-none outline-none focus:ring-0 bg-white hover:bg-[var(--color-secondary-light)]  transition-colors duration-300 pr-10 cursor-pointer"
-                    onchange="this.classList.remove('text-[#A0A0A0]')"
-                >
-                        <option value="">¿Cuál es tu especialidad?</option>
-                        <option value="Neurocirugía">Neurocirugía</option>
-                        <option value="Neurofisiología">Neurofisiología</option>
-                        <option value="Neuromodulación">Neuromodulación</option>
-                        <option value="Rehabilitación">Rehabilitación</option>
-                        <option value="Neurovascular">Neurovascular</option>
-                        <option value="Otra">Otra</option>
-                </select>
-   
-                <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                <svg class="w-4 h-4 text-[#5A3A36]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-                </div>
-            </div>
-
-            <style>
-                select::-webkit-inner-spin-button,
-                select::-webkit-outer-spin-button,
-                select::-webkit-search-cancel-button,
-                select::-webkit-search-decoration,
-                select::-webkit-search-results-button,
-                select::-webkit-search-results-decoration,
-                select::-ms-expand  {
-                    display: none;
-                }
-
-            </style>
-        
-            <input type="hidden" name="unidades_de_negocios" value="MEDRENT" />
-            <input type="hidden" name="hs_all_assigned_business_unit_ids" value="0" />
-            <input type="hidden" name="utm_term" />
-            <input type="hidden" name="utm_medium" />
-            <input type="hidden" name="utm_source" />
-            <input type="hidden" name="utm_content" />
-            <input type="hidden" name="utm_campaign" />
-            <input type="hidden" name="definicion_de_necesidad" value="Compra Equipo Médico" />
-        
-            <div class="flex items-start gap-2">
-                <input
-                type="checkbox"
-                id="aviso"
-                required
-                class="mt-1 border-[#5A3A36] text-[#5A3A36] focus:ring-[#5A3A36]"
-                />
-                <label for="aviso" class="text-sm text-[#212121] cursor-pointer">
-                He leído y acepto el
-                <a href="/aviso-de-privacidad" target="_blank" class="text-[var(--color-accent)] underline">
-                    Aviso de Privacidad
-                </a>
-                </label>
-            </div>
-        
-            <button id="submit-btn" type="submit" class="bg-[var(--color-primary)] text-white m-0 rounded w-full font-bold transition  cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed py-3 px-4 " aria-label="Recibir asesoría personalizada" disabled>
-                 Agenda una DEMO
-            </button>
-        
-            <div id="status" class="text-center mt-2 text-sm"></div>
-        </form>	 -->
     </section>
 
 
     <!--  Sección mosaico de categorías-->
-    <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
+    <section class="defer-section py-6 px-0 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
         <div class="text-center p-6">
             <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center "> Especialistas en tecnología</h3>
             <h2 class=" text-[24px] font-bold font-bold text-[var(--color-text-default)] tracking-tight">
@@ -334,7 +246,16 @@ const marcas = [
             .map((marca) => (
             <div class="text-center p-6 w-full md:w-[45%] lg:w-[30%]" key={marca.slug}>
                 <div class="flex items-center justify-center p-4">
-                    <img src={marca.iconImage} alt={marca.name} class="w-[84px] h-[84px]" />
+                    <ImageResponsive
+                      src={marca.iconImage}
+                      alt={marca.name}
+                      width={84}
+                      height={84}
+                      class="w-[84px] h-[84px]"
+                      sizes="84px"
+                      loading="lazy"
+                      decoding="async"
+                    />
                 </div>
                 <h3 class="my-2 text-[22px] font-bold text-[var(--color-primary)]">
                 {marca.name}
@@ -358,50 +279,56 @@ const marcas = [
     </section>
 
     <!-- Sección slider de marcas -->
-    <BrandSlider />
+    <BrandSlider marcasData={marcasData} />
 
     <!-- Sección slider de promociones -->
-    <PromotionSlider />
+    <PromotionSlider promotionsData={promotionsData} />
 
     <!--  Sección de financiamiento-->
-    <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
+    <section class="defer-section py-6 px-0 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
         <div class="hero-slider relative w-full h-full">
             <div id="slides-hero" class="relative w-full h-full">
                 <div class="fade-slide-hero w-full h-full active-slide-hero">
                     <!-- Layout responsive: mobile = imagen full width arriba, texto abajo -->
                     <!-- En mobile/tablet: Imagen full width primero (arriba) -->
-                    <div class="w-full block lg:hidden">
-                        <img src="/temp/FinanciamientoMobile.png" alt="SOMOS MED RENT" class="w-full h-[50vh] object-cover" loading="lazy" decoding="async">
-                    </div>
+                    <div class="w-full block lg:hidden financing-hero-mobile" aria-hidden="true"></div>
                     <!-- Layout para desktop y contenido -->
                     <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
-                        <div class="w-full flex flex-col items-center justify-center space-y-6 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 order-1 relative">
-                            <div class="w-full space-y-6">
-                                <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</h3>
+                        <div class="w-full flex flex-col items-center justify-center space-y-4 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 lg:space-y-6 order-1 relative">
+                            <div class="w-full space-y-6 financing-copy-card">
+                                <h3 class="type-eyebrow text-[var(--color-accent)] text-left m-0">FINANCIAMIENTO</h3>
 
-                                <div class="text-[16px] md:text-[16px] text-left m-0">
-                                    <p class="text-[28px] md:text-[24px] text-left">
+                                <div class="type-body text-left m-0">
+                                    <p class="type-h3 text-left">
                                         <strong>Korum Capital: Tecnología médica al alcance de tu práctica&nbsp;</strong>
                                     </p>
                                     <br>
-                                    <p>Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
+                                    <p class="type-body">Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
                                 </div>
-                                <a
-                                href="/contacto"
-                                class="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white py-3 px-4 m-0 mt-6 rounded w-full font-bold transition cursor-pointer flex justify-center gap-2"
-                                aria-label="Recibir asesoría personalizada"
-                                >
-                                    Recibir asesoría personalizada
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white"/>
-                                    </svg>
-                                </a>
                             </div>
+                            <a
+                            href="/contacto"
+                            class="medrent-btn-primary w-full m-0"
+                            aria-label="Recibir asesoría personalizada"
+                            >
+                                Recibir asesoría personalizada
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white"/>
+                                </svg>
+                            </a>
                         </div>
                         <!-- En desktop: Imagen derecha (oculta en mobile) -->
                         <div class="hidden lg:flex flex-1 items-center justify-center relative w-full h-full order-2">
-                            <img src="/temp/Financiamiento.png" alt="SOMOS MED RENT" class="w-full h-auto lg:h-[524px] object-cover z-10" loading="lazy" decoding="async">
+                            <ImageResponsive
+                              src="/temp/Financiamiento.png"
+                              alt="SOMOS MED RENT"
+                              class="w-full h-auto lg:h-[524px] object-cover z-10"
+                              sizes="(min-width: 1024px) 50vw, 100vw"
+                              loading="eager"
+                              decoding="async"
+                              fetchpriority="high"
+                            />
                         </div>
                     </div>
                 </div>
@@ -410,264 +337,37 @@ const marcas = [
     </section>
 
     <!--  Sección de eventos -->
-    <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
+    <section class="defer-section max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
         <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
-        <h3 class=" mb-6 font-normal text-[28px] text-[#212121] font-lato">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
+        <h3 class="mb-6 font-lato medrent-headline-section">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
         <SlideArticles articulos={articulosRelacionados} />
     </section>
 
 
 
-	<!-- <script type="module">
-        		// DROPDOWN
-		const phoneInput = document.querySelector('input[name="phone"]');
-
-		const dropdown = document.getElementById('country-dropdown');
-
-		function closeDropdown() {
-			dropdown.classList.add('hidden');
-			document.body.classList.remove('dropdown-open');
-		}
-
-		if (phoneInput && dropdown) {
-			phoneInput.addEventListener('click', (e) => {
-				e.stopPropagation();
-				dropdown.classList.remove('hidden');
-				document.body.classList.add('dropdown-open');
-			});
-			
-			document.querySelectorAll('.country-option').forEach(option => {
-				option.addEventListener('click', (e) => {
-					e.stopPropagation();
-					const code = option.dataset.code;
-					const currentNumber = phoneInput.value.replace(/^\+\d+\s*/, '');
-					phoneInput.value = code + ' ' + currentNumber;
-					phoneInput.focus();
-					closeDropdown();
-					validatePhone();
-					checkAll();
-				});
-			});
-			
-			document.addEventListener('click', (e) => {
-				if (!phoneInput.contains(e.target) && !dropdown.contains(e.target)) {
-					closeDropdown();
-				}
-			});
-			
-			dropdown.addEventListener('click', (e) => e.stopPropagation());
-			
-			// Prevenir que el scroll del dropdown afecte a la página
-			const scrollContainer = dropdown.querySelector('div');
-			if (scrollContainer) {
-				scrollContainer.addEventListener('wheel', (e) => {
-					e.stopPropagation();
-				}, { passive: false });
-			}
-		}
-
-
-		// Validación de campos y habilitación de botón
-		document.addEventListener('DOMContentLoaded', function() {
-			const form = document.getElementById('home-form');
-			const nameInput = form.querySelector('input[name="name"]');
-			const emailInput = form.querySelector('input[name="email"]');
-			// const phoneInput = form.querySelector('input[name="phone"]');
-			const selectInput = form.querySelector('select[name="specialty"]');
-			const termsInput = form.querySelector('input[type="checkbox"]#aviso');
-			const submitBtn = document.getElementById('submit-btn');
-
-			// Obtener color primario desde variables CSS
-			const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
-			const greenDarkColor = getComputedStyle(document.documentElement).getPropertyValue('--color-green-dark').trim();
-
-			function validateName() {
-				const label = nameInput.parentElement.querySelector('label');
-				if (nameInput.value.trim().length >= 3) {
-					nameInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
-					if (label) label.style.background = primaryColor;
-					return true;
-				} else {
-					nameInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
-					if (label) label.style.background = greenDarkColor;
-					return false;
-				}
-			}
-
-			function validateEmail() {
-				const label = emailInput.parentElement.querySelector('label');
-				const value = emailInput.value.trim();
-				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-				if (emailRegex.test(value)) {
-					emailInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
-					if (label) label.style.background = primaryColor;
-					return true;
-				} else {
-					emailInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
-					if (label) label.style.background = greenDarkColor;
-					return false;
-				}
-			}
-
-			function validatePhone() {
-				const label = phoneInput.parentElement.querySelector('label');
-				const digits = phoneInput.value.replace(/\D/g, '');
-				if (digits.length >= 10) {
-					phoneInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
-					if (label) label.style.background = primaryColor;
-					return true;
-				} else {
-					phoneInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
-					if (label) label.style.background = greenDarkColor;
-					return false;
-				}
-			}
-
-			function validateSelect() {
-				const label = selectInput.parentElement.querySelector('label');
-				if (selectInput.value && selectInput.value !== '') {
-					selectInput.classList.remove('text-[#A0A0A0]');
-					selectInput.style.setProperty('border', `3px solid ${primaryColor}`, 'important');
-					if (label) label.style.background = primaryColor;
-					return true;
-				} else {
-					selectInput.style.setProperty('border', `2px solid ${greenDarkColor}`, 'important');
-					if (label) label.style.background = greenDarkColor;
-					return false;
-				}
-			}
-            // Elimina el fondo azul de autocomplete para todos los inputs
-            const style = document.createElement('style');
-            style.innerHTML = `
-                input:-webkit-autofill,
-                input:-webkit-autofill:focus,
-                input:-webkit-autofill:hover,
-                input:-webkit-autofill:active {
-                    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
-                    box-shadow: 0 0 0 1000px #fff inset !important;
-                    background-color: #fff !important;
-                    color: #261819 !important;
-                    transition: background-color 5000s ease-in-out 0s;
-                    outline: none !important;
-                }
-            `;
-            document.head.appendChild(style);
-
-			function validateTerms() {
-				return termsInput.checked;
-			}
-
-			function checkAll() {
-				const allValid = validateName() && validateEmail() && validatePhone() && validateSelect() && validateTerms();
-				if (allValid) {
-					submitBtn.disabled = false;
-					submitBtn.classList.add('hover:bg-[#6B0028]');
-				} else {
-					submitBtn.disabled = true;
-					submitBtn.classList.remove('hover:bg-[#6B0028]');
-				}
-			}
-
-			nameInput.addEventListener('input', checkAll);
-			emailInput.addEventListener('input', checkAll);
-			phoneInput.addEventListener('input', checkAll);
-			selectInput.addEventListener('change', checkAll);
-			termsInput.addEventListener('change', checkAll);
-
-			// Inicializa el estado al cargar
-			checkAll();
-		});
-
-
-        // Formato teléfono - Versión simplificada
-        // const phoneInput = document.getElementById("phone");
-
-        phoneInput.addEventListener("input", () => {
-            // Permitir solo números, máximo 10 dígitos
-            let numbers = phoneInput.value.replace(/\D/g, "");
-            if (numbers.length > 10) {
-                numbers = numbers.slice(0, 10);
-            }
-            phoneInput.value = numbers;
-        });
-
-        // Procesar formulario
-        const form = document.getElementById("home-form");
-        const status = document.getElementById("status");
-
-        // Capturar UTM de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const utmFields = [
-            "utm_term",
-            "utm_medium",
-            "utm_source",
-            "utm_content",
-            "utm_campaign",
-        ];
-
-        utmFields.forEach((field) => {
-            const value = urlParams.get(field) || "";
-            const input = form.querySelector(`input[name="${field}"]`);
-            if (input) input.value = value;
-        });
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            // 👇 Asegura que se actualice el campo oculto antes del envío
-            if (typeof window.applyEquipos === "function") window.applyEquipos();
-
-            const formData = new FormData(form);
-            // Construir el objeto manualmente para mayor control y evitar errores de JSON
-            const data = {};
-            formData.forEach((value, key) => {
-                if (data.hasOwnProperty(key)) {
-                    if (!Array.isArray(data[key])) {
-                        data[key] = [data[key]];
-                    }
-                    data[key].push(value);
-                } else {
-                    data[key] = value;
-                }
-            });
-
-            // Validación de teléfono mexicano (10 dígitos)
-            const phoneRaw = String(data.phone || '').replace(/[^0-9]/g, '');
-            if (phoneRaw.length !== 10) {
-                status.textContent = "❌ El número de teléfono debe tener exactamente 10 dígitos (México).";
-                return;
-            }
-
-            try {
-                const jsonBody = JSON.stringify(data);
-                console.log("Objeto de datos a enviar:", data);
-                // console.log("JSON string enviado:", jsonBody);
-
-                const response = await fetch("/api/contact", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: jsonBody,
-                });
-
-                if (response.ok) {
-                    status.textContent = "✅ Tu solicitud se envió correctamente. Pronto nos pondremos en contacto.";
-                    // sendFormEvent();
-                    form.reset();
-                } else {
-                    const resData = await response.json();
-                    if (resData.category === 'CONFLICT') {
-                        status.textContent = "✅ Tu solicitud ya está en proceso. ";
-                        form.reset();
-                    } else {
-                        status.textContent = "❌ Hubo un problema al enviar tu solicitud. Intenta nuevamente más tarde.";
-                    }
-                    console.error("Error response:", resData);
-                }
-
-            } catch (error) {
-                console.error("Network error:", error);
-                status.textContent = "❌ Error de red. Por favor, verifica tu conexión e intenta nuevamente.";
-            }
-        });
-    </script> -->
 </Layout>
+
+<style>
+  .financing-hero-mobile {
+    flex: 1 0 0;
+    align-self: stretch;
+    aspect-ratio: 385 / 500;
+    background:
+      linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 38%),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.22) 100%),
+      url("/temp/FinanciamientoMobile.png") center center / cover no-repeat;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .financing-hero-mobile {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .financing-copy-card {
+      background: #fff;
+      padding: 16px;
+    }
+  }
+</style>

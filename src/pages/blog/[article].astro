@@ -6,18 +6,31 @@ import SocialMedia from '@components/blog/SocialMedia.astro';
 // import SlideArticulos from '@components/blog/SlideArticulos.astro';
 import Newsletter from '@components/FormNewsletter.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 
 export async function getStaticPaths() {
-const articles = await strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true&populate[content][populate]=*');  
-return articles.data.map((page) => ({
+  const articles = await strapiFetch(
+    "/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true&populate[content][populate]=*",
+  );
+
+  return articles.data.map((page) => ({
     params: { article: page.slug },
-    props: { 
+    props: {
       article: page,
-    }
+    },
   }));
 }
 
 const { article } = Astro.props as { article: any };
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl = article?.heroImage?.url || logoUrl;
+const authorSlug = article?.writer?.slug || 'team-medrent';
+const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;
+const postId = `${canonicalUrl}#post`;
 
 // Obtener artículos relacionados (excluyendo el actual)
 let articulosRelacionados = [];
@@ -44,7 +57,79 @@ try {
 }
 ---
 
-<Layout title={article?.title || "Blog"} pageType="blog">
+<Layout
+  title={article?.title || "Blog MedRent"}
+  description={article?.shortDescription || "Artículo de MedRent sobre tecnología médica e innovación clínica."}
+  keywords={`${article?.title || "blog"}; tecnología médica; MedRent`}
+  ogType="article"
+  pageType="blog"
+  ogImage={heroImageUrl}
+>
+  <Fragment slot="head">
+    <BreadcrumbSchema
+      id={breadcrumbId}
+      items={[
+        { name: "Inicio", url: `${baseUrl}/` },
+        { name: "Blog", url: `${baseUrl}/blog` },
+        { name: article?.title || "Artículo", url: canonicalUrl },
+      ]}
+    />
+    <script type="application/ld+json" set:html={
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": `${canonicalUrl}#webpage`,
+            url: canonicalUrl,
+            name: article?.title || "Blog MedRent",
+            description:
+              article?.shortDescription ||
+              "Artículo de MedRent sobre tecnología médica e innovación clínica.",
+            isPartOf: { "@id": `${baseUrl}/#website` },
+            about: { "@id": `${baseUrl}/#organization` },
+            inLanguage: "es-MX",
+            breadcrumb: { "@id": breadcrumbId },
+            mainEntity: { "@id": postId },
+            primaryImageOfPage: {
+              "@type": "ImageObject",
+              url: heroImageUrl,
+            },
+          },
+          {
+            "@type": "Person",
+            "@id": personId,
+            name: article?.writer?.fullName || "Autor",
+            description: article?.writer?.shortDescription,
+            image: article?.writer?.avatar?.url
+              ? {
+                  "@type": "ImageObject",
+                  url: article?.writer?.avatar?.url,
+                }
+              : undefined,
+            url: `${baseUrl}/blog/autor/${authorSlug}`,
+            worksFor: { "@id": `${baseUrl}/#organization` },
+          },
+          {
+            "@type": "BlogPosting",
+            "@id": postId,
+            mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` },
+            headline: article?.title || "Blog MedRent",
+            description:
+              article?.shortDescription ||
+              "Artículo de MedRent sobre tecnología médica e innovación clínica.",
+            image: heroImageUrl ? [heroImageUrl] : undefined,
+            datePublished: article?.createdAt,
+            dateModified: article?.createdAt,
+            author: { "@id": personId },
+            publisher: { "@id": `${baseUrl}/#organization` },
+            inLanguage: "es-MX",
+          },
+        ],
+      })
+    }></script>
+  </Fragment>
+
   <Fragment slot="metas">
     <!-- <meta id="description" content={pageDescription}>
     <meta property="og:title" content={pageTitle}>
@@ -105,7 +190,7 @@ try {
 
 
         {Array.isArray(article?.content)
-          ? article.content.map((item: any) => {
+          ? article.content.map((item) => {
               switch (item?.__component) {
                 case 'blog.article-content': {
                   const blocks = Array.isArray(item.articleContent)
@@ -160,7 +245,7 @@ try {
               >
                 {article?.writer?.fullName || 'Backoffice | Team Medrent'}
               </a>
-              <span class="text-[var(--color-gray-dark)] font-medium italic">
+              <span class="text-on-surface-variant font-medium italic">
                 {" — "}{Array.isArray(articulosRelacionados) ? articulosRelacionados.length + 1 : 1} Artículo{Array.isArray(articulosRelacionados) && articulosRelacionados.length + 1 !== 1 ? 's' : ''}
               </span>
             </div>
@@ -215,7 +300,7 @@ try {
                         {rel.subcategory?.name || ''}
                       </span>
                       <a href={`/blog/${rel.slug}`}>
-                        <h3 class="mb-1 text-[16px] font-light text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
+                        <h3 class="mb-1 text-[16px] font-bold text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
                           {rel.title}
                         </h3>
                       </a>

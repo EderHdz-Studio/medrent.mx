@@ -7,14 +7,16 @@ const {
   placeholder = "",
   required = true
 } = Astro.props;
+const inputId = `${name}-input`;
 ---
 
 <div class="relative form-field">
-  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
+  <label for={inputId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
     {label}{required && '*'}
   </label>
 
   <input
+    id={inputId}
     name={name}
     type={type}
     placeholder={placeholder}

@@ -14,17 +14,51 @@ import SelectField from "@components/forms/SelectField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+
 ---
 
 
-<Layout title="Med Rent - Contacto">
+<Layout
+  title="Contacto MedRent | Agenda una demo y solicita cotización"
+  description="Agenda una demo con especialistas de producto. Atención personalizada para elegir equipo, financiamiento y soporte. Respuesta rápida."
+  keywords="contacto MedRent; demo equipo médico; cotización; soporte técnico"
+  ogImage={logoUrl}
+>
     <Fragment slot="head">
         <BreadcrumbSchema
         items={[
-            { name: 'Inicio', url: 'https://www.medrent.mx' },
-            { name: 'Contacto', url: 'https://www.medrent.mx/contacto' },
+            { name: 'Inicio', url: `${baseUrl}/` },
+            { name: 'Contacto', url: `${baseUrl}/contacto` },
         ]}
+        id={breadcrumbId}
         />
+        <script type="application/ld+json" set:html={
+          JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": ["WebPage", "ContactPage"],
+                "@id": `${canonicalUrl}#webpage`,
+                "url": canonicalUrl,
+                "name": "Contacto MedRent | Agenda una demo y solicita cotización",
+                "description":
+                  "Agenda una demo con especialistas de producto. Atención personalizada para elegir equipo, financiamiento y soporte. Respuesta rápida.",
+                "isPartOf": { "@id": `${baseUrl}/#website` },
+                "about": { "@id": `${baseUrl}/#organization` },
+                "inLanguage": "es-MX",
+                "breadcrumb": { "@id": breadcrumbId },
+                "primaryImageOfPage": {
+                  "@type": "ImageObject",
+                  "url": logoUrl,
+                },
+              },
+            ],
+          })
+        }></script>
     </Fragment>
 
     <Breadcrumb
@@ -39,12 +73,12 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
         
         <!-- Columna 1: Encabezado -->
         <div class="p-4 md:p-6 lg:pt-20 lg:pr-[103px] lg:pb-6 lg:pl-[135px]">
-            <h3 class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase mt-8">
+            <p class="text-[#00827F] font-700 text-[14px] md:text-[14px] uppercase mt-8">
                 Contacto
-            </h3>
-            <h2 class="font-normal md:text-[28px] text-[28px]">
+            </p>
+            <h1 class="font-normal md:text-[28px] text-[28px]">
                 Agenda una DEMO con nuestro equipo técnico y nuestros especialistas de producto.
-            </h2>
+            </h1>
             <p
                 class="text-[#212121] md:text-[16px] text-[16px] text-[#5A4043] mt-2 text-pretty"
             >
@@ -257,6 +291,7 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
             <div class="overflow-hidden rounded-[32px]">
                 <iframe
                     class="w-full h-96 rounded-[32px] border-0"
+                    title="Ubicacion de MedRent en Google Maps"
                     loading="lazy"
                     allowfullscreen
                     referrerpolicy="no-referrer-when-downgrade"

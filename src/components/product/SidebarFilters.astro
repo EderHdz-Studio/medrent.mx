@@ -1,8 +1,28 @@
 ---
+interface FilterBrand {
+  slug: string;
+  name: string;
+}
+
+interface FilterSubcategory {
+  slug: string;
+  name: string;
+}
+
+interface FilterCategory {
+  slug: string;
+  name: string;
+  subcategories?: FilterSubcategory[];
+}
+
 const {
   brands = [],
   categories = [],
   subcategories = []
+}: {
+  brands?: FilterBrand[];
+  categories?: FilterCategory[];
+  subcategories?: FilterSubcategory[];
 } = Astro.props;
 
   // console.log('categories----:', categories[0].subcategories);
@@ -11,9 +31,9 @@ const {
 <div class="sidebar-filters-container">
 
   <!-- HEADER -->
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-[16px] font-bold text-[var(--color-primary)]">Filtros</h3>
-    <button id="clear-filters" class="text-[16px] text-[var(--color-gray-dark)] underline cursor-pointer hover:text-[var(--color-primary)] transition-colors duration-300">
+  <div class="sticky top-0 z-20 -mx-1 px-1 py-2 mb-4 flex justify-between items-center bg-[var(--color-secondary-light)] border-b border-[rgba(23,29,28,0.12)]">
+    <h3 id="filters-title" class="text-[16px] font-bold text-[var(--color-primary)]">Filtros (0)</h3>
+    <button id="clear-filters" class="text-[16px] text-on-surface-variant underline cursor-pointer hover:text-[var(--color-primary)] transition-colors duration-300">
       Limpiar
     </button>
   </div>
@@ -30,7 +50,7 @@ const {
     </button>
 
     <div class="filter-content mt-3 transition-all duration-300 ease-in-out overflow-hidden max-h-0" id="category">
-      {categories.map((cat) => (
+      {categories.map((cat: FilterCategory) => (
         <label class="flex items-center mt-2 cursor-pointer">
           <input
             type="checkbox"
@@ -56,7 +76,7 @@ const {
     </button>
 
     <div class="filter-content mt-3 transition-all duration-300 ease-in-out overflow-hidden max-h-0" id="subcategory">
-      {categories.map((cat) => (
+      {categories.map((cat: FilterCategory) => (
         <div class="mb-2">
           <button class="subcat-toggle flex justify-between w-full  cursor-pointer" data-target={ 'subcat-' + cat.slug } id={ 'btn-subcat-' + cat.slug }>
             <span class="text-[16px] text-[var(--color-primary)]">{cat.name}</span>
@@ -68,7 +88,7 @@ const {
           </button>
           <div class="subcat-content mt-2 transition-all duration-300 ease-in-out max-h-0 opacity-0 pointer-events-none" id={ 'subcat-' + cat.slug }>
             {Array.isArray(cat.subcategories) && cat.subcategories.length > 0 ? (
-              cat.subcategories.map((sub) => (
+              cat.subcategories.map((sub: FilterSubcategory) => (
                 <label class="flex items-center mt-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -100,7 +120,7 @@ const {
     </button>
 
     <div class="filter-content mt-3 transition-all duration-300 ease-in-out overflow-hidden max-h-0" id="brand">
-      {brands.map((brand) => (
+      {brands.map((brand: FilterBrand) => (
         <label class="flex items-center mt-2 cursor-pointer">
           <input
             type="checkbox"
@@ -117,48 +137,67 @@ const {
 </div>
 
 <script>
-
+  const isHTMLElement = (element) => element instanceof HTMLElement;
 
   // Dropdown toggle
   document.querySelectorAll(".filter-toggle").forEach(button => {
     button.addEventListener("click", () => {
-      const target = document.getElementById(button.dataset.target);
+      if (!isHTMLElement(button)) return;
+      const targetId = button.dataset.target;
+      if (!targetId) return;
+      const target = document.getElementById(targetId);
       const arrow = button.querySelector(".arrow");
+      if (!isHTMLElement(target)) return;
       if (!target.classList.contains("open")) {
         target.classList.add("open");
         target.style.maxHeight = target.scrollHeight + "px";
-        // Si es el de aplicación clínica, cambiar a auto después de la animación
-        if (target.id === "subcategory") {
-          setTimeout(() => {
-            target.style.maxHeight = "none";
-          }, 310);
-        }
+        setTimeout(() => {
+          if (!target.classList.contains("open")) return;
+          // Evita cortes cuando el contenido interno crece por wraps o submenus.
+          target.style.maxHeight = "none";
+        }, 320);
       } else {
+        if (target.style.maxHeight === "none") {
+          target.style.maxHeight = target.scrollHeight + "px";
+        }
         target.style.maxHeight = target.scrollHeight + "px";
         setTimeout(() => {
           target.classList.remove("open");
           target.style.maxHeight = "0px";
         }, 10);
       }
-      arrow.classList.toggle("rotate-180");
+      if (isHTMLElement(arrow)) {
+        arrow.classList.toggle("rotate-180");
+      }
     });
   });
 
   // Dropdown hijos de especialidad en Aplicación clínica (event delegation, ejecución directa)
   document.addEventListener("click", function(e) {
+    if (!(e.target instanceof Element)) return;
     const btn = e.target.closest('.subcat-toggle');
-    if (!btn) return;
+    if (!isHTMLElement(btn)) return;
     const targetId = btn.dataset.target;
+    if (!targetId) return;
     const target = document.getElementById(targetId);
     const arrow = btn.querySelector('.arrow');
-    if (!target) return;
+    if (!isHTMLElement(target)) return;
     if (!target.classList.contains("open")) {
       target.classList.add("open");
       target.style.maxHeight = target.scrollHeight + "px";
-      target.style.overflow = "visible";
+      target.style.overflow = "hidden";
       target.style.opacity = "1";
       target.style.pointerEvents = "auto";
+      setTimeout(() => {
+        if (target.classList.contains("open")) {
+          target.style.maxHeight = "none";
+          target.style.overflow = "hidden";
+        }
+      }, 320);
     } else {
+      if (target.style.maxHeight === "none") {
+        target.style.maxHeight = target.scrollHeight + "px";
+      }
       target.style.maxHeight = target.scrollHeight + "px";
       setTimeout(() => {
         target.classList.remove("open");
@@ -168,7 +207,9 @@ const {
         target.style.pointerEvents = "none";
       }, 300);
     }
-    arrow?.classList.toggle("rotate-180");
+    if (isHTMLElement(arrow)) {
+      arrow.classList.toggle("rotate-180");
+    }
   });
 
   // URL sync
@@ -176,13 +217,32 @@ const {
     return new URLSearchParams(window.location.search);
   }
 
+  /**
+   * @param {URLSearchParams} params
+   * @param {string} key
+   */
+  /**
+   * @param {URLSearchParams} params
+   * @param {string} key
+   */
+  function getFilterValues(params: URLSearchParams, key: string) {
+    const values = params
+      .getAll(key)
+      .flatMap((value) => value.split(","))
+      .map((value) => value.trim())
+      .filter(Boolean);
+    return Array.from(new Set(values));
+  }
+
 
   function setInitialState() {
     const params = getParams();
 
-    document.querySelectorAll("input[data-filter]").forEach(input => {
+    document.querySelectorAll('input[data-filter]').forEach(input => {
+      if (!(input instanceof HTMLInputElement)) return;
       const key = input.dataset.filter;
-      const values = params.get(key)?.split(",") || [];
+      if (!key) return;
+      const values = getFilterValues(params, key);
       if (values.includes(input.value)) {
         input.checked = true;
       }
@@ -211,6 +271,7 @@ const {
 
     // Forzar todos los dropdowns hijos a estar cerrados y ocultos al cargar
     document.querySelectorAll('.subcat-content').forEach(el => {
+      if (!isHTMLElement(el)) return;
       el.classList.remove('open');
       el.style.maxHeight = '0px';
       el.style.overflow = 'hidden';
@@ -223,7 +284,7 @@ const {
     ["brand", "category", "subcategory"].forEach(key => {
       const checked = Array.from(
         document.querySelectorAll(`input[data-filter="${key}"]:checked`)
-      ).map(el => el.value);
+      ).flatMap((el) => (el instanceof HTMLInputElement ? [el.value] : []));
 
       if (checked.length) {
         params.set(key, checked.join(","));
@@ -234,18 +295,47 @@ const {
       window.location.pathname +
       (params.toString() ? `?${params.toString()}` : "");
 
+    if (document.documentElement.dataset.plpClientFilters === "1") {
+      window.history.pushState({}, "", newUrl);
+      window.dispatchEvent(new CustomEvent("plp:filters-changed"));
+      return;
+    }
+
     window.location.href = newUrl;
   }
 
+  function getSelectedFiltersCount() {
+    return document.querySelectorAll('input[data-filter]:checked').length;
+  }
+
+  function updateFiltersTitle() {
+    const title = document.getElementById("filters-title");
+    if (!title) return;
+    title.textContent = `Filtros (${getSelectedFiltersCount()})`;
+  }
+
   document.addEventListener("change", e => {
-    if (e.target.matches("input[data-filter]")) {
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (target.matches("input[data-filter]")) {
+      updateFiltersTitle();
       updateUrl();
     }
   });
 
   document.getElementById("clear-filters")?.addEventListener("click", () => {
+    document.querySelectorAll("input[data-filter]:checked").forEach((input) => {
+      input.checked = false;
+    });
+    updateFiltersTitle();
+    if (document.documentElement.dataset.plpClientFilters === "1") {
+      window.history.pushState({}, "", window.location.pathname);
+      window.dispatchEvent(new CustomEvent("plp:filters-changed"));
+      return;
+    }
     window.location.href = window.location.pathname;
   });
 
   setInitialState();
+  updateFiltersTitle();
 </script>

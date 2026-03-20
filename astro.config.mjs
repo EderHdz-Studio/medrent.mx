@@ -6,7 +6,7 @@ import vercel from '@astrojs/vercel';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://medrent.mx',
+  site: 'https://www.medrent.mx',
   integrations: [alpinejs(), react()],
   vite: {
     plugins: [tailwind()],

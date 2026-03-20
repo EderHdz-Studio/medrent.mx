@@ -6,6 +6,7 @@
   src: url("/fonts/Lato-Regular.ttf") format("opentype");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -13,6 +14,7 @@
   src: url("/fonts/Lato-Bold.ttf") format("opentype");
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
 
 /* CSS variables colors */
@@ -48,6 +50,41 @@
       rgba(105, 216, 211, 0.14) 100%
     ),
     rgb(var(--color-surface-dark));
+
+  /* Typography scale (xs default) */
+  --type-eyebrow: 0.875rem; /* 14px */
+  --type-h1: 2rem; /* 32px */
+  --type-h2: 1.75rem; /* 28px */
+  --type-h3: 1.5rem; /* 24px */
+  --type-body-lg: 1.25rem; /* 20px */
+  --type-body: 1rem; /* 16px */
+  --type-caption: 0.75rem; /* 12px */
+  --type-button: 1.125rem; /* 18px */
+  --leading-tight: 1.2;
+  --leading-copy: 1.5;
+
+}
+
+@media (min-width: 768px) {
+  :root {
+    /* md */
+    --type-h1: 2.25rem; /* 36px */
+    --type-h2: 2rem; /* 32px */
+    --type-h3: 1.75rem; /* 28px */
+    --type-body-lg: 1.25rem; /* 20px */
+    --type-body: 1rem; /* 16px */
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    /* xl */
+    --type-h1: 2.5rem; /* 40px */
+    --type-h2: 2.25rem; /* 36px */
+    --type-h3: 2rem; /* 32px */
+    --type-body-lg: 1.375rem; /* 22px */
+    --type-body: 1.0625rem; /* 17px */
+  }
 }
 
 [data-theme="light"] {
@@ -62,6 +99,10 @@
 
 body {
   font-family: "Lato", sans-serif;
+}
+
+.text-on-surface-variant {
+  color: var(--Schemes-On-Surface-Variant, #3d4948);
 }
 html,
 body {
@@ -198,6 +239,10 @@ div.citaBlogAuthor span {
 .sliderArticulosRelacionados .glider-slide {
   padding: 12px;
 }
+.sliderArticulosRelacionados .glide__slide {
+  padding: 0;
+}
+
 
 @media (max-width: 1023px) {
   /* Contenedores del blog */
@@ -221,6 +266,7 @@ div.citaBlogAuthor span {
   }
 }
 
+
 @media (max-width: 600px) {
   .blogSubtitle {
     font-size: 20px;
@@ -228,8 +274,133 @@ div.citaBlogAuthor span {
 }
 
 @media (min-width: 769px) {
-  .glider-track {
+  .sliderArticulosRelacionados .glider-track {
     display: flex;
     justify-content: space-between;
   }
+  .sliderArticulosRelacionados .glide__track {
+    display: block;
+  }
+}
+
+/* Render below-the-fold sections on demand for faster mobile startup */
+.defer-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
+}
+
+.mobile-gallery-slider {
+  touch-action: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.mobile-gallery-slider::-webkit-scrollbar {
+  display: none;
+}
+
+/* Shared typography utilities for templates/pages */
+.type-eyebrow {
+  font-size: var(--type-eyebrow);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.type-h1 {
+  font-size: var(--type-h1);
+  line-height: var(--leading-tight);
+}
+
+.type-h2 {
+  font-size: var(--type-h2);
+  line-height: var(--leading-tight);
+}
+
+.type-h3 {
+  font-size: var(--type-h3);
+  line-height: var(--leading-tight);
+}
+
+.type-body-lg {
+  font-size: var(--type-body-lg);
+  line-height: var(--leading-copy);
+}
+
+.type-body {
+  font-size: var(--type-body);
+  line-height: var(--leading-copy);
+}
+
+.type-caption {
+  font-size: var(--type-caption);
+  line-height: 1.4;
+}
+
+.type-button {
+  font-size: var(--type-button);
+  font-weight: 700;
+  line-height: 1.33;
+}
+
+/* Medrent / Figma — headlines on surface (#171D1C) */
+.medrent-headline-small {
+  font-family: Lato, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--color-text-default);
+}
+
+.medrent-headline-medium {
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--color-text-default);
+}
+
+/**
+ * Section titles: xs = Medrent/headline/small, md+ = headline/medium
+ * (Tailwind md = 768px; xl can share medium unless design adds display/large)
+ */
+.medrent-headline-section {
+  font-family: Lato, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--color-text-default);
+  font-size: 24px;
+  line-height: 32px;
+}
+
+@media (min-width: 768px) {
+  .medrent-headline-section {
+    font-size: 28px;
+    line-height: 36px;
+  }
+}
+
+/* Primary CTA — 14px bold, 14px vertical padding (aligned con “Ver más artículos”) */
+.medrent-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 14px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.medrent-btn-primary:hover {
+  background-color: var(--color-accent);
 }

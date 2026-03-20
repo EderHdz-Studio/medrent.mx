@@ -6,16 +6,94 @@ import { ESPECIALTIES } from "@lib/site.ts";
 const especialidades = ESPECIALTIES;
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import ImageResponsive from '@components/media/ImageResponsive.astro';
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
-<Layout title="Especialidades">
+<Layout
+  title="Especialidades | Neurofisiología, Neurocirugía, Neuromodulación y más | MedRent"
+  description="Explora especialidades y aplicaciones clínicas. Soluciones para diagnóstico, terapia y rehabilitación con soporte y financiamiento."
+  keywords="especialidades médicas; neurofisiología; neuromodulación; rehabilitación; neurovascular"
+  ogImage={logoUrl}
+>
     <Fragment slot="head">
         <BreadcrumbSchema
         items={[
-            { name: 'Inicio', url: 'https://www.medrent.mx' },
-            { name: 'Especialidades', url: 'https://www.medrent.mx/especialidades' },
+            { name: 'Inicio', url: `${baseUrl}/` },
+            { name: 'Especialidades', url: `${baseUrl}/especialidades` },
         ]}
+        id={breadcrumbId}
         />
+        <script type="application/ld+json" set:html={
+          (() => {
+            const list = Array.isArray(especialidades) ? especialidades : [];
+            const itemListElement = list.map((c, index) => {
+              const specSlug = c?.Slug || c?.slug || "";
+              const specUrl = specSlug
+                ? `${baseUrl}/especialidades/${specSlug}`
+                : canonicalUrl;
+              const imageUrl = c?.ImageHero
+                ? `${baseUrl}/temp/especialidades/${c.ImageHero}`
+                : undefined;
+              return {
+                "@type": "ListItem",
+                position: index + 1,
+                item: {
+                  "@type": "MedicalSpecialty",
+                  "@id": `${specUrl}#specialty`,
+                  name: c?.Nombre || "Especialidad",
+                  url: specUrl,
+                  image: imageUrl ? [imageUrl] : undefined,
+                  description: c?.Descripcion,
+                },
+                url: specUrl,
+              };
+            });
+
+            return JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebPage",
+                  "@id": `${canonicalUrl}#webpage`,
+                  url: canonicalUrl,
+                  name: "Especialidades | Tecnología médica para diagnóstico, terapia y rehabilitación",
+                  description:
+                    "Explora especialidades y aplicaciones clínicas atendidas por MedRent: Neurofisiología, Neurocirugía, Neuromodulación, Neurovascular y Rehabilitación.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  about: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  breadcrumb: { "@id": breadcrumbId },
+                  mainEntity: { "@id": `${canonicalUrl}#specialtylist` },
+                  primaryImageOfPage: { "@type": "ImageObject", url: logoUrl },
+                },
+                {
+                  "@type": "CollectionPage",
+                  "@id": `${canonicalUrl}#specialtylist`,
+                  url: canonicalUrl,
+                  name: "Especialidades — listado",
+                  description:
+                    "Listado de especialidades médicas atendidas por MedRent con tecnología médica y soporte especializado.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  about: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  mainEntity: { "@id": `${canonicalUrl}#specialtylist-itemlist` },
+                },
+                {
+                  "@type": "ItemList",
+                  "@id": `${canonicalUrl}#specialtylist-itemlist`,
+                  name: "Especialidades médicas atendidas por MedRent",
+                  itemListOrder: "https://schema.org/ItemListOrderAscending",
+                  itemListElement,
+                },
+              ],
+            });
+          })()
+        }></script>
     </Fragment>
 
 
@@ -56,13 +134,22 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
             <!-- Columna 1.1: Texto (actual derecha) --> 
             <div class="w-full overflow-hidden" >
-                <img src="/temp/especialidades/especialidadesHero.png" alt="especialidades" class="rounded-[16px] mx-auto" style="background: linear-gradient(91deg, #69D8D3 0.22%, #AFFFFA 74.55%);"/>
+                <ImageResponsive
+                  src="/temp/especialidades/especialidadesHero.png"
+                  alt="especialidades"
+                  class="rounded-[16px] mx-auto"
+                  style="background: linear-gradient(91deg, #69D8D3 0.22%, #AFFFFA 74.55%);"
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
             </div> 
         </div>
     </section>
 
     <section>
-        {especialidades.map((categoria: any, index: number) => (
+        {especialidades.map((categoria, index) => (
             <div class={`flex flex-col md:flex-row w-full bg-white rounded-lg gap-6 p-4 md:p-6 lg:px-[135px] lg:py-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
                 <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-center"> 
                     <div class="py-6"> 
@@ -85,7 +172,14 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
                     </div> 
                 </div>  
                 <div class="w-full md:w-1/2 lg:w-3/5 h-64 md:h-auto min-h-[240px] relative overflow-hidden">  
-                    <img src={`/temp/especialidades/${categoria.Image}`} alt={categoria.Nombre} class="w-full h-full object-cover rounded-[4px]"/> 
+                    <ImageResponsive
+                      src={`/temp/especialidades/${categoria.Image}`}
+                      alt={categoria.Nombre}
+                      class="w-full h-full object-cover rounded-[4px]"
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                      loading="lazy"
+                      decoding="async"
+                    /> 
                 </div> 
 
             </div>

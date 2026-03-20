@@ -6,6 +6,7 @@ import { strapiFetch } from "@server/strapiClient";
 import Newsletter from '@components/FormNewsletter.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import ImageResponsive from '@components/media/ImageResponsive.astro';
 
 let articulosActivos = [];
 
@@ -14,15 +15,22 @@ try {
   
   articulosActivos = articulosAPI.data.filter((articulo: any) => articulo.isActive === true);
 
-  console.log('articulosActivos')
-  console.log(articulosActivos)
-
 } catch (error) {
   articulosActivos = [];
 }
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
-<Layout title="Blog | Medrent – Tecnología médica">
+<Layout
+  title="Blog MedRent | Innovación, neurodiagnóstico y tecnología médica"
+  description="Artículos y tendencias sobre tecnología médica, neurodiagnóstico y práctica clínica para especialistas."
+  keywords="blog MedRent; tecnología médica; neurodiagnóstico; innovación médica"
+  ogImage={logoUrl}
+>
   <!-- <Fragment slot="metas"> -->
     <!-- <title>Blog | Medrent – Tecnología médica</title>
     <meta name="description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
@@ -44,10 +52,72 @@ try {
     <Fragment slot="head">
         <BreadcrumbSchema
         items={[
-            { name: 'Inicio', url: 'https://www.medrent.mx' },
-            { name: 'Blog', url: 'https://www.medrent.mx/blog' },
+            { name: 'Inicio', url: `${baseUrl}/` },
+            { name: 'Blog', url: `${baseUrl}/blog` },
         ]}
+        id={breadcrumbId}
         />
+        <script type="application/ld+json" set:html={
+          (() => {
+            const posts = Array.isArray(articulosActivos) ? articulosActivos.slice(0, 12) : [];
+            const postlistId = `${canonicalUrl}#postlist`;
+            const itemListElement = posts.map((p, index) => {
+              const postUrl = p?.slug ? `${baseUrl}/blog/${p.slug}` : canonicalUrl;
+              return {
+                "@type": "ListItem",
+                position: index + 1,
+                url: postUrl,
+                item: {
+                  "@type": "BlogPosting",
+                  "@id": `${postUrl}#post`,
+                  headline: p?.title || "Blog MedRent",
+                },
+              };
+            });
+
+            return JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebPage",
+                  "@id": `${canonicalUrl}#webpage`,
+                  url: canonicalUrl,
+                  name: "Blog MedRent | Innovación, neurodiagnóstico y tecnología médica",
+                  description:
+                    "Artículos y tendencias sobre tecnología médica, neurodiagnóstico y práctica clínica para especialistas.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  about: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  breadcrumb: { "@id": breadcrumbId },
+                  mainEntity: { "@id": postlistId },
+                  primaryImageOfPage: {
+                    "@type": "ImageObject",
+                    url: logoUrl,
+                  },
+                },
+                {
+                  "@type": ["Blog", "CollectionPage"],
+                  "@id": `${canonicalUrl}#blog`,
+                  url: canonicalUrl,
+                  name: "Blog MedRent",
+                  description:
+                    "Artículos y tendencias sobre tecnología médica, neurodiagnóstico y práctica clínica para especialistas.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  publisher: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  mainEntity: { "@id": postlistId },
+                },
+                {
+                  "@type": "ItemList",
+                  "@id": postlistId,
+                  name: "Artículos del blog MedRent",
+                  itemListOrder: "https://schema.org/ItemListOrderDescending",
+                  itemListElement,
+                },
+              ],
+            });
+          })()
+        }></script>
     </Fragment>
 
     <div class="absolute w-full z-2">
@@ -87,20 +157,28 @@ try {
           
             <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative md:col-span-2">
               <div class="h-75 relative overflow-hidden flex-shrink-0">
-                <img src={articulosActivos[0]?.heroImage?.url} alt={articulosActivos[0]?.title} class="w-full h-full object-cover" />
+                <ImageResponsive
+                  image={articulosActivos[0]?.heroImage}
+                  alt={articulosActivos[0]?.title}
+                  class="w-full h-full object-cover"
+                  sizes="(min-width: 1024px) 66vw, 100vw"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
               </div>
               <div class="p-6 flex flex-col flex-grow min-h-[300px]">
                 <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulosActivos[0]?.subcategory?.name}</span>
                 <a href={`/blog/${articulosActivos[0]?.slug}`}>
-                  <h3 class="text-[28px] font-light font-lato text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
+                  <h3 class="text-[28px] font-bold font-lato text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
                 </a>
-                <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
+                <p class="text-on-surface-variant text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
                 
                 
                 
 
                   <div class="flex items-end justify-between mt-auto">
-                    <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+                    <span class="text-xs text-on-surface-variant font-lato w-full flex">
                         Por:&nbsp;
                         <a href={`/blog/autor/${articulosActivos[0]?.writer?.slug}`} 
                           class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato">
@@ -112,18 +190,18 @@ try {
             </div>
             
             <div class="w-full flex flex-col gap-6 sm:flex-row sm:gap-6 sm:w-full md:flex-col md:gap-6 md:col-span-1 md:w-full">
-              {articulosActivos.slice(1,3).map((articulo:any, idx:number) => (
+              {articulosActivos.slice(1,3).map((articulo, idx) => (
                 <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative sm:w-1/2 md:w-full">
                   <div class="p-6 flex flex-col flex-grow">
                     <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulo?.subcategory?.name}</span>
                     <a href={`/blog/${articulo?.slug}`}>
-                      <h3 class="text-[22px] font-light text-lg text-[#261819] font-lato mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.title}</h3>
+                      <h3 class="text-[22px] font-bold text-[#261819] font-lato mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.title}</h3>
                     </a>
-                    <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 line-clamp-3 flex-grow max-h-[68px]" style="font-family: Lato;">{articulo?.shortDescription}</p>
+                    <p class="text-on-surface-variant text-[16px] font-normal mb-4 line-clamp-3 flex-grow max-h-[68px]" style="font-family: Lato;">{articulo?.shortDescription}</p>
                     
                     
                     <div class="flex items-end justify-between mt-auto">
-                      <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+                      <span class="text-xs text-on-surface-variant font-lato w-full flex">
                         Por:&nbsp;
                         <a href={`/blog/autor/${articulo?.writer?.slug}`} 
                         class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">
@@ -143,7 +221,7 @@ try {
           <section>
             <h2 class="text-[#261819] font-lato text-[28px] font-light mb-6 uppercase">Última publicación</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {articulosActivos.slice(3).map((articulo:any) => (
+              {articulosActivos.slice(3).map((articulo) => (
                 <ArticleCard article={articulo} />
               ))}
             </div>
