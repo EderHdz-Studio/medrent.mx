@@ -81,7 +81,7 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
       (() => {
         const list = Array.isArray(products) ? products.slice(0, 12) : [];
         const itemListId = `${canonicalUrl}#itemlist`;
-        const itemListElement = list.map((p: any, index: number) => {
+        const itemListElement = list.map((p, index) => {
           const pdpUrl = p?.slug ? `${baseUrl}/productos/${p.slug}` : canonicalUrl;
           const imageUrl = Array.isArray(p?.gallery) ? p.gallery[0] : undefined;
           return {
@@ -135,7 +135,7 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
           ],
         });
       })()
-    }/>
+    }></script>
   </Fragment>
 
   <!-- HERO -->

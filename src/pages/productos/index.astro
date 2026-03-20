@@ -58,7 +58,7 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
     <script type="application/ld+json" set:html={
       (() => {
         const slice = Array.isArray(products) ? products.slice(0, 12) : [];
-        const itemListElement = slice.map((p: any, index: number) => {
+        const itemListElement = slice.map((p, index) => {
           const slug = p?.slug;
           const pdpUrl = slug ? `${baseUrl}/productos/${slug}` : canonicalUrl;
           const imageUrl = Array.isArray(p?.gallery) ? p.gallery[0] : undefined;
@@ -118,7 +118,7 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
           ],
         });
       })()
-    }/>
+    }></script>
   </Fragment>
 
   <!-- HERO -->

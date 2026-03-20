@@ -64,7 +64,7 @@ const postlistId = `${canonicalUrl}#postlist`;
       (() => {
         const articles = Array.isArray(author?.articles) ? author.articles : [];
         const slice = articles.slice(0, 10);
-        const itemListElement = slice.map((a: any, index: number) => {
+        const itemListElement = slice.map((a, index) => {
           const postUrl = a?.slug ? `${baseUrl}/blog/${a.slug}` : canonicalUrl;
           return {
             "@type": "ListItem",
@@ -138,7 +138,7 @@ const postlistId = `${canonicalUrl}#postlist`;
           ],
         });
       })()
-    }/>
+    }></script>
   </Fragment>
 
   <Fragment slot="metas">
@@ -184,7 +184,7 @@ const postlistId = `${canonicalUrl}#postlist`;
       <section>
         <h2 class="text-[#261819] font-lato text-[28px] font-light mb-4 md:mb-6 mt-4 md:mt-0 uppercase">{author.articles.length} Artículos</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {author.articles.map((articulo:any) => (
+          {author.articles.map((articulo) => (
             // console.log(articulo)
             <ArticleCard article={articulo} />
           ))}

@@ -58,11 +58,11 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     <script type="application/ld+json" set:html={
       (() => {
         const subs = Array.isArray(especialidad?.subcategories)
-          ? especialidad.subcategories.filter((s: any) => s?.slug)
+          ? especialidad.subcategories.filter((s) => s?.slug)
           : [];
         const specialtyId = `${canonicalUrl}#specialty`;
         const listId = `${canonicalUrl}#applications`;
-        const itemListElement = subs.slice(0, 12).map((s: any, index: number) => {
+        const itemListElement = subs.slice(0, 12).map((s, index) => {
           const subSlug = s?.slug;
           const subUrl = `${baseUrl}/especialidades/${especialidad?.slug ?? ""}/${subSlug}`;
           const subName = s?.name ?? s?.Nombre ?? s?.title ?? "Aplicación";
@@ -118,7 +118,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
           ],
         });
       })()
-    }/>
+    }></script>
   </Fragment>
 
   <div class="w-full max-w-7xl mx-auto flex flex-col ">
@@ -153,7 +153,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
           <p class="text-[16px] md:text-[16px] text-left text-white">{especialidad?.heroDescription ?? ''}</p>
           
           <!-- Botones de navegación -->
-          (() => {
+          {(() => {
             const items = Array.isArray(categories) ? categories : [];
             const currentIdx = items.findIndex(item => item.slug === category);
             const prevIdx = currentIdx === 0 ? items.length - 1 : currentIdx - 1;
@@ -181,14 +181,14 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 </a>
             </div>
             );
-          })()
+          })()}
         </div>
       </div>
 
-      {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).length > 0 && (
+      {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion) => aplicacion.slug).length > 0 && (
         <section class="mb-16 bg-[#F5FAF9]">
           <div class="space-y-[25px]">
-            {especialidad.subcategories.filter((aplicacion: any) => aplicacion.slug).map((aplicacion: any, index: number) => (
+            {especialidad.subcategories.filter((aplicacion) => aplicacion.slug).map((aplicacion, index) => (
               <div>
               <div class={`flex flex-col-reverse sm:flex-row md:flex-row w-full rounded-lg gap-4 p-4 md:gap-6 md:p-6 lg:gap-6 lg:py-6 lg:px-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}> 
                 

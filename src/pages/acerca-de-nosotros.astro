@@ -49,7 +49,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
               },
             ],
           })
-        }/>
+        }></script>
     </Fragment>
 
     <div class="absolute w-full z-2">
@@ -241,26 +241,30 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     </section>
     <script type="module">
         const slider = document.querySelector('#MetricsSlider');
-
-        if (slider) {
-            new Glide(slider, {
-            type: 'carousel',
-                perView: 5,
-                gap: 24,
-                autoplay: 2000,
-                hoverpause: true,
-                rewind: false,
-                breakpoints: {
-                1024: {
-                    perView: 3
-                },
-                640: {
-                    perView: 1
-                }
-                }
-            }).mount();
+        if (!slider) {
+            // noop
+        } else {
+            (async () => {
+                const { default: Glide } = await import('@glidejs/glide');
+                new Glide(slider, {
+                    type: 'carousel',
+                    perView: 5,
+                    gap: 24,
+                    autoplay: 2000,
+                    hoverpause: true,
+                    rewind: false,
+                    breakpoints: {
+                        1024: {
+                            perView: 3
+                        },
+                        640: {
+                            perView: 1
+                        }
+                    }
+                }).mount();
+            })().catch(() => {});
         }
-    }/>
+    </script>
 
 
 

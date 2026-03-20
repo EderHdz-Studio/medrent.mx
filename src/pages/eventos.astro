@@ -8,6 +8,7 @@ import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
+import ImageResponsive from "@components/media/ImageResponsive.astro";
 import SlideArticles from '@components/blog/slideArticles.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
@@ -132,7 +133,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
               (() => {
                 const eventosList = Array.isArray(data?.events) ? data.events : [];
                 const slice = eventosList.slice(0, 12);
-                const itemListElement = slice.map((evento: any, index: number) => {
+                const itemListElement = slice.map((evento, index) => {
                   const startDate = evento?.startDate;
                   const endDate = evento?.endDate;
                   const title =
@@ -211,7 +212,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                   ],
                 });
               })()
-            }/>
+            }></script>
         </Fragment>
 
     <div class="absolute w-full z-2">
@@ -244,12 +245,14 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 <!-- Columna derecha - Imagen -->
                 <div class="lg:pl-8">
                     <div class="relative rounded-[24px] overflow-hidden">
-                        <img
-                            src={(data.heroImage?.url)}
-                            alt="Eventos médicos y de tecnología"
-                            class="w-full"
-                            loading="lazy"
-                            decoding="async"
+                        <ImageResponsive
+                          image={data.heroImage}
+                          alt="Eventos médicos y de tecnología"
+                          class="w-full"
+                          sizes="(min-width: 1024px) 50vw, 100vw"
+                          loading="eager"
+                          decoding="async"
+                          fetchpriority="high"
                         />
                     </div>
                 </div>  
@@ -333,7 +336,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                             // Agrupar eventos por mes
                             const eventosPorMes: any = {};
                             
-                            eventosList.forEach((evento: any) => {
+                            eventosList.forEach((evento) => {
                                 const fechaInicio = dayjs(evento.startDate);
                                 const mesKey = fechaInicio.format('YYYY-MM');
                                 const mesNombreRaw = fechaInicio.format('MMMM YYYY');
@@ -395,10 +398,13 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                     <article class="bg-white border border-[var(--color-accent)] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                         <div class="flex flex-col md:flex-row">
                                                             <div class="w-full md:w-1/2">
-                                                                <img
-                                                                    src={evento.image?.url}
-                                                                    alt={evento.title}
-                                                                    class="w-full aspect-square object-cover"
+                                                                <ImageResponsive
+                                                                  image={evento.image}
+                                                                  alt={evento.title}
+                                                                  class="w-full aspect-square object-cover"
+                                                                  sizes="(min-width: 1024px) 30vw, 100vw"
+                                                                  loading="lazy"
+                                                                  decoding="async"
                                                                 />
                                                             </div>
                                                             <div class="w-full md:w-1/2 p-6 flex flex-col bg-[#F5FAF9]">
@@ -517,6 +523,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                             src=""
                             alt="Evento"
                             class="w-full h-auto min-h-0 object-contain md:h-64 md:min-h-[500px] md:object-cover lg:h-full lg:min-h-[500px] lg:object-cover"
+                            loading="lazy"
+                            decoding="async"
                         />
                     </div>
                     

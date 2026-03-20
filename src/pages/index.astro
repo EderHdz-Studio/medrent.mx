@@ -12,6 +12,7 @@ import SelectField from "@components/forms/SelectField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import ImageResponsive from "@components/media/ImageResponsive.astro";
 
 
 let articulosRelacionados = null;
@@ -21,7 +22,6 @@ try {
     // La respuesta de strapiFetch probablemente ya viene como data
     articulosRelacionados = relacionados?.data || relacionados || [];
     
-    console.log('Artículos cargados:', articulosRelacionados);
 } catch (e) {
     console.error('Error cargando artículos:', e);
     articulosRelacionados = [];
@@ -110,7 +110,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                     },
                 ],
             })
-        }/>
+        }></script>
     </Fragment>
 
     <!-- Sección de contacto -->
@@ -176,10 +176,27 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
             </BaseForm>
         </div>
         <script type="module">
-            import { initForm } from "/scripts/formValidator.js";
-
             document.addEventListener("DOMContentLoaded", () => {
-                initForm("home-form");
+                const formId = "home-form";
+                const form = document.getElementById(formId);
+                if (!form) return;
+
+                let mounted = false;
+                const mountValidation = async () => {
+                    if (mounted) return;
+                    mounted = true;
+                    const { initForm } = await import("/scripts/formValidator.js");
+                    initForm(formId);
+                };
+
+                const onFirstInteraction = () => {
+                    form.removeEventListener("focusin", onFirstInteraction);
+                    form.removeEventListener("input", onFirstInteraction);
+                    mountValidation().catch(() => {});
+                };
+
+                form.addEventListener("focusin", onFirstInteraction, { once: true });
+                form.addEventListener("input", onFirstInteraction, { once: true });
             });
         </script>
         
@@ -187,7 +204,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
 
 
     <!--  Sección mosaico de categorías-->
-    <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
+    <section class="defer-section py-6 px-0 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
         <div class="text-center p-6">
             <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center "> Especialistas en tecnología</h3>
             <h2 class=" text-[24px] font-bold font-bold text-[var(--color-text-default)] tracking-tight">
@@ -219,7 +236,16 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
             .map((marca) => (
             <div class="text-center p-6 w-full md:w-[45%] lg:w-[30%]" key={marca.slug}>
                 <div class="flex items-center justify-center p-4">
-                    <img src={marca.iconImage} alt={marca.name} class="w-[84px] h-[84px]" />
+                    <ImageResponsive
+                      src={marca.iconImage}
+                      alt={marca.name}
+                      width={84}
+                      height={84}
+                      class="w-[84px] h-[84px]"
+                      sizes="84px"
+                      loading="lazy"
+                      decoding="async"
+                    />
                 </div>
                 <h3 class="my-2 text-[22px] font-bold text-[var(--color-primary)]">
                 {marca.name}
@@ -249,44 +275,50 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     <PromotionSlider />
 
     <!--  Sección de financiamiento-->
-    <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
+    <section class="defer-section py-6 px-0 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
         <div class="hero-slider relative w-full h-full">
             <div id="slides-hero" class="relative w-full h-full">
                 <div class="fade-slide-hero w-full h-full active-slide-hero">
                     <!-- Layout responsive: mobile = imagen full width arriba, texto abajo -->
                     <!-- En mobile/tablet: Imagen full width primero (arriba) -->
-                    <div class="w-full block lg:hidden">
-                        <img src="/temp/FinanciamientoMobile.png" alt="SOMOS MED RENT" class="w-full h-[50vh] object-cover" loading="lazy" decoding="async">
-                    </div>
+                    <div class="w-full block lg:hidden financing-hero-mobile" aria-hidden="true"></div>
                     <!-- Layout para desktop y contenido -->
                     <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
-                        <div class="w-full flex flex-col items-center justify-center space-y-6 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 order-1 relative">
-                            <div class="w-full space-y-6">
-                                <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-left m-0">FINANCIAMIENTO</h3>
+                        <div class="w-full flex flex-col items-center justify-center space-y-4 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 lg:space-y-6 order-1 relative">
+                            <div class="w-full space-y-6 financing-copy-card">
+                                <h3 class="type-eyebrow text-[var(--color-accent)] text-left m-0">FINANCIAMIENTO</h3>
 
-                                <div class="text-[16px] md:text-[16px] text-left m-0">
-                                    <p class="text-[28px] md:text-[24px] text-left">
+                                <div class="type-body text-left m-0">
+                                    <p class="type-h3 text-left">
                                         <strong>Korum Capital: Tecnología médica al alcance de tu práctica&nbsp;</strong>
                                     </p>
                                     <br>
-                                    <p>Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
+                                    <p class="type-body">Korum Capital nace como una solución integral para médicos, hospitales y empresas del sector salud que buscan adquirir tecnología médica de última generación con planes de financiamiento flexibles y accesibles.</p>
                                 </div>
-                                <a
-                                href="/contacto"
-                                class="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white py-3 px-4 m-0 mt-6 rounded w-full font-bold transition cursor-pointer flex justify-center gap-2"
-                                aria-label="Recibir asesoría personalizada"
-                                >
-                                    Recibir asesoría personalizada
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white"/>
-                                    </svg>
-                                </a>
                             </div>
+                            <a
+                            href="/contacto"
+                            class="medrent-btn-primary w-full m-0"
+                            aria-label="Recibir asesoría personalizada"
+                            >
+                                Recibir asesoría personalizada
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white"/>
+                                </svg>
+                            </a>
                         </div>
                         <!-- En desktop: Imagen derecha (oculta en mobile) -->
                         <div class="hidden lg:flex flex-1 items-center justify-center relative w-full h-full order-2">
-                            <img src="/temp/Financiamiento.png" alt="SOMOS MED RENT" class="w-full h-auto lg:h-[524px] object-cover z-10" loading="lazy" decoding="async">
+                            <ImageResponsive
+                              src="/temp/Financiamiento.png"
+                              alt="SOMOS MED RENT"
+                              class="w-full h-auto lg:h-[524px] object-cover z-10"
+                              sizes="(min-width: 1024px) 50vw, 100vw"
+                              loading="eager"
+                              decoding="async"
+                              fetchpriority="high"
+                            />
                         </div>
                     </div>
                 </div>
@@ -295,12 +327,37 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     </section>
 
     <!--  Sección de eventos -->
-    <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
+    <section class="defer-section max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
         <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
-        <h3 class=" mb-6 font-normal text-[28px] text-[#212121] font-lato">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
+        <h3 class="mb-6 font-lato medrent-headline-section">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
         <SlideArticles articulos={articulosRelacionados} />
     </section>
 
 
 
 </Layout>
+
+<style>
+  .financing-hero-mobile {
+    flex: 1 0 0;
+    align-self: stretch;
+    aspect-ratio: 385 / 500;
+    background:
+      linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 38%),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.22) 100%),
+      url("/temp/FinanciamientoMobile.png") center center / cover no-repeat;
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .financing-hero-mobile {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .financing-copy-card {
+      background: #fff;
+      padding: 16px;
+    }
+  }
+</style>

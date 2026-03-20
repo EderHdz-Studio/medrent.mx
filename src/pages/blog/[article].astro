@@ -127,7 +127,7 @@ try {
           },
         ],
       })
-    }/>
+    }></script>
   </Fragment>
 
   <Fragment slot="metas">
@@ -190,7 +190,7 @@ try {
 
 
         {Array.isArray(article?.content)
-          ? article.content.map((item: any) => {
+          ? article.content.map((item) => {
               switch (item?.__component) {
                 case 'blog.article-content': {
                   const blocks = Array.isArray(item.articleContent)
@@ -300,7 +300,7 @@ try {
                         {rel.subcategory?.name || ''}
                       </span>
                       <a href={`/blog/${rel.slug}`}>
-                        <h3 class="mb-1 text-[16px] font-light text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
+                        <h3 class="mb-1 text-[16px] font-bold text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
                           {rel.title}
                         </h3>
                       </a>
