@@ -1,200 +1,159 @@
+---
+/**
+ * Organismo: newsletter (punto de entrada único).
+ * Estilos: `src/styles/newsletter-module.css` · Átomos/moléculas: `src/components/newsletter/`
+ */
+import NewsletterHeading from "./newsletter/NewsletterHeading.astro";
+import NewsletterLead from "./newsletter/NewsletterLead.astro";
+import NewsletterSubscribeForm from "./newsletter/NewsletterSubscribeForm.astro";
+import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro";
+---
+
 <style>
-input[type="email"]:-webkit-autofill,
-input[type="email"]:-webkit-autofill:focus,
-input[type="email"]:-webkit-autofill:hover,
-input[type="email"]:-webkit-autofill:active {
+  input[type="email"]:-webkit-autofill,
+  input[type="email"]:-webkit-autofill:focus,
+  input[type="email"]:-webkit-autofill:hover,
+  input[type="email"]:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
     box-shadow: 0 0 0 1000px #fff inset !important;
     background-color: #fff !important;
     color: #261819 !important;
     transition: background-color 5000s ease-in-out 0s;
     outline: none !important;
-}
+  }
 
-input[type="email"]:focus {
+  input[type="email"]:focus {
     outline: none !important;
-}
+  }
 </style>
 
-<section id="newsletter-section" class="bg-[var(--color-secondary-light)] py-6 px-4 md:py-8 md:px-12 text-center relative rounded-t-[24px] flex-col gap-4 flex max-w-7xl mx-auto min-h-[320px]">
-    <div id="newsletter-default" class="flex flex-col gap-4 transition-opacity duration-[400ms] ease-in-out">
-        <h2 class="font-light text-[24px] md:text-[28px] font-kallisto text-center">
-            ¡Suscríbete al newsletter de Medrent!
-        </h2>
-        <p class="text-[#261819] text-base max-w-xl mx-auto m-0">
-            Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones exclusivas sobre nuestras soluciones.
-        </p>
-
-        <form id="newsletter-form" class="justify-center items-center max-w-xl w-full mx-auto flex flex-col gap-4 py-6">
-            <div class="relative w-full flex flex-col md:flex-row gap-2 md:gap-0">
-                <label id="email-label" for="email" class="absolute -top-2 left-3 bg-[var(--color-green-dark)] text-[#FFF] text-xs px-1 rounded-sm transition-colors duration-300">
-                    Correo electrónico*
-                </label>
-                <input id="email" type="email" placeholder="Ej: nombre@correo.com" class="w-full border border-[#5A4043] rounded-[4px] md:rounded-l-[4px] md:rounded-r-none p-4 placeholder-gray-400 focus:outline-none outline-none focus:ring-[#8C0032] bg-white hover:bg-[--color-secondary] transition-colors duration-300" required />
-                <button type="submit" class="w-full md:w-auto bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white font-semibold p-4 rounded-[4px] md:rounded-r-[4px] md:rounded-l-none transition-colors duration-300 cursor-pointer mt-2 md:mt-0">
-                    Suscríbeme
-                </button>
-            </div>
-
-            <div class="flex items-center justify-start w-full gap-2 text-sm text-[#3b2a2a]">
-                <input type="checkbox" id="privacy" class="w-4 h-4 accent-[#2c1b1b]" required />
-                <label for="privacy" class="cursor-pointer">
-                    He leído y acepto el
-                    <a href="/aviso-de-privacidad" class="underline text-[var(--color-primary)]">
-                        Aviso de Privacidad
-                    </a>
-                </label>
-            </div>
-            <p id="newsletter-error" class="text-[var(--color-primary)] text-sm hidden"></p>
-        </form>
+<section id="newsletter-section" class="newsletter-module">
+  <div class="newsletter-module__inner">
+    <div id="newsletter-default" class="newsletter-module__default transition-opacity duration-400 ease-in-out">
+      <NewsletterHeading>¡Suscríbete al newsletter de Medrent!</NewsletterHeading>
+      <NewsletterLead>
+        Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones
+        exclusivas sobre nuestras soluciones.
+      </NewsletterLead>
+      <NewsletterSubscribeForm />
     </div>
-
-    <!-- Mensaje de éxito -->
-    <div id="newsletter-success" class="hidden flex-col gap-4 items-center justify-center py-8 transition-opacity duration-[400ms] ease-in-out opacity-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none">
-            <path d="M57.015 30.4849C57.3404 30.813 57.7275 31.0733 58.154 31.251C58.5805 31.4287 59.038 31.5202 59.5 31.5202C59.962 31.5202 60.4195 31.4287 60.846 31.251C61.2725 31.0733 61.6596 30.813 61.985 30.4849L75.985 16.4849C76.6441 15.8259 77.0143 14.932 77.0143 13.9999C77.0143 13.0679 76.6441 12.174 75.985 11.5149C75.3259 10.8559 74.4321 10.4856 73.5 10.4856C72.5679 10.4856 71.6741 10.8559 71.015 11.5149L59.5 23.0649L54.985 18.5149C54.6587 18.1886 54.2713 17.9297 53.8449 17.7531C53.4185 17.5765 52.9615 17.4856 52.5 17.4856C51.5679 17.4856 50.6741 17.8559 50.015 18.5149C49.6887 18.8413 49.4298 19.2287 49.2532 19.655C49.0766 20.0814 48.9857 20.5384 48.9857 20.9999C48.9857 21.932 49.3559 22.8259 50.015 23.4849L57.015 30.4849ZM73.5 27.9999C72.5717 27.9999 71.6815 28.3687 71.0251 29.025C70.3687 29.6814 70 30.5717 70 31.4999V62.9999C70 63.9282 69.6313 64.8184 68.9749 65.4748C68.3185 66.1312 67.4283 66.4999 66.5 66.4999H17.5C16.5717 66.4999 15.6815 66.1312 15.0251 65.4748C14.3687 64.8184 14 63.9282 14 62.9999V29.4349L34.58 50.0499C36.5444 51.9982 39.1983 53.0925 41.965 53.0949C44.8013 53.0803 47.5175 51.9486 49.525 49.9449L55.545 43.9249C56.2041 43.2659 56.5743 42.372 56.5743 41.4399C56.5743 40.5079 56.2041 39.614 55.545 38.9549C54.8859 38.2959 53.9921 37.9256 53.06 37.9256C52.1279 37.9256 51.2341 38.2959 50.575 38.9549L44.45 45.0799C43.7957 45.7212 42.9161 46.0804 42 46.0804C41.0839 46.0804 40.2043 45.7212 39.55 45.0799L18.935 24.4999H38.5C39.4283 24.4999 40.3185 24.1312 40.9749 23.4748C41.6312 22.8184 42 21.9282 42 20.9999C42 20.0717 41.6312 19.1814 40.9749 18.525C40.3185 17.8687 39.4283 17.4999 38.5 17.4999H17.5C14.7152 17.4999 12.0445 18.6062 10.0754 20.5753C8.10625 22.5444 7 25.2151 7 27.9999V62.9999C7 65.7847 8.10625 68.4554 10.0754 70.4245C12.0445 72.3937 14.7152 73.4999 17.5 73.4999H66.5C69.2848 73.4999 71.9555 72.3937 73.9246 70.4245C75.8938 68.4554 77 65.7847 77 62.9999V31.4999C77 30.5717 76.6313 29.6814 75.9749 29.025C75.3185 28.3687 74.4283 27.9999 73.5 27.9999Z" fill="#006764"/>
-        </svg>
-        <h3 class="text-[var(--color-primary)] text-center font-kallisto text-base font-medium leading-6 tracking-[0.15px] uppercase">
-            ¡Gracias por suscribirte!
-        </h3>
-        <p class="text-[#261819] text-center font-lato text-base font-medium leading-6 tracking-[0.15px] max-w-xl">
-            Te avisaremos cuando publiquemos contenido relevante, lanzamientos y análisis que realmente valen tu tiempo. Nada de spam, solo información clara y útil.
-        </p>
-    </div>
+    <NewsletterSuccessBanner />
+  </div>
 </section>
 
 <script is:inline>
-    document.addEventListener('DOMContentLoaded', function() {
-        const input = document.getElementById('email');
-        const label = document.getElementById('email-label');
-        const form = document.getElementById('newsletter-form');
-        const defaultContent = document.getElementById('newsletter-default');
-        const successContent = document.getElementById('newsletter-success');
-        const errorMessage = document.getElementById('newsletter-error');
-        const privacyCheckbox = document.getElementById('privacy');
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("email");
+    const label = document.getElementById("email-label");
+    const form = document.getElementById("newsletter-form");
+    const defaultContent = document.getElementById("newsletter-default");
+    const successContent = document.getElementById("newsletter-success");
+    const errorMessage = document.getElementById("newsletter-error");
+    const privacyCheckbox = document.getElementById("privacy");
 
-        if (input) {
-            function updateBorder() {
-                const value = input.value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (emailRegex.test(value)) {
-                    input.style.setProperty('border', '3px solid #006764', 'important');
-                    input.style.setProperty('outline', 'none', 'important');
-                    if (label) label.style.background = '#006764';
-                } else if (document.activeElement === input) {
-                    input.style.setProperty('border', '3px solid #006764', 'important');
-                    input.style.setProperty('outline', 'none', 'important');
-                    if (label) label.style.background = '';
-                } else {
-                    input.style.setProperty('border', '1px solid #006764', 'important');
-                    input.style.setProperty('outline', 'none', 'important');
-                    if (label) label.style.background = '';
-                }
-            }
+    if (input) {
+      function updateBorder() {
+        const value = input.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(value)) {
+          input.style.setProperty("border", "3px solid #006764", "important");
+          input.style.setProperty("outline", "none", "important");
+          if (label) label.style.background = "#006764";
+        } else if (document.activeElement === input) {
+          input.style.setProperty("border", "3px solid #006764", "important");
+          input.style.setProperty("outline", "none", "important");
+          if (label) label.style.background = "";
+        } else {
+          input.style.setProperty("border", "1px solid #006764", "important");
+          input.style.setProperty("outline", "none", "important");
+          if (label) label.style.background = "";
+        }
+      }
 
-            function forceWhiteBg() {
-                input.style.setProperty('background-color', '#fff', 'important');
-                input.style.setProperty('outline', 'none', 'important');
-            }
+      function forceWhiteBg() {
+        input.style.setProperty("background-color", "#fff", "important");
+        input.style.setProperty("outline", "none", "important");
+      }
 
-            input.addEventListener('change', updateBorder);
-            input.addEventListener('blur', updateBorder);
-            input.addEventListener('focus', updateBorder);
-            input.addEventListener('input', forceWhiteBg);
-            input.addEventListener('change', forceWhiteBg);
+      input.addEventListener("change", updateBorder);
+      input.addEventListener("blur", updateBorder);
+      input.addEventListener("focus", updateBorder);
+      input.addEventListener("input", forceWhiteBg);
+      input.addEventListener("change", forceWhiteBg);
+    }
+
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const email = input.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        errorMessage.classList.add("hidden");
+        errorMessage.textContent = "";
+
+        if (!email) {
+          errorMessage.textContent = "Por favor, ingresa tu correo electrónico.";
+          errorMessage.classList.remove("hidden");
+          return;
         }
 
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const email = input.value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                // Ocultar mensaje de error previo
-                errorMessage.classList.add('hidden');
-                errorMessage.textContent = '';
-
-                // Validar email
-                if (!email) {
-                    errorMessage.textContent = 'Por favor, ingresa tu correo electrónico.';
-                    errorMessage.classList.remove('hidden');
-                    return;
-                }
-
-                if (!emailRegex.test(email)) {
-                    errorMessage.textContent = 'Por favor, ingresa un correo electrónico válido.';
-                    errorMessage.classList.remove('hidden');
-                    return;
-                }
-
-                // Validar checkbox de privacidad
-                if (!privacyCheckbox.checked) {
-                    errorMessage.textContent = 'Debes aceptar el Aviso de Privacidad para continuar.';
-                    errorMessage.classList.remove('hidden');
-                    return;
-                }
-
-                // Todo válido - mostrar mensaje de éxito con transición
-                showSuccessMessage();
-            });
+        if (!emailRegex.test(email)) {
+          errorMessage.textContent = "Por favor, ingresa un correo electrónico válido.";
+          errorMessage.classList.remove("hidden");
+          return;
         }
 
-        function showSuccessMessage() {
-            // Fade out del contenido por defecto
-            defaultContent.classList.add('opacity-0');
+        if (!privacyCheckbox.checked) {
+          errorMessage.textContent = "Debes aceptar el Aviso de Privacidad para continuar.";
+          errorMessage.classList.remove("hidden");
+          return;
+        }
 
-            setTimeout(function() {
-                // Ocultar contenido por defecto
-                defaultContent.classList.add('hidden');
+        showSuccessMessage();
+      });
+    }
 
-                // Mostrar mensaje de éxito
-                successContent.classList.remove('hidden');
-                successContent.style.display = 'flex';
+    function showSuccessMessage() {
+      defaultContent.classList.add("opacity-0");
 
-                // Trigger reflow para la animación
-                void successContent.offsetWidth;
+      setTimeout(function () {
+        defaultContent.classList.add("hidden");
 
-                // Fade in del mensaje de éxito
-                successContent.classList.remove('opacity-0');
-                successContent.classList.add('opacity-100');
+        successContent.classList.remove("hidden");
+        successContent.style.display = "flex";
 
-                // Después de 5 segundos, volver al estado original
-                setTimeout(function() {
-                    // Fade out del mensaje de éxito
-                    successContent.classList.remove('opacity-100');
-                    successContent.classList.add('opacity-0');
+        void successContent.offsetWidth;
 
-                    setTimeout(function() {
-                        // Ocultar mensaje de éxito
-                        successContent.classList.add('hidden');
-                        successContent.style.display = '';
+        successContent.classList.remove("opacity-0");
+        successContent.classList.add("opacity-100");
 
-                        // Resetear el formulario
-                        form.reset();
-                        input.style.setProperty('border', '1px solid #006764', 'important');
-                        if (label) label.style.background = '#006764';
+        setTimeout(function () {
+          successContent.classList.remove("opacity-100");
+          successContent.classList.add("opacity-0");
 
-                        // Preparar contenido por defecto con opacidad 0 antes de mostrar
-                        defaultContent.classList.add('opacity-0');
-                        defaultContent.classList.remove('hidden');
+          setTimeout(function () {
+            successContent.classList.add("hidden");
+            successContent.style.display = "";
 
-                        // Trigger reflow para la animación
-                        void defaultContent.offsetWidth;
+            form.reset();
+            input.style.setProperty("border", "1px solid #006764", "important");
+            if (label) label.style.background = "#006764";
 
-                        // Fade in del contenido por defecto
-                        defaultContent.classList.remove('opacity-0');
-                        defaultContent.classList.add('opacity-100');
+            defaultContent.classList.add("opacity-0");
+            defaultContent.classList.remove("hidden");
 
-                        setTimeout(function() {
-                            // Limpiar clase después de la transición
-                            defaultContent.classList.remove('opacity-100');
-                        }, 400);
+            void defaultContent.offsetWidth;
 
-                    }, 400);
-                }, 5000);
+            defaultContent.classList.remove("opacity-0");
+            defaultContent.classList.add("opacity-100");
 
+            setTimeout(function () {
+              defaultContent.classList.remove("opacity-100");
             }, 400);
-        }
-    });
+          }, 400);
+        }, 5000);
+      }, 400);
+    }
+  });
 </script>

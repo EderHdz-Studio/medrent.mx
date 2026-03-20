@@ -1,0 +1,267 @@
+/**
+ * Newsletter — design system (un solo origen de verdad para tokens + apariencia).
+ * Metodología: BEM bajo .newsletter-module; los átomos Astro solo aplican estas clases.
+ */
+
+:root {
+  /* Tipografía alineada al sistema global (Lato + escala --type-* en global.css) */
+  --newsletter-font-body: "Lato", ui-sans-serif, system-ui, sans-serif;
+  --newsletter-text: #261819;
+  --newsletter-text-muted: #3b2a2a;
+  --newsletter-surface: var(--color-secondary-light);
+  --newsletter-radius-section: 24px;
+  --newsletter-inner-min-height: 320px;
+  --newsletter-inner-gap: 1rem;
+  --newsletter-title-tracking: -0.02em;
+  --newsletter-title-max-sm: min(100%, 20rem);
+  --newsletter-title-max-sm-up: min(100%, 28rem);
+  --newsletter-title-max-md: 42rem;
+  --newsletter-lead-max: 36rem;
+  --newsletter-form-max: 36rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --newsletter-inner-gap: 1rem;
+  }
+}
+
+/* Section (organism) */
+.newsletter-module {
+  width: 100%;
+  border-top-left-radius: var(--newsletter-radius-section);
+  border-top-right-radius: var(--newsletter-radius-section);
+  background-color: var(--newsletter-surface);
+}
+
+.newsletter-module__inner {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  min-height: var(--newsletter-inner-min-height);
+  width: 100%;
+  max-width: 80rem; /* max-w-7xl */
+  flex-direction: column;
+  gap: var(--newsletter-inner-gap);
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .newsletter-module__inner {
+    padding: 2rem 3rem;
+  }
+}
+
+.newsletter-module__default {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Atom: título principal (Lato + escala --type-h3 / breakpoints en :root global) */
+.newsletter-module__title {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: fit-content;
+  height: fit-content;
+  max-width: var(--newsletter-title-max-sm);
+  margin: 0 auto;
+  padding-left: 4px;
+  padding-right: 8px;
+  text-align: center;
+  font-family: var(--newsletter-font-body);
+  font-size: var(--type-h3);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--newsletter-title-tracking);
+  text-wrap: balance;
+  color: var(--newsletter-text);
+}
+
+@media (min-width: 640px) {
+  .newsletter-module__title {
+    max-width: var(--newsletter-title-max-sm-up);
+  }
+}
+
+@media (min-width: 768px) {
+  .newsletter-module__title {
+    max-width: var(--newsletter-title-max-md);
+  }
+}
+
+/* Atom: lead */
+.newsletter-module__lead {
+  margin: 0 auto;
+  max-width: var(--newsletter-lead-max);
+  text-wrap: pretty;
+  font-family: var(--newsletter-font-body);
+  font-size: 1rem;
+  line-height: 1.625;
+  color: var(--newsletter-text);
+}
+
+/* Molecule: formulario */
+.newsletter-module__form {
+  display: flex;
+  width: 100%;
+  max-width: var(--newsletter-form-max);
+  margin-left: auto;
+  margin-right: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.newsletter-module__field-row {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .newsletter-module__field-row {
+    flex-direction: row;
+    gap: 0;
+  }
+}
+
+.newsletter-module__floating-label {
+  position: absolute;
+  top: -0.5rem;
+  left: 0.75rem;
+  border-radius: 0.125rem;
+  background-color: var(--color-green-dark);
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: #fff;
+  transition: background-color 300ms;
+}
+
+.newsletter-module__input {
+  width: 100%;
+  border: 1px solid #5a4043;
+  border-radius: 4px;
+  padding: 1rem;
+  font-family: var(--newsletter-font-body);
+  background-color: #fff;
+  color: var(--newsletter-text);
+}
+
+.newsletter-module__input::placeholder {
+  color: #9ca3af;
+}
+
+.newsletter-module__input:hover {
+  background-color: var(--color-secondary);
+}
+
+.newsletter-module__input:focus {
+  outline: none;
+}
+
+@media (min-width: 768px) {
+  .newsletter-module__input {
+    flex: 1 1 0%;
+    min-width: 0;
+    border-radius: 4px 0 0 4px;
+  }
+}
+
+.newsletter-module__submit {
+  flex-shrink: 0;
+  width: 100%;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 1rem;
+  font-family: var(--newsletter-font-body);
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--color-primary);
+  transition: background-color 300ms;
+}
+
+.newsletter-module__submit:hover {
+  background-color: var(--color-accent);
+}
+
+@media (min-width: 768px) {
+  .newsletter-module__submit {
+    width: auto;
+    margin-top: 0;
+    border-radius: 0 4px 4px 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .newsletter-module__submit {
+    margin-top: 0.5rem;
+  }
+}
+
+.newsletter-module__privacy-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--newsletter-text-muted);
+}
+
+.newsletter-module__privacy-row input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #2c1b1b;
+}
+
+.newsletter-module__privacy-row a {
+  text-decoration: underline;
+  color: var(--color-primary);
+}
+
+.newsletter-module__error {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-primary);
+}
+
+.newsletter-module__error.hidden {
+  display: none;
+}
+
+/* Success (layout en componente con Tailwind; tipografía abajo) */
+.newsletter-module__success-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--newsletter-font-body);
+  font-size: var(--type-body);
+  font-weight: 600;
+  line-height: var(--leading-copy);
+  letter-spacing: 0.15px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.newsletter-module__success-body {
+  margin: 0;
+  max-width: var(--newsletter-lead-max);
+  text-align: center;
+  font-family: var(--newsletter-font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+  letter-spacing: 0.15px;
+  color: var(--newsletter-text);
+}
