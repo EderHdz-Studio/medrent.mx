@@ -13,6 +13,8 @@ import Upperbar from "@components/layout/header/Upperbar.astro";
 import Footer from "@components/layout/footer/Footer.astro";
 import Navbar from "@components/layout/header/Navbar.astro";
 import StickyCta from "@components/layout/overlays/StickyCta.astro";
+
+import LenisScroll from '@components/LenisScroll.astro';
 ---
 
 <!doctype html>
@@ -46,7 +48,7 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <slot name="head" />
 
     <!-- 8. CSS externo -->
-      <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
+    <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
       <!-- Optional Theme stylesheet | https://github.com/glidejs/glide/dist/css/glide.theme.min.css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
@@ -68,7 +70,7 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <!-- 10. JS externos (defer siempre que sea posible) -->
     <!-- Glide JS -->
     <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/glide.min.js" defer></script>
-    
+  
   </head>
   
   <body>
@@ -93,6 +95,8 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <div class="h-[50px] lg:h-[100px]"></div> 
 
     <slot />
+
+    <LenisScroll />
 
     <StickyCta />
 
