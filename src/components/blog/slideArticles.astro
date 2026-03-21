@@ -24,8 +24,10 @@ const { articulos, tagByArticleKey } = Astro.props as {
   </div>
 </div>
 
-<div class="flex flex-row justify-between items-center gap-4 mt-6 flex-nowrap">
-    <a href={ '/blog'} class="medrent-btn-primary h-fit shrink-0 group" >
+<div
+  class="flex flex-row items-center mt-6 w-full gap-4 justify-center min-[501px]:justify-between min-[501px]:gap-4 flex-wrap min-[501px]:flex-nowrap"
+>
+    <a href="/blog" class="medrent-btn-primary h-fit shrink-0 group">
       <span class="hidden min-[440px]:inline">Ver más artículos</span>
       <span class="inline min-[440px]:hidden">Ver más</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -33,17 +35,30 @@ const { articulos, tagByArticleKey } = Astro.props as {
       </svg>
     </a>
 
-    <div id="controls-BlogArticulos" class="flex items-center gap-4 justify-center shrink-0">
-        <button id="prev-btn-BlogArticulos" aria-label="Anterior" class="prevBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black">
-          <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
+    <div
+      id="controls-BlogArticulos"
+      class="flex items-center gap-4 justify-center shrink-0 border-2 border-[var(--color-primary)] rounded-full p-2 md:px-4 md:py-3"
+    >
+        <button
+          id="prev-btn-BlogArticulos"
+          type="button"
+          aria-label="Anterior"
+          class="prevBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white" aria-hidden="true">
             <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
           </svg>
         </button>
         <span id="contador-BlogArticulos" class="font-semibold text-base min-w-[72px] text-center">1 / 1</span>
-        <button id="next-btn-BlogArticulos" aria-label="Siguiente" class="nextBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black">
-         <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-          <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
-        </svg>
+        <button
+          id="next-btn-BlogArticulos"
+          type="button"
+          aria-label="Siguiente"
+          class="nextBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white" aria-hidden="true">
+            <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
+          </svg>
         </button>
     </div>
 </div>
