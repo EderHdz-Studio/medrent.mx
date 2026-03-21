@@ -1,4 +1,10 @@
-<!-- Sección slider de promociones -->
+---
+import { strapiFetch } from "@server/strapiClient";
+
+const promos = await strapiFetch("/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true");
+const slides = promos?.data || [];
+---
+
 <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
     <div class="text-center ">
         <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight text-left">
@@ -9,9 +15,27 @@
     <div class="glide" id="PromotionSlider">
         <div class="glide__track" data-glide-el="track">
             <ul class="glide__slides">
-                <li class="glide__slide flex flex-col items-center justify-center  bg-white rounded shadow " >
-                    <img src="/temp/promociones/image 1.png" alt="Promoción 1" class="h-full w-auto object-contain" />
-                </li>
+                {slides.map((slide) => (
+                    <li class="glide__slide flex flex-col items-center justify-center bg-white rounded shadow">
+                        <a 
+                            href={slide.url} 
+                            class="block w-full"
+                        >
+                            <picture>
+                                <source 
+                                    media="(max-width: 768px)" 
+                                    srcset={slide.mobileImage?.url || slide.desktopImage?.url} 
+                                />
+                                <img 
+                                    src={slide.desktopImage?.url} 
+                                    alt={slide.title || "Promociones disponibles"} 
+                                    class="w-full h-auto object-contain"
+                                    loading="lazy"
+                                />
+                            </picture>
+                        </a>
+                    </li>
+                ))}
             </ul>
         </div>
     </div>
@@ -37,4 +61,3 @@
     }).mount();
   }
 </script>
-
