@@ -2,6 +2,7 @@
 Astro.response.headers.set("Cache-Control", "public, max-age=60");
 
 import { getProducts, getProductBySlug } from "@server/api/products";
+import { getPromotionSlides } from "@server/api/promotions";
 import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
@@ -11,6 +12,10 @@ import GalleryPopup from '@components/product/GalleryPopUp.astro';
 import PopUpSolicitarCotizacion from '@components/popup/popUpSolicitarCotizacion.astro';
 import ButtonPDPSticky from "@components/buttonPDPSticky.astro";
 import ImageResponsive from "@components/media/ImageResponsive.astro";
+import Newsletter from "@components/FormNewsletter.astro";
+import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
+import PromotionSlider from "@components/sections/PromotionSlider.astro";
+import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -31,6 +36,9 @@ const product = await getProductBySlug(slug);
 if (!product) {
   return Astro.redirect("/404");
 }
+
+const especialidadesSliderItems = getHomeEspecialidadesForSlider();
+const promotionsData = await getPromotionSlides();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
@@ -431,7 +439,7 @@ const pdpJsonLd = {
           <!-- Preguntas Frecuentes -->
           {product?.faqItem && product.faqItem.length > 0 && (
             <div id="preguntas-frecuentes">
-              <h3 class=" text-[28px] font-bold text-[#261819]">
+              <h3 class="pdp-section-title">
                 Preguntas frecuentes
               </h3>
             
@@ -499,7 +507,7 @@ const pdpJsonLd = {
       {product?.technicalSpecifications && product.technicalSpecifications.length > 0 && (
         <section class="max-w-7xl mx-auto py-8">
           <div class="flex flex-col" x-data="{ openTechItems: [] }">
-            <h2 class=" text-[28px] font-bold ">
+            <h2 class="pdp-section-title">
               Especificaciones técnicas
             </h2>
             
@@ -637,6 +645,14 @@ const pdpJsonLd = {
         prefixId="ProductosRelacionados"
         disableHorizontalPadding={true}
       />
+
+      <PromotionSlider
+        promotionsData={promotionsData}
+        disableHorizontalPadding={true}
+        pdpSectionTitle={true}
+      />
+
+      <EspecialidadesSlider items={especialidadesSliderItems} prefixId="PDPEspecialidades" />
     </section>
 
     <!-- =========================
@@ -698,7 +714,8 @@ const pdpJsonLd = {
     
 
   </main>
-  
+
+  <Newsletter />
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

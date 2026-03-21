@@ -29,6 +29,7 @@
   --color-green-dark: #3d4948;
   --color-secondary-light: #f5faf9;
   --color-text-default: #171d1c;
+  --Schemes-On-Surface: #171d1c;
   --color-gray: #bcc9c8;
   --color-gray-dark: #6d7a78;
   --color-white: #ffffff;
@@ -374,6 +375,21 @@ div.citaBlogAuthor span {
   font-weight: 700;
   line-height: 32px;
   color: var(--color-text-default);
+}
+
+/**
+ * PDP — títulos de bloque (Medrent/headline/small, alineado a la izquierda).
+ * Misma apariencia en mobile y desktop para evitar saltos entre secciones.
+ */
+.pdp-section-title {
+  font-family: Lato, ui-sans-serif, system-ui, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--Schemes-On-Surface, #171d1c);
+  text-align: left;
+  margin: 0;
 }
 
 .medrent-headline-medium {

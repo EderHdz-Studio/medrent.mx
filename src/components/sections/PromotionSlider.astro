@@ -12,7 +12,16 @@ type PromoSlide = {
   mobileImage?: any;
 };
 
-const { promotionsData = [] } = Astro.props as { promotionsData?: PromoSlide[] };
+const {
+  promotionsData = [],
+  disableHorizontalPadding = false,
+  pdpSectionTitle = false,
+} = Astro.props as {
+  promotionsData?: PromoSlide[];
+  disableHorizontalPadding?: boolean;
+  /** Título al estilo Medrent/headline/small (solo PDP; home/PLP conservan type-h3). */
+  pdpSectionTitle?: boolean;
+};
 const promotions = Array.isArray(promotionsData)
   ? promotionsData
       .filter((item: PromoSlide) => item?.isActive)
@@ -35,9 +44,20 @@ function buildPromotionHref(item: PromoSlide) {
 ---
 <!-- Sección slider de promociones -->
 {promotions.length > 0 && (
-<section class="py-6 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
+<section
+  class:list={[
+    "py-6 max-w-7xl mx-auto flex flex-col gap-6",
+    disableHorizontalPadding ? "px-0" : "px-4 md:px-6 lg:px-8",
+  ]}
+>
     <div class="text-center ">
-        <h2 class="type-h3 font-bold text-[var(--color-text-default)] tracking-tight text-left">
+        <h2
+          class:list={[
+            pdpSectionTitle
+              ? "pdp-section-title"
+              : "type-h3 font-bold text-[var(--color-text-default)] tracking-tight text-left",
+          ]}
+        >
             Nuestras promociones
         </h2>
     </div>

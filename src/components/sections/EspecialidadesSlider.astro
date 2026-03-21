@@ -1,0 +1,289 @@
+---
+/**
+ * Carrusel de especialidades con la misma UX que ProductSlider (Glide, contador, flechas).
+ */
+import ImageResponsive from "@components/media/ImageResponsive.astro";
+import type { HomeEspecialidadItem } from "@lib/homeEspecialidades";
+
+interface Props {
+  items: HomeEspecialidadItem[];
+  prefixId?: string;
+}
+
+const { items, prefixId = "Especialidades" } = Astro.props as Props;
+const list = Array.isArray(items) ? items : [];
+---
+
+{
+  list.length > 0 && (
+    <section
+      class:list={[
+        "defer-section max-w-7xl mx-auto w-full flex flex-col justify-center items-center self-stretch py-6 px-0",
+      ]}
+    >
+      <div
+        class="botones-glider flex justify-between gap-6 w-full"
+        style="flex-wrap: wrap; position: relative;"
+      >
+        <h2 class="pdp-section-title w-full md:w-auto">
+          Especialidades
+        </h2>
+
+        {list.length > 1 && (
+          <div
+            id={`controls-${prefixId}`}
+            class="flex gap-4 items-center"
+            data-glide-el="controls"
+          >
+            <button
+              type="button"
+              aria-label="Anterior"
+              data-glide-dir="<"
+              class:list={[`prev-btn-${prefixId}`, "group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black"]}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="fill-current text-black transition group-hover:text-white"
+                aria-hidden="true"
+              >
+                <path
+                  d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+            <span
+              id={`contador-${prefixId}`}
+              class="font-semibold text-base min-w-[72px] text-center"
+            >
+              1 / 1
+            </span>
+            <button
+              type="button"
+              aria-label="Siguiente"
+              data-glide-dir=">"
+              class:list={[`next-btn-${prefixId}`, "group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black"]}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="fill-current text-black transition group-hover:text-white"
+                aria-hidden="true"
+              >
+                <path
+                  d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        <div
+          id={`${prefixId}-especialidadesSlider`}
+          data-prefixid={prefixId}
+          data-total-items={String(list.length)}
+          class="glide js-especialidades-slider w-full"
+        >
+          <div class="glide__track" data-glide-el="track">
+            <ul class="glide__slides">
+              {list.map((marca) => (
+                <li class="glide__slide h-auto">
+                  <article class="especialidades-slider-card flex flex-col items-center text-center h-full p-6 gap-2">
+                    <div class="flex items-center justify-center shrink-0">
+                      <ImageResponsive
+                        src={marca.iconImage}
+                        alt={marca.name}
+                        width={84}
+                        height={84}
+                        class="w-[84px] h-[84px] object-contain"
+                        sizes="84px"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    <h3 class="text-[22px] font-bold text-[var(--color-primary)]">{marca.name}</h3>
+                    <a
+                      href={marca.isActive ? `/especialidades/${marca.slug}` : "#"}
+                      class="text-[16px] tracking-[0.15px] text-[var(--color-text-default)] hover:underline hover:text-[var(--color-primary)] flex justify-center items-center gap-2 mt-0"
+                    >
+                      Ver aplicaciones
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </a>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  const initEspecialidadesSliders = async () => {
+    const { default: Glide } = await import("@glidejs/glide");
+    document.querySelectorAll(".js-especialidades-slider[data-prefixid]").forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      if (el.dataset.mounted === "true") return;
+      el.dataset.mounted = "true";
+
+      const prefixId = el.dataset.prefixid;
+      const totalItems = Number(el.dataset.totalItems || 0);
+      const isDesktop = window.innerWidth >= 1024;
+
+      const glider = new Glide(el, {
+        rewind: false,
+        type: "slider",
+        bound: true,
+        perView: 3,
+        gap: 24,
+        autoplay: false,
+        hoverpause: false,
+        dragThreshold: isDesktop ? false : 80,
+        swipeThreshold: isDesktop ? false : 80,
+        startAt: 0,
+        breakpoints: {
+          1024: { perView: 3 },
+          768: { perView: 2 },
+          480: { perView: 1 },
+        },
+      }) as any;
+
+      function equalizeCardHeights() {
+        const cards = Array.from(el.querySelectorAll(".especialidades-slider-card"));
+        if (!cards.length) return;
+
+        cards.forEach((card) => {
+          if (card instanceof HTMLElement) card.style.minHeight = "";
+        });
+
+        let maxHeight = 0;
+        cards.forEach((card) => {
+          if (card instanceof HTMLElement) {
+            maxHeight = Math.max(maxHeight, card.offsetHeight);
+          }
+        });
+
+        if (!maxHeight) return;
+        cards.forEach((card) => {
+          if (card instanceof HTMLElement) card.style.minHeight = `${maxHeight}px`;
+        });
+      }
+
+      function getSlidesToShow() {
+        const width = window.innerWidth;
+        if (width <= 480) return 1;
+        if (width <= 768) return 2;
+        return 3;
+      }
+
+      const contador = prefixId ? document.getElementById(`contador-${prefixId}`) : null;
+      const controls = prefixId ? document.getElementById(`controls-${prefixId}`) : null;
+
+      function updateContador() {
+        if (!glider || !contador || !prefixId) return;
+
+        if (controls) {
+          if (window.innerWidth < 1000) {
+            controls.classList.add("order-4");
+            controls.style.flexWrap = "wrap";
+            controls.style.width = "100%";
+            controls.style.justifyContent = "center";
+          } else {
+            controls.classList.remove("order-4");
+            controls.style.flexWrap = "";
+            controls.style.width = "";
+            controls.style.justifyContent = "";
+          }
+        }
+
+        const total = totalItems;
+        const slidesToShow = getSlidesToShow();
+        const totalPages = Math.max(1, Math.ceil(total / slidesToShow));
+        const currentIndex = glider.index;
+        const lastStart = Math.max(0, total - slidesToShow);
+        const currentPage =
+          currentIndex >= lastStart
+            ? totalPages
+            : Math.min(totalPages, Math.floor(currentIndex / slidesToShow) + 1);
+        contador.textContent = `${currentPage} / ${totalPages}`;
+
+        if (controls) {
+          const shouldShowControls = total > slidesToShow;
+
+          if (shouldShowControls) {
+            controls.style.display = "";
+          } else {
+            controls.style.display = "none";
+          }
+        }
+      }
+
+      glider.on("run.after", updateContador);
+      glider.on("mount.after", updateContador);
+      glider.on("run.after", equalizeCardHeights);
+      glider.on("mount.after", equalizeCardHeights);
+      window.addEventListener("resize", updateContador);
+      window.addEventListener("orientationchange", updateContador);
+      window.addEventListener("resize", equalizeCardHeights);
+      window.addEventListener("orientationchange", equalizeCardHeights);
+
+      const prevBtn = prefixId ? document.querySelector(`.prev-btn-${prefixId}`) : null;
+      const nextBtn = prefixId ? document.querySelector(`.next-btn-${prefixId}`) : null;
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          const perView = getSlidesToShow();
+          const target = Math.max(0, glider.index - perView);
+          glider.go(`=${target}`);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          const perView = getSlidesToShow();
+          const total = totalItems;
+          const lastStart = Math.max(0, total - perView);
+          const target = Math.min(lastStart, glider.index + perView);
+          glider.go(`=${target}`);
+        });
+      }
+
+      glider.mount();
+      updateContador();
+      equalizeCardHeights();
+
+      if (isDesktop) {
+        el.addEventListener("dragstart", (event) => {
+          event.preventDefault();
+        });
+      }
+    });
+  };
+
+  const safeInit = () => {
+    initEspecialidadesSliders().catch(() => {});
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", safeInit, { once: true });
+  else safeInit();
+</script>
