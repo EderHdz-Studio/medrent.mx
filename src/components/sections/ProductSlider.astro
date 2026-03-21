@@ -4,27 +4,35 @@ import ProductCard from '@components/product/ProductCard.astro';
 ---
 {data && data.length > 0 && (
     <section class="max-w-7xl mx-auto py-8">
-        <div class="botones-glider flex justify-between gap-6 w-full md:w-auto" style="flex-wrap: wrap; position: relative;">
+        <div class="botones-glider flex justify-between gap-6 w-auto" style="flex-wrap: wrap; position: relative;">
             <h2 class=" text-[28px] font-bold text-[var(--color-text-default)] w-full md:w-auto">
               {title}
             </h2>
             
             {data.length > 4 && (
-              <div id={`controls-${prefixId}`} class="flex gap-4 items-center" >
-                <button aria-label="Anterior" class={`prev-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black`}>
-                <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-                  <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
-                </svg>
-                </button>
-                <span id={`contador-${prefixId}`} class="font-semibold text-base min-w-[48px] text-center">1 / {data.length}</span>
-                <button aria-label="Siguiente" class={`next-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black`}>
-                <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-                  <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
-                </svg>
-                </button>
-              </div>
+                <div id={`controls-${prefixId}`} class="flex gap-4 items-center md:justify-end justify-center order-3 md:order-2 mt-4 md:mt-0 w-full md:w-auto sm:w-auto border-2 border-[var(--color-primary)] rounded-full bg-white p-3 mx-auto md:mx-0">
+                    <button 
+                        id={`prev-btn-${prefixId}`}
+                        aria-label="Anterior"
+                        class={`prev-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] cursor-pointer transition`}
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#006764"/>
+                    </svg>
+                    </button>
+                    <span id={`contador-${prefixId}`} class="font-semibold text-base min-w-[48px] text-center">1 / {data.length}</span>
+                    <button 
+                        id={`next-btn-${prefixId}`}
+                        aria-label="Siguiente" 
+                        class={`next-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] cursor-pointer transition`}
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+                    </svg>
+                    </button>
+                </div>
             )}
-            <div id={`${prefixId}-vitrinaProductCard`}  data-prefixid={`${prefixId}`}  class="glide">
+            <div id={`${prefixId}-vitrinaProductCard`}  data-prefixid={`${prefixId}`}  class="glide order-2 md:order-3 w-full">
                 <div class="glide__track" data-glide-el="track">
                     <div class="glide__slides">
                         {data.map((product:any) => (
@@ -37,76 +45,58 @@ import ProductCard from '@components/product/ProductCard.astro';
     </section>
 )}
 
-<!-- Este script se inyecta de forma única con el valor de prefixId -->
- 
-<!-- <script type="module">
-  const slider = document.querySelector('#BrandSlider');
-
-  if (slider) {
-    new Glide(slider, {
-      type: 'carousel',
-      perView: 8,
-      gap: 0,
-      autoplay: 2000,
-      hoverpause: true,
-      rewind: false,
-      breakpoints: {
-        1024: { perView: 4 },
-        640: { perView: 2 }
-      }
-    }).mount();
-  }
-</script> -->
-
 <script type="module">
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-prefixid]').forEach((el) => {
         const prefixId = el.dataset.prefixid;
-
+        
+        const prevBtn = document.getElementById(`prev-btn-${prefixId}`);
+        const nextBtn = document.getElementById(`next-btn-${prefixId}`);
+        const slides = el.querySelectorAll('.glide__slide');
+        const totalProducts = slides.length;
+        const isMoreThan4 = totalProducts > 4;
+        
         const glider = new Glide(el, {
-            rewind: false,
-            type: 'slider',
+            rewind: isMoreThan4,
+            type: isMoreThan4 ? 'carousel' : 'slider',
             perView: 4,
             gap: 16,
-            autoplay: 2000,
+            autoplay: isMoreThan4 ? 2000 : false,
             hoverpause: true,
             startAt: 0,
+            arrows: {
+                prev: `#prev-btn-${prefixId}`,
+                next: `#next-btn-${prefixId}`
+            },
             breakpoints: {
                 1024: { perView: 4 },
-                920: { perView: 3 },
-                640: { perView: 2 },
-                400: { perView: 1 }
+                768: { perView: 2 },
+                0: { perView: 2 }
             }
         });
 
-        // Función para obtener el número de cards visibles según el ancho de pantalla
         function getSlidesToShow() {
             const width = window.innerWidth;
-            if (width <= 400) return 1;
-            if (width <= 999) return 2;
-            return 4;
+            if (width >= 1024) return 4;
+            return 2;
         }
         
-        // Actualiza el contador
         const contador = document.getElementById(`contador-${prefixId}`);
         const controls = document.getElementById(`controls-${prefixId}`);
         
         function updateContador() {
             if (!glider || !glider.slides || !contador) return;
             
-            // Alterna la clase order-4 en controles según el ancho de pantalla
-            if (controls) {
-                if (window.innerWidth < 1000) {
-                    controls.classList.add('order-4');
-                    controls.style.flexWrap = 'wrap';
-                    controls.style.width = '100%';
-                    controls.style.justifyContent = 'center';
-                } else {
-                    controls.classList.remove('order-4');
-                    controls.style.flexWrap = '';
-                    controls.style.width = '';
-                    controls.style.justifyContent = '';
-                }
+            if (controls && window.innerWidth < 1000) {
+                controls.classList.add('order-4');
+                controls.style.flexWrap = 'wrap';
+                controls.style.width = '100%';
+                controls.style.justifyContent = 'center';
+            } else if (controls) {
+                controls.classList.remove('order-4');
+                controls.style.flexWrap = '';
+                controls.style.width = '';
+                controls.style.justifyContent = '';
             }
             
             const slidesToShow = getSlidesToShow();
@@ -115,15 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let end = glider.slide + slidesToShow;
             if (end > total) end = total;
             
-            contador.textContent = `${slidesToShow > 0 ? start + ' - ' + end : ''} / ${total}`;
+            contador.textContent = `${start} - ${end} / ${total}`;
             
-            // Mostrar controles solo si hay más cards que las visibles
             if (controls) {
-                if (total > slidesToShow) {
-                    controls.style.display = '';
-                } else {
-                    controls.style.display = 'none';
-                }
+                controls.style.display = total > slidesToShow ? 'flex' : 'none';
             }
         }
         
@@ -135,6 +120,17 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('orientationchange', updateContador);
         
         glider.mount();
+
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                glider.go('<');
+            });
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                glider.go('>');
+            });
+        }
     });
 });
 </script>

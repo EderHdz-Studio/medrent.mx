@@ -80,7 +80,7 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
                 <!-- Institución o clínica -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs"
                         >Nombre de institución o clínica*</label
                     >
                     <input
@@ -88,7 +88,7 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
                         type="text"
                         placeholder="Ej: Clínica Neuro"
                         required
-                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded focus:border-2  placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                        class="phone-input w-full border-[var(--color-green-dark)] border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[var(--color-green-dark)] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     />
                 </div>
                 
@@ -98,69 +98,70 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
                     options={["Neurocirugía", "Neurofisiología", "Neuromodulación", "Rehabilitación", "Neurovascular", "Otra"]}
                 />    
 
-
                 <!-- Estado de la República -->
                 <div class="relative">
                     <label
-                        class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
+                        class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs"
                         >Estado de la república*</label
                     >
-                    <select
-                        name="estado_mx"
-                        required
-                        class="appearance-none w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded text-[#A0A0A0] focus:outline-none focus:ring-0 bg-white pr-10 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                    
+                    <!-- Botón que abre el dropdown -->
+                    <button
+                        type="button"
+                        id="estado-btn"
+                        class="w-full border-2 border-[var(--color-green-dark)] rounded-[4px] px-4 py-3 text-left text-[#A0A0A0] bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300 flex justify-between items-center"
+                        style="overscroll-behavior: contain;"
                     >
-                        <option value="">Selecciona tu estado</option>
-                        <option>Aguascalientes</option>
-                        <option>Baja California</option>
-                        <option>Baja California Sur</option>
-                        <option>Campeche</option>
-                        <option>Chiapas</option>
-                        <option>Chihuahua</option>
-                        <option>Ciudad de México</option>
-                        <option>Coahuila</option>
-                        <option>Colima</option>
-                        <option>Durango</option>
-                        <option>Estado de México</option>
-                        <option>Guanajuato</option>
-                        <option>Guerrero</option>
-                        <option>Hidalgo</option>
-                        <option>Jalisco</option>
-                        <option>Michoacán</option>
-                        <option>Morelos</option>
-                        <option>Nayarit</option>
-                        <option>Nuevo León</option>
-                        <option>Oaxaca</option>
-                        <option>Puebla</option>
-                        <option>Querétaro</option>
-                        <option>Quintana Roo</option>
-                        <option>San Luis Potosí</option>
-                        <option>Sinaloa</option>
-                        <option>Sonora</option>
-                        <option>Tabasco</option>
-                        <option>Tamaulipas</option>
-                        <option>Tlaxcala</option>
-                        <option>Veracruz</option>
-                        <option>Yucatán</option>
-                        <option>Zacatecas</option>
-                    </select>
-                    <!-- Flechita SVG -->
-                    <div
-                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
-                    >
-                        <svg
-                            class="w-4 h-4 text-[#5A3A36]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
+                        <span id="estado-seleccionado">Selecciona tu estado</span>
+                        <svg class="w-4 h-4 text-[#5A3A36]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
+                    </button>
+
+                    <!-- Dropdown oculto con scroll -->
+                    <div 
+                        id="estado-dropdown" 
+                        class="absolute left-0 w-full hidden z-[10000]" 
+                        style="top:100%;"
+                    >
+                        <div class="border-2 border-[var(--color-green-dark)] border-t-0 rounded-b-[4px] bg-white shadow-lg max-h-[128px] overflow-y-auto" style="overscroll-behavior: contain;">
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Aguascalientes">Aguascalientes</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Baja California">Baja California</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Baja California Sur">Baja California Sur</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Campeche">Campeche</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Chiapas">Chiapas</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Chihuahua">Chihuahua</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Ciudad de México">Ciudad de México</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Coahuila">Coahuila</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Colima">Colima</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Durango">Durango</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Estado de México">Estado de México</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Guanajuato">Guanajuato</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Guerrero">Guerrero</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Hidalgo">Hidalgo</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Jalisco">Jalisco</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Michoacán">Michoacán</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Morelos">Morelos</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Nayarit">Nayarit</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Nuevo León">Nuevo León</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Oaxaca">Oaxaca</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Puebla">Puebla</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Querétaro">Querétaro</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Quintana Roo">Quintana Roo</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="San Luis Potosí">San Luis Potosí</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Sinaloa">Sinaloa</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Sonora">Sonora</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Tabasco">Tabasco</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Tamaulipas">Tamaulipas</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Tlaxcala">Tlaxcala</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Veracruz">Veracruz</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Yucatán">Yucatán</div>
+                            <div class="estado-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer" data-value="Zacatecas">Zacatecas</div>
+                        </div>
                     </div>
+                    
+                    <!-- Input oculto para enviar el valor -->
+                    <input type="hidden" name="estado_mx" id="estado_mx_input" value="" required />
                 </div>
 
                 <!-- ¿Cómo nos conociste? -->
@@ -186,6 +187,7 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
                     >
                     <textarea
                         name="message"
+                        id="message"
                         rows="4"
                         placeholder="Cuéntanos tus dudas o necesidades..."
                         class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
@@ -266,3 +268,53 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
         </div>
     </section>
 </Layout>
+
+
+
+<!-- SCROLL EN INPUT ESTADOS DE LA REPÚBLICA -->
+<script>
+    const estadoBtn = document.getElementById('estado-btn');
+    const estadoDropdown = document.getElementById('estado-dropdown');
+    const estadoSeleccionado = document.getElementById('estado-seleccionado');
+    const estadoInput = document.getElementById('estado_mx_input');
+    const scrollableDiv = estadoDropdown?.querySelector('.overflow-y-auto');
+    
+    // Abrir/cerrar dropdown
+    estadoBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        estadoDropdown.classList.toggle('hidden');
+    });
+    
+    // Manejar scroll dentro del dropdown (para Lenis)
+    if (scrollableDiv) {
+        scrollableDiv.addEventListener('wheel', (e) => {
+            e.stopPropagation();
+            scrollableDiv.scrollTop += e.deltaY;
+        });
+    }
+    
+    // Seleccionar opción
+    document.querySelectorAll('.estado-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const value = option.dataset.value;
+            estadoSeleccionado.textContent = value;
+            estadoInput.value = value;
+            estadoDropdown.classList.add('hidden');
+            
+            // Disparar evento change para validación
+            estadoInput.dispatchEvent(new Event('change'));
+            
+            // Aplicar estilo de validación
+            if (estadoInput.value !== '') {
+                estadoBtn.classList.add('bg-[var(--color-secondary-light)]');
+            }
+        });
+    });
+    
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (!estadoBtn.contains(e.target) && !estadoDropdown.contains(e.target)) {
+            estadoDropdown.classList.add('hidden');
+        }
+    });
+</script>
