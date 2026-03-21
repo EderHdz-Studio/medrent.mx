@@ -4,30 +4,30 @@ import ProductCard from '@components/product/ProductCard.astro';
 ---
 {data && data.length > 0 && (
     <section class="max-w-7xl mx-auto py-8">
-        <div class="botones-glider flex justify-between gap-6 w-full md:w-auto" style="flex-wrap: wrap; position: relative;">
+        <div class="botones-glider flex justify-between gap-6 w-auto" style="flex-wrap: wrap; position: relative;">
             <h2 class=" text-[28px] font-bold text-[var(--color-text-default)] w-full md:w-auto">
               {title}
             </h2>
             
             {data.length > 4 && (
-                <div id={`controls-${prefixId}`} class="flex gap-4 items-center md:justify-end justify-center order-3 md:order-2 mt-4 md:mt-0 w-full md:w-auto">
+                <div id={`controls-${prefixId}`} class="flex gap-4 items-center md:justify-end justify-center order-3 md:order-2 mt-4 md:mt-0 w-full md:w-auto sm:w-auto border-2 border-[var(--color-primary)] rounded-full bg-white p-3 mx-auto md:mx-0">
                     <button 
                         id={`prev-btn-${prefixId}`}
-                        aria-label="Anterior" 
-                        class={`prev-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black`}
+                        aria-label="Anterior"
+                        class={`prev-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] cursor-pointer transition`}
                     >
-                    <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-                        <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#006764"/>
                     </svg>
                     </button>
                     <span id={`contador-${prefixId}`} class="font-semibold text-base min-w-[48px] text-center">1 / {data.length}</span>
                     <button 
                         id={`next-btn-${prefixId}`}
                         aria-label="Siguiente" 
-                        class={`next-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black`}
+                        class={`next-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] cursor-pointer transition`}
                     >
-                    <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-                        <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
                     </svg>
                     </button>
                 </div>
