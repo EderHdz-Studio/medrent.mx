@@ -11,6 +11,7 @@ import PhoneField from "@components/forms/PhoneField.astro";
 import SelectField from "@components/forms/SelectField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
+import EventosHome from '@components/eventosHome.astro'; 
 
 
 let articulosRelacionados = null;
@@ -26,6 +27,19 @@ try {
     articulosRelacionados = [];
 }
 
+
+let dataEventos = null;
+try {
+    const response = await strapiFetch("/events-page?populate[events][populate]=image&populate=heroImage");
+    dataEventos = response.data;
+} catch (error) {
+    console.error('Error fetching events:', error);
+    dataEventos = {
+        events: [],
+        title: 'Eventos médicos',
+        description: 'Mantente actualizado con los últimos avances...'
+    };
+}
 
 const dataHome = {}
 const marcas = [
@@ -362,6 +376,9 @@ const marcas = [
 
     <!-- Sección slider de promociones -->
     <PromotionSlider />
+    
+    <!-- Sección slider de eventos -->
+    <EventosHome dataEventos={dataEventos} />
 
     <!--  Sección de financiamiento-->
     <section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
@@ -409,7 +426,7 @@ const marcas = [
         </div>
     </section>
 
-    <!--  Sección de eventos -->
+    <!--  Blog section-->
     <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
         <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
         <h3 class=" mb-6 font-normal text-[28px] text-[#212121] font-lato">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
@@ -419,7 +436,7 @@ const marcas = [
 
 
 	<!-- <script type="module">
-        		// DROPDOWN
+       // DROPDOWN
 		const phoneInput = document.querySelector('input[name="phone"]');
 
 		const dropdown = document.getElementById('country-dropdown');
