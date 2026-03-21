@@ -6,12 +6,20 @@ const {
   surface = 'dark',
   /** 'overlay' = nav absolute (comportamiento anterior). 'inline' = flujo normal, útil en hero. */
   navPosition = 'overlay',
+  /** false = tipografía label (12px, medium, tracking 0.5px); último ítem suele ser título de artículo. */
+  uppercaseAll = true,
+  class: className,
 } = Astro.props as {
   items: { name: string; href?: string }[];
   textColor?: string;
   surface?: 'dark' | 'light';
   navPosition?: 'overlay' | 'inline';
+  uppercaseAll?: boolean;
+  class?: string;
 };
+const listTypography = uppercaseAll
+  ? "text-[12px] uppercase leading-4 tracking-[0.08em]"
+  : "text-[12px] font-medium leading-4 tracking-[0.5px] normal-case";
 const outerBg = surface === 'light' ? 'bg-transparent' : 'bg-[#000]';
 const navLayout =
   navPosition === 'inline'
@@ -20,10 +28,10 @@ const navLayout =
 ---
 <div class={`mx-auto flex w-full max-w-[1280px] flex-col justify-start ${outerBg}`}>
   <nav
-    class={`mx-auto flex w-full max-w-[1280px] items-center px-8 py-2 font-lato ${navLayout}`}
+    class={`mx-auto flex w-full max-w-[1280px] items-center px-8 py-2 font-lato ${navLayout} ${className || ""}`}
     aria-label="Breadcrumb"
   >
-    <ol class="scrollbar-hide flex touch-pan-x items-center gap-2 overflow-x-auto whitespace-nowrap text-[12px] uppercase leading-4 tracking-[0.08em]">
+    <ol class={`scrollbar-hide flex touch-pan-x items-center gap-2 overflow-x-auto whitespace-nowrap ${listTypography}`}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
@@ -31,7 +39,9 @@ const navLayout =
           <>
             <li>
               {isLast ? (
-                <span class={`font-semibold ${textColor || 'text-black'}`}>
+                <span
+                  class={`${uppercaseAll ? "font-semibold" : "font-medium"} ${textColor || "text-black"}`}
+                >
                   {item.name}
                 </span>
               ) : (

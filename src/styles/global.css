@@ -34,6 +34,11 @@
   --color-white: #ffffff;
   --color-primary-light: #87f4ef;
 
+  /* Material / Figma schemes (cuerpo secundario sobre superficie) */
+  --Schemes-On-Surface: #171d1c;
+  --Schemes-On-Surface-Variant: #3d4948;
+  --Schemes-Primary-Container: #00827f;
+
   /* Light surfaces */
   --color-surface-light: 245 250 249; /* #F5FAF9 */
   --color-text-light: 15 20 20; /* #0F1414 */
@@ -182,18 +187,74 @@ select option:focus {
   flex-direction: column;
   gap: 8px;
 }
-.blogSubtitle,
-.dinamicContent h2 {
-  font-family: Lato;
-  color: #261819;
-  font-size: 28px;
-  font-weight: 300;
+/* Subtítulos legacy (p. ej. comentarios en plantilla) */
+.blogSubtitle {
+  font-family: Lato, sans-serif;
+  color: var(--Schemes-On-Surface, #261819);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
 }
+
+/* Cuerpo del artículo (Strapi blocks): headline/small en móvil, medium en desktop */
+.dinamicContent h2 {
+  font-family: Lato, sans-serif;
+  color: var(--Schemes-On-Surface, #261819);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .blogSubtitle {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .dinamicContent h2 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+}
+
 .dinamicContent li strong,
 .dinamicContent p {
   color: #261819;
   font-family: Lato;
   font-size: 16px;
+}
+
+.dinamicContent strong {
+  font-weight: 700;
+}
+
+/* Enlaces en el texto del artículo: primario + subrayado (excl. bloque autor) */
+.dinamicContent a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  text-underline-offset: 2px;
+}
+
+.dinamicContent a:hover {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
+}
+
+.dinamicContent a:where(:has(> img:only-child)) {
+  text-decoration: none;
+}
+
+.dinamicContent .acreditadoPor a {
+  color: #261819;
+  text-decoration: none;
+}
+
+.dinamicContent .acreditadoPor a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  color: #261819;
 }
 .dinamicContent ol,
 .dinamicContent ul {
@@ -268,12 +329,6 @@ div.citaBlogAuthor span {
 }
 
 
-@media (max-width: 600px) {
-  .blogSubtitle {
-    font-size: 20px;
-  }
-}
-
 @media (min-width: 769px) {
   .sliderArticulosRelacionados .glider-track {
     display: flex;
@@ -319,6 +374,89 @@ div.citaBlogAuthor span {
   outline: 2px solid #006764;
   outline-offset: 2px;
   border-radius: 0.5rem;
+}
+
+/* Lateral artículo — Medrent/headline/medium (Compartir, Relacionados desktop, …) */
+.blog-aside-section-title {
+  margin: 0;
+  align-self: stretch;
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--Schemes-On-Surface, #171d1c);
+}
+
+/* Relacionados móvil/tablet en artículo — Medrent/headline/small */
+.blog-article-related-heading {
+  margin: 0;
+  margin-bottom: 1rem; /* 16px separation from card */
+  align-self: stretch;
+  font-family: Lato, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--Schemes-On-Surface, #171d1c);
+}
+
+/* Título principal del artículo — headline/medium (alineado con tokens) */
+.blog-article-hero-title {
+  margin: 0;
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--Schemes-On-Surface, #261819);
+}
+
+@media (min-width: 1024px) {
+  .blog-article-hero-title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+}
+
+/* Compartir en fila móvil: mismo headline/small que Relacionados móvil */
+@media (max-width: 1023px) {
+  .SocialMediaMobile .blog-aside-section-title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+}
+
+/* Extracto en tarjetas “Relacionados” (Medrent/body/medium) */
+.blog-related-card-excerpt {
+  font-family: Lato, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  color: var(--Schemes-On-Surface-Variant, #3d4948);
+}
+
+/* Título en tarjetas Relacionados aside desktop — Medrent/title/medium (subrayado solo en hover) */
+.blog-related-card-title {
+  font-family: Lato, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  color: var(--Schemes-On-Surface, #171d1c);
+  text-decoration-line: none;
+}
+
+.articulosRelacionadosDesktop a:hover .blog-related-card-title {
+  color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+  text-decoration-color: var(--color-primary);
 }
 
 /* Shared typography utilities for templates/pages */

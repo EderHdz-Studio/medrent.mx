@@ -3,11 +3,16 @@ import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import { formatDate, buildImageUrl } from '@lib/utils.js';
 import SocialMedia from '@components/blog/SocialMedia.astro';
-// import SlideArticulos from '@components/blog/SlideArticulos.astro';
 import Newsletter from '@components/FormNewsletter.astro';
+// import SlideArticulos from '@components/blog/SlideArticulos.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
-import { buildClassificationTagByArticleKeyMap, getClassificationTag } from '@lib/blog/classification';
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import {
+  buildClassificationTagByArticleKeyMap,
+  getClassificationTag,
+} from '@lib/blog/classification';
+import ArticleRelatedMobile from '@components/blog/ArticleRelatedMobile.astro';
 
 export async function getStaticPaths() {
   let articles: { data?: unknown[] };
@@ -69,28 +74,63 @@ const authorSlug = article?.writer?.slug || 'team-medrent';
 const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;
 const postId = `${canonicalUrl}#post`;
 
-// Obtener artículos relacionados (excluyendo el actual)
-let articulosRelacionados = [];
+// Relacionados: misma clasificación (TAG CMS); si no hay, subcategoría; si no, recientes.
+let articulosRelacionados: any[] = [];
+const classTagForRelated = getClassificationTag(article, classificationTagByArticleKey);
 try {
-  // Aquí puedes personalizar la lógica de relacionados
-  // Por ejemplo, por misma subcategoría o tag
-  const filterParams = new URLSearchParams({
-    'populate': '*',
-    'sort': 'publishedAt:desc',
-    'pagination[limit]': '10',
-    'filters[slug][$ne]': article.slug, // Excluir el artículo actual
-  });
+  const poolRes = await strapiFetch(
+    '/blog-articles?populate=*&sort=publishedAt:desc&pagination[pageSize]=100',
+  );
+  const pool = Array.isArray(poolRes?.data) ? poolRes.data : [];
+  const others = pool.filter(
+    (a: any) => a.isActive === true && a.slug && a.slug !== article.slug,
+  );
 
-  // Si tiene subcategoría, filtrar por ella
-  if (article?.subcategory?.slug) {
-    filterParams.append('filters[subcategory][slug][$eq]', article.subcategory.slug);
+  let picked: any[] = [];
+  if (classTagForRelated) {
+    picked = others.filter(
+      (a: any) => getClassificationTag(a, classificationTagByArticleKey) === classTagForRelated,
+    );
   }
-
-  const relatedResponse = await strapiFetch(`/blog-articles?${filterParams.toString()}`);
-  articulosRelacionados = relatedResponse.data || [];
+  if (picked.length === 0 && article?.subcategory?.slug) {
+    picked = others.filter((a: any) => a.subcategory?.slug === article.subcategory.slug);
+  }
+  if (picked.length === 0) {
+    picked = others;
+  }
+  articulosRelacionados = picked.slice(0, 15);
 } catch (error) {
   console.error('Error fetching related articles:', error);
   articulosRelacionados = [];
+}
+
+/** Total de artículos activos del mismo autor (no relacionados + 1). */
+let authorArticleTotal = 1;
+const writerSlugForCount = article?.writer?.slug;
+if (writerSlugForCount) {
+  const countActiveByWriter = (list: unknown[]) =>
+    list.filter(
+      (a: any) => a.isActive === true && a.writer?.slug === writerSlugForCount,
+    ).length;
+  try {
+    const countRes = await strapiFetch(
+      `/blog-articles?filters[writer][slug][$eq]=${encodeURIComponent(writerSlugForCount)}&pagination[pageSize]=500&fields[0]=slug&fields[1]=isActive`,
+    );
+    const list = Array.isArray(countRes?.data) ? countRes.data : [];
+    const n = list.filter((a: { isActive?: boolean }) => a.isActive === true).length;
+    if (n > 0) authorArticleTotal = n;
+  } catch {
+    try {
+      const all = await strapiFetch(
+        "/blog-articles?pagination[pageSize]=500&populate[writer]=true",
+      );
+      const list = Array.isArray(all?.data) ? all.data : [];
+      const n = countActiveByWriter(list);
+      if (n > 0) authorArticleTotal = n;
+    } catch {
+      authorArticleTotal = 1;
+    }
+  }
 }
 ---
 
@@ -180,27 +220,45 @@ try {
   </Fragment>
 
   <main class="max-w-7xl mx-auto">
+    <div class="w-full">
+      <div class="mx-auto max-w-7xl px-4 py-3 md:px-6">
+        <Breadcrumb
+          surface="light"
+          navPosition="inline"
+          textColor="text-dark"
+          class="max-w-none! px-0!"
+          items={[
+            { name: "INICIO", href: "/" },
+            { name: "BLOG", href: "/blog" },
+            { name: "ARTÍCULO" },
+          ]}
+        />
+      </div>
+    </div>
+
     <!-- Cabecera -->
     <div class="w-full p-4 md:py-6 md:px-4">
       {classificationLabel && (
-        <p class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+        <p class="mb-4 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
           {classificationLabel}
         </p>
       )}
 
-      <h1 class="font-light text-[32px] text-[#261819] font-lato">
+      <h1 class="blog-article-hero-title">
         {article?.title}
       </h1>
-      
+
       {article?.shortDescription && (
-        <p class="text-[var(--color-primary)] text-[16px] font-normal">
+        <p class="font-lato text-base font-normal leading-6 tracking-[0.5px] text-on-surface-variant">
           {article.shortDescription}
         </p>
       )}
 
-      <div class="w-full my-6">
-        <p class="text-[var(--color-primary)] text-sm font-normal italic">
-          • {formatDate(article?.createdAt)}
+      <div class="my-6 flex w-full flex-col">
+        <p
+          class="w-full self-stretch font-lato text-xs font-medium italic leading-4 tracking-[0.5px] text-on-surface-variant"
+        >
+          {formatDate(article?.createdAt)}
         </p>
       </div>
     </div>
@@ -215,17 +273,9 @@ try {
     
     <SocialMedia articulo={article} inline={true} class="px-4" clase="SocialMediaMobile" />
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
       <!-- Columna principal: Contenido del artículo -->
       <div class="lg:col-span-8 dinamicContent p-4 md:py-6 md:px-4 contentBlog">
-          <div class="w-full py-4">
-            <h2 class="font-light text-[32px] text-[#171D1C] font-lato">
-              Antecedentes
-            </h2>
-          </div>
-
-
-
         {Array.isArray(article?.content)
           ? article.content.map((item: any) => {
               switch (item?.__component) {
@@ -283,7 +333,9 @@ try {
                 {article?.writer?.fullName || 'Backoffice | Team Medrent'}
               </a>
               <span class="text-on-surface-variant font-medium italic">
-                {" — "}{Array.isArray(articulosRelacionados) ? articulosRelacionados.length + 1 : 1} Artículo{Array.isArray(articulosRelacionados) && articulosRelacionados.length + 1 !== 1 ? 's' : ''}
+                {" — "}
+                {authorArticleTotal}{" "}
+                {authorArticleTotal === 1 ? "artículo" : "artículos"}
               </span>
             </div>
             <span class="text-[var(--color-green-dark)] font-lato text-sm font-normal leading-5 tracking-wide">
@@ -293,35 +345,21 @@ try {
         </section>
       </div>
 
+      <!-- Relacionados: solo tablet/móvil (desktop en aside); mismo listado por clasificación -->
+      <div class="col-span-full lg:hidden px-4 md:px-6">
+        <ArticleRelatedMobile
+          articulos={articulosRelacionados}
+          tagByArticleKey={classificationTagByArticleKey}
+        />
+      </div>
+
       <!-- Columna lateral: Otros artículos, suscripción y ver más -->
       <aside class="lg:col-span-4 flex flex-col gap-6 pt-4 pr-4 contentBlogAside">
         <!-- Botones de redes sociales -->
         <SocialMedia articulo={article} inline={false} class="px-4" clase="SocialMediaDesktop" />
 
-        <section class="flex-col gap-2 flex max-w-7xl mx-auto mb-6"> 
-          <h2 class="text-lg font-bold text-[#261819] blogSubtitle">Suscríbete al blog</h2>
-          <p class="text-[14px] text-[var(--color-primary)] max-w-xl mx-auto m-0">
-            Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones exclusivas sobre nuestras soluciones.
-          </p> 
-          <form class="justify-center max-w-xl w-full mx-auto flex flex-col gap-4 pt-4"> 
-            <div class="relative w-full flex"> 
-              <label for="email" class="absolute -top-2 left-3 bg-[#3D4948] text-[#FFF] text-xs px-1 rounded-sm">Correo electrónico*</label> 
-              <input id="email" type="email" placeholder="Ej: nombre@correo.com" class="w-full border border-[#3b2a2a] rounded-l-md py-2 px-4 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#8C0032] bg-white" required=""> 
-              <button type="submit" class="bg-[#006764] text-white font-semibold py-2 px-6 rounded-r-md transition-colors duration-300 cursor-pointer">
-                Suscríbeme
-              </button> 
-            </div>
-            <div class="flex items-center justify-start w-full gap-2 text-sm text-[#3b2a2a]"> 
-              <input type="checkbox" id="privacy" class="w-4 h-4 accent-[#2c1b1b]" required=""> 
-              <label for="privacy" class="cursor-pointer">He leído y acepto el 
-                <a href="/aviso-de-privacidad" class="underline text-[#text-[var(--color-primary)]]"> Aviso de Privacidad</a> 
-              </label> 
-            </div> 
-          </form> 
-        </section>
-
-        <section class="articulosRelacionadosDesktop flex gap-6 flex-col gap-6 mb-6">
-          <h2 class="text-lg font-bold text-[#261819] blogSubtitle">RELACIONADOS</h2>
+        <section class="articulosRelacionadosDesktop flex flex-col gap-6 mb-6">
+          <h2 class="blog-aside-section-title">Relacionados</h2>
           <div class="flex flex-col gap-4 md:gap-4" style="gap:16px;">
             {Array.isArray(articulosRelacionados) && articulosRelacionados.length > 0 ? (
               articulosRelacionados.slice(0, 3).map((rel) => (
@@ -334,31 +372,32 @@ try {
                   <div class="flex flex-col h-full justify-between w-full">
                     <div>
                       {getClassificationTag(rel, classificationTagByArticleKey) && (
-                        <span class="mb-1 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+                        <span class="mb-1 block uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
                           {getClassificationTag(rel, classificationTagByArticleKey)}
                         </span>
                       )}
                       <a href={`/blog/${rel.slug}`}>
-                        <h3 class="mb-1 text-[16px] font-bold text-[#261819] hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] not-italic font-lato cursor-pointer line-clamp-2">
+                        <h3 class="blog-related-card-title mb-1 cursor-pointer line-clamp-2">
                           {rel.title}
                         </h3>
                       </a>
-                      <p class="mb-1 text-[14px] text-[var(--color-primary)] line-clamp-3">{rel.shortDescription}</p>
+                      <p class="blog-related-card-excerpt mb-1 line-clamp-3">{rel.shortDescription}</p>
                     </div>
-                    <div class="flex">
-                      <span class="block text-xs text-[#261819] font-lato mt-2">Por: &nbsp;</span>
-                      <a href={`/blog/autor/${rel.writer?.slug}`} class="block text-xs text-[#text-[var(--color-primary)]] underline decoration-[#text-[var(--color-primary)]] cursor-pointer font-lato mt-2">
-                        {rel.writer?.fullName || 'Medrent'}
+                    <div class="mt-2 flex flex-wrap items-baseline gap-x-1 font-lato text-xs leading-4">
+                      <span class="text-on-surface-variant">Por:</span>
+                      <a
+                        href={`/blog/autor/${rel.writer?.slug}`}
+                        class="text-[var(--color-primary)] underline decoration-[var(--color-primary)]"
+                      >
+                        {rel.writer?.fullName || "Medrent"}
                       </a>
-                      <span class="block text-xs text-[var(--color-primary)] font-lato mt-2">
-                        &nbsp;• {formatDate(rel.createdAt)}
-                      </span>
+                      <span class="text-on-surface-variant">• {formatDate(rel.createdAt)}</span>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <p class="text-[var(--color-primary)]]">Por el momento no hay artículos relacionados.</p>
+              <p class="text-on-surface-variant font-lato text-sm">Por el momento no hay artículos relacionados.</p>
             )}
           </div>
 
@@ -379,5 +418,7 @@ try {
       <!-- <SlideArticulos articulos={articulosRelacionados} /> -->
     <!-- </section> -->
   </main>
+
+  <!-- Ancho completo del #contenido-principal, pegado al bloque previo y al footer -->
   <Newsletter />
 </Layout>
