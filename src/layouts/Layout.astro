@@ -14,7 +14,7 @@ import Footer from "@components/layout/footer/Footer.astro";
 import Navbar from "@components/layout/header/Navbar.astro";
 import StickyCta from "@components/layout/overlays/StickyCta.astro";
 
-import LenisScroll from '@components/LenisScroll.astro';
+// import LenisScroll from '@components/LenisScroll.astro';
 ---
 
 <!doctype html>
@@ -96,11 +96,11 @@ import LenisScroll from '@components/LenisScroll.astro';
 
     <slot />
 
-    <LenisScroll />
-
     <StickyCta />
 
     <Footer site={site}/>
+
+    <!-- <LenisScroll /> -->
     
   </body>
 </html>
