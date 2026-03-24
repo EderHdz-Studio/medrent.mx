@@ -6,7 +6,7 @@ User-agent: *
 Allow: /
 
 Canonical: https://www.medrent.mx
-Contact: sdr_telemarketing@medrent.mx
+Contact: contacto@medrent.mx
 
 Description:
 Medrent es una empresa especializada en soluciones médicas,
