@@ -1,10 +1,13 @@
 ---
 // src/components/forms/SelectField.astro
 const { label, name, options = [] } = Astro.props;
+const selectId = `${name}-select`;
+const helperTextId = `${name}-placeholder`;
+const otherId = `${name}-other`;
 ---
 
 <div class="relative form-select">
-  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
+  <label for={selectId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
     {label}*
   </label>
 
@@ -43,6 +46,7 @@ const { label, name, options = [] } = Astro.props;
     ¿Otra especialidad? Escribe aquí
   </label>
   <input
+    id={otherId}
     name="otras_especialidades"
     type="text"
     placeholder="Escribe aquí tu especialidad"

@@ -1,28 +1,49 @@
 ---
-const { article } = Astro.props;
 import { formatDate } from '@lib/utils.js';
+import ImageResponsive from '@components/media/ImageResponsive.astro';
+import { getClassificationTag } from '@lib/blog/classification';
+
+const { article, tagByArticleKey } = Astro.props as {
+  article: any;
+  tagByArticleKey?: Map<string, string> | null;
+};
+
+const classificationLabel = getClassificationTag(article as Record<string, unknown>, tagByArticleKey);
 ---
 
 <div class="bg-[var(--color-secondary-light)] rounded-[16px]  hover:bg-[var(--color-secondary-light)] hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative min-h-[500px]">
     <div class="h-55 relative overflow-hidden flex-shrink-0">
-        <img src={article?.heroImage?.url} alt={article?.title} class="w-full h-full object-cover" style="max-height:218px;" />
+        <ImageResponsive
+          image={article?.heroImage}
+          alt={article?.title}
+          class="w-full h-full object-cover max-h-[218px]"
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+          loading="lazy"
+          decoding="async"
+        />
     </div>
     <div class="p-6 flex flex-col flex-grow">
-        <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{article?.speciality?.speciality}</span>
+        {classificationLabel && (
+          <span class="mb-4 block uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+            {classificationLabel}
+          </span>
+        )}
         <a href={`/blog/${article?.slug}`}>
-        <h3 class="text-[22px] font-light text-lg text-[#261819] mb-2 font-lato line-clamp-2 leading-7 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{article?.title}</h3>
+        <h3 class="text-[22px] font-bold text-[#261819] mb-2 font-lato line-clamp-2 leading-7 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{article?.title}</h3>
         </a>
-        <p class="text-[var(--color-gray-dark)] text-[16px] font-lato ont-normal mb-4 line-clamp-3 flex-grow" style="max-height: 70px;">{article?.shortDescription}</p>
+        <p class="text-on-surface-variant text-[16px] font-lato font-normal mb-4 line-clamp-3 flex-grow" style="max-height: 70px;">{article?.shortDescription}</p>
         <div class="flex items-end justify-between mt-auto">
 
-        <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
-            Por:&nbsp;
-            <a href={`/blog/autor/${article?.writer?.slug}`} 
-                class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">
-                    {article?.writer?.fullName}
-            </a>
-            &nbsp;• {formatDate(article?.createdAt)}
+        <span class="text-xs text-on-surface-variant font-lato w-full flex flex-wrap items-center gap-x-1 gap-y-1">
+            <span class="whitespace-nowrap">
+              Por:&nbsp;
+              <a href={`/blog/autor/${article?.writer?.slug}`} 
+                  class="inline text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">
+                      {article?.writer?.fullName}
+              </a>
             </span>
+            <span class="whitespace-nowrap">• {formatDate(article?.createdAt)}</span>
+        </span>
         </div>
     </div>
 </div>

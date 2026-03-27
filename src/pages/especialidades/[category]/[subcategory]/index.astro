@@ -5,13 +5,14 @@ import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
 import Breadcrumb from "@components/navigation/Breadcrumb.astro";
 import PLPLayout from "@components/product/PLPLayout.astro";
-import ProductGrid from "@components/product/ProductGrid.astro";
+import PLPProductsSection from "@components/product/PLPProductsSection.astro";
 import SidebarFilters from "@components/product/SidebarFilters.astro";
 
 import { getProducts } from "@server/api/products";
 import { getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
-import { getAllSubcategories } from "@server/api/subcategories";
+import { getAllSubcategories, getSubcategoryBySlug } from "@server/api/subcategories";
+import { formatSlugAsTitle } from "@lib/utils.js";
 
 /* ---------------- ROUTE PARAMS ---------------- */
 
@@ -21,10 +22,18 @@ const { category, subcategory } = Astro.params;
 
 const url = new URL(Astro.request.url);
 
-const brandQuery = url.searchParams.get("brand")?.split(",") || [];
-const categoryQuery = url.searchParams.get("category")?.split(",") || [];
-const subcategoryQuery =
-  url.searchParams.get("subcategory")?.split(",") || [];
+const parseFilterParam = (key: string) => {
+  const values = url.searchParams
+    .getAll(key)
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return [...new Set(values)];
+};
+
+const brandQuery = parseFilterParam("brand");
+const categoryQuery = parseFilterParam("category");
+const subcategoryQuery = parseFilterParam("subcategory");
 
 /* Siempre incluir contexto base */
 if (category && !categoryQuery.includes(category)) {
@@ -46,51 +55,146 @@ const products = await getProducts({
 const brandsData = await getBrands();
 const categoriesData = await getCategories();
 const subcategoriesData = await getAllSubcategories();
+const subcategoryData = subcategory
+  ? await getSubcategoryBySlug(subcategory)
+  : null;
+const categoryName = category ?? "";
+const subcategoryName = subcategory ?? "";
+const plpHeadingTitle =
+  subcategoryData?.name || formatSlugAsTitle(subcategoryName);
+
+/** Etiquetas legibles para breadcrumb (sin slug con guiones) */
+const breadcrumbCategoryLabel =
+  subcategoryData?.category?.name ||
+  categoriesData.find((c: { slug?: string }) => c.slug === category)?.name ||
+  formatSlugAsTitle(categoryName);
+const seoPlpDescription =
+  subcategoryData?.SEO?.description ||
+  subcategoryData?.SEO?.seoDescription ||
+  subcategoryData?.description ||
+  "";
+const seoPlpTitle = subcategoryData?.SEO?.title || "MEDRENT";
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 ---
 
-<Layout title={subcategory}>
+<Layout
+  title={`${subcategoryName} | MedRent`}
+  description={`Soluciones y productos para ${subcategoryName} con tecnología médica especializada y soporte de MedRent.`}
+  keywords={`${subcategoryName}; aplicación clínica; equipo médico; MedRent`}
+  ogImage={heroImageUrl}
+>
   <Fragment slot="head">
     <BreadcrumbSchema
       items={[
-        { name: "Inicio", url: "https://www.medrent.mx" },
+        { name: "Inicio", url: `${baseUrl}/` },
         {
-          name: category,
-          url: `https://www.medrent.mx/especialidades/${category}`,
+          name: breadcrumbCategoryLabel,
+          url: `${baseUrl}/especialidades/${categoryName}`,
         },
         {
-          name: subcategory,
-          url: `https://www.medrent.mx/especialidades/${category}/${subcategory}`,
+          name: plpHeadingTitle,
+          url: `${baseUrl}/especialidades/${categoryName}/${subcategoryName}`,
         },
       ]}
+      id={breadcrumbId}
     />
+    <script type="application/ld+json" set:html={
+      (() => {
+        const list = Array.isArray(products) ? products.slice(0, 12) : [];
+        const itemListId = `${canonicalUrl}#itemlist`;
+        const itemListElement = list.map((p, index) => {
+          const pdpUrl = p?.slug ? `${baseUrl}/productos/${p.slug}` : canonicalUrl;
+          const imageUrl = Array.isArray(p?.gallery) ? p.gallery[0] : undefined;
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": ["MedicalDevice", "Product"],
+              "@id": `${pdpUrl}#product`,
+              name: p?.name || "Producto",
+              url: pdpUrl,
+              image: imageUrl ? [imageUrl] : undefined,
+            },
+            url: pdpUrl,
+          };
+        });
+
+        return JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": `${canonicalUrl}#webpage`,
+              url: canonicalUrl,
+              name: `${subcategoryName} | MedRent`,
+              description: `Soluciones y productos para ${subcategoryName} con tecnología médica especializada y soporte de MedRent.`,
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              breadcrumb: { "@id": breadcrumbId },
+              mainEntity: { "@id": itemListId },
+              primaryImageOfPage: { "@type": "ImageObject", url: heroImageUrl },
+            },
+            {
+              "@type": "CollectionPage",
+              "@id": itemListId,
+              url: canonicalUrl,
+              name: `${subcategoryName} | MedRent`,
+              description: `Soluciones y productos para ${subcategoryName} con tecnología médica especializada y soporte de MedRent.`,
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": `${baseUrl}/#organization` },
+              inLanguage: "es-MX",
+              mainEntity: { "@id": itemListId },
+            },
+            {
+              "@type": "ItemList",
+              "@id": itemListId,
+              name: `${subcategoryName} — productos`,
+              itemListOrder: "https://schema.org/ItemListOrderAscending",
+              itemListElement,
+            },
+          ],
+        });
+      })()
+    }></script>
   </Fragment>
 
   <!-- HERO -->
-  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">
+  <section class="relative w-full h-[140px] overflow-hidden">
     <div class="absolute inset-0 heroproductos">
       <Breadcrumb
         textColor="text-white"
         items={[
           { name: "INICIO", href: "/" },
           {
-            name: category.toUpperCase(),
-            href: `/especialidades/${category}`,
+            name: breadcrumbCategoryLabel,
+            href: `/especialidades/${categoryName}`,
           },
           {
-            name: subcategory.toUpperCase(),
+            name: plpHeadingTitle,
           },
         ]}
       />
       <img
         src="/temp/HeroPLP.png"
-        alt={subcategory}
+        alt={subcategoryName}
         class="w-full h-full object-cover rounded-b-[24px]"
       />
     </div>
   </section>
 
   <!-- PLP -->
-  <PLPLayout title={subcategory}>
+  <PLPLayout
+    title={plpHeadingTitle}
+    productCount={products.length}
+    seoTitle={seoPlpTitle}
+    seoDescription={seoPlpDescription}
+  >
     <Fragment slot="filters">
       <SidebarFilters
         brands={brandsData}
@@ -99,6 +203,6 @@ const subcategoriesData = await getAllSubcategories();
       />
     </Fragment>
 
-    <ProductGrid products={products} />
+    <PLPProductsSection products={products} />
   </PLPLayout>
 </Layout>

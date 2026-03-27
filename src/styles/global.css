@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./newsletter-module.css";
 
 /* FONTS */
 @font-face {
@@ -6,6 +7,7 @@
   src: url("/fonts/Lato-Regular.ttf") format("opentype");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -13,6 +15,7 @@
   src: url("/fonts/Lato-Bold.ttf") format("opentype");
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
 
 /* CSS variables colors */
@@ -26,10 +29,16 @@
   --color-green-dark: #3d4948;
   --color-secondary-light: #f5faf9;
   --color-text-default: #171d1c;
+  --Schemes-On-Surface: #171d1c;
   --color-gray: #bcc9c8;
   --color-gray-dark: #6d7a78;
   --color-white: #ffffff;
   --color-primary-light: #87f4ef;
+
+  /* Material / Figma schemes (cuerpo secundario sobre superficie) */
+  --Schemes-On-Surface: #171d1c;
+  --Schemes-On-Surface-Variant: #3d4948;
+  --Schemes-Primary-Container: #00827f;
 
   /* Light surfaces */
   --color-surface-light: 245 250 249; /* #F5FAF9 */
@@ -48,6 +57,41 @@
       rgba(105, 216, 211, 0.14) 100%
     ),
     rgb(var(--color-surface-dark));
+
+  /* Typography scale (xs default) */
+  --type-eyebrow: 0.875rem; /* 14px */
+  --type-h1: 2rem; /* 32px */
+  --type-h2: 1.75rem; /* 28px */
+  --type-h3: 1.5rem; /* 24px */
+  --type-body-lg: 1.25rem; /* 20px */
+  --type-body: 1rem; /* 16px */
+  --type-caption: 0.75rem; /* 12px */
+  --type-button: 1.125rem; /* 18px */
+  --leading-tight: 1.2;
+  --leading-copy: 1.5;
+
+}
+
+@media (min-width: 768px) {
+  :root {
+    /* md */
+    --type-h1: 2.25rem; /* 36px */
+    --type-h2: 2rem; /* 32px */
+    --type-h3: 1.75rem; /* 28px */
+    --type-body-lg: 1.25rem; /* 20px */
+    --type-body: 1rem; /* 16px */
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    /* xl */
+    --type-h1: 2.5rem; /* 40px */
+    --type-h2: 2.25rem; /* 36px */
+    --type-h3: 2rem; /* 32px */
+    --type-body-lg: 1.375rem; /* 22px */
+    --type-body: 1.0625rem; /* 17px */
+  }
 }
 
 [data-theme="light"] {
@@ -62,6 +106,10 @@
 
 body {
   font-family: "Lato", sans-serif;
+}
+
+.text-on-surface-variant {
+  color: var(--Schemes-On-Surface-Variant, #3d4948);
 }
 html,
 body {
@@ -140,18 +188,74 @@ select option:focus {
   flex-direction: column;
   gap: 8px;
 }
-.blogSubtitle,
-.dinamicContent h2 {
-  font-family: Lato;
-  color: #261819;
-  font-size: 28px;
-  font-weight: 300;
+/* Subtítulos legacy (p. ej. comentarios en plantilla) */
+.blogSubtitle {
+  font-family: Lato, sans-serif;
+  color: var(--Schemes-On-Surface, #261819);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
 }
+
+/* Cuerpo del artículo (Strapi blocks): headline/small en móvil, medium en desktop */
+.dinamicContent h2 {
+  font-family: Lato, sans-serif;
+  color: var(--Schemes-On-Surface, #261819);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .blogSubtitle {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .dinamicContent h2 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+}
+
 .dinamicContent li strong,
 .dinamicContent p {
   color: #261819;
   font-family: Lato;
   font-size: 16px;
+}
+
+.dinamicContent strong {
+  font-weight: 700;
+}
+
+/* Enlaces en el texto del artículo: primario + subrayado (excl. bloque autor) */
+.dinamicContent a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  text-underline-offset: 2px;
+}
+
+.dinamicContent a:hover {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
+}
+
+.dinamicContent a:where(:has(> img:only-child)) {
+  text-decoration: none;
+}
+
+.dinamicContent .acreditadoPor a {
+  color: #261819;
+  text-decoration: none;
+}
+
+.dinamicContent .acreditadoPor a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  color: #261819;
 }
 .dinamicContent ol,
 .dinamicContent ul {
@@ -198,6 +302,10 @@ div.citaBlogAuthor span {
 .sliderArticulosRelacionados .glider-slide {
   padding: 12px;
 }
+.sliderArticulosRelacionados .glide__slide {
+  padding: 0;
+}
+
 
 /* Quitar el fondo azul/morado del autocompletado y aplicar el color secundario */
 input:-webkit-autofill,
@@ -274,15 +382,274 @@ select:autofill {
   }
 }
 
-@media (max-width: 600px) {
-  .blogSubtitle {
-    font-size: 20px;
-  }
-}
 
 @media (min-width: 769px) {
-  .glider-track {
+  .sliderArticulosRelacionados .glider-track {
     display: flex;
     justify-content: space-between;
   }
+  .sliderArticulosRelacionados .glide__track {
+    display: block;
+  }
+}
+
+/* Render below-the-fold sections on demand for faster mobile startup */
+.defer-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
+}
+
+.mobile-gallery-slider {
+  touch-action: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.mobile-gallery-slider::-webkit-scrollbar {
+  display: none;
+}
+
+/* Blog hero: categorías en carrusel horizontal en móvil (overflow-x, sin barra visible) */
+.blog-chips-scroll {
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.blog-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Foco visible en la tira de chips (accesibilidad teclado) */
+.blog-chips-scroll:focus-within {
+  outline: 2px solid #006764;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Lateral artículo — Medrent/headline/medium (Compartir, Relacionados desktop, …) */
+.blog-aside-section-title {
+  margin: 0;
+  align-self: stretch;
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--Schemes-On-Surface, #171d1c);
+}
+
+/* Relacionados móvil/tablet en artículo — Medrent/headline/small */
+.blog-article-related-heading {
+  margin: 0;
+  margin-bottom: 1rem; /* 16px separation from card */
+  align-self: stretch;
+  font-family: Lato, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--Schemes-On-Surface, #171d1c);
+}
+
+/* Título principal del artículo — headline/medium (alineado con tokens) */
+.blog-article-hero-title {
+  margin: 0;
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--Schemes-On-Surface, #261819);
+}
+
+@media (min-width: 1024px) {
+  .blog-article-hero-title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+}
+
+/* Compartir en fila móvil: mismo headline/small que Relacionados móvil */
+@media (max-width: 1023px) {
+  .SocialMediaMobile .blog-aside-section-title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+}
+
+/* Extracto en tarjetas “Relacionados” (Medrent/body/medium) */
+.blog-related-card-excerpt {
+  font-family: Lato, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  color: var(--Schemes-On-Surface-Variant, #3d4948);
+}
+
+/* Título en tarjetas Relacionados aside desktop — Medrent/title/medium (subrayado solo en hover) */
+.blog-related-card-title {
+  font-family: Lato, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  color: var(--Schemes-On-Surface, #171d1c);
+  text-decoration-line: none;
+}
+
+.articulosRelacionadosDesktop a:hover .blog-related-card-title {
+  color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+  text-decoration-color: var(--color-primary);
+}
+
+/* Shared typography utilities for templates/pages */
+.type-eyebrow {
+  font-size: var(--type-eyebrow);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.type-h1 {
+  font-size: var(--type-h1);
+  line-height: var(--leading-tight);
+}
+
+.type-h2 {
+  font-size: var(--type-h2);
+  line-height: var(--leading-tight);
+}
+
+.type-h3 {
+  font-size: var(--type-h3);
+  line-height: var(--leading-tight);
+}
+
+.type-body-lg {
+  font-size: var(--type-body-lg);
+  line-height: var(--leading-copy);
+}
+
+.type-body {
+  font-size: var(--type-body);
+  line-height: var(--leading-copy);
+}
+
+.type-caption {
+  font-size: var(--type-caption);
+  line-height: 1.4;
+}
+
+.type-button {
+  font-size: var(--type-button);
+  font-weight: 700;
+  line-height: 1.33;
+}
+
+/* Medrent / Figma — headlines on surface (#171D1C) */
+.medrent-headline-small {
+  font-family: Lato, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--color-text-default);
+}
+
+/**
+ * PDP — títulos de bloque (Medrent/headline/small, alineado a la izquierda).
+ * Misma apariencia en mobile y desktop para evitar saltos entre secciones.
+ */
+.pdp-section-title {
+  font-family: Lato, ui-sans-serif, system-ui, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--Schemes-On-Surface, #171d1c);
+  text-align: left;
+  margin: 0;
+}
+
+.medrent-headline-medium {
+  font-family: Lato, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--color-text-default);
+}
+
+/**
+ * Medrent/headline/large — mobile titulares (Figma)
+ * Shadow/Light/2xl
+ */
+.medrent-headline-large {
+  font-family: Lato, sans-serif;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 40px;
+  color: var(--color-text-default);
+  text-shadow:
+    0 20px 24px rgba(49, 48, 48, 0.1),
+    0 8px 10px rgba(49, 48, 48, 0.04);
+  align-self: stretch;
+}
+
+/**
+ * Section titles: mobile = headline/large, md+ = headline/medium (sin sombra)
+ */
+.medrent-headline-section {
+  font-family: Lato, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--color-text-default);
+  font-size: 32px;
+  line-height: 40px;
+  text-shadow:
+    0 20px 24px rgba(49, 48, 48, 0.1),
+    0 8px 10px rgba(49, 48, 48, 0.04);
+  align-self: stretch;
+}
+
+@media (min-width: 768px) {
+  .medrent-headline-section {
+    font-size: 28px;
+    line-height: 36px;
+    text-shadow: none;
+  }
+}
+
+/* Primary CTA — 14px bold, 14px vertical padding (aligned con “Ver más artículos”) */
+.medrent-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 14px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.medrent-btn-primary:hover {
+  background-color: var(--color-accent);
 }

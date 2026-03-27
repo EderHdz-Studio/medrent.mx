@@ -5,14 +5,13 @@ interface Props {
   product: Product;
 }
 const { product } = Astro.props;
-console.log("Fetched product:", product); // Agrega este log para verificar los datos obtenidos
 ---
 <style>
     .productCard:hover{ box-shadow: 7px 11px 13px 0 rgba(33, 46, 56, 0.09), 2px 3px 7px 0 rgba(33, 46, 56, 0.10);}
 </style>
 
-<div class="glide__slide productCard bg-white rounded-[16px] border border-[var(--color-gray)] hover:border-[var(--color-primary)] hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col h-full">
-    <div class="w-full max-[447px]:h-70 min-[448px]:max-[519px]:h-70 min-[520px]:h-60 relative overflow-hidden flex-shrink-0">
+<div class="productCard bg-white rounded-[16px] border border-[var(--color-gray)] hover:border-[var(--color-primary)] hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col h-full">
+    <div class="w-full h-[220px] sm:h-[240px] md:h-[260px] relative overflow-hidden shrink-0 bg-white">
 
         {product.isNew && (
             <div class="absolute top-3 left-3 bg-[#006191] text-white text-[11px] font-semibold px-3 py-1 rounded-[2px] z-20 w-fit">
@@ -21,7 +20,7 @@ console.log("Fetched product:", product); // Agrega este log para verificar los 
             </div>
         )}
 
-        <div class="h-70 relative overflow-hidden flex-shrink-0">
+        <div class="h-full relative overflow-hidden shrink-0">
             <img
                 src={
                     typeof product.gallery?.[0] === 'string'
@@ -31,23 +30,18 @@ console.log("Fetched product:", product); // Agrega este log para verificar los 
                             : '/images/default-logo.webp'
                 }
                 alt={product?.name || "Producto"}
-                class="w-full h-full object-contain group-hover:scale-103 transition-transform duration-800"
-                style={{ height: "100%", minHeight: "300px" }}
+                class="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-700"
             />
         </div>
     </div>
     
     {/* Contenedor de contenido */}
-    <div class="relative p-3 sm:p-6 flex flex-col flex-grow h-[260px]">
-        {/* Fondo que cubre TODO */}
-        <div class="absolute inset-0 bg-white group-hover:bg-[var(--color-secondary-light)] transition-colors duration-300"></div>
-
-        {/* Contenido */}
-        <div class="relative z-10 flex-grow gap-2 flex flex-col ">
+    <div class="relative p-3 sm:p-4 flex flex-col flex-grow bg-white group-hover:bg-[var(--color-secondary-light)] transition-colors duration-300">
+        <div class="relative z-10 flex flex-col gap-3 flex-grow">
             <!-- {product.CatalogoMarca?.Marca && ( -->
                 <a
                 href={`/nuestras-marcas/${product?.brand?.slug}`}
-                class="uppercase  text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)] hover:underline"
+                class="uppercase text-[11px] sm:text-[12px] font-medium leading-[18px] tracking-[0.1px] text-[var(--color-primary)] hover:underline"
                 >
                    {product?.brand?.name}
                 </a>
@@ -56,13 +50,13 @@ console.log("Fetched product:", product); // Agrega este log para verificar los 
                 href={`/productos/${product.slug}`}
                 class="block hover:underline transition-all duration-300 product-link"
             >
-                <h3 class="text-[16px] font-bold text-[var(--color-text-default)] transition-colors uppercase  hover:underline decoration-[var(--color-primary)]">
+                <h3 class="text-[15px] sm:text-[16px] font-bold text-[var(--color-text-default)] transition-colors uppercase hover:underline decoration-[var(--color-primary)] line-clamp-2 leading-[1.35]">
                     {product.name}
                 </h3>
             </a>
             {product.shortDescription && (
                 <p
-                class="text-[var(--color-gray-dark)] text-[12px] font-normal  line-clamp-3 min-h-[60px] transition-colors duration-300"
+                class="text-on-surface-variant text-[12px] font-medium line-clamp-3 leading-[16px] tracking-[0.5px] min-h-[52px] transition-colors duration-300"
                 style={{ fontFamily: "Lato" }}
                 >
                     {product.shortDescription}
@@ -73,7 +67,7 @@ console.log("Fetched product:", product); // Agrega este log para verificar los 
         {/* Botón */}
         <a
         href={`/productos/${product.slug}`}
-        class="relative z-10 inline-flex items-center bg-[#00201F] text-white px-4 py-2 rounded  text-sm font-light hover:bg-[var(--color-primary)] hover:text-white transition-colors w-full justify-center mt-auto product-link"
+        class="relative z-10 inline-flex items-center bg-[#00201F] text-white px-4 py-2 rounded text-sm font-light hover:bg-[var(--color-primary)] hover:text-white transition-colors w-full justify-center mt-4 product-link min-h-[40px]"
         style={{ padding: "8px 16px" }}
         >
         Ver detalles

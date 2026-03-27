@@ -8,6 +8,7 @@ import BaseForm from "@components/forms/BaseForm.astro";
 import FormField from "@components/forms/FormField.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
+import ImageResponsive from "@components/media/ImageResponsive.astro";
 import SlideArticles from '@components/blog/slideArticles.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
@@ -86,8 +87,19 @@ for (let i = 0; i < 42; i++) {
 
 // Días con eventos (puedes personalizar esto)
 const eventDays = [11, 14];
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 ---
-<Layout title="Eventos | MedRent – Eventos médicos y de tecnología"> 
+<Layout
+  title="Eventos MedRent | Congresos, talleres y presentaciones médicas"
+  description="Explora congresos, talleres y presentaciones donde MedRent comparte innovación y equipos líderes. Filtra por especialidad y fecha."
+  keywords="eventos médicos; congresos; talleres; MedRent; tecnología médica"
+  ogImage={heroImageUrl}
+>
     <!-- <Fragment slot="metas">
         <title>Eventos | MedRent – Eventos médicos y de tecnología</title> -->
         <!-- <meta name="description" content="Mantente actualizado con los últimos avances en tecnología médica. Participamos en congresos, seminarios y eventos especializados donde compartimos conocimientos sobre equipos de diagnóstico cardiovascular y respiratorio." /> --> 
@@ -112,10 +124,95 @@ const eventDays = [11, 14];
         <Fragment slot="head">
             <BreadcrumbSchema
             items={[
-                { name: 'Inicio', url: 'https://www.medrent.mx' },
-                { name: 'Eventos', url: 'https://www.medrent.mx/eventos' },
+                { name: 'Inicio', url: `${baseUrl}/` },
+                { name: 'Eventos', url: `${baseUrl}/eventos` },
             ]}
+            id={breadcrumbId}
             />
+            <script type="application/ld+json" set:html={
+              (() => {
+                const eventosList = Array.isArray(data?.events) ? data.events : [];
+                const slice = eventosList.slice(0, 12);
+                const itemListElement = slice.map((evento, index) => {
+                  const startDate = evento?.startDate;
+                  const endDate = evento?.endDate;
+                  const title =
+                    evento?.title || evento?.eventType || `Evento ${index + 1}`;
+                  const description = evento?.subtitle || evento?.description || "";
+                  const imageUrl = evento?.image?.url;
+                  const locationName = evento?.locationLabel || "";
+                  return {
+                    "@type": "ListItem",
+                    position: index + 1,
+                    item: {
+                      "@type": "Event",
+                      "@id": `${canonicalUrl}#event-${index + 1}`,
+                      name: title,
+                      description,
+                      startDate,
+                      endDate,
+                      eventAttendanceMode:
+                        "https://schema.org/OfflineEventAttendanceMode",
+                      eventStatus: "https://schema.org/EventScheduled",
+                      image: imageUrl ? [imageUrl] : undefined,
+                      location: locationName
+                        ? {
+                            "@type": "Place",
+                            name: locationName,
+                            url: evento?.locationUrlMaps,
+                          }
+                        : undefined,
+                      organizer: { "@id": `${baseUrl}/#organization` },
+                    },
+                  };
+                });
+
+                return JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@graph": [
+                    {
+                      "@type": "WebPage",
+                      "@id": `${canonicalUrl}#webpage`,
+                      url: canonicalUrl,
+                      name:
+                        "Eventos MedRent | Congresos, talleres y presentaciones médicas",
+                      description:
+                        "Explora congresos, talleres y presentaciones donde MedRent comparte innovación y equipos líderes. Filtra por especialidad y fecha.",
+                      isPartOf: { "@id": `${baseUrl}/#website` },
+                      about: { "@id": `${baseUrl}/#organization` },
+                      inLanguage: "es-MX",
+                      breadcrumb: { "@id": breadcrumbId },
+                      mainEntity: { "@id": `${canonicalUrl}#event-list` },
+                      primaryImageOfPage: {
+                        "@type": "ImageObject",
+                        url: heroImageUrl,
+                      },
+                    },
+                    {
+                      "@type": "CollectionPage",
+                      "@id": `${canonicalUrl}#event-collection`,
+                      url: canonicalUrl,
+                      name: "Eventos médicos y de tecnología | MedRent",
+                      description:
+                        data?.description ||
+                        "Eventos médicos, congresos, talleres y presentaciones donde MedRent comparte innovación y equipos líderes.",
+                      isPartOf: { "@id": `${baseUrl}/#website` },
+                      about: { "@id": `${baseUrl}/#organization` },
+                      inLanguage: "es-MX",
+                      mainEntity: { "@id": `${canonicalUrl}#event-list` },
+                    },
+                    {
+                      "@type": "ItemList",
+                      "@id": `${canonicalUrl}#event-list`,
+                      name: "Eventos médicos y de tecnología MedRent",
+                      itemListOrder:
+                        "https://schema.org/ItemListUnordered",
+                      itemListElement,
+                    },
+                  ],
+                });
+              })()
+            }></script>
         </Fragment>
 
     <div class="absolute w-full z-2">
@@ -135,10 +232,10 @@ const eventDays = [11, 14];
                 
                 <!-- Columna izquierda - Contenido -->
                 <div class="lg:pr-8 flex flex-col items-start justify-center gap-2" style="height: -webkit-fill-available;">
-                    <h3 class="text-[14px] font-lato text-[var(--color-primary)] font-bold">EVENTOS</h3>
-                    <h2 class=" text-[28px] font-bold text-[#261819] leading-tight">
+                    <p class="text-[14px] font-lato text-[var(--color-primary)] font-bold">EVENTOS</p>
+                    <h1 class="text-[28px] font-bold text-[#261819] leading-tight">
                        {data.title ? data.title : "Eventos médicos"}
-                    </h2>
+                    </h1>
                     
                     <p class="text-[16px] leading-[1.6] text-[#5A4043]">
                         {data.description ? data.description : "Conoce los congresos, talleres y presentaciones donde Medrent comparte innovación y equipos líderes en diagnóstico y tratamiento."}
@@ -148,12 +245,14 @@ const eventDays = [11, 14];
                 <!-- Columna derecha - Imagen -->
                 <div class="lg:pl-8">
                     <div class="relative rounded-[24px] overflow-hidden">
-                        <img
-                            src={(data.heroImage?.url)}
-                            alt="Eventos médicos y de tecnología"
-                            class="w-full"
-                            loading="lazy"
-                            decoding="async"
+                        <ImageResponsive
+                          image={data.heroImage}
+                          alt="Eventos médicos y de tecnología"
+                          class="w-full"
+                          sizes="(min-width: 1024px) 50vw, 100vw"
+                          loading="eager"
+                          decoding="async"
+                          fetchpriority="high"
                         />
                     </div>
                 </div>  
@@ -237,7 +336,7 @@ const eventDays = [11, 14];
                             // Agrupar eventos por mes
                             const eventosPorMes: any = {};
                             
-                            eventosList.forEach((evento: any) => {
+                            eventosList.forEach((evento) => {
                                 const fechaInicio = dayjs(evento.startDate);
                                 const mesKey = fechaInicio.format('YYYY-MM');
                                 const mesNombreRaw = fechaInicio.format('MMMM YYYY');
@@ -299,10 +398,13 @@ const eventDays = [11, 14];
                                                     <article class="bg-white border border-[var(--color-accent)] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                         <div class="flex flex-col md:flex-row">
                                                             <div class="w-full md:w-1/2">
-                                                                <img
-                                                                    src={evento.image?.url}
-                                                                    alt={evento.title}
-                                                                    class="w-full aspect-square object-cover"
+                                                                <ImageResponsive
+                                                                  image={evento.image}
+                                                                  alt={evento.title}
+                                                                  class="w-full aspect-square object-cover"
+                                                                  sizes="(min-width: 1024px) 30vw, 100vw"
+                                                                  loading="lazy"
+                                                                  decoding="async"
                                                                 />
                                                             </div>
                                                             <div class="w-full md:w-1/2 p-6 flex flex-col bg-[#F5FAF9]">
@@ -421,6 +523,8 @@ const eventDays = [11, 14];
                             src=""
                             alt="Evento"
                             class="w-full h-auto min-h-0 object-contain md:h-64 md:min-h-[500px] md:object-cover lg:h-full lg:min-h-[500px] lg:object-cover"
+                            loading="lazy"
+                            decoding="async"
                         />
                     </div>
                     

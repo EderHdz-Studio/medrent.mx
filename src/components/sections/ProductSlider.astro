@@ -1,68 +1,102 @@
 ---
 const { data, title, prefixId } = Astro.props;
+const { disableHorizontalPadding = false } = Astro.props;
 import ProductCard from '@components/product/ProductCard.astro';
 ---
 {data && data.length > 0 && (
-    <section class="max-w-7xl mx-auto py-8">
-        <div class="botones-glider flex justify-between gap-6 w-auto" style="flex-wrap: wrap; position: relative;">
-            <h2 class=" text-[28px] font-bold text-[var(--color-text-default)] w-full md:w-auto">
+    <section class={`max-w-7xl mx-auto py-6 md:py-6 ${disableHorizontalPadding ? 'px-0' : 'px-4 md:px-8'}`}>
+        <div class="botones-glider flex justify-between gap-6 w-full" style="flex-wrap: wrap; position: relative;">
+            <h2 class="pdp-section-title w-full md:w-auto">
               {title}
             </h2>
             
-            {data.length > 4 && (
-                <div id={`controls-${prefixId}`} class="flex gap-4 items-center md:justify-end justify-center order-3 md:order-2 mt-4 md:mt-0 w-full md:w-auto sm:w-auto border-2 border-[var(--color-primary)] rounded-full bg-white p-3 mx-auto md:mx-0">
-                    <button 
-                        id={`prev-btn-${prefixId}`}
-                        aria-label="Anterior"
-                        class={`prev-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] cursor-pointer transition`}
-                    >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#006764"/>
-                    </svg>
-                    </button>
-                    <span id={`contador-${prefixId}`} class="font-semibold text-base min-w-[48px] text-center">1 / {data.length}</span>
-                    <button 
-                        id={`next-btn-${prefixId}`}
-                        aria-label="Siguiente" 
-                        class={`next-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] cursor-pointer transition`}
-                    >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
-                    </svg>
-                    </button>
-                </div>
+            {data.length > 1 && (
+              <div id={`controls-${prefixId}`} class="flex gap-4 items-center" data-glide-el="controls">
+                <button
+                  type="button"
+                  aria-label="Anterior"
+                  data-glide-dir="<"
+                  class={`prev-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black`}
+                >
+                <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
+                  <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
+                </svg>
+                </button>
+                <span id={`contador-${prefixId}`} class="font-semibold text-base min-w-[72px] text-center">1 / 1</span>
+                <button
+                  type="button"
+                  aria-label="Siguiente"
+                  data-glide-dir=">"
+                  class={`next-btn-${prefixId} group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black`}
+                >
+                <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
+                  <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
+                </svg>
+                </button>
+              </div>
             )}
-            <div id={`${prefixId}-vitrinaProductCard`}  data-prefixid={`${prefixId}`}  class="glide order-2 md:order-3 w-full">
+            <div
+              id={`${prefixId}-vitrinaProductCard`}
+              data-prefixid={`${prefixId}`}
+              data-total-items={String(data.length)}
+              class="glide js-product-slider w-full"
+            >
                 <div class="glide__track" data-glide-el="track">
-                    <div class="glide__slides">
+                    <ul class="glide__slides">
                         {data.map((product:any) => (
-                            <ProductCard product={product} ></ProductCard>
+                            <li class="glide__slide">
+                              <ProductCard product={product} />
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 )}
 
-<script type="module">
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[data-prefixid]').forEach((el) => {
+<!-- Este script se inyecta de forma única con el valor de prefixId -->
+ 
+<!-- <script type="module">
+  const slider = document.querySelector('#BrandSlider');
+
+  if (slider) {
+    new Glide(slider, {
+      type: 'carousel',
+      perView: 8,
+      gap: 0,
+      autoplay: 2000,
+      hoverpause: true,
+      rewind: false,
+      breakpoints: {
+        1024: { perView: 4 },
+        640: { perView: 2 }
+      }
+    }).mount();
+  }
+</script> -->
+
+<script>
+const initProductSliders = async () => {
+    const { default: Glide } = await import('@glidejs/glide');
+    document.querySelectorAll('.js-product-slider[data-prefixid]').forEach((el) => {
+        if (el.dataset.mounted === 'true') return;
+        el.dataset.mounted = 'true';
+
         const prefixId = el.dataset.prefixid;
-        
-        const prevBtn = document.getElementById(`prev-btn-${prefixId}`);
-        const nextBtn = document.getElementById(`next-btn-${prefixId}`);
-        const slides = el.querySelectorAll('.glide__slide');
-        const totalProducts = slides.length;
-        const isMoreThan4 = totalProducts > 4;
-        
+        const totalItems = Number(el.dataset.totalItems || 0);
+        const isDesktop = window.innerWidth >= 1024;
+
         const glider = new Glide(el, {
-            rewind: isMoreThan4,
-            type: isMoreThan4 ? 'carousel' : 'slider',
+            rewind: false,
+            type: 'slider',
+            bound: true,
             perView: 4,
             gap: 16,
-            autoplay: isMoreThan4 ? 2000 : false,
-            hoverpause: true,
+            autoplay: false,
+            hoverpause: false,
+            dragThreshold: isDesktop ? false : 80,
+            swipeThreshold: isDesktop ? false : 80,
             startAt: 0,
             arrows: {
                 prev: `#prev-btn-${prefixId}`,
@@ -70,22 +104,47 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             breakpoints: {
                 1024: { perView: 4 },
+                920: { perView: 3 },
                 768: { perView: 2 },
-                0: { perView: 2 }
+                480: { perView: 1 }
             }
         });
 
+        function equalizeCardHeights() {
+            const cards = Array.from(el.querySelectorAll('.productCard'));
+            if (!cards.length) return;
+
+            cards.forEach((card) => {
+                if (card instanceof HTMLElement) card.style.minHeight = '';
+            });
+
+            let maxHeight = 0;
+            cards.forEach((card) => {
+                if (card instanceof HTMLElement) {
+                    maxHeight = Math.max(maxHeight, card.offsetHeight);
+                }
+            });
+
+            if (!maxHeight) return;
+            cards.forEach((card) => {
+                if (card instanceof HTMLElement) card.style.minHeight = `${maxHeight}px`;
+            });
+        }
+
+        // Función para obtener el número de cards visibles según el ancho de pantalla
         function getSlidesToShow() {
             const width = window.innerWidth;
-            if (width >= 1024) return 4;
-            return 2;
+            if (width <= 480) return 1;
+            if (width <= 768) return 2;
+            if (width <= 920) return 3;
+            return 4;
         }
         
         const contador = document.getElementById(`contador-${prefixId}`);
         const controls = document.getElementById(`controls-${prefixId}`);
         
         function updateContador() {
-            if (!glider || !glider.slides || !contador) return;
+            if (!glider || !contador) return;
             
             if (controls && window.innerWidth < 1000) {
                 controls.classList.add('order-4');
@@ -99,38 +158,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 controls.style.justifyContent = '';
             }
             
+            const total = totalItems;
             const slidesToShow = getSlidesToShow();
-            const total = glider.slides.length;
-            const start = glider.slide + 1;
-            let end = glider.slide + slidesToShow;
-            if (end > total) end = total;
-            
-            contador.textContent = `${start} - ${end} / ${total}`;
+            const totalPages = Math.max(1, Math.ceil(total / slidesToShow));
+            const currentIndex = glider.index;
+            const lastStart = Math.max(0, total - slidesToShow);
+            const currentPage = currentIndex >= lastStart
+              ? totalPages
+              : Math.min(totalPages, Math.floor(currentIndex / slidesToShow) + 1);
+            contador.textContent = `${currentPage} / ${totalPages}`;
             
             if (controls) {
-                controls.style.display = total > slidesToShow ? 'flex' : 'none';
+                const isMobileViewport = window.innerWidth < 768;
+                const shouldShowControls = isMobileViewport
+                  ? total > 1
+                  : total > 4 && total > slidesToShow;
+
+                if (shouldShowControls) {
+                    controls.style.display = '';
+                } else {
+                    controls.style.display = 'none';
+                }
             }
         }
         
-        updateContador();
-        el.addEventListener('glider-slide-visible', updateContador);
-        el.addEventListener('glider-animated', updateContador);
-        el.addEventListener('glider-refresh', updateContador);
+        // Glide emits run/mount events; keep counter synced.
+        glider.on('run.after', updateContador);
+        glider.on('mount.after', updateContador);
+        glider.on('run.after', equalizeCardHeights);
+        glider.on('mount.after', equalizeCardHeights);
         window.addEventListener('resize', updateContador);
         window.addEventListener('orientationchange', updateContador);
+        window.addEventListener('resize', equalizeCardHeights);
+        window.addEventListener('orientationchange', equalizeCardHeights);
+
+        const prevBtn = document.querySelector(`.prev-btn-${prefixId}`);
+        const nextBtn = document.querySelector(`.next-btn-${prefixId}`);
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const perView = getSlidesToShow();
+                const target = Math.max(0, glider.index - perView);
+                glider.go(`=${target}`);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const perView = getSlidesToShow();
+                const total = totalItems;
+                const lastStart = Math.max(0, total - perView);
+                const target = Math.min(lastStart, glider.index + perView);
+                glider.go(`=${target}`);
+            });
+        }
         
         glider.mount();
+        updateContador();
+        equalizeCardHeights();
 
-        if (prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                glider.go('<');
-            });
-            nextBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                glider.go('>');
+        if (isDesktop) {
+            el.addEventListener('dragstart', (event) => {
+                event.preventDefault();
             });
         }
     });
-});
+};
+
+const safeInit = () => {
+    initProductSliders().catch(() => {});
+};
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit, { once: true });
+else safeInit();
 </script>

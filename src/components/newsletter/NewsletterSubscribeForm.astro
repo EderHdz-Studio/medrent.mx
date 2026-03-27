@@ -1,0 +1,28 @@
+---
+/** Molécula: formulario de suscripción (ids fijos para el script de FormNewsletter). */
+---
+
+<form id="newsletter-form" class="newsletter-module__form">
+  <div class="newsletter-module__field-row">
+    <label id="email-label" for="email" class="newsletter-module__floating-label">
+      Correo electrónico*
+    </label>
+    <input
+      id="email"
+      type="email"
+      placeholder="Ej: nombre@correo.com"
+      class="newsletter-module__input"
+      required
+    />
+    <button type="submit" class="newsletter-module__submit"> Suscríbeme </button>
+  </div>
+
+  <div class="newsletter-module__privacy-row">
+    <input type="checkbox" id="privacy" required />
+    <label for="privacy" class="cursor-pointer">
+      He leído y acepto el
+      <a href="/aviso-de-privacidad" class="underline"> Aviso de Privacidad </a>
+    </label>
+  </div>
+  <p id="newsletter-error" class="newsletter-module__error hidden" aria-live="polite"></p>
+</form>

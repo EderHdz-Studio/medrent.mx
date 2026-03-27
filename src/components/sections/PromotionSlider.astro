@@ -1,13 +1,63 @@
 ---
-import { strapiFetch } from "@server/strapiClient";
+import ImageResponsive from "@components/media/ImageResponsive.astro";
 
-const promos = await strapiFetch("/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true");
-const slides = promos?.data || [];
+type PromoSlide = {
+  id: number;
+  title?: string;
+  url?: string;
+  utmParams?: string | null;
+  isActive?: boolean;
+  displayOrder?: number | null;
+  desktopImage?: any;
+  mobileImage?: any;
+};
+
+const {
+  promotionsData = [],
+  disableHorizontalPadding = false,
+  pdpSectionTitle = false,
+} = Astro.props as {
+  promotionsData?: PromoSlide[];
+  disableHorizontalPadding?: boolean;
+  /** Título al estilo Medrent/headline/small (solo PDP; home/PLP conservan type-h3). */
+  pdpSectionTitle?: boolean;
+};
+const promotions = Array.isArray(promotionsData)
+  ? promotionsData
+      .filter((item: PromoSlide) => item?.isActive)
+      .sort((a: PromoSlide, b: PromoSlide) => {
+        const aOrder = a?.displayOrder ?? Number.MAX_SAFE_INTEGER;
+        const bOrder = b?.displayOrder ?? Number.MAX_SAFE_INTEGER;
+        return aOrder - bOrder;
+      })
+  : [];
+
+function buildPromotionHref(item: PromoSlide) {
+  const base = (item?.url || "#").trim();
+  const utm = (item?.utmParams || "").trim();
+
+  if (!utm) return base;
+
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}${utm.replace(/^\?/, "")}`;
+}
 ---
-
-<section class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6">
+<!-- Sección slider de promociones -->
+{promotions.length > 0 && (
+<section
+  class:list={[
+    "py-6 max-w-7xl mx-auto flex flex-col gap-6",
+    disableHorizontalPadding ? "px-0" : "px-4 md:px-6 lg:px-8",
+  ]}
+>
     <div class="text-center ">
-        <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight text-left">
+        <h2
+          class:list={[
+            pdpSectionTitle
+              ? "pdp-section-title"
+              : "type-h3 font-bold text-[var(--color-text-default)] tracking-tight text-left",
+          ]}
+        >
             Nuestras promociones
         </h2>
     </div>
@@ -15,49 +65,82 @@ const slides = promos?.data || [];
     <div class="glide" id="PromotionSlider">
         <div class="glide__track" data-glide-el="track">
             <ul class="glide__slides">
-                {slides.map((slide) => (
-                    <li class="glide__slide flex flex-col items-center justify-center bg-white rounded shadow">
-                        <a 
-                            href={slide.url} 
-                            class="block w-full"
-                        >
-                            <picture>
-                                <source 
-                                    media="(max-width: 768px)" 
-                                    srcset={slide.mobileImage?.url || slide.desktopImage?.url} 
-                                />
-                                <img 
-                                    src={slide.desktopImage?.url} 
-                                    alt={slide.title || "Promociones disponibles"} 
-                                    class="w-full h-auto object-contain"
-                                    loading="lazy"
-                                />
-                            </picture>
-                        </a>
-                    </li>
+                {promotions.map((promo) => (
+                  <li class="glide__slide">
+                    <a
+                      href={buildPromotionHref(promo)}
+                      class="block rounded overflow-hidden"
+                      target={promo.url?.startsWith("http") ? "_self" : undefined}
+                    >
+                      <ImageResponsive
+                        image={promo.mobileImage || promo.desktopImage}
+                        alt={promo.mobileImage?.alternativeText || promo.desktopImage?.alternativeText || promo.title || "Promoción"}
+                        class="block w-full h-auto object-cover md:hidden"
+                        sizes="100vw"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <ImageResponsive
+                        image={promo.desktopImage || promo.mobileImage}
+                        alt={promo.desktopImage?.alternativeText || promo.mobileImage?.alternativeText || promo.title || "Promoción"}
+                        class="hidden w-full h-auto object-cover md:block"
+                        sizes="(min-width: 1024px) 80vw, 100vw"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+                  </li>
                 ))}
             </ul>
         </div>
     </div>
 </section>
+)}
 
 <script type="module">
   const slider = document.querySelector('#PromotionSlider');
+  if (!slider || slider.dataset.mounted === 'true') {
+    // noop
+  } else {
+    const mount = async () => {
+      if (slider.dataset.mounted === 'true') return;
+      const { default: Glide } = await import('@glidejs/glide');
+      new Glide(slider, {
+        type: 'slider',
+        perView: 1,
+        gap: 0,
+        hoverpause: true,
+        breakpoints: {
+          1024: {
+            perView: 1
+          },
+          640: {
+            perView: 1
+          }
+        }
+      }).mount();
+      slider.dataset.mounted = 'true';
+    };
 
-  if (slider) {
-    new Glide(slider, {
-    type: 'slider',
-    perView: 1,
-    gap: 0,
-    hoverpause: true,
-    breakpoints: {
-      1024: {
-        perView: 1
-      },
-      640: {
-        perView: 1
+    const scheduleMount = () => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => mount().catch(() => {}));
+      } else {
+        setTimeout(() => mount().catch(() => {}), 0);
       }
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        const isVisible = entries.some((entry) => entry.isIntersecting);
+        if (isVisible) {
+          observer.disconnect();
+          scheduleMount();
+        }
+      }, { rootMargin: '300px 0px' });
+      observer.observe(slider);
+    } else {
+      scheduleMount();
     }
-    }).mount();
   }
 </script>

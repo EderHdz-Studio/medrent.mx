@@ -5,14 +5,15 @@ import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
 import Breadcrumb from "@components/navigation/Breadcrumb.astro";
 import PLPLayout from "@components/product/PLPLayout.astro";
-import ProductGrid from "@components/product/ProductGrid.astro";
+import PLPProductsSection from "@components/product/PLPProductsSection.astro";
 import SidebarFilters from "@components/product/SidebarFilters.astro";
 
 
 import { getProducts } from "@server/api/products";
-import { getBrands } from "@server/api/brands";
+import { getBrandBySlug, getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
 import { getAllSubcategories } from "@server/api/subcategories";
+import { formatSlugAsTitle } from "@lib/utils.js";
 
 /* ---------------- ROUTE PARAM ---------------- */
 
@@ -22,10 +23,18 @@ const { brand } = Astro.params;
 
 const url = new URL(Astro.request.url);
 
-const brandQuery = url.searchParams.get("brand")?.split(",") || [];
-const categoryQuery = url.searchParams.get("category")?.split(",") || [];
-const subcategoryQuery =
-  url.searchParams.get("subcategory")?.split(",") || [];
+const parseFilterParam = (key: string) => {
+  const values = url.searchParams
+    .getAll(key)
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return [...new Set(values)];
+};
+
+const brandQuery = parseFilterParam("brand");
+const categoryQuery = parseFilterParam("category");
+const subcategoryQuery = parseFilterParam("subcategory");
 
 /* Siempre incluir marca base */
 if (brand && !brandQuery.includes(brand)) {
@@ -43,45 +52,140 @@ const products = await getProducts({
 const brandsData = await getBrands();
 const categoriesData = await getCategories();
 const subcategoriesData = await getAllSubcategories();
+const brandData = brand ? await getBrandBySlug(brand) : null;
+const brandName = brand ?? "Marca";
+const plpHeadingTitle = brandData?.name || formatSlugAsTitle(brandName);
+const pageTitle = `${brandName} | Partners tecnológicos | MedRent`;
+const pageDescription =
+  `Descubre productos y soluciones de la marca ${brandName} con respaldo y soporte especializado de MedRent.`;
+const pageKeywords = `${brandName}; equipo médico; MedRent`;
 
-const pageTitle = `Marca ${brand}`;
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
+const brandUrl = `${baseUrl}/nuestras-marcas/${brandName}`;
+const brandId = `${brandUrl}#brand`;
+const seoPlpDescription =
+  brandData?.SEO?.description ||
+  brandData?.SEO?.seoDescription ||
+  brandData?.description ||
+  "";
+const seoPlpTitle = brandData?.SEO?.title || "MEDRENT";
 ---
 
-<Layout title={pageTitle}>
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  ogImage={heroImageUrl}
+>
   <Fragment slot="head">
     <BreadcrumbSchema
       items={[
-        { name: "Inicio", url: "https://www.medrent.mx" },
+        { name: "Inicio", url: `${baseUrl}/` },
         {
           name: "Nuestras Marcas",
-          url: "https://www.medrent.mx/nuestras-marcas",
+          url: `${baseUrl}/nuestras-marcas`,
         },
-        { name: brand }
+        { name: plpHeadingTitle, url: brandUrl }
       ]}
+      id={breadcrumbId}
     />
+    <script type="application/ld+json" set:html={
+      (() => {
+        const list = Array.isArray(products) ? products.slice(0, 12) : [];
+        const itemListId = `${canonicalUrl}#itemlist`;
+        const itemListElement = list.map((p, index) => {
+          const pdpUrl = p?.slug ? `${baseUrl}/productos/${p.slug}` : canonicalUrl;
+          const imageUrl = Array.isArray(p?.gallery) ? p.gallery[0] : undefined;
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": ["MedicalDevice", "Product"],
+              "@id": `${pdpUrl}#product`,
+              name: p?.name || "Producto",
+              url: pdpUrl,
+              image: imageUrl ? [imageUrl] : undefined,
+            },
+            url: pdpUrl,
+          };
+        });
+
+        return JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": `${canonicalUrl}#webpage`,
+              url: canonicalUrl,
+              name: pageTitle,
+              description: pageDescription,
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": brandId },
+              inLanguage: "es-MX",
+              breadcrumb: { "@id": breadcrumbId },
+              mainEntity: { "@id": itemListId },
+              primaryImageOfPage: { "@type": "ImageObject", url: heroImageUrl },
+            },
+            {
+              "@type": "Brand",
+              "@id": brandId,
+              name: brandName,
+              url: brandUrl,
+            },
+            {
+              "@type": "CollectionPage",
+              "@id": itemListId,
+              url: canonicalUrl,
+              name: pageTitle,
+              description: pageDescription,
+              isPartOf: { "@id": `${baseUrl}/#website` },
+              about: { "@id": brandId },
+              inLanguage: "es-MX",
+              mainEntity: { "@id": itemListId },
+            },
+            {
+              "@type": "ItemList",
+              "@id": itemListId,
+              name: `${brandName} — productos`,
+              itemListOrder: "https://schema.org/ItemListOrderAscending",
+              itemListElement,
+            },
+          ],
+        });
+      })()
+    }></script>
   </Fragment>
 
   <!-- HERO -->
-  <section class="relative w-full h-[140px] max-w-7xl mx-auto overflow-hidden">
+  <section class="relative w-full h-[140px] overflow-hidden">
     <div class="absolute inset-0 heroproductos">
       <Breadcrumb
         textColor="text-white"
         items={[
           { name: "INICIO", href: "/" },
           { name: "NUESTRAS MARCAS", href: "/nuestras-marcas" },
-          { name: brand.toUpperCase() }
+          { name: plpHeadingTitle },
         ]}
       />
       <img
         src="/temp/HeroPLP.png"
-        alt={`Marca ${brand}`}
+        alt={`Marca ${brandName}`}
         class="w-full h-full object-cover rounded-b-[24px]"
       />
     </div>
   </section>
 
   <!-- PLP -->
-  <PLPLayout title={`Marca ${brand}`}>
+  <PLPLayout
+    title={plpHeadingTitle}
+    productCount={products.length}
+    seoTitle={seoPlpTitle}
+    seoDescription={seoPlpDescription}
+  >
     <Fragment slot="filters">
       <SidebarFilters
         brands={brandsData}
@@ -90,6 +194,6 @@ const pageTitle = `Marca ${brand}`;
       />
     </Fragment>
 
-    <ProductGrid products={products} />
+    <PLPProductsSection products={products} />
   </PLPLayout>
 </Layout>

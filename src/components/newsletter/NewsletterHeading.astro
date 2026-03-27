@@ -1,0 +1,11 @@
+---
+/** Átomo: título del bloque newsletter (estilos en `src/styles/newsletter-module.css`). */
+type Props = { as?: "h2" | "h3"; variant?: "default" | "success" };
+const { as: Tag = "h2", variant = "default" } = Astro.props;
+const className =
+  variant === "success" ? "newsletter-module__success-title" : "newsletter-module__title";
+---
+
+<Tag class={className}>
+  <slot />
+</Tag>

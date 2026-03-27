@@ -9,7 +9,7 @@ export async function getStaticPaths() {
   const res = await strapiFetch("/legal-content?populate[legalPages][populate]=imageHero");
   const mainPublishedAt = res.data.publishedAt;
   
-  return res.data.legalPages.map((page) => ({
+  return res.data.legalPages.map((page: any) => ({
     params: { legal_page: page.slug },
     props: { 
       pageData: page,
@@ -18,25 +18,75 @@ export async function getStaticPaths() {
   }));
 }
 
-const { pageData, mainPublishedAt } = Astro.props;
+const { pageData, mainPublishedAt } = Astro.props as any;
 
-const { 
-  title, 
-  content, 
-  imageHero 
-} = pageData || {};
+const pageDataSafe: any = pageData || {};
+const title = pageDataSafe.title;
+const content = pageDataSafe.content;
+const imageHero = pageDataSafe.imageHero;
+const pageSlug = pageDataSafe.slug ?? "";
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl = imageHero?.url || logoUrl;
+const isPrivacy = pageSlug === "aviso-de-privacidad";
+const schemaType = isPrivacy ? "PrivacyPolicy" : "TermsOfService";
+const pageDescription =
+  title === "Aviso de privacidad"
+    ? "Consulta el aviso de privacidad y el tratamiento de datos personales de MedRent."
+    : title === "Condiciones de uso"
+      ? "Revisa las políticas de uso del sitio web y plataformas digitales de MedRent."
+      : undefined;
 
 //console.log('pageData:', JSON.stringify(pageData, null, 2));
 ---
 
-<Layout title={title}>
+<Layout
+  title={title}
+  description={title === "Aviso de privacidad"
+    ? "Consulta el aviso de privacidad y el tratamiento de datos personales de MedRent."
+    : title === "Condiciones de uso"
+      ? "Revisa las políticas de uso del sitio web y plataformas digitales de MedRent."
+      : undefined}
+  keywords={title === "Aviso de privacidad"
+    ? "aviso de privacidad; datos personales; MedRent"
+    : title === "Condiciones de uso"
+      ? "condiciones de uso; cookies; políticas sitio web; MedRent"
+      : undefined}
+  robots={["aviso-de-privacidad", "condiciones-de-uso"].includes(pageSlug) ? "noindex,follow" : "index,follow"}
+  ogImage={heroImageUrl}
+>
   <Fragment slot="head">
     <BreadcrumbSchema
       items={[
-        { name: 'Inicio', url: 'https://www.medrent.mx' },
-        { name: title, url: `https://www.medrent.mx/${pageData?.slug}` },
+        { name: 'Inicio', url: `${baseUrl}/` },
+        { name: title, url: canonicalUrl },
       ]}
+      id={breadcrumbId}
     />
+    <script type="application/ld+json" set:html={
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": ["WebPage", schemaType],
+            "@id": `${canonicalUrl}#webpage`,
+            url: canonicalUrl,
+            name: title,
+            description: pageDescription,
+            isPartOf: { "@id": `${baseUrl}/#website` },
+            about: { "@id": `${baseUrl}/#organization` },
+            inLanguage: "es-MX",
+            breadcrumb: { "@id": breadcrumbId },
+            primaryImageOfPage: heroImageUrl
+              ? { "@type": "ImageObject", url: heroImageUrl }
+              : undefined,
+          },
+        ],
+      })
+    }></script>
   </Fragment>
 
   <div class="absolute w-full z-2">

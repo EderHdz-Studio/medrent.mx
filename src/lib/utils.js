@@ -32,3 +32,13 @@ export function formatDate(dateString) {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+/** Convierte un slug con guiones en título legible (mayúscula inicial por palabra). */
+export function formatSlugAsTitle(slug) {
+  if (!slug || typeof slug !== "string") return "";
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}

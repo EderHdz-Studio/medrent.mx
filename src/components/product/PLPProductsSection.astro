@@ -1,0 +1,239 @@
+---
+import ProductCard from "@components/product/ProductCard.astro";
+import type { Product } from "@lib/domain/product/types";
+
+interface Props {
+  products: Product[];
+}
+
+const { products = [] } = Astro.props;
+const totalProducts = products.length;
+---
+
+<section class="flex flex-col gap-4">
+  <div class="flex h-fit w-full flex-col gap-4 pl-[4px] pr-[8px] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+    <p id="product-count-top" class="text-[var(--color-text-default)] font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px]">
+      Mostrando {Math.min(9, totalProducts)} de {totalProducts}
+    </p>
+
+    <div class="relative w-fit max-w-full min-w-0 shrink-0 sm:ml-auto">
+      <button
+        id="sort-products-btn"
+        type="button"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        aria-controls="sort-products-menu"
+        class="box-border flex h-fit w-fit min-h-0 max-w-full items-center justify-between gap-2 rounded-[8px] border border-[#171D1C] bg-white py-2 pl-[8px] pr-[8px] text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] transition-[color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+      >
+        <span id="sort-products-label" class="min-w-0 flex-1 truncate">Filtrar por:</span>
+        <!-- Cerrado: chevron abajo · Abierto: rotate-180 → chevron arriba -->
+        <svg
+          id="sort-products-icon"
+          class="size-6 shrink-0 rotate-0 transition-transform duration-200 ease-out"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path d="M7.00005 14.83C7.18741 15.0162 7.44087 15.1208 7.70505 15.1208C7.96924 15.1208 8.22269 15.0162 8.41005 14.83L12.0001 11.29L15.5401 14.83C15.7274 15.0162 15.9809 15.1208 16.2451 15.1208C16.5092 15.1208 16.7627 15.0162 16.9501 14.83C17.0438 14.737 17.1182 14.6264 17.1689 14.5046C17.2197 14.3827 17.2458 14.252 17.2458 14.12C17.2458 13.988 17.2197 13.8573 17.1689 13.7354C17.1182 13.6136 17.0438 13.503 16.9501 13.41L12.7101 9.17C12.6171 9.07627 12.5065 9.00187 12.3846 8.9511C12.2628 8.90034 12.1321 8.8742 12.0001 8.8742C11.868 8.8742 11.7373 8.90034 11.6155 8.9511C11.4936 9.00187 11.383 9.07627 11.2901 9.17L7.00005 13.41C6.90632 13.503 6.83193 13.6136 6.78116 13.7354C6.73039 13.8573 6.70425 13.988 6.70425 14.12C6.70425 14.252 6.73039 14.3827 6.78116 14.5046C6.83193 14.6264 6.90632 14.737 7.00005 14.83Z" fill="#171D1C"/>
+        </svg>
+      </button>
+
+      <div id="sort-products-menu" class="absolute left-0 top-[calc(100%+6px)] z-20 hidden w-full min-w-full overflow-hidden rounded-[8px] border border-[#171D1C] bg-white shadow-sm">
+        <button type="button" data-sort="default" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+          Todos
+        </button>
+        <button type="button" data-sort="new" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+          Lanzamientos
+        </button>
+        <button type="button" data-sort="az" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+          A-Z
+        </button>
+        <button type="button" data-sort="za" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+          Z-A
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {totalProducts === 0 ? (
+    <p>No products found.</p>
+  ) : (
+    <>
+      <div
+        id="productos-list"
+        class="grid gap-6 grid-cols-1 [@media(min-width:520px)]:grid-cols-2 [@media(min-width:800px)]:grid-cols-3"
+      >
+        {products.map((product, index) => (
+          <div
+            class={index >= 9 ? "hidden" : ""}
+            data-product-item
+            data-name={product.name?.toLowerCase() || ""}
+            data-is-new={product.isNew ? "1" : "0"}
+            data-brand={product?.brand?.slug || ""}
+            data-category={product?.subcategory?.category?.slug || ""}
+            data-subcategory={product?.subcategory?.slug || ""}
+          >
+            <ProductCard product={product} />
+          </div>
+        ))}
+      </div>
+
+      <div class="flex flex-col items-center gap-2 py-2">
+        <button
+          id="btn-load-more-products"
+          type="button"
+          class={`flex h-fit w-fit items-center justify-center gap-2 border border-[var(--color-primary)] bg-[var(--color-secondary-light)] px-4 py-4 text-[var(--color-primary)] font-lato text-base font-bold leading-6 rounded transition hover:bg-[var(--color-primary)] hover:text-white ${totalProducts <= 9 ? "hidden" : ""}`}
+        >
+          Ver más productos
+          <span class="text-lg leading-none">+</span>
+        </button>
+        <p id="product-count-bottom" class="text-center text-[var(--color-text-default)] font-lato text-base font-normal leading-6 tracking-[0.5px]">
+          Mostrando {Math.min(9, totalProducts)} de {totalProducts} productos
+        </p>
+      </div>
+    </>
+  )}
+</section>
+
+<script is:inline define:vars={{ totalProducts }}>
+  (() => {
+    document.documentElement.dataset.plpClientFilters = "1";
+    const pageSize = 9;
+    const baseItems = Array.from(document.querySelectorAll("[data-product-item]"));
+    let items = [...baseItems];
+    let currentSort = "default";
+    const list = document.getElementById("productos-list");
+    const btn = document.getElementById("btn-load-more-products");
+    const sortBtn = document.getElementById("sort-products-btn");
+    const sortLabel = document.getElementById("sort-products-label");
+    const sortIcon = document.getElementById("sort-products-icon");
+    const sortMenu = document.getElementById("sort-products-menu");
+    const topCounter = document.getElementById("product-count-top");
+    const bottomCounter = document.getElementById("product-count-bottom");
+
+    const syncSortLabel = () => {
+      if (sortLabel) {
+        if (currentSort === "new") sortLabel.textContent = "Filtrar por: Lanzamientos";
+        else if (currentSort === "az") sortLabel.textContent = "Filtrar por: A-Z";
+        else if (currentSort === "za") sortLabel.textContent = "Filtrar por: Z-A";
+        else sortLabel.textContent = "Filtrar por:";
+      }
+    };
+
+    let visible = Math.min(pageSize, items.length);
+
+    const getSelectedValues = (key) =>
+      Array.from(document.querySelectorAll(`input[data-filter="${key}"]:checked`))
+        .map((input) => input.value)
+        .filter(Boolean);
+
+    const hasAnyMatch = (attributeValue, selectedValues) => {
+      if (!selectedValues.length) return true;
+      const values = String(attributeValue || "")
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean);
+      return selectedValues.some((value) => values.includes(value));
+    };
+
+    const render = () => {
+      baseItems.forEach((item) => item.classList.add("hidden"));
+      items.forEach((item, index) => {
+        list?.appendChild(item);
+        item.classList.toggle("hidden", index >= visible);
+      });
+
+      const shown = Math.min(visible, items.length);
+      const topText = `Mostrando ${shown} de ${items.length}`;
+      const bottomText = `Mostrando ${shown} de ${items.length} productos`;
+      if (topCounter) topCounter.textContent = topText;
+      if (bottomCounter) bottomCounter.textContent = bottomText;
+
+      if (btn) {
+        const shouldHide = visible >= items.length;
+        btn.hidden = shouldHide;
+        btn.classList.toggle("hidden", shouldHide);
+      }
+    };
+
+    const applySort = (mode) => {
+      currentSort = mode;
+      applyCurrentView();
+    };
+
+    const applyCurrentView = () => {
+      let nextItems = baseItems;
+      const selectedBrands = getSelectedValues("brand");
+      const selectedCategories = getSelectedValues("category");
+      const selectedSubcategories = getSelectedValues("subcategory");
+
+      nextItems = nextItems.filter((item) =>
+        hasAnyMatch(item.getAttribute("data-brand"), selectedBrands) &&
+        hasAnyMatch(item.getAttribute("data-category"), selectedCategories) &&
+        hasAnyMatch(item.getAttribute("data-subcategory"), selectedSubcategories)
+      );
+
+      if (currentSort === "new") {
+        nextItems = nextItems.filter((item) => item.getAttribute("data-is-new") === "1");
+      } else if (currentSort === "az") {
+        nextItems = [...nextItems].sort((a, b) =>
+          (a.getAttribute("data-name") || "").localeCompare(b.getAttribute("data-name") || ""));
+      } else if (currentSort === "za") {
+        nextItems = [...nextItems].sort((a, b) =>
+          (b.getAttribute("data-name") || "").localeCompare(a.getAttribute("data-name") || ""));
+      }
+
+      items = nextItems;
+      visible = Math.min(pageSize, items.length);
+
+      syncSortLabel();
+
+      render();
+    };
+
+    if (btn) {
+      btn.addEventListener("click", () => {
+        visible = Math.min(visible + pageSize, items.length);
+        render();
+      });
+    }
+
+    if (sortBtn && sortMenu) {
+      sortBtn.addEventListener("click", () => {
+        const isOpen = !sortMenu.classList.contains("hidden");
+        sortMenu.classList.toggle("hidden", isOpen);
+        sortBtn.setAttribute("aria-expanded", String(!isOpen));
+        sortIcon?.classList.toggle("rotate-180", !isOpen);
+      });
+
+      sortMenu.querySelectorAll("[data-sort]").forEach((option) => {
+        option.addEventListener("click", () => {
+          const mode = option.getAttribute("data-sort") || "default";
+          applySort(mode);
+          sortMenu.classList.add("hidden");
+          sortBtn.setAttribute("aria-expanded", "false");
+          sortIcon?.classList.remove("rotate-180");
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Node)) return;
+        if (!sortMenu.contains(target) && !sortBtn.contains(target)) {
+          sortMenu.classList.add("hidden");
+          sortBtn.setAttribute("aria-expanded", "false");
+          sortIcon?.classList.remove("rotate-180");
+        }
+      });
+    }
+
+    window.addEventListener("plp:filters-changed", () => {
+      applyCurrentView();
+    });
+
+    applyCurrentView();
+  })();
+</script>

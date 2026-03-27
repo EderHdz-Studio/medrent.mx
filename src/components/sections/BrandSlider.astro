@@ -1,18 +1,11 @@
 ---
-import { strapiFetch } from "@server/strapiClient";
-
-let marcasData: any[] = [];
-
-try {
-  const response = await strapiFetch("/brands?populate=*");
-  //console.log('Respuesta de Strapi:', response);
-  marcasData = response?.data || [];
-  
-  console.log('Marcas', marcasData);
-} catch (error) {
-  //console.error('Error al cargar marcas:', error.message);
-  marcasData = [];
-}
+import ImageResponsive from "@components/media/ImageResponsive.astro";
+type BrandItem = {
+  slug?: string;
+  name?: string;
+  logo?: any;
+};
+const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
 ---
 
 <section class="max-w-7xl mx-auto py-16">
@@ -36,15 +29,17 @@ try {
       <div class="glide" id="BrandSlider">
         <div class="glide__track" data-glide-el="track">
           <ul class="glide__slides">
-            {marcasData.map((brand) => (
+            {marcasData.map((brand: BrandItem) => (
               <li class="glide__slide flex justify-center items-center p-6" style="width: 158px;">
                 <a href={'nuestras-marcas/' + brand.slug || '#'} class="hover-scale-img block">
-                  <img 
-                    src={brand.logo?.url} 
-                    alt={brand.name} 
+                  <ImageResponsive
+                    image={brand.logo}
+                    alt={brand.name}
                     class="h-[40px] w-auto object-contain"
-                    loading="lazy" 
+                    loading="lazy"
                     decoding="async"
+                    sizes="158px"
+                    fetchpriority="low"
                   />
                 </a>
               </li>
@@ -75,13 +70,16 @@ try {
 
 
 <script>
-  (async function() {
-    const Glide = (await import('@glidejs/glide')).default;
-    
-    const slider = document.querySelector('#BrandSlider');
-    
-    if (slider) {
-      new Glide(slider, {
+  (function () {
+    const slider = document.querySelector('#BrandSlider') as HTMLElement | null;
+    if (!slider || slider.dataset.mounted === 'true') return;
+    let glide: { mount: () => void; play: () => void; pause: () => void } | null = null;
+    let visibilityObserver: IntersectionObserver | null = null;
+
+    const mount = async () => {
+      if (slider.dataset.mounted === 'true') return;
+      const Glide = (await import('@glidejs/glide')).default;
+      glide = new Glide(slider, {
         type: 'carousel',
         perView: 8,
         gap: 0,
@@ -93,7 +91,42 @@ try {
           1024: { perView: 4 },
           640: { perView: 2 }
         }
-      }).mount();
+      });
+      glide.mount();
+      slider.dataset.mounted = 'true';
+
+      if ('IntersectionObserver' in window && glide) {
+        visibilityObserver = new IntersectionObserver((entries) => {
+          const isVisible = entries.some((entry) => entry.isIntersecting);
+          if (isVisible) {
+            glide?.play();
+          } else {
+            glide?.pause();
+          }
+        }, { threshold: 0.05 });
+        visibilityObserver.observe(slider);
+      }
+    };
+
+    const scheduleMount = () => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => mount().catch(() => {}));
+      } else {
+        setTimeout(() => mount().catch(() => {}), 0);
+      }
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        const isVisible = entries.some((entry) => entry.isIntersecting);
+        if (isVisible) {
+          observer.disconnect();
+          scheduleMount();
+        }
+      }, { rootMargin: '300px 0px' });
+      observer.observe(slider);
+    } else {
+      scheduleMount();
     }
   })();
 </script>

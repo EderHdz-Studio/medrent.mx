@@ -1,14 +1,21 @@
-<script type="application/ld+json">
-    {JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Medrent",
-        "url": "https://www.medrent.mx",
-        "inLanguage": "es-MX",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://www.medrent.mx/?s={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-    })}
-</script>
+---
+const baseUrl = Astro.site;
+const organizationId = `${baseUrl}/#organization`;
+const websiteId = `${baseUrl}/#website`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": websiteId,
+  url: `${baseUrl}/`,
+  name: "MedRent",
+  publisher: { "@id": organizationId },
+  inLanguage: "es-MX",
+  potentialAction: {
+    "@type": "SearchAction",
+    // Site uses direct query at root: /?s=...
+    target: `${baseUrl}/?s={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

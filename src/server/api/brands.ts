@@ -11,3 +11,12 @@ export async function getBrands() {
     slug: b?.slug ?? "",
   }));
 }
+
+export async function getBrandBySlug(slug: string) {
+  const res = await strapiFetch(
+    `/brands?filters[slug][$eq]=${slug}&populate[SEO]=true`
+  );
+
+  if (!Array.isArray(res?.data) || !res.data.length) return null;
+  return res.data[0];
+}

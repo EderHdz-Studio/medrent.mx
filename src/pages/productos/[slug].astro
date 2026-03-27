@@ -2,6 +2,7 @@
 Astro.response.headers.set("Cache-Control", "public, max-age=60");
 
 import { getProducts, getProductBySlug } from "@server/api/products";
+import { getPromotionSlides } from "@server/api/promotions";
 import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
@@ -10,8 +11,11 @@ import FichaTecnica from '@components/product/TechnicalSheet.astro';
 import GalleryPopup from '@components/product/GalleryPopUp.astro';
 import PopUpSolicitarCotizacion from '@components/popup/popUpSolicitarCotizacion.astro';
 import ButtonPDPSticky from "@components/buttonPDPSticky.astro";
-import Newsletter from '@components/FormNewsletter.astro';
-import PromotionSlider from '@components/sections/PromotionSlider.astro';
+import ImageResponsive from "@components/media/ImageResponsive.astro";
+import Newsletter from "@components/FormNewsletter.astro";
+import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
+import PromotionSlider from "@components/sections/PromotionSlider.astro";
+import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -33,17 +37,109 @@ if (!product) {
   return Astro.redirect("/404");
 }
 
-console.log("Product data:", product);
+const especialidadesSliderItems = getHomeEspecialidadesForSlider();
+const promotionsData = await getPromotionSlides();
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
+const heroImageUrl =
+  Array.isArray(product.gallery) && product.gallery.length > 0
+    ? product.gallery[0]
+    : logoUrl;
+
+const productId = `${baseUrl}/entity/product/${product.slug}#id`;
+const offerId = `${baseUrl}/entity/offer/${product.slug}#offer`;
+
+const firstVariant = Array.isArray((product as any)?.variants)
+  ? (product as any).variants[0]
+  : undefined;
+const ratingValue =
+  firstVariant?.ratingValue ??
+  firstVariant?.rating ??
+  firstVariant?.aggregateRating?.ratingValue;
+const reviewCount =
+  firstVariant?.reviewCount ??
+  firstVariant?.reviews ??
+  firstVariant?.aggregateRating?.reviewCount;
+
+const pdpGraph: any[] = [
+  {
+    "@type": "WebPage",
+    "@id": `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: `${product.name} | Equipo médico especializado | MedRent`,
+    description:
+      product.description ||
+      `${product.name} | Equipo médico especializado de MedRent.`,
+    isPartOf: { "@id": `${baseUrl}/#website` },
+    about: { "@id": `${baseUrl}/#organization` },
+    inLanguage: "es-MX",
+    breadcrumb: { "@id": breadcrumbId },
+    mainEntity: { "@id": productId },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: heroImageUrl,
+    },
+  },
+  {
+    "@type": ["Product", "MedicalDevice"],
+    "@id": productId,
+    name: product.name,
+    description: product.description,
+    image: heroImageUrl ? [heroImageUrl] : undefined,
+    category: ["Medical Device"],
+    brand: product.brand?.slug
+      ? { "@type": "Brand", "@id": `${baseUrl}/nuestras-marcas/${product.brand.slug}#brand` }
+      : undefined,
+    datePublished: product.createdAt,
+    offers: { "@id": offerId },
+  },
+  {
+    "@type": "Offer",
+    "@id": offerId,
+    url: canonicalUrl,
+    availability: "https://schema.org/InStock",
+    description: "Cotizacion disponible bajo solicitud a traves de contacto comercial.",
+    businessFunction: "https://schema.org/Sell",
+    eligibleCustomerType: "https://schema.org/BusinessCustomer",
+    seller: { "@id": `${baseUrl}/#organization` },
+  },
+];
+
+if (ratingValue && reviewCount) {
+  pdpGraph.push({
+    "@type": "AggregateRating",
+    "@id": `${productId}#aggregateRating`,
+    ratingValue,
+    reviewCount,
+  });
+}
+
+const pdpJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": pdpGraph,
+};
 
 ---
-<Layout title={product.name} pageType="product">
+<Layout
+  title={`${product.name} | Equipo médico especializado | MedRent`}
+  description={product.description || `${product.name} | Equipo médico especializado de MedRent.`}
+  keywords={`${product.name}; equipo médico; MedRent`}
+  ogType="product"
+  pageType="product"
+  ogImage={heroImageUrl}
+>
   <Fragment slot="head">
       <BreadcrumbSchema
       items={[
-          { name: 'Inicio', url: 'https://www.medrent.mx' },
-          { name: 'Productos', url: 'https://www.medrent.mx/productos' },
+          { name: 'Inicio', url: `${baseUrl}/` },
+          { name: 'Productos', url: `${baseUrl}/productos` },
       ]}
+      id={breadcrumbId}
       />
+      <script type="application/ld+json" set:html={JSON.stringify(pdpJsonLd)}></script>
   </Fragment>
   <Breadcrumb
     textColor="text-black"
@@ -57,7 +153,7 @@ console.log("Product data:", product);
   <!-- Contenido Principal del Producto -->
   <main class="max-w-7xl mx-auto px-4 py-8">
 
-    <section class="max-w-7xl mx-auto px-4 py-6">
+    <section class="max-w-7xl mx-auto py-6">
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
 
@@ -66,40 +162,89 @@ console.log("Product data:", product);
         ========================== -->
         <!-- Galería de imágenes mobile tipo Slide (solo mobile) -->
         <div class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start sm:hidden">
-          <div id="glider-slideimagenesProducto" class="glide px-0 gap-4 w-full gap-4 flex">
-            <div class="glide__track" data-glide-el="track">
-              <ul class="glide__slides">
-                {product.gallery && product.gallery.map((item: string, index: number) => {
+          <div class="w-full relative">
+            {product.isNew && (
+              <div class="badge-launch-mobile">
+                LANZAMIENTO
+                <span class="badge-launch-mobile-tail" aria-hidden="true"></span>
+              </div>
+            )}
+            <div id="glider-slideimagenesProducto" class="w-full px-0 mobile-gallery-slider overflow-x-auto scroll-smooth" data-lenis-prevent>
+              <ul class="flex snap-x snap-mandatory">
+                {product.gallery && product.gallery.map((item, index) => {
                   const isImage = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(item);
                   const isVideo = /\.(mp4|webm|ogg)$/i.test(item);
                   return (
-                    <div class="glide__slide flex-shrink-0 px-2" key={index}>
-                      {isImage ? (
-                        <img 
-                            src={item} 
-                            alt={product.name || 'Imagen del producto'} 
-                            class="w-full h-full object-cover transition-all duration-500 rounded-lg cursor-pointer" 
-                            loading="lazy" 
+                    <li class="w-full shrink-0 snap-start px-0">
+                      <div class="w-full aspect-square rounded-[16px] bg-white overflow-hidden relative">
+                        {isImage ? (
+                          <ImageResponsive
+                            src={item}
+                            alt={product.name || "Imagen del producto"}
+                            class="w-full h-full object-contain transition-all duration-500 cursor-pointer"
+                            loading={index === 0 ? "eager" : "lazy"}
                             decoding="async"
+                            fetchpriority={index === 0 ? "high" : "auto"}
                             id="main-image-mobile"
-                        />
-                      ) : isVideo ? (
-                        <video
-                          src={item || '/images/Productos/default.webp'}
-                          controls
-                          class="w-full h-auto object-contain transition-all duration-500 rounded-lg cursor-pointer"
-                          id="main-image-mobile"
-                          data-type="video"
-                        />
-                      ) : null}
-                    </div>
+                            sizes="100vw"
+                          />
+                        ) : isVideo ? (
+                          <video
+                            src={item || '/images/Productos/default.webp'}
+                            controls
+                            class="w-full h-full object-contain transition-all duration-500 cursor-pointer"
+                            id="main-image-mobile"
+                            data-type="video"
+                          />
+                        ) : null}
+                      </div>
+                    </li>
                   );
                 })}
               </ul>
-            
+            </div>
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-30 pointer-events-none">
+            <span
+              id="mobile-gallery-counter"
+              class="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-text-default)] bg-[#F3FFFD] px-4 py-1 text-center text-[var(--color-text-default)] text-[16px] font-normal leading-6 tracking-[0.5px]"
+            >
+              1 / {product?.gallery?.length ?? 0}
+            </span>
             </div>
           </div>
         </div>
+        <style is:inline>
+          .badge-launch-mobile {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            z-index: 30;
+            display: inline-flex;
+            padding: 2px 4px;
+            justify-content: center;
+            align-items: center;
+            border-radius: 2px;
+            background: #006191;
+            color: #fff;
+            text-align: center;
+            font-family: Lato, sans-serif;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 1.43;
+            letter-spacing: 0.1px;
+          }
+
+          .badge-launch-mobile-tail {
+            position: absolute;
+            right: 8px;
+            bottom: -8px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-top: 8px solid #006191;
+          }
+        </style>
 
         
         <!-- Galería de Imágenes (solo tablet/desktop) -->
@@ -115,11 +260,15 @@ console.log("Product data:", product);
             )}
             <div id="main-media-container" style="min-height: 400px; justify-content: center; display: flex; align-items: center; margin-bottom: 16px;">
               {product.gallery.length > 0 ? (
-                <img
+                <ImageResponsive
                   src={product.gallery[0]}
                   alt={product.name}
                   class="w-full h-full object-contain max-h-[600px] rounded-lg"
                   id="main-image-desktop"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                 />
               ) : (
                 <div class="text-gray-400">Sin imagen</div>
@@ -137,13 +286,13 @@ console.log("Product data:", product);
                 {(() => {
                   const total = product.gallery.length;
                   const maxThumbnails = 6;
-                    return product.gallery.slice(0, maxThumbnails).map((imagen: string, index: number) => {
+                    return product.gallery.slice(0, maxThumbnails).map((imagen, index) => {
                       const isImage = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(imagen);
                       const isVideo = /\.(mp4|webm|ogg)$/i.test(imagen);
                       // Si es la última visible y hay más, muestra el overlay '+N'
                       if (index === maxThumbnails - 1 && total > maxThumbnails) {
                         return (
-                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)} >
+                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)}>
                             <button
                               class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)] opacity-20"
                               style="min-height:80px; max-height:80px;"
@@ -153,7 +302,14 @@ console.log("Product data:", product);
                               type="button"
                             >
                               {isImage ? (
-                                <img src={imagen} alt={`Miniatura ${index + 1}`} class="w-full h-full object-cover" />
+                                <ImageResponsive
+                                  src={imagen}
+                                  alt={`Miniatura ${index + 1}`}
+                                  class="w-full h-full object-cover"
+                                  loading="lazy"
+                                  decoding="async"
+                                  sizes="80px"
+                                />
                               ) : isVideo ? (
                                 <video src={imagen} class="w-full h-full object-cover" />
                               ) : null}
@@ -165,7 +321,7 @@ console.log("Product data:", product);
                         );
                       }
                       return (
-                        <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)} >
+                        <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)}>
                           <button
                             class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
                             style="min-height:80px; max-height:80px;"
@@ -175,7 +331,14 @@ console.log("Product data:", product);
                             type="button"
                           >
                             {isImage ? (
-                              <img src={imagen} alt={`Miniatura ${index + 1}`} class="w-full h-full object-cover" />
+                              <ImageResponsive
+                                src={imagen}
+                                alt={`Miniatura ${index + 1}`}
+                                class="w-full h-full object-cover"
+                                loading="lazy"
+                                decoding="async"
+                                sizes="80px"
+                              />
                             ) : isVideo ? (
                               <video src={imagen} class="w-full h-full object-cover" />
                             ) : null}
@@ -209,7 +372,7 @@ console.log("Product data:", product);
             </a>
           )}
 
-          <h1 class="text-3xl font-bold text-[var(--color-text-default)] uppercase m-0">
+          <h1 class="self-stretch m-0 uppercase font-bold text-[28px] leading-[36px] text-[var(--color-green-dark)] md:text-3xl md:leading-[1.2]">
             {product.name}
           </h1>
 
@@ -245,7 +408,7 @@ console.log("Product data:", product);
           <!-- Beneficios -->
           {product?.benefit && product.benefit.length > 0 && (
             <div class="p-6 space-y-6">
-                {product.benefit.map((benefit: any) => (
+                {product.benefit.map((benefit) => (
                 <div class="rounded-lg flex items-start gap-4">
                     {/* Icono */}
                     {benefit.icon?.url && (
@@ -274,12 +437,12 @@ console.log("Product data:", product);
           <!-- Preguntas Frecuentes -->
           {product?.faqItem && product.faqItem.length > 0 && (
             <div id="preguntas-frecuentes">
-              <h3 class=" text-[28px] font-bold text-[#261819]">
+              <h3 class="pdp-section-title">
                 Preguntas frecuentes
               </h3>
             
               <div class="space-y-4" x-data="{ openItems: [] }">
-                {product.faqItem.map((faq: any, index: number) => {
+                {product.faqItem.map((faq, index) => {
                   const itemIndex = index + 1;
                   return (
                     <div class="group px-2 py-4 relative overflow-hidden m-0" style="border-bottom: 1px solid var(--color-primary);">
@@ -314,7 +477,7 @@ console.log("Product data:", product);
                               x-bind:style={`openItems.includes(${itemIndex}) ? 'max-height:' + $refs['content' + ${itemIndex}].scrollHeight + 'px' : 'max-height: 0px'`}
                               class="transition-all duration-500 ease-in-out overflow-hidden"
                           >
-                              <p style="font-family: Lato; font-size: 16px; font-style: italic;" class="mt-4 pl-6 text-[var(--color-gray-dark)]">
+                              <p style="font-family: Lato; font-size: 16px; font-style: italic;" class="mt-4 pl-6 text-on-surface-variant">
                                   {faq.answer}
                               </p>
                           </div>
@@ -330,9 +493,10 @@ console.log("Product data:", product);
 
       <!-- Consumibles -->
       <ProductSlider
-        data={product?.relatedProducts} 
-        title="Productos relacionados" 
-        prefixId="ProductosRelacionados"
+        data={product?.relatedConsumables} 
+        title="Consumibles" 
+        prefixId="Consumibles"
+        disableHorizontalPadding={true}
       />
 
       <FichaTecnica data={product?.technicalSheet} archivoPDF={product?.documents} />
@@ -341,11 +505,11 @@ console.log("Product data:", product);
       {product?.technicalSpecifications && product.technicalSpecifications.length > 0 && (
         <section class="max-w-7xl mx-auto py-8">
           <div class="flex flex-col" x-data="{ openTechItems: [] }">
-            <h2 class=" text-[28px] font-bold ">
+            <h2 class="pdp-section-title">
               Especificaciones técnicas
             </h2>
             
-            {product.technicalSpecifications.map((item: any, index: number) => {
+            {product.technicalSpecifications.map((item, index) => {
               const itemIndex = index + 1;
               const isFirstItem = index === 0;
               
@@ -397,15 +561,15 @@ console.log("Product data:", product);
                       class="transition-all duration-500 ease-in-out overflow-hidden"
                     >
                       <div class="mt-4 px-2">
-                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                        <div class="flex flex-col md:flex-row gap-6 items-stretch md:items-start">
                           {/* Imagen del producto - SOLO para el primer ítem */}
                           {isFirstItem && product.gallery && product.gallery.length > 0 && (
-                            <div class="flex-shrink-0 w-full md:w-48 lg:w-64 flex items-center justify-center relative z-10">
-                              <div class="w-full h-48 md:h-40 lg:h-48">
+                            <div class="w-full md:w-[160px] md:flex-shrink-0 flex items-center justify-center relative z-10">
+                              <div class="w-full aspect-square md:aspect-[4/3]">
                                 <img
                                   src={product.gallery[0]}
                                   alt={product.name}
-                                  class="w-full h-full object-cover p-2"
+                                  class="w-full h-full object-contain rounded-[16px] bg-white"
                                 />
                               </div>
                             </div>
@@ -415,7 +579,7 @@ console.log("Product data:", product);
                           <div class="flex-1">
                             {/* Descripción */}
                             <p 
-                              class="text-[16px] font-medium mb-4 transition-colors duration-300 text-[var(--color-gray-dark)]"
+                              class="text-[16px] font-medium mb-4 transition-colors duration-300 text-on-surface-variant"
                             >
                               {item.description}
                             </p>
@@ -429,7 +593,7 @@ console.log("Product data:", product);
                                   Accesorios relacionados:
                                 </h5>
                                 <ul class="list-disc list-inside space-y-1">
-                                  {item.relatedAccessories.map((accesorio: any) => (
+                                  {item.relatedAccessories.map((accesorio) => (
                                     <li 
                                       class="text-[16px] font-medium transition-colors duration-300"
                                       style="font-family: Lato;"
@@ -444,11 +608,11 @@ console.log("Product data:", product);
                             {/* Imagen específica de la especificación (si existe) */}
                             {item.gallerypecificacion?.url && (
                               <div class="mt-4 flex items-center justify-center md:justify-start">
-                                <div class="w-40 h-40">
+                                <div class="w-full aspect-square md:w-[160px] md:aspect-[4/3] md:flex-shrink-0">
                                   <img
                                     src={buildImageUrl(item.gallerypecificacion.url)}
                                     alt={item.title}
-                                    class="w-full h-full object-contain rounded border border-gray-200 p-2"
+                                    class="w-full h-full object-contain rounded-[16px] bg-white"
                                   />
                                 </div>
                               </div>
@@ -465,27 +629,28 @@ console.log("Product data:", product);
         </section>
       )}
 
-      <!-- Consumibles -->
-      <ProductSlider
-        data={product?.relatedConsumables} 
-        title="Consumibles" 
-        prefixId="Consumibles"
-      />
-
-      <!-- Consumibles -->
-      <ProductSlider
-        data={product?.relatedProducts} 
-        title="Productos relacionados" 
-        prefixId="ProductosRelacionados"
-      />    
-      
       <!-- btn sticky -->
       <ButtonPDPSticky
         Images={product.gallery}
         product={product.name}
         brand={product.brand?.name}
       />
+      
+      <!-- Consumibles -->
+      <ProductSlider
+        data={product?.relatedProducts} 
+        title="Productos relacionados" 
+        prefixId="ProductosRelacionados"
+        disableHorizontalPadding={true}
+      />
 
+      <PromotionSlider
+        promotionsData={promotionsData}
+        disableHorizontalPadding={true}
+        pdpSectionTitle={true}
+      />
+
+      <EspecialidadesSlider items={especialidadesSliderItems} prefixId="PDPEspecialidades" />
     </section>
 
   </main>
@@ -498,96 +663,100 @@ console.log("Product data:", product);
 
     <!-- SCRIPT SEGURO SSR -->
 
-    <script>
-    if (typeof window !== "undefined") {
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggleButtons = document.querySelectorAll('[data-share-toggle]');
+        const encodedUrl = encodeURIComponent(window.location.href);
 
-      document.querySelectorAll('[data-share-toggle]').forEach((toggleBtn) => {
+        toggleButtons.forEach((button) => {
+          const container = button.closest(".relative");
+          if (!container) return;
 
-        const container = toggleBtn.closest('.relative')
-        if (!container) return
+          const closeBtn = container.querySelector('[data-share-close]');
+          const actions = container.querySelector('[data-share-actions]');
+          const tooltip = container.querySelector('[data-copy-tooltip]');
+          const copyBtn = container.querySelector('[data-copy-url]');
+          const facebook = container.querySelector('[data-share-facebook]');
+          const linkedin = container.querySelector('[data-share-linkedin]');
 
-        const closeBtn = container.querySelector('[data-share-close]')
-        const actions = container.querySelector('[data-share-actions]')
-        const tooltip = container.querySelector('[data-copy-tooltip]')
-        const copyBtn = container.querySelector('[data-copy-url]')
-        const facebook = container.querySelector('[data-share-facebook]')
-        const linkedin = container.querySelector('[data-share-linkedin]')
+          if (facebook instanceof HTMLAnchorElement) {
+            facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+          }
 
-        const url = encodeURIComponent(window.location.href)
+          if (linkedin instanceof HTMLAnchorElement) {
+            linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}`;
+          }
 
-        if (facebook) {
-          facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`
-        }
+          button.addEventListener("click", () => {
+            button.classList.add("opacity-0", "pointer-events-none");
+            actions?.classList.remove("opacity-0", "pointer-events-none");
+            actions?.classList.add("opacity-100");
+          });
 
-        if (linkedin) {
-          linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`
-        }
+          closeBtn?.addEventListener("click", () => {
+            button.classList.remove("opacity-0", "pointer-events-none");
+            actions?.classList.add("opacity-0", "pointer-events-none");
+            actions?.classList.remove("opacity-100");
+          });
 
-        toggleBtn.addEventListener('click', () => {
-          toggleBtn.classList.add('opacity-0', 'pointer-events-none')
-          actions?.classList.remove('opacity-0', 'pointer-events-none')
-          actions?.classList.add('opacity-100')
-        })
+          copyBtn?.addEventListener("click", async () => {
+            await navigator.clipboard.writeText(window.location.href);
+            tooltip?.classList.remove("opacity-0");
+            tooltip?.classList.add("opacity-100");
 
-        closeBtn?.addEventListener('click', () => {
-          toggleBtn.classList.remove('opacity-0', 'pointer-events-none')
-          actions?.classList.add('opacity-0', 'pointer-events-none')
-          actions?.classList.remove('opacity-100')
-        })
-
-        copyBtn?.addEventListener('click', async () => {
-          await navigator.clipboard.writeText(window.location.href)
-          tooltip?.classList.remove('opacity-0')
-          tooltip?.classList.add('opacity-100')
-
-          setTimeout(() => {
-            tooltip?.classList.add('opacity-0')
-            tooltip?.classList.remove('opacity-100')
-          }, 1500)
-        })
-
-      })
-
-    }
+            setTimeout(() => {
+              tooltip?.classList.add("opacity-0");
+              tooltip?.classList.remove("opacity-100");
+            }, 1500);
+          });
+        });
+      });
     </script>
 
 
     
-    <script is:inline>
-    document.addEventListener('DOMContentLoaded', () => {
-        const slideimagenesProducto = document.querySelector('#glider-slideimagenesProducto');
-        const counterMobile = document.getElementById('gallery-counter-mobile');
-        if (slideimagenesProducto) {
-            // @ts-ignore
-            const sliderPromociones = new Glide(slideimagenesProducto, {
-                rewind: true,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                draggable: true,
-                duration: .5,
-                scrollLock: true,
-                // arrows: {
-                //     prev: '#prev-btn-promociones',
-                //     next: '#next-btn-promociones'
-                // },
-            });
-            sliderPromociones.mount();
-            // Actualizar contador al inicializar y al cambiar de slide
-            // function updateMobileCounter() {
-            //     if (!counterMobile) return;
-            //     const total = sliderPromociones.slides.length;
-            //     const actual = sliderPromociones.slide + 1;
-            //     counterMobile.textContent = `${actual} / ${total}`;
-            // }
-            // slideimagenesProducto.addEventListener('glider-slide-visible', updateMobileCounter);
-            // // Inicializar contador
-            // setTimeout(updateMobileCounter, 100);
-        }
-    });
-    </script>
-  
+    
+
+  </main>
+
+  <Newsletter />
 
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('glider-slideimagenesProducto');
+    const counter = document.getElementById('mobile-gallery-counter');
+    if (!slider || !counter) return;
+
+    const slides = slider.querySelectorAll('li');
+    const total = slides.length;
+    if (!total) return;
+
+    let rafId = 0;
+    let snapTimer = 0;
+    const updateCounter = () => {
+      const width = slider.clientWidth || 1;
+      const index = Math.min(total - 1, Math.max(0, Math.round(slider.scrollLeft / width)));
+      counter.textContent = `${index + 1} / ${total}`;
+      return { width, index };
+    };
+
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const { width, index } = updateCounter();
+        if (snapTimer) window.clearTimeout(snapTimer);
+        snapTimer = window.setTimeout(() => {
+          slider.scrollTo({ left: index * width, behavior: 'smooth' });
+        }, 80);
+        rafId = 0;
+      });
+    };
+
+    slider.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateCounter);
+    updateCounter();
+  });
+
   // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
   document.addEventListener('DOMContentLoaded', function() {
     const thumbnails = document.querySelectorAll('[data-thumbnail]');

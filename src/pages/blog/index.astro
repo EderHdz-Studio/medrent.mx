@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import Layout from '@layouts/Layout.astro';
 import ArticleCard from '@components/blog/articleCard.astro';
 import { formatDate } from '@lib/utils.js';
@@ -6,23 +8,102 @@ import { strapiFetch } from "@server/strapiClient";
 import Newsletter from '@components/FormNewsletter.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import ImageResponsive from '@components/media/ImageResponsive.astro';
+import {
+  buildClassificationChips,
+  buildClassificationTagByArticleKeyMap,
+  formatChipCount,
+  getArticleClassificationIdString,
+  getClassificationTag,
+} from '@lib/blog/classification';
 
-let articulosActivos = [];
+let articulosActivos: any[] = [];
+let clasificacionesCms: any[] = [];
+
+/** Populate mínimo válido; tags de clasificación vienen de `/article-classifications` abajo. */
+try {
+  const articulosAPI = await strapiFetch(
+    "/blog-articles?populate[heroImage]=true&populate[writer][populate][avatar]=true&sort=publishedAt:desc",
+  );
+  const raw = articulosAPI?.data ?? articulosAPI ?? [];
+  articulosActivos = Array.isArray(raw)
+    ? raw.filter((articulo: any) => articulo.isActive === true)
+    : [];
+} catch (e) {
+  console.error("Error blog-articles (índice, primario):", e);
+  try {
+    const fallback = await strapiFetch("/blog-articles?populate=*&sort=publishedAt:desc");
+    const raw = fallback?.data ?? [];
+    articulosActivos = Array.isArray(raw)
+      ? raw.filter((articulo: any) => articulo.isActive === true)
+      : [];
+  } catch (e2) {
+    console.error("Error blog-articles (índice, fallback):", e2);
+    articulosActivos = [];
+  }
+}
+
+/** Siempre: más reciente primero (publicación o creación). El destacado grande = índice 0. */
+articulosActivos.sort((a: any, b: any) => {
+  const ta = new Date(a?.publishedAt || a?.createdAt || 0).getTime();
+  const tb = new Date(b?.publishedAt || b?.createdAt || 0).getTime();
+  return tb - ta;
+});
 
 try {
-  const articulosAPI = await strapiFetch('/blog-articles?populate=*&sort=publishedAt:desc');
-  
-  articulosActivos = articulosAPI.data.filter((articulo: any) => articulo.isActive === true);
-
-  console.log('articulosActivos')
-  console.log(articulosActivos)
-
-} catch (error) {
-  articulosActivos = [];
+  const clsRes = await strapiFetch(
+    '/article-classifications?pagination[pageSize]=100&sort=tag:asc&populate[articles]=true',
+  );
+  clasificacionesCms = Array.isArray(clsRes?.data) ? clsRes.data : [];
+} catch {
+  try {
+    const clsRes = await strapiFetch('/article-classifications?pagination[pageSize]=100&sort=tag:asc');
+    clasificacionesCms = Array.isArray(clsRes?.data) ? clsRes.data : [];
+  } catch {
+    clasificacionesCms = [];
+  }
 }
+
+const classificationTagByArticleKey = buildClassificationTagByArticleKeyMap(clasificacionesCms);
+const chipsClasificacion = buildClassificationChips(
+  clasificacionesCms,
+  articulosActivos,
+  classificationTagByArticleKey,
+);
+
+/** Fila principal (estilo catálogo) + resto en panel "Más filtros". */
+const CHIPS_PRIMARY_ROW = 7;
+const chipsPrimaryRow = chipsClasificacion.slice(0, CHIPS_PRIMARY_ROW);
+const chipsMoreRow = chipsClasificacion.slice(CHIPS_PRIMARY_ROW);
+
+/** Datos mínimos para reordenar destacados + grid en cliente (mismo criterio que el ordenador). */
+const articlesForClient = articulosActivos.map((a: any) => ({
+  slug: a.slug,
+  title: a.title,
+  shortDescription: a.shortDescription || "",
+  titleLower: (a.title || "").toLowerCase(),
+  ts: new Date(a.publishedAt || a.createdAt || 0).getTime(),
+  writerSlug: a.writer?.slug || "",
+  writerName: a.writer?.fullName || "",
+  classification: getClassificationTag(a, classificationTagByArticleKey) || "",
+  classificationId: getArticleClassificationIdString(a, chipsClasificacion, classificationTagByArticleKey),
+  imgUrl: a.heroImage?.url || "",
+  imgAlt: a.heroImage?.alternativeText || a.title || "",
+  dateLabel: formatDate(a.createdAt),
+}));
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = `${baseUrl}/favicon-512.png`;
 ---
 
-<Layout title="Blog | Medrent – Tecnología médica">
+<Layout
+  title="Blog MedRent | Innovación, neurodiagnóstico y tecnología médica"
+  description="Artículos y tendencias sobre tecnología médica, neurodiagnóstico y práctica clínica para especialistas."
+  keywords="blog MedRent; tecnología médica; neurodiagnóstico; innovación médica"
+  ogImage={logoUrl}
+>
   <!-- <Fragment slot="metas"> -->
     <!-- <title>Blog | Medrent – Tecnología médica</title>
     <meta name="description" content="Descubre artículos, novedades y tendencias en tecnología médica. Información confiable para potenciar tu práctica y optimizar el cuidado de tus pacientes." />
@@ -44,63 +125,387 @@ try {
     <Fragment slot="head">
         <BreadcrumbSchema
         items={[
-            { name: 'Inicio', url: 'https://www.medrent.mx' },
-            { name: 'Blog', url: 'https://www.medrent.mx/blog' },
+            { name: 'Inicio', url: `${baseUrl}/` },
+            { name: 'Blog', url: `${baseUrl}/blog` },
         ]}
+        id={breadcrumbId}
         />
+        <script type="application/ld+json" set:html={
+          (() => {
+            const posts = Array.isArray(articulosActivos) ? articulosActivos.slice(0, 12) : [];
+            const postlistId = `${canonicalUrl}#postlist`;
+            const itemListElement = posts.map((p, index) => {
+              const postUrl = p?.slug ? `${baseUrl}/blog/${p.slug}` : canonicalUrl;
+              return {
+                "@type": "ListItem",
+                position: index + 1,
+                url: postUrl,
+                item: {
+                  "@type": "BlogPosting",
+                  "@id": `${postUrl}#post`,
+                  headline: p?.title || "Blog MedRent",
+                },
+              };
+            });
+
+            return JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebPage",
+                  "@id": `${canonicalUrl}#webpage`,
+                  url: canonicalUrl,
+                  name: "Blog MedRent | Innovación, neurodiagnóstico y tecnología médica",
+                  description:
+                    "Artículos y tendencias sobre tecnología médica, neurodiagnóstico y práctica clínica para especialistas.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  about: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  breadcrumb: { "@id": breadcrumbId },
+                  mainEntity: { "@id": postlistId },
+                  primaryImageOfPage: {
+                    "@type": "ImageObject",
+                    url: logoUrl,
+                  },
+                },
+                {
+                  "@type": ["Blog", "CollectionPage"],
+                  "@id": `${canonicalUrl}#blog`,
+                  url: canonicalUrl,
+                  name: "Blog MedRent",
+                  description:
+                    "Artículos y tendencias sobre tecnología médica, neurodiagnóstico y práctica clínica para especialistas.",
+                  isPartOf: { "@id": `${baseUrl}/#website` },
+                  publisher: { "@id": `${baseUrl}/#organization` },
+                  inLanguage: "es-MX",
+                  mainEntity: { "@id": postlistId },
+                },
+                {
+                  "@type": "ItemList",
+                  "@id": postlistId,
+                  name: "Artículos del blog MedRent",
+                  itemListOrder: "https://schema.org/ItemListOrderDescending",
+                  itemListElement,
+                },
+              ],
+            });
+          })()
+        }></script>
     </Fragment>
 
-    <div class="absolute w-full z-2">
+  <!-- Hero: breadcrumbs arriba a la izquierda; texto + chips alineados a la izquierda -->
+  <section class="relative w-full rounded-b-[24px] bg-[#F5FAF9] antialiased">
+    <div class="pointer-events-none absolute inset-x-0 top-0 z-10 w-full">
+      <div class="pointer-events-auto">
         <Breadcrumb
-        textColor="text-dark"
-        items={[
+          surface="light"
+          navPosition="inline"
+          textColor="text-dark"
+          items={[
             { name: "INICIO", href: "/" },
-            { name: "BLOG" }
-        ]}
+            { name: "BLOG" },
+          ]}
         />
+      </div>
     </div>
-  
-  <section class="max-w-[1280px] w-full flex flex-col items-center justify-center bg-[#F5FAF9] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
-    <div class="max-w-[1080px] w-full flex flex-col items-center gap-2 py-[32px] px-4 sm:px-[16px] md:px-[120px] md:py-[32px] sm:py-[32px] sm:px-[24px]">
-        <span class="text-xs font-bold text-[var(--color-primary)] tracking-widest mb-2">BLOG</span>
-        <div class="w-full flex flex-col items-center">
-            <h1 class="text-center text-[#261819] font-lato text-[24px] md:text-[28px] font-bold">Innovación en Tecnología Médica y Neurodiagnóstico</h1>
-            <p class="text-center text-[#261819] font-lato text-[16px] font-medium">Explora artículos, guías y tendencias sobre diagnóstico médico, neurofisiología, cardiología y avances tecnológicos que transforman la práctica clínica en México.</p>
+    <div class="mx-auto flex min-h-0 w-full max-w-[1280px] flex-col items-stretch">
+      <div class="flex w-full max-w-[1280px] flex-col items-start gap-4 px-4 pb-8 pt-16 sm:px-6 md:px-8 lg:px-10">
+        <div class="flex w-full max-w-[min(100%,72rem)] flex-col items-start gap-3 text-left sm:gap-4">
+          <span
+            class="w-full text-left font-lato text-[14px] font-medium leading-5 tracking-[0.14em] text-(--Schemes-Primary,#006764)"
+          >
+            BLOG
+          </span>
+          <h1 class="w-full max-w-[min(100%,48rem)] text-balance text-left font-lato text-[24px] font-bold leading-[1.28] tracking-[-0.015em] text-[#1a1516] md:max-w-[min(100%,56rem)] md:text-[28px] md:leading-[1.22]">
+            Innovación en Tecnología Médica y Neurodiagnóstico
+          </h1>
+          <p class="w-full max-w-[min(100%,72ch)] text-pretty text-left font-lato text-[16px] font-normal leading-[1.65] text-[#1e191a] md:max-w-[min(100%,78ch)] md:text-[17px] md:leading-[1.68] lg:max-w-[min(100%,80ch)]">
+            Explora artículos, guías y tendencias sobre diagnóstico médico, neurofisiología, cardiología y avances tecnológicos que transforman la práctica clínica en México.
+          </p>
         </div>
+        {chipsClasificacion.length > 0 && (
+          <div
+            id="blog-classification-chips"
+            class="w-full pt-2"
+            role="navigation"
+            aria-label="Filtros por categoría del blog"
+          >
+            <div class="flex w-full flex-col gap-4">
+              <div class="flex w-full flex-col gap-2 sm:gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-4 lg:gap-y-3">
+                <span
+                  id="blog-categorias-label"
+                  class="shrink-0 self-start text-left font-lato text-[13px] font-semibold uppercase leading-5 tracking-[0.1em] text-[#141918] sm:pt-0.5 lg:self-center"
+                >
+                  Categorías:
+                </span>
+                <div class="flex w-full min-w-0 flex-1 flex-row items-stretch gap-0">
+                  <div
+                    id="blog-chips-primary-scroll"
+                    class="blog-chips-scroll min-w-0 flex-1 overflow-x-auto scroll-smooth lg:overflow-visible"
+                    role="region"
+                    aria-labelledby="blog-categorias-label"
+                    aria-describedby="blog-chips-primary-hint"
+                  >
+                    <p id="blog-chips-primary-hint" class="sr-only">
+                      Lista desplazable horizontalmente. En pantallas pequeñas, desliza con el dedo para ver todas las
+                      categorías.
+                    </p>
+                    <ul
+                      role="list"
+                      class="m-0 flex w-max list-none flex-nowrap gap-2 py-0.5 pl-0 sm:gap-x-2.5 lg:w-full lg:flex-wrap lg:content-start lg:gap-x-2.5 lg:gap-y-2"
+                    >
+                      {chipsPrimaryRow.map((chip) => (
+                        <li class="shrink-0">
+                          <button
+                            type="button"
+                            class="blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]"
+                            data-blog-classification-chip="inactive"
+                            data-classification-id={String(chip.id)}
+                            aria-pressed="false"
+                            aria-label={`Filtrar por ${chip.tag}`}
+                          >
+                            <span class="blog-chip__text uppercase">{chip.tag} ({formatChipCount(chip.count)})</span>
+                            <svg
+                              class="blog-chip__icon hidden size-4 shrink-0 text-white"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M18 6L6 18M6 6l12 12"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {chipsMoreRow.length > 0 && (
+                    <div class="flex shrink-0 items-center self-stretch border-l border-[#171D1C]/15 bg-[#F5FAF9] pl-2 sm:pl-3">
+                      <button
+                        id="blog-filters-toggle"
+                        type="button"
+                        class="flex h-fit w-fit shrink-0 items-center gap-2 rounded-lg border border-[#171D1C] bg-white py-1.5 pl-1 pr-2 font-lato text-[13px] font-medium leading-5 tracking-[0.02em] text-[#171D1C] shadow-sm transition hover:bg-[#171D1C]/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:text-[14px]"
+                        aria-expanded="false"
+                        aria-controls="blog-filters-panel"
+                      >
+                        <span>Más filtros</span>
+                        <svg
+                          id="blog-filters-toggle-icon"
+                          class="size-4 shrink-0 transition-transform duration-200"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              {chipsMoreRow.length > 0 && (
+                <div
+                  id="blog-filters-panel"
+                  class="hidden w-full rounded-xl border border-[#171D1C]/12 bg-white/60 px-4 py-4 shadow-[0_1px_2px_rgba(23,29,28,0.06)] backdrop-blur-sm sm:px-5"
+                  role="region"
+                  aria-labelledby="blog-mas-categorias-label"
+                  aria-describedby="blog-chips-more-hint"
+                >
+                  <h2
+                    id="blog-mas-categorias-label"
+                    class="mb-3 font-lato text-[12px] font-semibold uppercase leading-4 tracking-[0.12em] text-[#1a1f1e]"
+                  >
+                    Más categorías
+                  </h2>
+                  <p id="blog-chips-more-hint" class="sr-only">
+                    Lista desplazable horizontalmente. En pantallas pequeñas, desliza con el dedo para ver todas las
+                    categorías adicionales.
+                  </p>
+                  <div
+                    id="blog-chips-more-scroll"
+                    class="blog-chips-scroll -mx-1 min-w-0 overflow-x-auto scroll-smooth px-1 lg:mx-0 lg:block lg:overflow-visible lg:px-0"
+                  >
+                    <ul
+                      role="list"
+                      class="m-0 flex w-max list-none flex-nowrap gap-2 py-0.5 pl-0 sm:gap-x-2.5 lg:w-full lg:flex-wrap lg:content-start lg:gap-x-2.5 lg:gap-y-2"
+                    >
+                      {chipsMoreRow.map((chip) => (
+                        <li class="shrink-0">
+                          <button
+                            type="button"
+                            class="blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]"
+                            data-blog-classification-chip="inactive"
+                            data-classification-id={String(chip.id)}
+                            aria-pressed="false"
+                            aria-label={`Filtrar por ${chip.tag}`}
+                          >
+                            <span class="blog-chip__text uppercase">{chip.tag} ({formatChipCount(chip.count)})</span>
+                            <svg
+                              class="blog-chip__icon hidden size-4 shrink-0 text-white"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M18 6L6 18M6 6l12 12"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {chipsClasificacion.length > 0 && chipsMoreRow.length > 0 && (
+          <script is:inline>
+            (function () {
+              var btn = document.getElementById("blog-filters-toggle");
+              var panel = document.getElementById("blog-filters-panel");
+              var icon = document.getElementById("blog-filters-toggle-icon");
+              if (!btn || !panel) return;
+              btn.addEventListener("click", function () {
+                var open = panel.classList.contains("hidden");
+                if (open) {
+                  panel.classList.remove("hidden");
+                  btn.setAttribute("aria-expanded", "true");
+                  if (icon) icon.classList.add("rotate-180");
+                } else {
+                  panel.classList.add("hidden");
+                  btn.setAttribute("aria-expanded", "false");
+                  if (icon) icon.classList.remove("rotate-180");
+                }
+              });
+            })();
+          </script>
+        )}
+      </div>
     </div>
   </section>
 
     <main class="max-w-7xl mx-auto px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-6">
     {articulosActivos.length > 0 ? (
       <>
-        <section class="mb-12">
-          <div class="flex flex-col mb-6 w-full">
-            <!-- Artículo count arriba del h2 solo en mobile, derecha en desktop -->
-            <span class="block md:hidden text-[var(--color-primary)] font-lato text-[14px] font-medium m-0 p-0 mb-2" style="font-weight: 500; color: var(--color-primary);">{articulosActivos.length} ARTÍCULOS</span>
-            <div class="flex items-center justify-between w-full">
-              <h2 class="text-[#261819] font-lato text-[28px] font-light uppercase">Lo más nuevo</h2>
-              <!-- Artículo count a la derecha en desktop -->
-              <span class="hidden md:inline-block text-[var(--color-primary)] font-lato text-[14px] font-medium px-3 py-1 mt-auto" style="font-weight: 500; color: var(--color-primary);">{articulosActivos.length} ARTÍCULOS</span>
+        <section class="mb-12" aria-labelledby="blog-lo-mas-nuevo-heading">
+          <div class="mb-6 flex w-full flex-col pt-6">
+            <span
+              id="blog-article-count"
+              class="mb-2 self-stretch font-lato text-[14px] font-bold uppercase leading-5 tracking-[0.1px] text-(--Schemes-Primary-Container,#00827F)"
+            >
+              {articulosActivos.length} artículos
+            </span>
+            <div class="flex h-fit w-full flex-col gap-4 pl-[4px] pr-[8px] sm:flex-row sm:items-center sm:justify-between">
+              <h2
+                id="blog-lo-mas-nuevo-heading"
+                class="min-w-0 self-stretch font-lato text-[24px] font-bold leading-[32px] text-[#171D1C] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]"
+              >
+                Lo más nuevo
+              </h2>
+              {articulosActivos.length > 3 && (
+                <div class="relative w-fit max-w-full min-w-0 shrink-0 sm:ml-auto">
+                  <button
+                    id="blog-sort-btn"
+                    type="button"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-controls="blog-sort-menu"
+                    class="box-border flex h-fit w-fit min-h-0 max-w-full items-center justify-between gap-2 rounded-[8px] border border-[#171D1C] bg-white py-2 pl-[8px] pr-[8px] text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] transition-[color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+                  >
+                    <span id="blog-sort-label" class="min-w-0 flex-1 truncate">Ordenar por:</span>
+                    <svg
+                      id="blog-sort-icon"
+                      class="size-6 shrink-0 rotate-0 transition-transform duration-200 ease-out"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path d="M7.00005 14.83C7.18741 15.0162 7.44087 15.1208 7.70505 15.1208C7.96924 15.1208 8.22269 15.0162 8.41005 14.83L12.0001 11.29L15.5401 14.83C15.7274 15.0162 15.9809 15.1208 16.2451 15.1208C16.5092 15.1208 16.7627 15.0162 16.9501 14.83C17.0438 14.737 17.1182 14.6264 17.1689 14.5046C17.2197 14.3827 17.2458 14.252 17.2458 14.12C17.2458 13.988 17.2197 13.8573 17.1689 13.7354C17.1182 13.6136 17.0438 13.503 16.9501 13.41L12.7101 9.17C12.6171 9.07627 12.5065 9.00187 12.3846 8.9511C12.2628 8.90034 12.1321 8.8742 12.0001 8.8742C11.868 8.8742 11.7373 8.90034 11.6155 8.9511C11.4936 9.00187 11.383 9.07627 11.2901 9.17L7.00005 13.41C6.90632 13.503 6.83193 13.6136 6.78116 13.7354C6.73039 13.8573 6.70425 13.988 6.70425 14.12C6.70425 14.252 6.73039 14.3827 6.78116 14.5046C6.83193 14.6264 6.90632 14.737 7.00005 14.83Z" fill="#171D1C" />
+                    </svg>
+                  </button>
+                  <div
+                    id="blog-sort-menu"
+                    class="absolute left-0 top-[calc(100%+6px)] z-20 hidden w-full min-w-full overflow-hidden rounded-[8px] border border-[#171D1C] bg-white shadow-sm"
+                  >
+                    <button type="button" data-blog-sort="default" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+                      Todos
+                    </button>
+                    <button type="button" data-blog-sort="az" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+                      A-Z
+                    </button>
+                    <button type="button" data-blog-sort="za" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+                      Z-A
+                    </button>
+                    <button type="button" data-blog-sort="mas-antiguos" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] hover:bg-black/[0.04]">
+                      Más antiguos
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          
-            <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative md:col-span-2">
+          <div id="blog-ssr-featured">
+          <div id="blog-featured-row" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            <div id="blog-featured-big-slot" class="md:col-span-2">
+            <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative">
               <div class="h-75 relative overflow-hidden flex-shrink-0">
-                <img src={articulosActivos[0]?.heroImage?.url} alt={articulosActivos[0]?.title} class="w-full h-full object-cover" />
+                <ImageResponsive
+                  image={articulosActivos[0]?.heroImage}
+                  alt={articulosActivos[0]?.title}
+                  class="w-full h-full object-cover"
+                  sizes="(min-width: 1024px) 66vw, 100vw"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
               </div>
               <div class="p-6 flex flex-col flex-grow min-h-[300px]">
-                <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulosActivos[0]?.subcategory?.name}</span>
-                <a href={`/blog/${articulosActivos[0]?.slug}`}>
-                  <h3 class="text-[28px] font-light font-lato text-[#261819] mb-2 line-clamp-3 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulosActivos[0]?.title}</h3>
+                {getClassificationTag(articulosActivos[0], classificationTagByArticleKey) && (
+                  <span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+                    {getClassificationTag(articulosActivos[0], classificationTagByArticleKey)}
+                  </span>
+                )}
+                <a
+                  href={`/blog/${articulosActivos[0]?.slug}`}
+                  class="flex w-full max-w-full flex-col"
+                >
+                  <h3 class="mb-2 line-clamp-3 pl-1 pr-2 font-lato font-bold leading-snug text-[#261819] text-[22px] text-balance hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)] md:pl-0 md:pr-0 md:leading-[1.2] md:text-[28px]">
+                    {articulosActivos[0]?.title}
+                  </h3>
                 </a>
-                <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 flex-grow" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
+                <p class="text-on-surface-variant mb-4 flex-grow text-[16px] font-normal" style="font-family: Lato;">{articulosActivos[0]?.shortDescription}</p>
                 
                 
                 
 
                   <div class="flex items-end justify-between mt-auto">
-                    <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+                    <span class="text-xs text-on-surface-variant font-lato w-full flex">
                         Por:&nbsp;
                         <a href={`/blog/autor/${articulosActivos[0]?.writer?.slug}`} 
                           class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato">
@@ -110,20 +515,24 @@ try {
                 </div>
               </div>
             </div>
-            
-            <div class="w-full flex flex-col gap-6 sm:flex-row sm:gap-6 sm:w-full md:flex-col md:gap-6 md:col-span-1 md:w-full">
-              {articulosActivos.slice(1,3).map((articulo:any, idx:number) => (
+            </div>
+            <div id="blog-featured-stack-slot" class="w-full flex flex-col gap-6 sm:flex-row sm:gap-6 sm:w-full md:flex-col md:gap-6 md:col-span-1 md:w-full">
+              {articulosActivos.slice(1,3).map((articulo, idx) => (
                 <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative sm:w-1/2 md:w-full">
                   <div class="p-6 flex flex-col flex-grow">
-                    <span class="mb-2 uppercase font-lato text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-primary)]">{articulo?.subcategory?.name}</span>
+                    {getClassificationTag(articulo, classificationTagByArticleKey) && (
+                      <span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+                        {getClassificationTag(articulo, classificationTagByArticleKey)}
+                      </span>
+                    )}
                     <a href={`/blog/${articulo?.slug}`}>
-                      <h3 class="text-[22px] font-light text-lg text-[#261819] font-lato mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.title}</h3>
+                      <h3 class="text-[22px] font-bold text-[#261819] font-lato mb-2 line-clamp-2 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{articulo?.title}</h3>
                     </a>
-                    <p class="text-[var(--color-gray-dark)] text-[16px] font-normal mb-4 line-clamp-3 flex-grow max-h-[68px]" style="font-family: Lato;">{articulo?.shortDescription}</p>
+                    <p class="text-on-surface-variant mb-4 line-clamp-3 flex-grow max-h-[68px] text-[16px] font-normal" style="font-family: Lato;">{articulo?.shortDescription}</p>
                     
                     
                     <div class="flex items-end justify-between mt-auto">
-                      <span class="text-xs text-[var(--color-gray-dark)] font-lato w-full flex">
+                      <span class="text-xs text-on-surface-variant font-lato w-full flex">
                         Por:&nbsp;
                         <a href={`/blog/autor/${articulo?.writer?.slug}`} 
                         class="block text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">
@@ -137,18 +546,396 @@ try {
               ))}
             </div>
           </div>
+          </div>
+          <div id="blog-client-simple" class="hidden w-full">
+            <p
+              id="blog-empty-filtered"
+              class="hidden w-full py-10 text-center font-lato text-[16px] font-normal leading-6 text-[#171D1C]"
+              role="status"
+            >
+              No hay artículos para mostrar con el filtro u orden seleccionado.
+            </p>
+            <div
+              id="blog-simple-grid"
+              class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3"
+            >
+            </div>
+            <div class="flex flex-col items-center justify-center gap-2 self-stretch pt-6">
+              <button
+                id="blog-load-more-simple"
+                type="button"
+                class="hidden cursor-pointer flex items-center justify-center gap-2 rounded-[4px] bg-[#006764] px-4 py-3 font-lato text-base font-semibold text-white transition hover:bg-[var(--color-accent)]"
+              >
+                Ver más artículos
+              </button>
+              <p
+                id="blog-grid-count-simple"
+                class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#171D1C]"
+              >
+              </p>
+            </div>
+          </div>
         </section>
 
         {articulosActivos.length > 3 && (
-          <section>
-            <h2 class="text-[#261819] font-lato text-[28px] font-light mb-6 uppercase">Última publicación</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {articulosActivos.slice(3).map((articulo:any) => (
-                <ArticleCard article={articulo} />
-              ))}
-            </div>
-          </section>
+            <section id="blog-ultimas-section" aria-labelledby="blog-ultimas-publicaciones-heading">
+              <h2
+                id="blog-ultimas-publicaciones-heading"
+                class="mb-6 font-lato text-[24px] font-bold leading-[32px] text-[#171D1C] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]"
+              >
+                Últimas publicaciones
+              </h2>
+              <div id="blog-grid-list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+                {articulosActivos.slice(3).map((articulo, idx) => (
+                  <div
+                    data-blog-item
+                    class:list={["blog-grid-card", idx >= 6 ? "hidden" : ""]}
+                  >
+                    <ArticleCard article={articulo} tagByArticleKey={classificationTagByArticleKey} />
+                  </div>
+                ))}
+              </div>
+              <div class="flex flex-col items-center justify-center gap-2 self-stretch pt-6">
+                {articulosActivos.length - 3 > 6 && (
+                  <button
+                    id="blog-load-more"
+                    type="button"
+                    class="flex cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#006764] px-4 py-3 font-lato text-base font-semibold text-white transition hover:bg-[var(--color-accent)]"
+                  >
+                    Ver más artículos
+                  </button>
+                )}
+                <p
+                  id="blog-grid-count"
+                  class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#171D1C]"
+                >
+                  Mostrando {Math.min(6, articulosActivos.length - 3)} de{" "}
+                  {articulosActivos.length - 3} artículos
+                </p>
+              </div>
+            </section>
         )}
+
+        <script
+          type="application/json"
+          id="blog-articles-data"
+          set:html={JSON.stringify(articlesForClient).replace(/</g, "\\u003c")}
+        />
+        <script is:inline>
+              (function initBlogSort() {
+                const dataEl = document.getElementById("blog-articles-data");
+                const grid = document.getElementById("blog-grid-list");
+                const blogSsrFeatured = document.getElementById("blog-ssr-featured");
+                const blogClientSimple = document.getElementById("blog-client-simple");
+                const simpleGrid = document.getElementById("blog-simple-grid");
+                const loadMoreSimple = document.getElementById("blog-load-more-simple");
+                const gridCountSimple = document.getElementById("blog-grid-count-simple");
+                const emptyFiltered = document.getElementById("blog-empty-filtered");
+                const ultimasSection = document.getElementById("blog-ultimas-section");
+                const articleCountEl = document.getElementById("blog-article-count");
+                const chipRoot = document.getElementById("blog-classification-chips");
+                const sortBtn = document.getElementById("blog-sort-btn");
+                const sortMenu = document.getElementById("blog-sort-menu");
+                const sortLabel = document.getElementById("blog-sort-label");
+                const sortIcon = document.getElementById("blog-sort-icon");
+                const loadMoreBtn = document.getElementById("blog-load-more");
+                const gridCountEl = document.getElementById("blog-grid-count");
+                if (!dataEl || !blogClientSimple || !simpleGrid) return;
+
+                let articles = [];
+                try {
+                  articles = JSON.parse(dataEl.textContent || "[]");
+                } catch (e) {
+                  return;
+                }
+                if (!Array.isArray(articles) || articles.length === 0) return;
+
+                var clientMode = false;
+                var selectedIds = new Set();
+                var CHIP_INACTIVE =
+                  "blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]";
+                var CHIP_ACTIVE =
+                  "blog-chip--active flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-transparent bg-[#006764] py-1 pl-1 pr-2 font-lato text-[14px] font-medium uppercase leading-5 tracking-[0.1px] text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764]";
+
+                function filterArticles() {
+                  if (selectedIds.size === 0) return articles.slice();
+                  return articles.filter(function (a) {
+                    return a.classificationId && selectedIds.has(a.classificationId);
+                  });
+                }
+
+                function updateArticleCount(n) {
+                  if (articleCountEl) articleCountEl.textContent = n + " artículos";
+                }
+
+                function syncChipButton(btn, isActive) {
+                  var icon = btn.querySelector(".blog-chip__icon");
+                  var text = btn.querySelector(".blog-chip__text");
+                  btn.setAttribute("data-blog-classification-chip", isActive ? "active" : "inactive");
+                  btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+                  btn.className = isActive ? CHIP_ACTIVE : CHIP_INACTIVE;
+                  if (text) text.classList.add("uppercase");
+                  if (icon) {
+                    if (isActive) icon.classList.remove("hidden");
+                    else icon.classList.add("hidden");
+                  }
+                }
+
+                function enterClientResultsLayout() {
+                  clientMode = true;
+                  if (blogSsrFeatured) blogSsrFeatured.classList.add("hidden");
+                  if (ultimasSection) ultimasSection.classList.add("hidden");
+                  if (blogClientSimple) blogClientSimple.classList.remove("hidden");
+                }
+
+                function restoreSsrLayout() {
+                  clientMode = false;
+                  if (blogSsrFeatured) blogSsrFeatured.classList.remove("hidden");
+                  if (blogClientSimple) blogClientSimple.classList.add("hidden");
+                  if (ultimasSection) ultimasSection.classList.remove("hidden");
+                  if (emptyFiltered) emptyFiltered.classList.add("hidden");
+                  if (simpleGrid) simpleGrid.innerHTML = "";
+                  if (loadMoreSimple) loadMoreSimple.classList.add("hidden");
+                  if (gridCountSimple) gridCountSimple.textContent = "";
+                  updateArticleCount(articles.length);
+                  if (grid) syncGridCount();
+                }
+
+                let currentSort = "default";
+                const PAGE = 6;
+
+                function escapeHtml(s) {
+                  if (s == null || s === undefined) return "";
+                  return String(s)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+                }
+
+                function writerFooterGrid(art) {
+                  var date = escapeHtml(art.dateLabel || "");
+                  var name = escapeHtml(art.writerName || "");
+                  var slug = art.writerSlug || "";
+                  var inner = slug
+                    ? '<a href="/blog/autor/' +
+                      escapeHtml(slug) +
+                      '" class="inline text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato">' +
+                      name +
+                      "</a>"
+                    : '<span class="inline text-xs text-[var(--color-primary)] font-lato">' + name + "</span>";
+                  return (
+                    '<span class="whitespace-nowrap">Por:&nbsp;' +
+                    inner +
+                    "</span><span class=\"whitespace-nowrap\">• " +
+                    date +
+                    "</span>"
+                  );
+                }
+
+                function renderGridCard(art, idx) {
+                  var hidden = idx >= PAGE ? " hidden" : "";
+                  var imgBlock = art.imgUrl
+                    ? '<div class="h-55 relative overflow-hidden flex-shrink-0"><img src="' +
+                      escapeHtml(art.imgUrl) +
+                      '" alt="' +
+                      escapeHtml(art.imgAlt) +
+                      '" class="w-full h-full object-cover max-h-[218px]" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" /></div>'
+                    : '<div class="h-55 relative overflow-hidden flex-shrink-0 bg-gray-200"></div>';
+                  var cls = art.classification
+                    ? '<span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">' +
+                      escapeHtml(art.classification) +
+                      "</span>"
+                    : "";
+                  var inner =
+                    '<div class="bg-[var(--color-secondary-light)] rounded-[16px]  hover:bg-[var(--color-secondary-light)] hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative min-h-[500px]">' +
+                    imgBlock +
+                    '<div class="p-6 flex flex-col flex-grow">' +
+                    cls +
+                    '<a href="/blog/' +
+                    escapeHtml(art.slug) +
+                    '"><h3 class="text-[22px] font-bold text-[#261819] mb-2 font-lato line-clamp-2 leading-7 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">' +
+                    escapeHtml(art.title) +
+                    "</h3></a>" +
+                    '<p class="text-on-surface-variant text-[16px] font-lato font-normal mb-4 line-clamp-3 flex-grow" style="max-height: 70px;">' +
+                    escapeHtml(art.shortDescription) +
+                    "</p>" +
+                    '<div class="flex items-end justify-between mt-auto"><span class="text-xs text-on-surface-variant font-lato w-full flex flex-wrap items-center gap-x-1 gap-y-1">' +
+                    writerFooterGrid(art) +
+                    "</span></div></div></div>";
+                  return '<div data-blog-item class="blog-grid-card' + hidden + '">' + inner + "</div>";
+                }
+
+                function sortArticles(arr, mode) {
+                  var out = arr.slice();
+                  out.sort(function (a, b) {
+                    if (mode === "az") return a.titleLower.localeCompare(b.titleLower, "es");
+                    if (mode === "za") return b.titleLower.localeCompare(a.titleLower, "es");
+                    if (mode === "mas-antiguos") return a.ts - b.ts;
+                    return b.ts - a.ts;
+                  });
+                  return out;
+                }
+
+                function applyPagination() {
+                  var g = clientMode ? simpleGrid : grid;
+                  var btn = clientMode ? loadMoreSimple : loadMoreBtn;
+                  if (!g) return;
+                  var items = Array.from(g.querySelectorAll("[data-blog-item]"));
+                  var shown = PAGE;
+                  for (var i = 0; i < items.length; i++) {
+                    if (i < shown) items[i].classList.remove("hidden");
+                    else items[i].classList.add("hidden");
+                  }
+                  if (btn) {
+                    var hiddenLeft = items.length > shown;
+                    btn.classList.toggle("hidden", !hiddenLeft);
+                  }
+                  syncGridCount();
+                }
+
+                function applyFullOrder() {
+                  var base = filterArticles();
+                  var sorted = sortArticles(base, currentSort);
+
+                  if (selectedIds.size === 0 && currentSort === "default") {
+                    restoreSsrLayout();
+                    return;
+                  }
+
+                  enterClientResultsLayout();
+
+                  if (sorted.length === 0) {
+                    if (simpleGrid) simpleGrid.innerHTML = "";
+                    if (emptyFiltered) emptyFiltered.classList.remove("hidden");
+                    if (loadMoreSimple) loadMoreSimple.classList.add("hidden");
+                    if (gridCountSimple) gridCountSimple.textContent = "";
+                    updateArticleCount(0);
+                    return;
+                  }
+                  if (emptyFiltered) emptyFiltered.classList.add("hidden");
+                  if (simpleGrid) {
+                    simpleGrid.innerHTML = sorted.map(function (a, i) {
+                      return renderGridCard(a, i);
+                    }).join("");
+                  }
+                  applyPagination();
+                  updateArticleCount(sorted.length);
+                }
+
+                function syncGridCount() {
+                  var g = clientMode ? simpleGrid : grid;
+                  var el = clientMode ? gridCountSimple : gridCountEl;
+                  if (!el || !g) return;
+                  var items = Array.from(g.querySelectorAll("[data-blog-item]"));
+                  var total = items.length;
+                  var visible = items.filter(function (el) {
+                    return !el.classList.contains("hidden");
+                  }).length;
+                  el.textContent = "Mostrando " + visible + " de " + total + " artículos";
+                }
+
+                const labels = {
+                  default: "Ordenar por:",
+                  az: "Ordenar por: A-Z",
+                  za: "Ordenar por: Z-A",
+                  "mas-antiguos": "Ordenar por: Más antiguos",
+                };
+
+                function syncSortLabel() {
+                  if (sortLabel) sortLabel.textContent = labels[currentSort] || labels.default;
+                }
+
+                function bindLoadMore(btn) {
+                  if (!btn) return;
+                  btn.addEventListener("click", function () {
+                    var g = clientMode ? simpleGrid : grid;
+                    if (!g) return;
+                    var items = Array.from(g.querySelectorAll("[data-blog-item]"));
+                    var count = 0;
+                    for (var i = 0; i < items.length; i++) {
+                      var el = items[i];
+                      if (el.classList.contains("hidden")) {
+                        el.classList.remove("hidden");
+                        count++;
+                        if (count >= PAGE) break;
+                      }
+                    }
+                    var anyHidden = items.some(function (el) {
+                      return el.classList.contains("hidden");
+                    });
+                    var activeBtn = clientMode ? loadMoreSimple : loadMoreBtn;
+                    if (activeBtn) activeBtn.classList.toggle("hidden", !anyHidden);
+                    syncGridCount();
+                  });
+                }
+                bindLoadMore(loadMoreBtn);
+                bindLoadMore(loadMoreSimple);
+
+                if (chipRoot) {
+                  chipRoot.addEventListener("click", function (e) {
+                    var t = e.target;
+                    if (!t || typeof t !== "object") return;
+                    var btn = t.closest ? t.closest("[data-classification-id]") : null;
+                    if (!btn || !chipRoot.contains(btn) || btn.tagName !== "BUTTON") return;
+                    e.preventDefault();
+                    var id = btn.getAttribute("data-classification-id");
+                    if (!id) return;
+                    if (selectedIds.has(id)) {
+                      selectedIds.delete(id);
+                      syncChipButton(btn, false);
+                    } else {
+                      selectedIds.add(id);
+                      syncChipButton(btn, true);
+                    }
+                    applyFullOrder();
+                  });
+                }
+
+                if (sortBtn && sortMenu) {
+                  sortBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var wasHidden = sortMenu.classList.contains("hidden");
+                    sortMenu.classList.toggle("hidden", !wasHidden);
+                    sortBtn.setAttribute("aria-expanded", String(wasHidden));
+                    if (sortIcon) sortIcon.classList.toggle("rotate-180", wasHidden);
+                  });
+
+                  sortMenu.addEventListener("click", function (e) {
+                    var raw = e.target;
+                    var base =
+                      raw && raw.nodeType === 1 ? raw : raw && raw.parentElement;
+                    var opt = base && base.closest ? base.closest("[data-blog-sort]") : null;
+                    if (!opt || !sortMenu.contains(opt)) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    currentSort = opt.getAttribute("data-blog-sort") || "default";
+                    syncSortLabel();
+                    applyFullOrder();
+                    sortMenu.classList.add("hidden");
+                    sortBtn.setAttribute("aria-expanded", "false");
+                    if (sortIcon) sortIcon.classList.remove("rotate-180");
+                  });
+
+                  document.addEventListener(
+                    "click",
+                    function (e) {
+                      var t = e.target;
+                      if (!t || typeof t !== "object") return;
+                      if (sortMenu.contains(t) || sortBtn.contains(t)) return;
+                      sortMenu.classList.add("hidden");
+                      sortBtn.setAttribute("aria-expanded", "false");
+                      if (sortIcon) sortIcon.classList.remove("rotate-180");
+                    },
+                    false,
+                  );
+                }
+
+                syncSortLabel();
+                if (!clientMode && grid) syncGridCount();
+              })();
+            </script>
       </>
     ) : (
       <div class="text-center py-12">
