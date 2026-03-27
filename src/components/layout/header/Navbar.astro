@@ -2,6 +2,8 @@
 const { site } = Astro.props;
 import { strapiFetch } from "@server/strapiClient";
 
+const currentPath = Astro.url.pathname;
+
 let marcasNavData: any[] = [];
   try {
     const response = await strapiFetch("/brands?populate=*");
@@ -39,6 +41,11 @@ let subcategoriasData: any[] = [];
     subcategoriasData = [];
   }
 
+  function isActive(linkPath) {
+  if (linkPath === '/') return currentPath === '/';
+  return currentPath.startsWith(linkPath);
+}
+
 ---
 
 <!-- Navbar -->
@@ -72,7 +79,9 @@ let subcategoriasData: any[] = [];
 
     <!-- Links desktop -->
     <div id="LinksNavBar-Desktop" class="hidden lg:flex gap-6 items-center text-[14px]">
-        <a href="/acerca-de-nosotros" class="hover:underline text-center  hover:text-[var(--color-primary)]">Acerca de nosotros</a>
+        <a href="/acerca-de-nosotros" class={`text-center ${isActive('/acerca-de-nosotros') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]'}`}>
+          Acerca de nosotros
+        </a>
 
         <!-- Dropdown Nuestras marcas -->
         <div
@@ -84,7 +93,10 @@ let subcategoriasData: any[] = [];
         >
           <button 
             @click="marcasOpen = !marcasOpen" 
-            :class="['flex items-center focus:outline-none cursor-pointer', marcasOpen ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)]']"
+            :class="[
+              'flex items-center focus:outline-none cursor-pointer', 
+              marcasOpen || isActive('/nuestras-marcas') ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:underline'
+            ]"
           >
             Nuestras marcas
             <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': marcasOpen }" fill="currentColor" viewBox="0 0 20 20">
@@ -350,15 +362,12 @@ let subcategoriasData: any[] = [];
             </div>
           </div>
         </div>
-
-        
-        <!-- <a href="/especialidades" class="hover:underline hover:text-[var(--color-primary)]">Especialidades</a> -->
-        <!-- <a href="/especialidades" class="hover:underline  hover:text-[var(--color-primary)]">Nuestras marcas</a> -->
-        <a href="/productos" class="hover:underline  hover:text-[var(--color-primary)]">Productos</a>
-        <a href="/financiamiento" class="hover:underline  hover:text-[var(--color-primary)]">Financiamiento</a>   
-        <a href="/eventos" class="hover:underline  hover:text-[var(--color-primary)]">Eventos</a>
-        <a href="/blog" class="hover:underline  hover:text-[var(--color-primary)]">Blog</a>
-        <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded">Contáctanos</a>
+       
+       <a href="/productos" class={`${isActive('/productos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}>Productos </a>
+       <a href="/financiamiento" class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
+       <a href="/eventos" class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
+       <a href="/blog" class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a>
+       <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded">Contáctanos</a>
     </div>
   </div>
 

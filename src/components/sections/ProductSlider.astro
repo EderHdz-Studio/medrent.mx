@@ -98,6 +98,10 @@ const initProductSliders = async () => {
             dragThreshold: isDesktop ? false : 80,
             swipeThreshold: isDesktop ? false : 80,
             startAt: 0,
+            arrows: {
+                prev: `#prev-btn-${prefixId}`,
+                next: `#next-btn-${prefixId}`
+            },
             breakpoints: {
                 1024: { perView: 4 },
                 920: { perView: 3 },
@@ -136,26 +140,22 @@ const initProductSliders = async () => {
             return 4;
         }
         
-        // Actualiza el contador
         const contador = document.getElementById(`contador-${prefixId}`);
         const controls = document.getElementById(`controls-${prefixId}`);
         
         function updateContador() {
             if (!glider || !contador) return;
             
-            // Alterna la clase order-4 en controles según el ancho de pantalla
-            if (controls) {
-                if (window.innerWidth < 1000) {
-                    controls.classList.add('order-4');
-                    controls.style.flexWrap = 'wrap';
-                    controls.style.width = '100%';
-                    controls.style.justifyContent = 'center';
-                } else {
-                    controls.classList.remove('order-4');
-                    controls.style.flexWrap = '';
-                    controls.style.width = '';
-                    controls.style.justifyContent = '';
-                }
+            if (controls && window.innerWidth < 1000) {
+                controls.classList.add('order-4');
+                controls.style.flexWrap = 'wrap';
+                controls.style.width = '100%';
+                controls.style.justifyContent = 'center';
+            } else if (controls) {
+                controls.classList.remove('order-4');
+                controls.style.flexWrap = '';
+                controls.style.width = '';
+                controls.style.justifyContent = '';
             }
             
             const total = totalItems;
@@ -168,7 +168,6 @@ const initProductSliders = async () => {
               : Math.min(totalPages, Math.floor(currentIndex / slidesToShow) + 1);
             contador.textContent = `${currentPage} / ${totalPages}`;
             
-            // Mostrar controles solo si hay más cards que las visibles
             if (controls) {
                 const isMobileViewport = window.innerWidth < 768;
                 const shouldShowControls = isMobileViewport

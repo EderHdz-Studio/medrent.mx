@@ -208,6 +208,18 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                     ))}
                 </div>
             )}
+
+            {/* Especialidades de cada brand */}
+            {brand.brandEspecialties && brand.brandEspecialties.length > 0 && (
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-[16px]">
+                    {brand.brandEspecialties.map((specialty) => (
+                        <div class="w-full">
+                            <h4 class="font-bold text-[var(--color-text-default)]">{specialty.name}</h4>
+                            <p class="text-[var(--color-green-dark)]"> {specialty.description}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
         </section>
     ))}
 </Layout>

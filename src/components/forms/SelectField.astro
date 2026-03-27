@@ -11,50 +11,125 @@ const otherId = `${name}-other`;
     {label}*
   </label>
 
-  <select
-    id={selectId}
-    name={name}
-    required
-    aria-describedby={helperTextId}
-    class="w-full border border-[var(--color-green-dark)] border-2 appearance-none rounded-[4px] px-4 py-3 text-[#212121] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] transition-colors duration-300 pr-10 cursor-pointer"
+  <!-- Botón que abre el dropdown -->
+  <button
+    type="button"
+    class="select-btn w-full border-2 border-[var(--color-green-dark)] rounded-[4px] px-4 py-3 text-left bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300 flex justify-between items-center"
   >
-    <option id={helperTextId} value="" selected disabled>¿Cuál es tu especialidad médica?</option>
-    {options.map(option => (
-      <option value={option}>{option}</option>
-    ))}
-  </select>
+    <span class="select-selected text-[#A0A0A0]">¿Cuál es tu especialidad médica?</span>
+    <svg class="w-4 h-4 text-[#5A3A36]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  <!-- Dropdown oculto -->
+  <div class="select-dropdown absolute left-0 w-full hidden z-[10000]" style="top:100%;">
+    <div class="border-2 border-[var(--color-green-dark)] border-t-0 rounded-b-[4px] bg-white shadow-lg max-h-[128px] overflow-y-auto" style="overscroll-behavior: contain;">
+      {options.map(option => (
+        <div 
+          class="select-option px-4 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer transition-colors text-[#212121]" 
+          data-value={option}
+        >
+          {option}
+        </div>
+      ))}
+    </div>
+  </div>
+  
+  <!-- Input oculto para enviar el valor -->
+  <input type="hidden" name={name} class="select-input" value="" required />
 </div>
 
-
-<div class="relative form-field hidden"  id="otraEspecialidad">
-  <label for={otherId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
+<!-- Campo "Otra especialidad" -->
+<div class="relative form-field hidden" id="otraEspecialidad">
+  <label class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs">
     ¿Otra especialidad? Escribe aquí
   </label>
-
   <input
     id={otherId}
     name="otras_especialidades"
     type="text"
     placeholder="Escribe aquí tu especialidad"
-    class="w-full border border-[var(--color-green-dark)] border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+    class="w-full border-2 border-[var(--color-green-dark)] rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
   />
 </div>
 
 <script>
-  const select = document.querySelector('.form-select select');
-  const otraEspecialidad = document.querySelector('#otraEspecialidad');
-  const otraEspecialidadInput = otraEspecialidad.querySelector('input');
-
-  select.addEventListener('change', () => {
-    if (select.value === 'Otra') {
-      otraEspecialidad.classList.remove('hidden');
-      otraEspecialidadInput.required = true;
-    } else {
-      otraEspecialidad.classList.add('hidden');
-      otraEspecialidadInput.required = false;
-      otraEspecialidadInput.value = '';
-      // Disparar un evento de input para que formValidator.js re-evalúe
-      otraEspecialidadInput.dispatchEvent(new Event('input'));
+  // Para cada componente, buscar dentro de su contexto
+  document.querySelectorAll('.form-select').forEach(container => {
+    const btn = container.querySelector('.select-btn');
+    const dropdown = container.querySelector('.select-dropdown');
+    const selectedSpan = btn?.querySelector('.select-selected');
+    const input = container.querySelector('.select-input');
+    const scrollableDiv = dropdown?.querySelector('.overflow-y-auto');
+    const otraEspecialidad = document.querySelector('#otraEspecialidad');
+    const otraEspecialidadInput = otraEspecialidad?.querySelector('input');
+    
+    if (!btn || !dropdown) return;
+    
+    // Abrir/cerrar dropdown
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+    
+    // Manejar scroll dentro del dropdown (para Lenis)
+    if (scrollableDiv) {
+      scrollableDiv.addEventListener('wheel', (e) => {
+        e.stopPropagation();
+        scrollableDiv.scrollTop += e.deltaY;
+      });
     }
+    
+    // Seleccionar opción
+    container.querySelectorAll('.select-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const value = option.dataset.value;
+        const optionText = option.textContent;
+        
+        // Cambiar texto y color del span seleccionado
+        selectedSpan.textContent = optionText;
+        selectedSpan.classList.remove('text-[#A0A0A0]');
+        selectedSpan.classList.add('text-[var(--color-green-dark)]');
+        
+        // Actualizar input oculto
+        input.value = value;
+        dropdown.classList.add('hidden');
+        
+        // Disparar evento change para validación
+        input.dispatchEvent(new Event('change'));
+        
+        // Aplicar estilo de validación al botón
+        if (input.value !== '') {
+          btn.classList.add('bg-[var(--color-secondary-light)]');
+        }
+        
+        // Manejar "Otra especialidad"
+        if (value === 'Otra') {
+          if (otraEspecialidad) {
+            otraEspecialidad.classList.remove('hidden');
+            if (otraEspecialidadInput) {
+              otraEspecialidadInput.required = true;
+            }
+          }
+        } else {
+          if (otraEspecialidad) {
+            otraEspecialidad.classList.add('hidden');
+            if (otraEspecialidadInput) {
+              otraEspecialidadInput.required = false;
+              otraEspecialidadInput.value = '';
+              otraEspecialidadInput.dispatchEvent(new Event('input'));
+            }
+          }
+        }
+      });
+    });
+    
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
   });
 </script>

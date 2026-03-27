@@ -1,0 +1,202 @@
+---
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+
+// Configurar dayjs en español
+dayjs.locale('es');
+
+const { dataEventos } = Astro.props;
+
+// Obtener solo los primeros 3 eventos para el home (opcional)
+const eventosHome = dataEventos?.events?.slice(0, 3) || [];
+---
+
+<section class="w-full pt-4 pb-4 px-4 gap-4 md:pt-6 md:pb-6 md:px-6 md:gap-6 lg:pt-8 lg:pb-8 lg:px-8 lg:gap-6 xl:pt-8 xl:pb-8 xl:px-8 xl:gap-6 2xl:pt-8 2xl:pb-8 2xl:px-8 2xl:gap-6">
+  <!-- Encabezado -->
+    <div class="max-w-7xl mx-auto mb-2 sm:mb-4 text-start">
+        <!-- Fila flexible para alinear título y botón -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <!-- Columna izquierda: textos -->
+            <div class="flex-1">
+                <h3 class="text-[var(--color-accent)] uppercase font-bold text-[14px] md:text-[14px] mb-2">Eventos</h3>
+                <h2 class="font-normal text-[28px] md:text-[28px] text-[#261819]">
+                    Nuestra tecnología, presente en los congresos líderes
+                </h2>
+            </div>
+            
+            <!-- Columna derecha: botón -->
+            <div class="flex-shrink-0  w-full sm:w-auto">
+                <a 
+                    href="/eventos"
+                    class="flex items-center justify-center gap-2 rounded-[4px] border-2 border-[#006764] bg-white px-4 py-3 font-lato text-[16px] font-bold leading-6 tracking-[0.5px] text-[#006764] hover:bg-[#006764] hover:text-white transition-colors duration-300"
+                >
+                    Ver todos los eventos
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="currentColor"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+  {eventosHome.length > 0 ? (
+    <!-- Slider -->
+    <div class="max-w-7xl mx-auto">
+      <div id="eventos-slider" class="relative overflow-hidden">
+        <div id="slides" class="relative transition-opacity duration-700">
+          
+          {eventosHome.map((evento: any, index: number) => {
+            // Formatear fechas
+            const fechaInicio = dayjs(evento.startDate);
+            const fechaFin = dayjs(evento.endDate);
+            
+            let fechaTexto = '';
+            if (fechaInicio.isSame(fechaFin, 'day')) {
+              fechaTexto = fechaInicio.format('D [de] MMMM YYYY');
+            } else if (fechaInicio.isSame(fechaFin, 'month')) {
+              fechaTexto = `${fechaInicio.format('D')} y ${fechaFin.format('D [de] MMMM YYYY')}`;
+            } else {
+              fechaTexto = `${fechaInicio.format('D [de] MMMM YYYY')} al ${fechaFin.format('D [de] MMMM YYYY')}`;
+            }
+            
+            return (
+              <div class={`flex flex-col md:flex-row items-center gap-2 md:gap-8 fade-slide ${index === 0 ? 'active-slide' : ''}`}>
+                <div class="w-full md:w-1/2">
+                  <img 
+                    src={evento.image?.url || '/images/eventos/default.webp'} 
+                    alt={evento.title || 'Evento'} 
+                    class="rounded-[16px] w-full h-auto max-h-[600px] object-cover" 
+                  />
+                </div>
+                <div class="w-full md:w-1/2 text-[#212121] p-0 lg:px-16 flex flex-col gap-3">
+                  <h4 class="text-[var(--color-accent)] font-bold uppercase text-sm mb-1">{evento.eventType || ''}</h4>
+                  <h3 class="text-[28px] lg:text-[36px] font-bold mb-1 leading-10">{evento.title || ''}</h3>
+                  <div class="flex items-center gap-2 mb-2 font-[16px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21C11.656 21 11.336 20.823 11.153 20.532L7.19504 14.227C6.98904 13.9 6.79204 13.565 6.61604 13.222C5.34904 10.739 4.01504 7.08802 7.04804 4.05302C8.35804 2.74202 10.116 2.02002 12 2.02002C13.883 2.02002 15.642 2.74202 16.952 4.05202C20.002 7.10402 18.638 10.788 17.347 13.293C17.195 13.589 17.024 13.879 16.847 14.162L12.847 20.532C12.664 20.823 12.344 21 12 21ZM12 4.02002C10.65 4.02002 9.39404 4.53302 8.46204 5.46602C6.81104 7.11902 6.79104 9.16702 8.39704 12.312C8.54504 12.603 8.71404 12.886 8.88804 13.163L12 18.12L15.152 13.099C15.298 12.865 15.442 12.624 15.568 12.377C17.209 9.19502 17.199 7.12802 15.538 5.46602C14.605 4.53302 13.35 4.02002 12 4.02002Z" fill="#171D1C"/>
+                        <path d="M12 12C10.346 12 9 10.654 9 9C9 7.346 10.346 6 12 6C13.654 6 15 7.346 15 9C15 10.654 13.654 12 12 12ZM12 8C11.449 8 11 8.449 11 9C11 9.551 11.449 10 12 10C12.551 10 13 9.551 13 9C13 8.449 12.551 8 12 8Z" fill="#171D1C"/>
+                        <path d="M17 19H7V21H17V19Z" fill="#171D1C"/>
+                    </svg>
+                    <span class="text-[var(--color-text-default)]">{evento.locationLabel || 'Ubicación por confirmar'}</span>
+                  </div>
+                  <div class="flex items-center gap-2 mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M17 4V2H15V4H9V2H7V4H3V21H21V4H17ZM7 6V8H9V6H15V8H17V6H19V10H5V6H7ZM5 19V12H19V19H5Z" fill="#171D1C"/>
+                    </svg>
+                    <span class="text-[var(--color-text-default)]">{fechaTexto}</span>
+                  </div>
+
+                  <!-- Botones en misma fila para mobile -->
+                  <div class="flex flex-row items-center justify-around w-full mt-0 md:flex-col md:items-start justify-start gap-4 md:mt-4">
+                    <!-- Botón Saber más -->
+                    <a href={evento.locationUrlMaps || '/eventos'} class="w-full sm:w-auto bg-[var(--color-primary)] text-white text-sm rounded font-bold flex justify-center sm:justify-start items-center sm:items-start gap-1 [width:stretch]" style="padding:12px 16px;">
+                      Saber más
+                      <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.44 5.465C13.3638 5.28174 13.2182 5.13611 13.035 5.06C12.9448 5.02157 12.848 5.00118 12.75 5H5.24995C5.05104 5 4.86028 5.07902 4.71962 5.21967C4.57897 5.36032 4.49995 5.55109 4.49995 5.75C4.49995 5.94891 4.57897 6.13968 4.71962 6.28033C4.86028 6.42098 5.05104 6.5 5.24995 6.5H10.9425L4.71745 12.7175C4.64716 12.7872 4.59136 12.8702 4.55329 12.9616C4.51521 13.053 4.49561 13.151 4.49561 13.25C4.49561 13.349 4.51521 13.447 4.55329 13.5384C4.59136 13.6298 4.64716 13.7128 4.71745 13.7825C4.78718 13.8528 4.87013 13.9086 4.96152 13.9467C5.05292 13.9847 5.15095 14.0043 5.24995 14.0043C5.34896 14.0043 5.44699 13.9847 5.53839 13.9467C5.62978 13.9086 5.71273 13.8528 5.78245 13.7825L12 7.5575V13.25C12 13.4489 12.079 13.6397 12.2196 13.7803C12.3603 13.921 12.551 14 12.75 14C12.9489 14 13.1396 13.921 13.2803 13.7803C13.4209 13.6397 13.5 13.4489 13.5 13.25V5.75C13.4988 5.65199 13.4784 5.55517 13.44 5.465Z" fill="white"/>
+                      </svg>
+                    </a>
+
+                    {/* Controles de flechitas (solo visibles en mobile) */}
+                    {eventosHome.length > 1 && (
+                      <div class="flex md:hidden items-center justify-center gap-4 rounded-full border-2 border-[#006764] bg-white px-4 py-3">
+                        <button aria-label="Anterior" class="prevBtn group flex items-center justify-center cursor-pointer">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
+                          </svg>
+                        </button>
+                        <label class="eventos-label text-black text-center text-[16px] font-light tracking-[2.5px]">1/{eventosHome.length}</label>
+                        <button aria-label="Siguiente" class="nextBtn group flex items-center justify-center cursor-pointer">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Controles solo en desktop/tablet */}
+                  {eventosHome.length > 1 && (
+                    <div class="hidden md:flex items-center gap-[24px] mt-8">
+                      <div class="botones-glider flex justify-start gap-4 w-full md:w-auto items-center rounded-full border-2 border-[#006764] bg-white" style="padding: 12px 16px;">
+                        <button aria-label="Anterior" class="prevBtn group flex items-center justify-center w-[56px] h-[32px] cursor-pointer">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
+                          </svg>
+                        </button>
+                        <label class="eventos-label text-black text-center  text-[16px] font-light tracking-[2.5px]">1/{eventosHome.length}</label>
+                        <button aria-label="Siguiente" class="nextBtn group flex items-center justify-center w-[56px] h-[32px] cursor-pointer">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="max-w-7xl mx-auto text-center py-12">
+      <p class="text-gray-500">Próximamente nuevos eventos</p>
+    </div>
+  )}
+</section>
+
+<style>
+  .fade-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 0;
+  }
+
+  .fade-slide.active-slide {
+    opacity: 1;
+    z-index: 10;
+    position: relative;
+  }
+</style>
+
+<script is:inline>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.fade-slide');
+  const prevBtns = document.querySelectorAll('.prevBtn');
+  const nextBtns = document.querySelectorAll('.nextBtn');
+  const eventosLabels = document.querySelectorAll('.eventos-label');
+
+  function updateLabel() {
+    eventosLabels.forEach(label => {
+      label.textContent = `${currentSlide + 1}/${slides.length}`;
+    });
+  }
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active-slide', i === index);
+    });
+    updateLabel();
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  if (slides.length > 0) {
+    prevBtns.forEach(btn => btn.addEventListener('click', prevSlide));
+    nextBtns.forEach(btn => btn.addEventListener('click', nextSlide));
+    showSlide(currentSlide);
+  }
+</script>

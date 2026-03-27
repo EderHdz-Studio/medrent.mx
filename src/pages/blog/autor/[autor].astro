@@ -177,27 +177,29 @@ const postlistId = `${canonicalUrl}#postlist`;
         <Breadcrumb textColor="text-dark" items={breadcrumbItems} />
       </div>
 
+  <section class="heroAutor max-w-[1280px] w-full flex flex-col items-center justify-center bg-[var(--color-secondary-light)] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
+    <div class="containerHero w-full flex flex-col md:flex-row items-center gap-6 pt-16 px-4 sm:px-6 md:px-8 pb-4 md:pb-6 lg:py-16 lg:px-8">
       <style>
         .heroAutor { position: relative; }
         .breadcrumb-fixed-wrapper { pointer-events: auto; }
       </style>
+
       {/* Columna texto */}
       <div class="w-full md:w-1/2 flex flex-col items-start text-left md:px-8 md:py-6">
         <span class="text-sm font-medium text-[var(--color-primary)] tracking-widest mb-2 uppercase font-lato">{author?.speciality || ''}</span>
-        <h1 class="text-[#261819] font-lato text-[32px] font-light">{author?.fullName || 'Autor Desconocido'}</h1>
-        <p class="text-[#261819] font-lato text-[16px] font-light">
+        <h1 class="text-[#261819] font-lato text-[32px] font-light">{authorName}</h1>
+        <div class="text-[#261819] font-lato text-[16px] font-light">
           <BlocksRenderer content={author?.longDescription || []} />
-        </p>
+        </div>
       </div>
       {/* Columna imagen */}
       <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0">
-        <img src={author?.heroImage?.url || ''} alt="Team Medrent" class=" w-full rounded-xl shadow-md" loading="lazy" />
+        <img src={author?.heroImage?.url || ''} alt={authorName} class="w-full rounded-xl shadow-md" loading="lazy" />
       </div>
     </div>
   </section>
 
-
-  <main class="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-6 xl:px-8 xl:py-6 2xl:px-8 2xl:py-6 ">
+  <main class="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-6 xl:px-8 xl:py-6 2xl:px-8 2xl:py-6">
     {author.articles.length > 0 ? (
       <section>
         <h2 class="mb-4 mt-4 font-lato text-[28px] font-light text-[#261819] md:mb-6 md:mt-0">
@@ -219,8 +221,8 @@ const postlistId = `${canonicalUrl}#postlist`;
           <svg xmlns="http://www.w3.org/2000/svg" width="59" height="59" viewBox="0 0 59 59" fill="none" class="mb-4">
             <path d="M17.2085 19.6667C16.5565 19.6667 15.9312 19.9258 15.4702 20.3868C15.0091 20.8478 14.7501 21.4731 14.7501 22.1251C14.7501 22.7771 15.0091 23.4024 15.4702 23.8634C15.9312 24.3244 16.5565 24.5834 17.2085 24.5834H19.6668C20.3188 24.5834 20.9441 24.3244 21.4051 23.8634C21.8661 23.4024 22.1252 22.7771 22.1252 22.1251C22.1252 21.4731 21.8661 20.8478 21.4051 20.3868C20.9441 19.9258 20.3188 19.6667 19.6668 19.6667H17.2085ZM29.5002 49.1669H12.2918C11.6398 49.1669 11.0145 48.9079 10.5535 48.4468C10.0924 47.9858 9.83344 47.3605 9.83344 46.7085V12.2917C9.83344 11.6397 10.0924 11.0144 10.5535 10.5534C11.0145 10.0924 11.6398 9.83337 12.2918 9.83337H24.5835V17.2084C24.5835 19.1644 25.3605 21.0403 26.7436 22.4233C28.1267 23.8064 30.0025 24.5834 31.9585 24.5834H39.3336V27.0418C39.3336 27.6938 39.5926 28.3191 40.0536 28.7801C40.5146 29.2411 41.1399 29.5001 41.7919 29.5001C42.4439 29.5001 43.0692 29.2411 43.5302 28.7801C43.9912 28.3191 44.2502 27.6938 44.2502 27.0418V22.1251C44.2502 22.1251 44.2502 22.1251 44.2502 21.9776C44.2246 21.7518 44.1752 21.5293 44.1027 21.3138V21.0926C43.9845 20.8398 43.8269 20.6075 43.6357 20.4043L28.8856 5.65419C28.6824 5.46297 28.45 5.3053 28.1973 5.1871C28.1239 5.17668 28.0494 5.17668 27.976 5.1871L27.1893 4.91669H12.2918C10.3358 4.91669 8.45993 5.6937 7.07684 7.07678C5.69376 8.45987 4.91675 10.3357 4.91675 12.2917V46.7085C4.91675 48.6645 5.69376 50.5404 7.07684 51.9235C8.45993 53.3065 10.3358 54.0836 12.2918 54.0836H29.5002C30.1522 54.0836 30.7775 53.8246 31.2385 53.3635C31.6995 52.9025 31.9585 52.2772 31.9585 51.6252C31.9585 50.9732 31.6995 50.3479 31.2385 49.8869C30.7775 49.4259 30.1522 49.1669 29.5002 49.1669ZM29.5002 13.2996L35.8673 19.6667H31.9585C31.3065 19.6667 30.6812 19.4077 30.2202 18.9467C29.7592 18.4857 29.5002 17.8604 29.5002 17.2084V13.2996ZM51.2074 37.2931C49.3326 35.5047 46.8412 34.5069 44.2502 34.5069C41.6593 34.5069 39.1679 35.5047 37.2931 37.2931C35.919 38.6687 34.9836 40.4209 34.605 42.3281C34.2265 44.2353 34.4219 46.2119 35.1664 48.008C35.911 49.8042 37.1714 51.3393 38.7883 52.4194C40.4051 53.4994 42.3059 54.0758 44.2502 54.0758C46.1946 54.0758 48.0954 53.4994 49.7122 52.4194C51.3291 51.3393 52.5895 49.8042 53.3341 48.008C54.0786 46.2119 54.274 44.2353 53.8955 42.3281C53.5169 40.4209 52.5815 38.6687 51.2074 37.2931ZM39.3336 44.2502C39.3336 42.9462 39.8516 41.6956 40.7736 40.7736C41.6957 39.8515 42.9463 39.3335 44.2502 39.3335C44.6737 39.339 45.0948 39.3968 45.504 39.5056L39.5056 45.5039C39.3968 45.0947 39.339 44.6736 39.3336 44.2502ZM47.7165 47.7164C47.1071 48.3101 46.354 48.7354 45.531 48.9508C44.708 49.1663 43.8432 49.1645 43.0211 48.9456L48.9948 42.9964C49.1037 43.4057 49.1615 43.8268 49.1669 44.2502C49.1614 45.5521 48.6398 46.7986 47.7165 47.7164ZM27.0418 44.2502C27.6938 44.2502 28.3191 43.9912 28.7802 43.5302C29.2412 43.0691 29.5002 42.4438 29.5002 41.7918C29.5002 41.1398 29.2412 40.5146 28.7802 40.0535C28.3191 39.5925 27.6938 39.3335 27.0418 39.3335H17.2085C16.5565 39.3335 15.9312 39.5925 15.4702 40.0535C15.0091 40.5146 14.7501 41.1398 14.7501 41.7918C14.7501 42.4438 15.0091 43.0691 15.4702 43.5302C15.9312 43.9912 16.5565 44.2502 17.2085 44.2502H27.0418ZM31.9585 29.5001H17.2085C16.5565 29.5001 15.9312 29.7591 15.4702 30.2202C15.0091 30.6812 14.7501 31.3065 14.7501 31.9585C14.7501 32.6105 15.0091 33.2357 15.4702 33.6968C15.9312 34.1578 16.5565 34.4168 17.2085 34.4168H31.9585C32.6105 34.4168 33.2358 34.1578 33.6968 33.6968C34.1579 33.2357 34.4169 32.6105 34.4169 31.9585C34.4169 31.3065 34.1579 30.6812 33.6968 30.2202C33.2358 29.7591 32.6105 29.5001 31.9585 29.5001Z" fill="var(--color-primary)"/>
           </svg>
-          <div class="text-[#261819] text-center font-lato text-[24px] font-bold leading-8 mb-2">Aún no hay artículos publicados :</div>
-          <div class="text-[#261819] text-center font-lato text-[14px] font-normal leading-5 tracking-[0.25px] ">
+          <div class="text-[#261819] text-center font-lato text-[24px] font-bold leading-8 mb-2">Aún no hay artículos publicados :(</div>
+          <div class="text-[#261819] text-center font-lato text-[14px] font-normal leading-5 tracking-[0.25px]">
             Este autor forma parte del ecosistema Medrent y pronto compartirá contenido especializado.<br/>
             Te invitamos a explorar otros artículos o conocer a nuestros expertos.
           </div>
@@ -228,5 +230,4 @@ const postlistId = `${canonicalUrl}#postlist`;
       </section>
     )}
   </main>
-
 </Layout>

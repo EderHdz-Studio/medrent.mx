@@ -69,6 +69,19 @@ try {
 }
 
 
+let dataEventos = null;
+try {
+    const response = await strapiFetch("/events-page?populate[events][populate]=image&populate=heroImage");
+    dataEventos = response.data;
+} catch (error) {
+    console.error('Error fetching events:', error);
+    dataEventos = {
+        events: [],
+        title: 'Eventos médicos',
+        description: 'Mantente actualizado con los últimos avances...'
+    };
+}
+
 const dataHome = {}
 const marcas = HOME_ESPECIALIDADES;
 
