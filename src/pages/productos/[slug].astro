@@ -8,6 +8,7 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ProductSlider from '@components/sections/ProductSlider.astro';
 import FichaTecnica from '@components/product/TechnicalSheet.astro';
+import ShareButtons from '@components/product/ShareButtons.astro';
 import GalleryPopup from '@components/product/GalleryPopUp.astro';
 import PopUpSolicitarCotizacion from '@components/popup/popUpSolicitarCotizacion.astro';
 import ButtonPDPSticky from "@components/buttonPDPSticky.astro";
@@ -200,100 +201,19 @@ const pdpJsonLd = {
                 })}
               </ul>
             </div>
-            <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-30 pointer-events-none">
-            <span
-              id="mobile-gallery-counter"
-              class="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-text-default)] bg-[#F3FFFD] px-4 py-1 text-center text-[var(--color-text-default)] text-[16px] font-normal leading-6 tracking-[0.5px]"
-            >
-              1 / {product?.gallery?.length ?? 0}
-            </span>
-            </div>
           </div>
 
-
-          <div id="mediaButtonsMobile" class="flex flex-row items-center gap-2 left-0 bottom-0 w-full z-20 px-2 py-2 justify-between bg-transparent">
+          <div id="mediaButtonsMobile" class="flex flex-row items-center gap-2 left-0 bottom-0 w-full z-20 px-2 py-2 justify-between bg-transparent relative">
             <!-- Contenedor btns share -->
-            <div class="relative flex items-center">
+            <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
 
-                <!-- BOTÓN COMPARTIR -->
-                <button
-                    id="share-toggle"
-                    class="w-10 h-10 flex items-center justify-center bg-[#261819] transition-all duration-300 rounded-[4px]"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M18 22C17.1667 22 16.4583 21.7083 15.875 21.125C15.2917 20.5417 15 19.8333 15 19C15 18.8833 15.0083 18.7625 15.025 18.6375C15.0417 18.5125 15.0667 18.4 15.1 18.3L8.05 14.2C7.76667 14.45 7.45 14.6458 7.1 14.7875C6.75 14.9292 6.38333 15 6 15C5.16667 15 4.45833 14.7083 3.875 14.125C3.29167 13.5417 3 12.8333 3 12C3 11.1667 3.29167 10.4583 3.875 9.875C4.45833 9.29167 5.16667 9 6 9C6.38333 9 6.75 9.07083 7.1 9.2125C7.45 9.35417 7.76667 9.55 8.05 9.8L15.1 5.7C15.0667 5.6 15.0417 5.4875 15.025 5.3625C15.0083 5.2375 15 5.11667 15 5C15 4.16667 15.2917 3.45833 15.875 2.875C16.4583 2.29167 17.1667 2 18 2C18.8333 2 19.5417 2.29167 20.125 2.875C20.7083 3.45833 21 4.16667 21 5C21 5.83333 20.7083 6.54167 20.125 7.125C19.5417 7.70833 18.8333 8 18 8C17.6167 8 17.25 7.92917 16.9 7.7875C16.55 7.64583 16.2333 7.45 15.95 7.2L8.9 11.3C8.93333 11.4 8.95833 11.5125 8.975 11.6375C8.99167 11.7625 9 11.8833 9 12C9 12.1167 8.99167 12.2375 8.975 12.3625C8.95833 12.4875 8.93333 12.6 8.9 12.7L15.95 16.8C16.2333 16.55 16.55 16.3542 16.9 16.2125C17.25 16.0708 17.6167 16 18 16C18.8333 16 19.5417 16.2917 20.125 16.875C20.7083 17.4583 21 18.1667 21 19C21 19.8333 20.7083 20.5417 20.125 21.125C19.5417 21.7083 18.8333 22 18 22ZM18 6C18.2833 6 18.5208 5.90417 18.7125 5.7125C18.9042 5.52083 19 5.28333 19 5C19 4.71667 18.9042 4.47917 18.7125 4.2875C18.5208 4.09583 18.2833 4 18 4C17.7167 4 17.4792 4.09583 17.2875 4.2875C17.0958 4.47917 17 4.71667 17 5C17 5.28333 17.0958 5.52083 17.2875 5.7125C17.4792 5.90417 17.7167 6 18 6ZM6 13C6.28333 13 6.52083 12.9042 6.7125 12.7125C6.90417 12.5208 7 12.2833 7 12C7 11.7167 6.90417 11.4792 6.7125 11.2875C6.52083 11.0958 6.28333 11 6 11C5.71667 11 5.47917 11.0958 5.2875 11.2875C5.09583 11.4792 5 11.7167 5 12C5 12.2833 5.09583 12.5208 5.2875 12.7125C5.47917 12.9042 5.71667 13 6 13ZM18 20C18.2833 20 18.5208 19.9042 18.7125 19.7125C18.9042 19.5208 19 19.2833 19 19C19 18.7167 18.9042 18.4792 18.7125 18.2875C18.5208 18.0958 18.2833 18 18 18C17.7167 18 17.4792 18.0958 17.2875 18.2875C17.0958 18.4792 17 18.7167 17 19C17 19.2833 17.0958 19.5208 17.2875 19.7125C17.4792 19.9042 17.7167 20 18 20Z" fill="white"/>
-                        </svg>
-                </button>
-                                
-                <!-- GRUPO DE SHARE -->
-                <div
-                    id="share-actions"
-                    class="absolute left-0 top-0 flex items-center opacity-0 scale-95 pointer-events-none transition-all duration-300"
-                >
-                                
-                <!-- CERRAR -->
-                    <button
-                        id="share-close" class="w-10 h-10 flex items-center justify-center bg-[var(--color-primary)] rounded-l-[4px] rounded-r-none"
-                    >
-                    <!-- X -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
-                            <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="white"/>
-                        </svg>
-                    </button>
-                                
-                    <!-- COPIAR URL -->
-                    <button
-                        id="copy-url" class="w-10 h-10 flex items-center justify-center bg-[#261819]"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M22.3619 7.30001L20.7719 3.23401L16.6999 1.63901L10.0759 8.26801L11.8859 11.886L8.26694 10.076L1.63794 16.7L3.22794 20.766L7.29994 22.361L13.9289 15.732L12.1189 12.114L15.7379 13.924L22.3619 7.30001ZM6.80594 20.023L4.77194 19.229L3.97194 17.195L8.66194 12.51L10.5479 13.452L11.4899 15.338L6.80594 20.023ZM13.4519 10.548L12.5099 8.66201L17.1939 3.97701L19.2279 4.77101L20.0229 6.80501L15.3379 11.49L13.4519 10.548Z" fill="white"/>
-                        </svg>
-                    </button>
-                                
-                    <!-- WHATSAPP -->
-                    <a
-                      id="share-whatsapp" target="_blank" class="w-10 h-10 flex items-center justify-center bg-[#261819]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M16.6 14C16.4 13.9 15.1 13.3 14.9 13.2C14.7 13.1 14.5 13.1 14.3 13.3C14.1 13.5 13.7 14.1 13.5 14.3C13.4 14.5 13.2 14.5 13 14.4C12.3 14.1 11.6 13.7 11 13.2C10.5 12.7 10 12.1 9.6 11.5C9.5 11.3 9.6 11.1 9.7 11C9.8 10.9 9.9 10.7 10.1 10.6C10.2 10.5 10.3 10.3 10.3 10.2C10.4 10.1 10.4 9.90001 10.3 9.80001C10.2 9.70001 9.7 8.50001 9.5 8.00001C9.4 7.30001 9.2 7.30001 9 7.30001C8.9 7.30001 8.7 7.30001 8.5 7.30001C8.3 7.30001 8 7.50001 7.9 7.60001C7.3 8.20001 7 8.90001 7 9.70001C7.1 10.6 7.4 11.5 8 12.3C9.1 13.9 10.5 15.2 12.2 16C12.7 16.2 13.1 16.4 13.6 16.5C14.1 16.7 14.6 16.7 15.2 16.6C15.9 16.5 16.5 16 16.9 15.4C17.1 15 17.1 14.6 17 14.2C17 14.2 16.8 14.1 16.6 14ZM19.1 4.90001C15.2 1.00001 8.9 1.00001 5 4.90001C1.8 8.10001 1.2 13 3.4 16.9L2 22L7.3 20.6C8.8 21.4 10.4 21.8 12 21.8C17.5 21.8 21.9 17.4 21.9 11.9C22 9.30001 20.9 6.80001 19.1 4.90001ZM16.4 18.9C15.1 19.7 13.6 20.2 12 20.2C10.5 20.2 9.1 19.8 7.8 19.1L7.5 18.9L4.4 19.7L5.2 16.7L5 16.4C2.6 12.4 3.8 7.40001 7.7 4.90001C11.6 2.40001 16.6 3.70001 19 7.50001C21.4 11.4 20.3 16.5 16.4 18.9Z" fill="white"/>
-                        </svg>
-                    </a>
-
-                   <!-- LINKEDIN -->
-                    <a id="share-linkedin" target="_blank" class="w-10 h-10 flex items-center justify-center bg-[#261819]">
-                        <svg xmlns="http://www.w3.org/2000/svg" 
-                            width="24" 
-                            height="24" 
-                            viewBox="0 0 512 509.64"
-                            style="fill: #fff;">
-                            <path d="M204.97 197.54h64.69v33.16h.94c9.01-16.16 31.04-33.16 63.89-33.16 68.31 0 80.94 42.51 80.94 97.81v116.92h-67.46l-.01-104.13c0-23.81-.49-54.45-35.08-54.45-35.12 0-40.51 25.91-40.51 52.72v105.86h-67.4V197.54zm-38.23-65.09c0 19.36-15.72 35.08-35.08 35.08-19.37 0-35.09-15.72-35.09-35.08 0-19.37 15.72-35.08 35.09-35.08 19.36 0 35.08 15.71 35.08 35.08zm-70.17 65.09h70.17v214.73H96.57V197.54z"/>
-                        </svg>
-                    </a>
-
-                    <!-- FACEBOOK -->
-                    <a id="share-facebook" target="_blank" class="w-10 h-10 flex items-center justify-center bg-[#261819]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M15.12 5.32H17V2.14C16.0897 2.04535 15.1751 1.99862 14.26 2C11.54 2 9.67999 3.66 9.67999 6.7V9.32H6.60999V12.88H9.67999V22H13.36V12.88H16.42L16.88 9.32H13.36V7.05C13.36 6 13.64 5.32 15.12 5.32Z" fill="white"/>
-                        </svg>
-                    </a>
-                                
-                    <!-- TWITTER -->
-                    <a
-                      id="share-twitter" target="_blank" class="w-10 h-10 flex items-center justify-center bg-[#261819] rounded-r-[4px] rounded-l-none"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M6 18.0839L11.0927 12.9924L6 18.0839ZM18.1429 5.94107L13.0514 11.0338L18.1429 5.94107ZM13.0514 11.0338L9.37207 5.94107H6L11.0927 12.9924M13.0501 11.0326L18.1429 18.0839H14.7696L11.0927 12.9924" fill="white"/>
-                            <path d="M6 18.0839L11.0927 12.9924M11.0927 12.9924L6 5.94107H9.37207L13.0514 11.0338L18.1429 5.94107M11.0927 12.9924L14.7696 18.0839H18.1429L13.0501 11.0326" stroke="white" stroke-width="1.28571" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>            
-                </div>
-                                
-                <!-- TOOLTIP -->
-                <div
-                    id="copy-tooltip" class="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1 text-xs rounded bg-[#261819] text-white opacity-0 transition-all duration-300"
-                >
-                URL copiada
-                </div>
-                
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-30 pointer-events-none">
+              <span
+                id="mobile-gallery-counter"
+                class="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-text-default)] bg-[#F3FFFD] px-4 py-1 text-center text-[var(--color-text-default)] text-[16px] font-normal leading-6 tracking-[0.5px]"
+              >
+                1 / {product?.gallery?.length ?? 0}
+              </span>
             </div>
 
             <button class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent" title="zoom">
@@ -334,100 +254,7 @@ const pdpJsonLd = {
 
             <div id="mediaButtons" class="flex flex-row items-center gap-2 left-0 bottom-0 w-full z-20 px-2 py-2 justify-between bg-transparent">
               <!-- Contenedor btns share -->
-              <div class="relative flex items-center">
-
-                  <!-- BOTÓN COMPARTIR -->
-                  <button
-                    id="share-toggle"
-                    class="w-10 h-10 flex items-center justify-center bg-[#261819] transition-all duration-300 rounded-[4px]"
-                  >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path d="M18 22C17.1667 22 16.4583 21.7083 15.875 21.125C15.2917 20.5417 15 19.8333 15 19C15 18.8833 15.0083 18.7625 15.025 18.6375C15.0417 18.5125 15.0667 18.4 15.1 18.3L8.05 14.2C7.76667 14.45 7.45 14.6458 7.1 14.7875C6.75 14.9292 6.38333 15 6 15C5.16667 15 4.45833 14.7083 3.875 14.125C3.29167 13.5417 3 12.8333 3 12C3 11.1667 3.29167 10.4583 3.875 9.875C4.45833 9.29167 5.16667 9 6 9C6.38333 9 6.75 9.07083 7.1 9.2125C7.45 9.35417 7.76667 9.55 8.05 9.8L15.1 5.7C15.0667 5.6 15.0417 5.4875 15.025 5.3625C15.0083 5.2375 15 5.11667 15 5C15 4.16667 15.2917 3.45833 15.875 2.875C16.4583 2.29167 17.1667 2 18 2C18.8333 2 19.5417 2.29167 20.125 2.875C20.7083 3.45833 21 4.16667 21 5C21 5.83333 20.7083 6.54167 20.125 7.125C19.5417 7.70833 18.8333 8 18 8C17.6167 8 17.25 7.92917 16.9 7.7875C16.55 7.64583 16.2333 7.45 15.95 7.2L8.9 11.3C8.93333 11.4 8.95833 11.5125 8.975 11.6375C8.99167 11.7625 9 11.8833 9 12C9 12.1167 8.99167 12.2375 8.975 12.3625C8.95833 12.4875 8.93333 12.6 8.9 12.7L15.95 16.8C16.2333 16.55 16.55 16.3542 16.9 16.2125C17.25 16.0708 17.6167 16 18 16C18.8333 16 19.5417 16.2917 20.125 16.875C20.7083 17.4583 21 18.1667 21 19C21 19.8333 20.7083 20.5417 20.125 21.125C19.5417 21.7083 18.8333 22 18 22ZM18 6C18.2833 6 18.5208 5.90417 18.7125 5.7125C18.9042 5.52083 19 5.28333 19 5C19 4.71667 18.9042 4.47917 18.7125 4.2875C18.5208 4.09583 18.2833 4 18 4C17.7167 4 17.4792 4.09583 17.2875 4.2875C17.0958 4.47917 17 4.71667 17 5C17 5.28333 17.0958 5.52083 17.2875 5.7125C17.4792 5.90417 17.7167 6 18 6ZM6 13C6.28333 13 6.52083 12.9042 6.7125 12.7125C6.90417 12.5208 7 12.2833 7 12C7 11.7167 6.90417 11.4792 6.7125 11.2875C6.52083 11.0958 6.28333 11 6 11C5.71667 11 5.47917 11.0958 5.2875 11.2875C5.09583 11.4792 5 11.7167 5 12C5 12.2833 5.09583 12.5208 5.2875 12.7125C5.47917 12.9042 5.71667 13 6 13ZM18 20C18.2833 20 18.5208 19.9042 18.7125 19.7125C18.9042 19.5208 19 19.2833 19 19C19 18.7167 18.9042 18.4792 18.7125 18.2875C18.5208 18.0958 18.2833 18 18 18C17.7167 18 17.4792 18.0958 17.2875 18.2875C17.0958 18.4792 17 18.7167 17 19C17 19.2833 17.0958 19.5208 17.2875 19.7125C17.4792 19.9042 17.7167 20 18 20Z" fill="white"/>
-                      </svg>
-                  </button>
-                
-                  <!-- GRUPO DE SHARE -->
-                  <div
-                    id="share-actions"
-                    class="absolute left-0 top-0 flex items-center opacity-0 scale-95 pointer-events-none transition-all duration-300"
-                  >
-                
-                    <!-- CERRAR -->
-                    <button
-                      id="share-close"
-                      class="w-10 h-10 flex items-center justify-center bg-[var(--color-primary)] rounded-l-[4px] rounded-r-none"
-                    >
-                      <!-- X -->
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
-                        <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="white"/>
-                      </svg>
-                    </button>
-                
-                    <!-- COPIAR URL -->
-                    <button
-                      id="copy-url"
-                      class="w-10 h-10 flex items-center justify-center bg-[#261819]"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path d="M22.3619 7.30001L20.7719 3.23401L16.6999 1.63901L10.0759 8.26801L11.8859 11.886L8.26694 10.076L1.63794 16.7L3.22794 20.766L7.29994 22.361L13.9289 15.732L12.1189 12.114L15.7379 13.924L22.3619 7.30001ZM6.80594 20.023L4.77194 19.229L3.97194 17.195L8.66194 12.51L10.5479 13.452L11.4899 15.338L6.80594 20.023ZM13.4519 10.548L12.5099 8.66201L17.1939 3.97701L19.2279 4.77101L20.0229 6.80501L15.3379 11.49L13.4519 10.548Z" fill="white"/>
-                      </svg>
-                    </button>
-                
-                    <!-- WHATSAPP -->
-                    <a
-                      id="share-whatsapp"
-                      target="_blank"
-                      class="w-10 h-10 flex items-center justify-center bg-[#261819]"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path d="M16.6 14C16.4 13.9 15.1 13.3 14.9 13.2C14.7 13.1 14.5 13.1 14.3 13.3C14.1 13.5 13.7 14.1 13.5 14.3C13.4 14.5 13.2 14.5 13 14.4C12.3 14.1 11.6 13.7 11 13.2C10.5 12.7 10 12.1 9.6 11.5C9.5 11.3 9.6 11.1 9.7 11C9.8 10.9 9.9 10.7 10.1 10.6C10.2 10.5 10.3 10.3 10.3 10.2C10.4 10.1 10.4 9.90001 10.3 9.80001C10.2 9.70001 9.7 8.50001 9.5 8.00001C9.4 7.30001 9.2 7.30001 9 7.30001C8.9 7.30001 8.7 7.30001 8.5 7.30001C8.3 7.30001 8 7.50001 7.9 7.60001C7.3 8.20001 7 8.90001 7 9.70001C7.1 10.6 7.4 11.5 8 12.3C9.1 13.9 10.5 15.2 12.2 16C12.7 16.2 13.1 16.4 13.6 16.5C14.1 16.7 14.6 16.7 15.2 16.6C15.9 16.5 16.5 16 16.9 15.4C17.1 15 17.1 14.6 17 14.2C17 14.2 16.8 14.1 16.6 14ZM19.1 4.90001C15.2 1.00001 8.9 1.00001 5 4.90001C1.8 8.10001 1.2 13 3.4 16.9L2 22L7.3 20.6C8.8 21.4 10.4 21.8 12 21.8C17.5 21.8 21.9 17.4 21.9 11.9C22 9.30001 20.9 6.80001 19.1 4.90001ZM16.4 18.9C15.1 19.7 13.6 20.2 12 20.2C10.5 20.2 9.1 19.8 7.8 19.1L7.5 18.9L4.4 19.7L5.2 16.7L5 16.4C2.6 12.4 3.8 7.40001 7.7 4.90001C11.6 2.40001 16.6 3.70001 19 7.50001C21.4 11.4 20.3 16.5 16.4 18.9Z" fill="white"/>
-                      </svg>
-                    </a>
-
-                  <!-- LINKEDIN -->
-                    <a id="share-linkedin" target="_blank" class="w-10 h-10 flex items-center justify-center bg-[#261819]">
-                      <svg xmlns="http://www.w3.org/2000/svg" 
-                          width="24" 
-                          height="24" 
-                          viewBox="0 0 512 509.64"
-                          style="fill: #fff;">
-                          <path d="M204.97 197.54h64.69v33.16h.94c9.01-16.16 31.04-33.16 63.89-33.16 68.31 0 80.94 42.51 80.94 97.81v116.92h-67.46l-.01-104.13c0-23.81-.49-54.45-35.08-54.45-35.12 0-40.51 25.91-40.51 52.72v105.86h-67.4V197.54zm-38.23-65.09c0 19.36-15.72 35.08-35.08 35.08-19.37 0-35.09-15.72-35.09-35.08 0-19.37 15.72-35.08 35.09-35.08 19.36 0 35.08 15.71 35.08 35.08zm-70.17 65.09h70.17v214.73H96.57V197.54z"/>
-                      </svg>
-                    </a>
-
-                    <!-- FACEBOOK -->
-                    <a
-                      id="share-facebook"
-                      target="_blank"
-                      class="w-10 h-10 flex items-center justify-center bg-[#261819]"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path d="M15.12 5.32H17V2.14C16.0897 2.04535 15.1751 1.99862 14.26 2C11.54 2 9.67999 3.66 9.67999 6.7V9.32H6.60999V12.88H9.67999V22H13.36V12.88H16.42L16.88 9.32H13.36V7.05C13.36 6 13.64 5.32 15.12 5.32Z" fill="white"/>
-                      </svg>
-                    </a>
-                
-                    <!-- TWITTER -->
-                    <a
-                      id="share-twitter"
-                      target="_blank"
-                      class="w-10 h-10 flex items-center justify-center bg-[#261819] rounded-r-[4px] rounded-l-none"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path d="M6 18.0839L11.0927 12.9924L6 18.0839ZM18.1429 5.94107L13.0514 11.0338L18.1429 5.94107ZM13.0514 11.0338L9.37207 5.94107H6L11.0927 12.9924M13.0501 11.0326L18.1429 18.0839H14.7696L11.0927 12.9924" fill="white"/>
-                          <path d="M6 18.0839L11.0927 12.9924M11.0927 12.9924L6 5.94107H9.37207L13.0514 11.0338L18.1429 5.94107M11.0927 12.9924L14.7696 18.0839H18.1429L13.0501 11.0326" stroke="white" stroke-width="1.28571" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </a>
-                
-                  </div>
-                
-                  <!-- TOOLTIP -->
-                  <div
-                    id="copy-tooltip"
-                    class="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1 text-xs rounded bg-[#261819] text-white opacity-0 transition-all duration-300"
-                  >
-                    URL copiada
-                  </div>
-              </div>
+              <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
                 
               <button class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent" title="Buscar">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -452,35 +279,34 @@ const pdpJsonLd = {
                       const isVideo = /\.(mp4|webm|ogg)$/i.test(imagen);
                       // Si es la última visible y hay más, muestra el overlay '+N'
                       if (index === maxThumbnails - 1 && total > maxThumbnails) {
-                        return (
-                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)}>
-                            <button
-                              class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)] opacity-20"
-                              style="min-height:80px; max-height:80px;"
-                              data-thumbnail={imagen}
-                              data-type={isImage ? 'image' : isVideo ? 'video' : 'other'}
-                              data-index={index}
-                              type="button"
-                            >
-                              {isImage ? (
-                                <ImageResponsive
-                                  src={imagen}
-                                  alt={`Miniatura ${index + 1}`}
-                                  class="w-full h-full object-cover"
-                                  loading="lazy"
-                                  decoding="async"
-                                  sizes="80px"
-                                />
-                              ) : isVideo ? (
-                                <video src={imagen} class="w-full h-full object-cover" />
-                              ) : null}
-                              <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white text-lg font-bold rounded">
-                                +{total - maxThumbnails + 1}
-                              </div>
-                            </button>
-                          </div>
-                        );
-                      }
+                      return (
+                        <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)}>
+                          <button
+                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
+                            style="min-height:80px; max-height:80px;"
+                            data-gallery-popup="true"
+                            data-start-index={index}
+                            type="button"
+                          >
+                            {isImage ? (
+                              <ImageResponsive
+                                src={imagen}
+                                alt={`Miniatura ${index + 1}`}
+                                class="w-full h-full object-cover opacity-20"
+                                loading="lazy"
+                                decoding="async"
+                                sizes="80px"
+                              />
+                            ) : isVideo ? (
+                              <video src={imagen} class="w-full h-full object-cover opacity-20" />
+                            ) : null}
+                            <div class="absolute inset-0 bg-opacity-60 flex items-center justify-center text-[var(--color-primary)] text-lg font-bold rounded">
+                              +{total - maxThumbnails + 1}
+                            </div>
+                          </button>
+                        </div>
+                      );
+                    }
                       return (
                         <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)}>
                           <button
@@ -789,7 +615,7 @@ const pdpJsonLd = {
         </section>
       )}
 
-      <!-- btn sticky -->
+      <!-- Btn sticky -->
       <ButtonPDPSticky
         Images={product.gallery}
         product={product.name}
@@ -823,7 +649,7 @@ const pdpJsonLd = {
 
   </main>
 
-
+<!-- BTN Compartir url -->
 <script is:inline>
   // Botón Copiar URL (compartir)
   document.addEventListener('DOMContentLoaded', function() {
@@ -860,286 +686,213 @@ const pdpJsonLd = {
   });
 </script>
 
+<!-- BTN SHARE -->
 <script>
-  document.querySelectorAll('[id="share-toggle"]').forEach((toggleBtn) => {
-    const container = toggleBtn.closest('.relative')
-    if (!container) return
-
-    const closeBtn = container.querySelector('#share-close')
-    const actions = container.querySelector('#share-actions')
-    const tooltip = container.querySelector('#copy-tooltip')
-    const copyBtn = container.querySelector('#copy-url')
-
-    const facebook = container.querySelector('#share-facebook')
-    const whatsapp = container.querySelector('#share-whatsapp')
-    const twitter = container.querySelector('#share-twitter')
-    const linkedin = container.querySelector('#share-linkedin')
-
-    const url = encodeURIComponent(window.location.href)
-
-    if (facebook) {
-      facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`
-    }
-    if (whatsapp) {
-      whatsapp.href = `https://wa.me/?text=${url}`
-    }
-    if (twitter) {
-      twitter.href = `https://twitter.com/intent/tweet?url=${url}`
-    }
-    if (linkedin) {
-      const title = encodeURIComponent(document.title || '');
-      linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`
-    }
-
-    toggleBtn.addEventListener('click', () => {
-      toggleBtn.classList.add('opacity-0', 'scale-90', 'pointer-events-none')
-      actions.classList.remove('opacity-0', 'scale-95', 'pointer-events-none')
-      actions.classList.add('opacity-100', 'scale-100')
-    })
-
-    closeBtn?.addEventListener('click', () => {
-      toggleBtn.classList.remove('opacity-0', 'scale-90', 'pointer-events-none')
-      actions.classList.add('opacity-0', 'scale-95', 'pointer-events-none')
-      actions.classList.remove('opacity-100', 'scale-100')
-    })
-
-    copyBtn?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(window.location.href)
-      tooltip.classList.remove('opacity-0')
-      tooltip.classList.add('opacity-100')
-
-      setTimeout(() => {
-        tooltip.classList.add('opacity-0')
-        tooltip.classList.remove('opacity-100')
-      }, 1500)
-    })
-  })
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.relative').forEach(container => {
+      const toggleBtn = container.querySelector('.share-toggle');
+      const closeBtn = container.querySelector('.share-close');
+      const actions = container.querySelector('.share-actions');
+      const tooltip = container.querySelector('.copy-tooltip');
+      const copyBtn = container.querySelector('.copy-url');
+      
+      // Buscar el contador dentro del mismo contenedor padre
+      const mediaButtons = container.closest('#mediaButtonsMobile, #mediaButtons');
+      const galleryCounter = mediaButtons?.querySelector('#mobile-gallery-counter');
+      
+      if (!toggleBtn) return;
+      
+      const url = encodeURIComponent(window.location.href);
+      
+      const facebook = container.querySelector('.share-facebook');
+      const whatsapp = container.querySelector('.share-whatsapp');
+      const twitter = container.querySelector('.share-twitter');
+      const linkedin = container.querySelector('.share-linkedin');
+      
+      if (facebook) facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+      if (whatsapp) whatsapp.href = `https://wa.me/?text=${url}`;
+      if (twitter) twitter.href = `https://twitter.com/intent/tweet?url=${url}`;
+      if (linkedin) linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`;
+      
+      toggleBtn.addEventListener('click', () => {
+        toggleBtn.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+        actions.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        actions.classList.add('opacity-100', 'scale-100');
+        if (galleryCounter) galleryCounter.style.opacity = '0';
+      });
+      
+      closeBtn?.addEventListener('click', () => {
+        toggleBtn.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+        actions.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        actions.classList.remove('opacity-100', 'scale-100');
+        if (galleryCounter) galleryCounter.style.opacity = '1';
+      });
+      
+      copyBtn?.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(window.location.href);
+        tooltip.classList.remove('opacity-0');
+        tooltip.classList.add('opacity-100');
+        setTimeout(() => {
+          tooltip.classList.add('opacity-0');
+          tooltip.classList.remove('opacity-100');
+        }, 1500);
+      });
+    });
+  });
 </script>
 
+<!-- BTN ZOOM -->
+<script is:inline>
+  let zoomActive = false;
+  let currentZoomBtn = null;
+  let currentMainImage = null;
 
+  function initZoom() {
+    const zoomBtn = document.querySelector('#mediaButtons button[title="Buscar"]');
+    const mainImage = document.getElementById('main-image-desktop');
+    
+    // Remover event listeners anteriores si existen
+    if (currentZoomBtn && currentZoomBtn !== zoomBtn) {
+      currentZoomBtn.removeEventListener('click', handleZoomClick);
+    }
+    if (currentMainImage && currentMainImage !== mainImage) {
+      currentMainImage.removeEventListener('mousemove', handleMouseMove);
+      currentMainImage.removeEventListener('mouseleave', handleMouseLeave);
+    }
+    
+    if (!zoomBtn || !mainImage) return;
+    
+    currentZoomBtn = zoomBtn;
+    currentMainImage = mainImage;
+    
+    // Resetear zoom visual
+    mainImage.style.cursor = 'default';
+    mainImage.style.transform = 'scale(1)';
+    mainImage.style.transformOrigin = 'center';
+    
+    // Agregar event listeners
+    zoomBtn.removeEventListener('click', handleZoomClick);
+    zoomBtn.addEventListener('click', handleZoomClick);
+    
+    mainImage.removeEventListener('mousemove', handleMouseMove);
+    mainImage.addEventListener('mousemove', handleMouseMove);
+    
+    mainImage.removeEventListener('mouseleave', handleMouseLeave);
+    mainImage.addEventListener('mouseleave', handleMouseLeave);
+  }
+  
+  function handleZoomClick(e) {
+    e.preventDefault();
+    zoomActive = !zoomActive;
+    
+    if (zoomActive) {
+      currentMainImage.style.cursor = 'zoom-in';
+      currentMainImage.style.transition = 'transform 0.2s ease';
+    } else {
+      currentMainImage.style.cursor = 'default';
+      currentMainImage.style.transform = 'scale(1)';
+      currentMainImage.style.transformOrigin = 'center';
+    }
+  }
+  
+  function handleMouseMove(e) {
+    if (!zoomActive) return;
+    if (!currentMainImage) return;
+    
+    const rect = currentMainImage.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    currentMainImage.style.transformOrigin = `${x}% ${y}%`;
+    currentMainImage.style.transform = 'scale(2)';
+  }
+  
+  function handleMouseLeave() {
+    if (zoomActive && currentMainImage) {
+      currentMainImage.style.transform = 'scale(1)';
+    }
+  }
+  
+  // Inicializar al cargar la página
+  document.addEventListener('DOMContentLoaded', initZoom);
+  
+  // Exponer función para que sea llamada desde otros scripts cuando cambie la imagen
+  window.reinitZoom = initZoom;
+</script>
+
+<!-- Slider mobile -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Slider mobile
     const slider = document.getElementById('glider-slideimagenesProducto');
     const counter = document.getElementById('mobile-gallery-counter');
-    if (!slider || !counter) return;
+    if (slider && counter) {
+      const slides = slider.querySelectorAll('li');
+      const total = slides.length;
+      if (total) {
+        let rafId = 0, snapTimer = 0;
+        const updateCounter = () => {
+          const width = slider.clientWidth || 1;
+          const index = Math.min(total - 1, Math.max(0, Math.round(slider.scrollLeft / width)));
+          counter.textContent = `${index + 1} / ${total}`;
+          return { width, index };
+        };
+        const onScroll = () => {
+          if (rafId) return;
+          rafId = requestAnimationFrame(() => {
+            const { width, index } = updateCounter();
+            if (snapTimer) clearTimeout(snapTimer);
+            snapTimer = setTimeout(() => slider.scrollTo({ left: index * width, behavior: 'smooth' }), 80);
+            rafId = 0;
+          });
+        };
+        slider.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', updateCounter);
+        updateCounter();
+      }
+    }
 
-    const slides = slider.querySelectorAll('li');
-    const total = slides.length;
-    if (!total) return;
-
-    let rafId = 0;
-    let snapTimer = 0;
-    const updateCounter = () => {
-      const width = slider.clientWidth || 1;
-      const index = Math.min(total - 1, Math.max(0, Math.round(slider.scrollLeft / width)));
-      counter.textContent = `${index + 1} / ${total}`;
-      return { width, index };
-    };
-
-    const onScroll = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        const { width, index } = updateCounter();
-        if (snapTimer) window.clearTimeout(snapTimer);
-        snapTimer = window.setTimeout(() => {
-          slider.scrollTo({ left: index * width, behavior: 'smooth' });
-        }, 80);
-        rafId = 0;
-      });
-    };
-
-    slider.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', updateCounter);
-    updateCounter();
-  });
-
-  // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
-  document.addEventListener('DOMContentLoaded', function() {
-    const thumbnails = document.querySelectorAll('[data-thumbnail]');
+    // Miniaturas desktop - cambiar imagen principal
+    const thumbnails = document.querySelectorAll('[data-thumbnail]:not([data-gallery-popup])');
     const mainMediaContainer = document.getElementById('main-media-container');
-    const thumbnailsScroll = document.getElementById('thumbnails-scroll');
-    const scrollDownBtn = document.getElementById('scroll-down-thumbnails');
-    const scrollUpBtn = document.getElementById('scroll-up-thumbnails');
     
-    thumbnails.forEach(thumbnail => {
-      thumbnail.addEventListener('click', function() {
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', function() {
         const newSrc = this.dataset.thumbnail;
         const type = this.dataset.type;
         if (mainMediaContainer && newSrc) {
-          // Actualizar el contenido del contenedor principal
           if (type === 'image') {
-            mainMediaContainer.innerHTML = `<img src='${newSrc}' alt='' class='w-full h-full object-contain max-h-[600px]' id='main-image' data-type='image' />`;
+            mainMediaContainer.innerHTML = `<img src='${newSrc}' alt='' class='w-full h-full object-contain max-h-[600px] rounded-lg' id='main-image-desktop' data-type='image' />`;
           } else if (type === 'video') {
-            mainMediaContainer.innerHTML = `<video src='${newSrc}' controls class='w-full h-full object-contain max-h-[600px]' id='main-image' data-type='video'></video>`;
+            mainMediaContainer.innerHTML = `<video src='${newSrc}' controls class='w-full h-full object-contain max-h-[600px] rounded-lg' id='main-image-desktop' data-type='video'></video>`;
           }
-          // Actualizar estilos de selección
-          thumbnails.forEach(thumb => {
-            thumb.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]';
+          if (window.reinitZoom) window.reinitZoom();
+          
+          document.querySelectorAll('[data-thumbnail]').forEach(t => {
+            t.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]';
           });
-          // Marcar como seleccionado el thumbnail actual
           this.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border-3 border-[var(--color-primary)]';
         }
       });
     });
 
-    // Scroll hacia abajo en la galería de miniaturas (5 miniaturas)
-    if (scrollDownBtn && thumbnailsScroll) {
-      scrollDownBtn.addEventListener('click', function() {
-        const thumbnailHeight = 80 + 12; // 80px alto + 12px gap
-        thumbnailsScroll.scrollBy({ top: thumbnailHeight * 5, behavior: 'smooth' });
+    // Popup galería
+    const popupBtn = document.querySelector('[data-gallery-popup="true"]');
+    if (popupBtn) {
+      popupBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const container = this.closest('.btnVerPopUpImagenes');
+        const images = container?.dataset.imagenes ? JSON.parse(container.dataset.imagenes) : [];
+        if (window.openGalleryPopup) {
+          window.openGalleryPopup(images, 5);
+        }
       });
     }
-    // Scroll hacia arriba en la galería de miniaturas (5 miniaturas)
-    if (scrollUpBtn && thumbnailsScroll) {
-      scrollUpBtn.addEventListener('click', function() {
-        const thumbnailHeight = 80 + 12;
-        thumbnailsScroll.scrollBy({ top: -thumbnailHeight * 5, behavior: 'smooth' });
-      });
-    }  
   });
-</script>  
-
-<script is:inline>
-    // Efecto de zoom: click en Buscar activa el zoom, mousemove sobre la imagen mueve el zoom, click en la imagen lo desactiva
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     const buscarBtn = document.querySelector('button[title="Buscar"]');
-    //     // Solo aplica zoom en desktop
-    //     const mainImage = () => document.getElementById('main-image-desktop');
-    //     let zoomActive = false;
-    //     if (buscarBtn) {
-    //         buscarBtn.addEventListener('click', function(e) {
-    //             e.preventDefault();
-    //             const img = mainImage();
-    //             if (!img || img.tagName !== 'IMG') return;
-    //             zoomActive = true;
-    //             img.classList.add('zoomed');
-    //         });
-    //     }
-    //     // Mousemove sobre la imagen mueve el zoom
-    //     document.addEventListener('mousemove', function(e) {
-    //         if (!zoomActive) return;
-    //         const img = mainImage();
-    //         if (!img || img.tagName !== 'IMG') return;
-    //         // Solo si el mouse está sobre la imagen
-    //         const rect = img.getBoundingClientRect();
-    //         if (
-    //             e.clientX < rect.left || e.clientX > rect.right ||
-    //             e.clientY < rect.top || e.clientY > rect.bottom
-    //         ) return;
-    //         const x = ((e.clientX - rect.left) / rect.width) * 100;
-    //         const y = ((e.clientY - rect.top) / rect.height) * 100;
-    //         img.style.transformOrigin = `${x}% ${y}%`;
-    //     });
-    //     // Click en la imagen desactiva el zoom
-    //     document.addEventListener('click', function(e) {
-    //         if (!zoomActive) return;
-    //         const img = mainImage();
-    //         if (!img || img.tagName !== 'IMG') return;
-    //         const rect = img.getBoundingClientRect();
-    //         if (
-    //             e.clientX >= rect.left && e.clientX <= rect.right &&
-    //             e.clientY >= rect.top && e.clientY <= rect.bottom
-    //         ) {
-    //             img.classList.remove('zoomed');
-    //             img.style.transformOrigin = '';
-    //             zoomActive = false;
-    //         }
-    //     });
-    // });
-    // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
-    document.addEventListener('DOMContentLoaded', function() {
-        // Miniaturas: cambiar imagen principal al hacer clic y resaltar la seleccionada
-        const thumbnails = document.querySelectorAll('#thumbnails-scroll button[data-index]');
-        // Desktop/Tablet main image
-        let mainImage = document.getElementById('main-image-desktop');
-        // Al cargar, marcar la primera miniatura como seleccionada
-        if (thumbnails.length) {
-            thumbnails.forEach(b => {
-                b.style.borderColor = '';
-                b.style.borderWidth = '';
-            });
-            thumbnails[0].style.borderColor = '#006764';
-            thumbnails[0].style.borderWidth = '3px';
-        }
-        thumbnails.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Quitar borde de seleccion a todas
-                thumbnails.forEach(b => {
-                    b.style.borderColor = '';
-                    b.style.borderWidth = '';
-                });
-                // Agregar borde de seleccion al actual
-                this.style.borderColor = '#006764';
-                this.style.borderWidth = '3px';
-                const type = this.getAttribute('data-type');
-                const src = this.getAttribute('data-thumbnail');
-                // Reemplazar el nodo principal por el tipo correcto (img o video)
-                const container = document.getElementById('main-media-container');
-                if (!container) return;
-                if (type === 'image') {
-                    if (mainImage && mainImage.tagName === 'IMG') {
-                        mainImage.src = src;
-                        mainImage.setAttribute('data-type', 'image');
-                        mainImage.classList.remove('hidden');
-                    } else {
-                        // Si el actual es video, reemplazar por img
-                        const img = document.createElement('img');
-                        img.src = src;
-                        img.alt = '';
-                        img.className = 'w-full h-full object-contain max-h-[600px] rounded-lg';
-                        img.id = 'main-image-desktop';
-                        img.setAttribute('data-type', 'image');
-                        container.innerHTML = '';
-                        container.appendChild(img);
-                        mainImage = img;
-                    }
-                } else if (type === 'video') {
-                    if (mainImage && mainImage.tagName === 'VIDEO') {
-                        mainImage.src = src;
-                        mainImage.setAttribute('data-type', 'video');
-                        mainImage.classList.remove('hidden');
-                    } else {
-                        // Si el actual es img, reemplazar por video
-                        const video = document.createElement('video');
-                        video.src = src;
-                        video.controls = true;
-                        video.className = 'w-full h-full object-contain max-h-[600px] rounded-lg';
-                        video.id = 'main-image-desktop';
-                        video.setAttribute('data-type', 'video');
-                        container.innerHTML = '';
-                        container.appendChild(video);
-                        mainImage = video;
-                    }
-                }
-            });
-        });
-
-
-        const btnsVerPopUpImagenes = document.querySelectorAll('.btnVerPopUpImagenes');
-        btnsVerPopUpImagenes.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                const overlay = document.getElementById('gallery-popup-overlay');
-                if (overlay) overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                // Obtener imágenes desde data-imagenes (array de strings)
-                let images = [];
-                try {
-                  images = this.getAttribute('data-imagenes') ? JSON.parse(this.getAttribute('data-imagenes')) : [];
-                  if (!Array.isArray(images)) images = [];
-
-                  
-                } catch (err) {
-                  images = [];
-                }
-                // Recuperar el índice de la miniatura con +N
-                const index = this.querySelector('button')?.getAttribute('data-index');
-                const startIndex = index ? parseInt(index, 10) : 6;
-                openGalleryPopup(images, startIndex);
-            });
-        });
-    });
 </script>
 
+<!-- Pop up -->
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
     const openBtn = document.getElementById('open-event-popup');
@@ -1154,7 +907,6 @@ const pdpJsonLd = {
   });
 </script>
 
-
 <PopUpSolicitarCotizacion 
   imagesForHero={product.gallery || []}
   productData={product}
@@ -1164,7 +916,6 @@ const pdpJsonLd = {
 </Layout>
 
 <style>
-  /* Efecto de fondo hover */
   .faq-hover-fill-effect {
       position: absolute;
       bottom: 0;
@@ -1210,15 +961,14 @@ const pdpJsonLd = {
     border-top: 8px solid #006191;
   }
 
+  .relative.z-10 {
+      position: relative;
+      z-index: 10;
+  }
+
   @media (min-width: 768px) {
       .group:hover .faq-hover-fill-effect {
           transform: scaleY(1);
       }
-  }
-
-  /* Asegurar que el contenido esté por encima */
-  .relative.z-10 {
-      position: relative;
-      z-index: 10;
   }
 </style>
