@@ -88,6 +88,12 @@ let subcategoriasData: any[] = [];
           id="MarcasDropdown"
           x-data="{ 
             marcasOpen: false,
+            isActive(path) {
+              // Obtener la ruta actual del navegador
+              const currentPath = window.location.pathname;
+              if (path === '/') return currentPath === '/';
+              return currentPath.startsWith(path);
+            }
           }"
           class="relative"
         >

@@ -161,10 +161,6 @@
   color: #9ca3af;
 }
 
-.newsletter-module__input:hover {
-  background-color: var(--color-secondary);
-}
-
 .newsletter-module__input:focus {
   outline: none;
 }
