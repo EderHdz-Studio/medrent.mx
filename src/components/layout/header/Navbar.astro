@@ -1,45 +1,80 @@
 ---
 const { site } = Astro.props;
 import { strapiFetch } from "@server/strapiClient";
+import Search from "@components/layout/header/Search.astro";
+import { getProducts } from "@server/api/products";
+import { getArticles } from "@server/api/articles";
+import { any } from "astro:schema";
 
 const currentPath = Astro.url.pathname;
 
-let marcasNavData: any[] = [];
+// --- CACHE EN MEMORIA POR DEPLOY ---
+let cachedMarcas = globalThis.__cachedMarcasNavData;
+let cachedCategories = globalThis.__cachedCategoriesData;
+let cachedSubcategorias = globalThis.__cachedSubcategoriasData;
+let cachedProducts = globalThis.__cachedProductsData;
+let cachedArticles = globalThis.__cachedArticlesData;
+
+if (!cachedMarcas) {
   try {
     const response = await strapiFetch("/brands?populate=*");
-    //console.log('Respuesta de Strapi:', response);
-    marcasNavData = response?.data || [];
-    
-    //console.log('Marcas', marcasNavData);
+    cachedMarcas = response?.data || [];
+    globalThis.__cachedMarcasNavData = cachedMarcas;
   } catch (error) {
-    //console.error('Error al cargar marcas:', error.message);
-    marcasNavData = [];
+    cachedMarcas = [];
+    globalThis.__cachedMarcasNavData = [];
   }
+}
 
-
-let categoriesData: any[] = [];
+if (!cachedCategories) {
   try {
     const response = await strapiFetch("/categories?populate=*");
-    //console.log('Respuesta de Strapi:', response);
-    categoriesData = response?.data || [];
-    
-    //console.log('especialidades', categoriesData);
+    cachedCategories = response?.data || [];
+    globalThis.__cachedCategoriesData = cachedCategories;
   } catch (error) {
-    //console.error('Error al cargar especialidades:', error.message);
-    categoriesData = [];
+    cachedCategories = [];
+    globalThis.__cachedCategoriesData = [];
   }
+}
 
-const especialidades = categoriesData;
-
-let subcategoriasData: any[] = [];
+if (!cachedSubcategorias) {
   try {
-    const response = await strapiFetch("/subcategories?populate=*");
-    subcategoriasData = response?.data || [];
-    //console.log('subcategorias', subcategoriasData);
+    const response = await strapiFetch("/subcategories?populate[category]=true");
+    cachedSubcategorias = response?.data || [];
+    globalThis.__cachedSubcategoriasData = cachedSubcategorias;
   } catch (error) {
-    //console.error('Error al cargar subcategorías:', error.message);
-    subcategoriasData = [];
+    cachedSubcategorias = [];
+    globalThis.__cachedSubcategoriasData = [];
   }
+}
+
+if (!cachedProducts) {
+  try {
+    cachedProducts = await getProducts();
+    globalThis.__cachedProductsData = cachedProducts;
+  } catch (error) {
+    cachedProducts = [];
+    globalThis.__cachedProductsData = [];
+  }
+}
+
+if (!cachedArticles) {
+  try {
+    cachedArticles = await getArticles();
+    globalThis.__cachedArticlesData = cachedArticles;
+  } catch (error) {
+    cachedArticles = [];
+    globalThis.__cachedArticlesData = [];
+  }
+}
+
+const marcasNavData = cachedMarcas;
+const categoriesData = cachedCategories;
+const subcategoriasData = cachedSubcategorias;
+const productsData = cachedProducts;
+const articlesData = cachedArticles;
+// cachedProducts ya disponible para usar
+const especialidades = categoriesData;
 
   function isActive(linkPath) {
   if (linkPath === '/') return currentPath === '/';
@@ -53,7 +88,7 @@ let subcategoriasData: any[] = [];
   class="bg-white shadow sticky"
   x-data="{ open: false }"
 >
-  <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:px-8 md:py-3 xl:px-10 xl:py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-4 md:px-8 md:py-4 xl:px-10 xl:py-4">
     <!-- Logo -->
     <div>
       <a href="/" aria-label="Ir al inicio de MedRent">
@@ -61,320 +96,334 @@ let subcategoriasData: any[] = [];
       </a>
     </div>
 
-    <!-- Botón hamburguesa móvil -->
-    <button
-      @click="open = !open"
-      class="lg:hidden text-gray-700 focus:outline-none"
-      aria-label="Abrir menú"
-      :aria-expanded="open.toString()"
-      aria-controls="mobileMainMenu"
-    >
-        <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-        <svg x-show="open" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-    </button>
+    <div class="flex flex-row gap-4">
+      <!-- Links desktop -->
+      <div id="LinksNavBar-Desktop" class="hidden lg:flex gap-6 items-center text-[14px]">
+          <a href="/acerca-de-nosotros" class={`text-center ${isActive('/acerca-de-nosotros') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]'}`}>
+            Acerca de nosotros
+          </a>
 
-    <!-- Links desktop -->
-    <div id="LinksNavBar-Desktop" class="hidden lg:flex gap-6 items-center text-[14px]">
-        <a href="/acerca-de-nosotros" class={`text-center ${isActive('/acerca-de-nosotros') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)]'}`}>
-          Acerca de nosotros
-        </a>
-
-        <!-- Dropdown Nuestras marcas -->
-        <div
-          id="MarcasDropdown"
-          x-data="{ 
-            marcasOpen: false,
-            isActive(path) {
-              // Obtener la ruta actual del navegador
-              const currentPath = window.location.pathname;
-              if (path === '/') return currentPath === '/';
-              return currentPath.startsWith(path);
-            }
-          }"
-          class="relative"
-        >
-          <button 
-            @click="marcasOpen = !marcasOpen" 
-            :class="[
-              'flex items-center focus:outline-none cursor-pointer', 
-              marcasOpen || isActive('/nuestras-marcas') ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)] hover:underline'
-            ]"
-          >
-            Nuestras marcas
-            <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': marcasOpen }" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-            </svg>
-          </button>
-
+          <!-- Dropdown Nuestras marcas -->
           <div
-            x-show="marcasOpen"
-            x-cloak
-            class="fixed left-0 right-0 bottom-0 z-[95] bg-black/20"
-            @click="marcasOpen = false"
-            style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px));"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-          ></div>
-
-          <div 
-            x-show="marcasOpen"
-            @click.away="marcasOpen = false"
-            x-transition:enter="transition ease-out duration-220 transform-gpu"
-            x-transition:enter-start="opacity-0 scale-y-95"
-            x-transition:enter-end="opacity-100 scale-y-100"
-            x-transition:leave="transition ease-in duration-160 transform-gpu"
-            x-transition:leave-start="opacity-100 scale-y-100"
-            x-transition:leave-end="opacity-0 scale-y-95"
-            @keydown.escape.window="marcasOpen = false"
-            :class="marcasOpen ? 'fixed left-0 w-full z-[110] origin-top bg-white border border-gray-200 shadow-lg flex justify-between' : 'fixed flex justify-between left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
-            style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px)); max-width:100vw; border-bottom:2px solid var(--color-primary);"
-            id="MarcasDropdownMenu"
+            id="MarcasDropdown"
+            x-data="{ 
+              marcasOpen: false,
+            }"
+            class="relative group cursor-pointer hover:text-[var(--color-primary)] hover:cursor-pointer"
+            style="cursor: pointer!important; height: -webkit-fill-available;"
           >
-
-            <div class="flex w-full bg-white justify-between px-4 marcasContainer" 
-              style="max-width: 1280px; max-height: 310px; overflow-y: auto; margin: 0 auto; padding: 24px 32px; justify-content: space-between; flex-direction: column;"
-              @wheel="$event.stopPropagation(); $el.scrollTop += $event.deltaY"
+            <button 
+              @click="marcasOpen = !marcasOpen"
+              class={`flex items-center font-light focus:outline-none cursor-pointer h-full rounded-[4px] items-center justify-center px-1 ${
+                (currentPath.startsWith('/nuestras-marcas'))
+                  ? 'text-[var(--color-primary)] bg-[#F5FAF9]'
+                  : 'text-gray-700 hover:text-[var(--color-primary)] cursor-pointer'
+              }`}
+              style="display: flex; align-items: center; cursor: pointer!important; padding: 0 4px;  height: -webkit-fill-available;"
             >
-              {marcasNavData.length > 0 ? (
-                marcasNavData.map((marca) => (
-                  <a 
-                    href={`/nuestras-marcas/${marca.slug}`}
-                    class="p-2 cursor-pointer marcaLink group flex items-center justify-between gap-2 rounded transition-colors min-w-[140px] hover:text-[var(--color-primary)] hover:bg-[var(--color-secondary-light)]"
-                    style="margin-bottom: 16px;"
-                  >
-                    <span class="marcaName transition-colors">
-                      {marca.name}
-                    </span>
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="24" height="23" viewBox="0 0 24 23" fill="none" 
-                      class="marcaIcon transition-colors group-hover:text-[var(--color-primary)]"
-                    >
-                      <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" fill="currentColor"></path>
-                    </svg>
-                  </a>
-                ))
-              ) : (
-                <p class="text-center text-gray-500 p-4">Cargando marcas...</p>
-              )}
-
-              {/* Ver más */}
-              <a 
-                href={`/nuestras-marcas`} 
-                class="marcaLink group flex items-center justify-between gap-2 rounded transition-colors p-2 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer"
-              >
-                <span class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">Ver más</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">
-                  <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="currentColor"/>
-                </svg>
-              </a>                  
-            </div>
-          </div>
-        </div>
-
-        <!-- Dropdown Especialidades -->
-        <div x-data="{ 
-          especialidadesOpen: false,
-          activeItem: null,
-          activeAplicacion: null,
-          especialidades: [],
-          setActiveEspecialidad(especialidad) {
-            this.activeItem = especialidad.id;
-            this.activeAplicacion =
-              especialidad.subcategories && especialidad.subcategories.length > 0
-                ? especialidad.subcategories[0].id
-                : null;
-          }
-        }" 
-        x-init="
-          if ($el.dataset.especialidades) {
-            especialidades = JSON.parse($el.dataset.especialidades);
-            activeItem = null;
-            activeAplicacion = null;
-          }
-        "
-        data-especialidades={JSON.stringify(categoriesData)}
-        class="relative">
-          <button 
-              @click="
-                especialidadesOpen = !especialidadesOpen;
-                if (especialidadesOpen) {
-                  activeItem = null;
-                  activeAplicacion = null;
-                }
-              "
-              :class="['flex items-center font-light focus:outline-none cursor-pointer', especialidadesOpen ? 'text-[var(--color-primary)]' : 'text-gray-700 hover:text-[var(--color-primary)]']"
-          >
-              Especialidades
-              <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': especialidadesOpen }" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              Nuestras marcas
+              <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': marcasOpen }" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
               </svg>
-          </button>
-        
-          <!-- Menú especialidades -->
-          <div
-            x-show="especialidadesOpen"
-            x-cloak
-            class="fixed left-0 right-0 bottom-0 z-[95] bg-black/20"
-            @click="especialidadesOpen = false; activeItem = null; activeAplicacion = null"
-            style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px));"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-          ></div>
+            </button>
 
-          <div 
-            x-show="especialidadesOpen"
-            @click.away="especialidadesOpen = false; activeItem = null;"
-            x-transition:enter="transition ease-out duration-220 transform-gpu"
-            x-transition:enter-start="opacity-0 scale-y-95"
-            x-transition:enter-end="opacity-100 scale-y-100"
-            x-transition:leave="transition ease-in duration-160 transform-gpu"
-            x-transition:leave-start="opacity-100 scale-y-100"
-            x-transition:leave-end="opacity-0 scale-y-95"
-            :class="especialidadesOpen ? 'fixed left-0 w-full z-[110] origin-top bg-white border border-gray-200 shadow-lg py-6 px-8' : 'fixed left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
-            style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px)); border-bottom: 2px solid var(--color-primary);"
-            id="EspecialidadesDropdownMenu"
-          >
-            <div class="max-w-7xl mx-auto">
-              <div class="flex gap-12">
-                <!-- Columna izquierda - Especialidades -->
-                <div class="w-1/2">
-                  <div class="space-y-6">
-                    <!-- Lista de especialidades -->
-                    <div>
-                      <ul class="space-y-4">
-                        <template x-for="especialidad in especialidades" :key="especialidad.id">
-                          <li>
-                            <a
-                              :href="`/especialidades/${especialidad.slug}`"
-                              @mouseenter="setActiveEspecialidad(especialidad)"
-                              @focus="setActiveEspecialidad(especialidad)"
-                              @click.prevent="setActiveEspecialidad(especialidad)"
-                              :aria-label="`Ver especialidad ${especialidad.name}`"
-                              :class="[
-                                'transition-colors flex items-center justify-between gap-2 p-2 rounded-lg cursor-pointer',
-                                activeItem === especialidad.id
-                                  ? 'bg-[var(--color-secondary-light)] rounded-lg text-[var(--color-primary)]'
-                                  : 'text-gray-700 hover:text-[var(--color-primary)]'
-                              ]"
-                            >
-                              <div class="flex items-center gap-2">
-                                <img
-                                  :src="especialidad.figure?.url"
-                                  :alt="especialidad.name"
-                                  class="w-6 h-6 object-contain"
-                                >
-                                <span x-text="especialidad.name"></span>
-                              </div>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                  <path d="M8 19V5L19 12L8 19Z" 
-                                  fill="currentColor"/>
-                              </svg>
-                            </a>
-                          </li>
-                        </template>
-                      </ul>
+            <div
+              x-show="marcasOpen"
+              x-cloak
+              class="fixed left-0 right-0 bottom-0 z-[95] bg-black/20"
+              @click="marcasOpen = false"
+              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px));"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition ease-in duration-150"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+            ></div>
 
-                      <!-- Ver más -->
-                      <div>
-                        <a href="/especialidades" 
-                          class="transition-colors font-medium flex items-center gap-2 p-2 rounded-lg"
-                          :class="activeItem === 'vermas' ? 'text-[var(--color-primary)]' : 'text-[#261819] hover:text-[var(--color-primary)]'"
-                          @click="activeItem = 'vermas'"
-                          style="justify-content: space-between; margin-top: 14px;"
-                        >
-                          <span>Ver más</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
-                            <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
-                            fill="currentColor"/>
-                          </svg>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-          
-                  <!-- Columna derecha - subcategories -->
-                  <div class="w-1/2">
-                    <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
-                      <template x-if="activeItem">
-                        <div>
-                          <!-- Lista de aplicaciones clínicas -->
-                          <ul class="space-y-2">
-                            <template x-if="activeItem && activeItem !== 'vermas'"> 
-                              <template x-for="aplicacion in especialidades.find(e => e.id === activeItem)?.subcategories || []" 
-                                        :key="aplicacion.id">
-                                <li>
-                                  <a
-                                    :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}/${aplicacion.slug}`"
-                                    @mouseenter="activeAplicacion = aplicacion.id"
-                                    @focus="activeAplicacion = aplicacion.id"
-                                    @click="activeAplicacion = aplicacion.id"
-                                    :class="[
-                                      'transition-colors flex items-center justify-between gap-2 p-2 rounded-lg cursor-pointer',
-                                      activeAplicacion === aplicacion.id
-                                        ? 'bg-[var(--color-secondary-light)] text-[var(--color-primary)]'
-                                        : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-[var(--color-secondary-light)]'
-                                    ]"
-                                  >
-                                  <div class="font-medium" x-text="aplicacion.name"></div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
-                                      <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
-                                      fill="currentColor"/>
-                                    </svg>
-                                  </a>
-                                </li>
-                              </template>
-                            </template>
-                            
-                            <!-- Mensaje si no hay aplicaciones -->
-                            <template x-if="(!especialidades.find(e => e.id === activeItem)?.subcategories || especialidades.find(e => e.id === activeItem)?.subcategories.length === 0)">
-                              <li class="text-gray-500 italic p-2">
-                                No hay aplicaciones clínicas disponibles para esta especialidad.
-                              </li>
-                            </template>
-                            
-                            <!-- "Ver más" del catálogo -->
-                            <li>
-                              <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}`" 
-                                class="text-[#261819] hover:text-[var(--color-primary)] transition-colors font-medium flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--color-secondary-light)] group"
-                                style="justify-content: space-between; text-decoration: none;">
-                                <span>Ver más</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
-                                  <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
-                                  fill="currentColor"/>
-                                </svg>
-                              </a>
-                            </li>
-                          </ul>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
+            <div 
+              x-show="marcasOpen"
+              @click.away="marcasOpen = false"
+              x-transition:enter="transition ease-out duration-220 transform-gpu"
+              x-transition:enter-start="opacity-0 scale-y-95"
+              x-transition:enter-end="opacity-100 scale-y-100"
+              x-transition:leave="transition ease-in duration-160 transform-gpu"
+              x-transition:leave-start="opacity-100 scale-y-100"
+              x-transition:leave-end="opacity-0 scale-y-95"
+              @keydown.escape.window="marcasOpen = false"
+              :class="marcasOpen ? 'fixed left-0 w-full z-[110] origin-top bg-white border border-gray-200 shadow-lg flex justify-between' : 'fixed flex justify-between left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
+              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px)); max-width:100vw; border-bottom:2px solid var(--color-primary);"
+              id="MarcasDropdownMenu"
+            >
+
+              <div class="flex w-full bg-white justify-between px-4 marcasContainer" 
+                style="max-width: 1280px; max-height: 310px; overflow-y: auto; margin: 0 auto; padding: 24px 32px; justify-content: space-between; flex-direction: column;"
+                @wheel="$event.stopPropagation(); $el.scrollTop += $event.deltaY"
+              >
+                {marcasNavData.length > 0 ? (
+                  marcasNavData.map((marca) => (
+                    <a 
+                      href={`/nuestras-marcas/${marca.slug}`}
+                      class="p-2 cursor-pointer marcaLink group flex items-center justify-between gap-2 rounded transition-colors min-w-[140px] hover:text-[var(--color-primary)] hover:bg-[var(--color-secondary-light)]"
+                      style="margin-bottom: 16px;"
+                    >
+                      <span class="marcaName transition-colors">
+                        {marca.name}
+                      </span>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="23" viewBox="0 0 24 23" fill="none" 
+                        class="marcaIcon transition-colors group-hover:text-[var(--color-primary)]"
+                      >
+                        <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" fill="currentColor"></path>
+                      </svg>
+                    </a>
+                  ))
+                ) : (
+                  <p class="text-center text-gray-500 p-4">Cargando marcas...</p>
+                )}
+
+                {/* Ver más */}
+                <a 
+                  href={`/nuestras-marcas`} 
+                  class="marcaLink group flex items-center justify-between gap-2 rounded transition-colors p-2 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer"
+                >
+                  <span class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">Ver más</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">
+                    <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="currentColor"/>
+                  </svg>
+                </a>                  
               </div>
             </div>
           </div>
-        </div>
-       
-       <a href="/productos" class={`${isActive('/productos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}>Productos </a>
-       <a href="/financiamiento" class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
-       <a href="/eventos" class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
-       <a href="/blog" class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a>
-       <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded">Contáctanos</a>
+
+          <!-- Dropdown Especialidades -->
+          <div x-data="{ 
+            especialidadesOpen: false,
+            activeItem: null,
+            activeAplicacion: null,
+            especialidades: [],
+            setActiveEspecialidad(especialidad) {
+              this.activeItem = especialidad.id;
+              this.activeAplicacion =
+                especialidad.subcategories && especialidad.subcategories.length > 0
+                  ? especialidad.subcategories[0].id
+                  : null;
+            }
+          }" 
+          x-init="
+            if ($el.dataset.especialidades) {
+              especialidades = JSON.parse($el.dataset.especialidades);
+              activeItem = null;
+              activeAplicacion = null;
+            }
+          "
+          data-especialidades={JSON.stringify(categoriesData)}
+          class="relative"
+          style="height: -webkit-fill-available;">
+            <button 
+                @click="
+                  especialidadesOpen = !especialidadesOpen;
+                  if (especialidadesOpen) {
+                    activeItem = null;
+                    activeAplicacion = null;
+                  }
+                "
+                :class="['flex items-center font-light focus:outline-none cursor-pointer h-full rounded-[4px] items-center justify-center px-1', especialidadesOpen ? 'text-[var(--color-primary)] bg-[#F5FAF9]' : 'hover:text-[var(--color-primary)]']"
+              
+            >
+                Especialidades
+                <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': especialidadesOpen }" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+            </button>
+          
+            <!-- Menú especialidades -->
+            <div
+              x-show="especialidadesOpen"
+              x-cloak
+              class="fixed left-0 right-0 bottom-0 z-[95] bg-black/20"
+              @click="especialidadesOpen = false; activeItem = null; activeAplicacion = null"
+              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px));"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition ease-in duration-150"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+            ></div>
+
+            <div 
+              x-show="especialidadesOpen"
+              @click.away="especialidadesOpen = false; activeItem = null;"
+              x-transition:enter="transition ease-out duration-220 transform-gpu"
+              x-transition:enter-start="opacity-0 scale-y-95"
+              x-transition:enter-end="opacity-100 scale-y-100"
+              x-transition:leave="transition ease-in duration-160 transform-gpu"
+              x-transition:leave-start="opacity-100 scale-y-100"
+              x-transition:leave-end="opacity-0 scale-y-95"
+              :class="especialidadesOpen ? 'fixed left-0 w-full z-[110] origin-top bg-white border border-gray-200 shadow-lg py-6 px-8' : 'fixed left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
+              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px)); border-bottom: 2px solid var(--color-primary);"
+              id="EspecialidadesDropdownMenu"
+            >
+              <div class="max-w-7xl mx-auto">
+                <div class="flex gap-12">
+                  <!-- Columna izquierda - Especialidades -->
+                  <div class="w-1/2">
+                    <div class="space-y-6">
+                      <!-- Lista de especialidades -->
+                      <div>
+                        <ul class="space-y-4">
+                          <template x-for="especialidad in especialidades" :key="especialidad.id">
+                            <li>
+                              <a
+                                :href="`/especialidades/${especialidad.slug}`"
+                                @mouseenter="setActiveEspecialidad(especialidad)"
+                                @focus="setActiveEspecialidad(especialidad)"
+                                @click.prevent="setActiveEspecialidad(especialidad)"
+                                :aria-label="`Ver especialidad ${especialidad.name}`"
+                                :class="[
+                                  'transition-colors flex items-center justify-between gap-2 p-2 rounded-lg cursor-pointer',
+                                  activeItem === especialidad.id
+                                    ? 'bg-[var(--color-secondary-light)] rounded-lg text-[var(--color-primary)]'
+                                    : 'text-gray-700 hover:text-[var(--color-primary)]'
+                                ]"
+                              >
+                                <div class="flex items-center gap-2">
+                                  <img
+                                    :src="especialidad.figure?.url"
+                                    :alt="especialidad.name"
+                                    class="w-6 h-6 object-contain"
+                                  >
+                                  <span x-text="especialidad.name"></span>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M8 19V5L19 12L8 19Z" 
+                                    fill="currentColor"/>
+                                </svg>
+                              </a>
+                            </li>
+                          </template>
+                        </ul>
+
+                        <!-- Ver más -->
+                        <div>
+                          <a href="/especialidades" 
+                            class="transition-colors font-medium flex items-center gap-2 p-2 rounded-lg"
+                            :class="activeItem === 'vermas' ? 'text-[var(--color-primary)]' : 'text-[#261819] hover:text-[var(--color-primary)]'"
+                            @click="activeItem = 'vermas'"
+                            style="justify-content: space-between; margin-top: 14px;"
+                          >
+                            <span>Ver más</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                              <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                              fill="currentColor"/>
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            
+                    <!-- Columna derecha - subcategories -->
+                    <div class="w-1/2">
+                      <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
+                        <template x-if="activeItem">
+                          <div>
+                            <!-- Lista de aplicaciones clínicas -->
+                            <ul class="space-y-2">
+                              <template x-if="activeItem && activeItem !== 'vermas'"> 
+                                <template x-for="aplicacion in especialidades.find(e => e.id === activeItem)?.subcategories || []" 
+                                          :key="aplicacion.id">
+                                  <li>
+                                    <a
+                                      :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}/${aplicacion.slug}`"
+                                      @mouseenter="activeAplicacion = aplicacion.id"
+                                      @focus="activeAplicacion = aplicacion.id"
+                                      @click="activeAplicacion = aplicacion.id"
+                                      :class="[
+                                        'transition-colors flex items-center justify-between gap-2 p-2 rounded-lg cursor-pointer',
+                                        activeAplicacion === aplicacion.id
+                                          ? 'bg-[var(--color-secondary-light)] text-[var(--color-primary)]'
+                                          : 'text-gray-700 hover:text-[var(--color-primary)] hover:bg-[var(--color-secondary-light)]'
+                                      ]"
+                                    >
+                                    <div class="font-medium" x-text="aplicacion.name"></div>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                        <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                        fill="currentColor"/>
+                                      </svg>
+                                    </a>
+                                  </li>
+                                </template>
+                              </template>
+                              
+                              <!-- Mensaje si no hay aplicaciones -->
+                              <template x-if="(!especialidades.find(e => e.id === activeItem)?.subcategories || especialidades.find(e => e.id === activeItem)?.subcategories.length === 0)">
+                                <li class="text-gray-500 italic p-2">
+                                  No hay aplicaciones clínicas disponibles para esta especialidad.
+                                </li>
+                              </template>
+                              
+                              <!-- "Ver más" del catálogo -->
+                              <li>
+                                <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}`" 
+                                  class="text-[#261819] hover:text-[var(--color-primary)] transition-colors font-medium flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--color-secondary-light)] group"
+                                  style="justify-content: space-between; text-decoration: none;">
+                                  <span>Ver más</span>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+                                    <path d="M17.9199 6.34417C17.8185 6.11 17.6243 5.92391 17.3799 5.82667C17.2597 5.77756 17.1306 5.75151 16.9999 5.75H6.99994C6.73472 5.75 6.48037 5.85097 6.29283 6.03069C6.1053 6.21041 5.99994 6.45417 5.99994 6.70833C5.99994 6.9625 6.1053 7.20625 6.29283 7.38598C6.48037 7.5657 6.73472 7.66667 6.99994 7.66667H14.5899L6.28994 15.6112C6.19621 15.7003 6.12182 15.8063 6.07105 15.9231C6.02028 16.0399 5.99414 16.1652 5.99414 16.2917C5.99414 16.4182 6.02028 16.5434 6.07105 16.6602C6.12182 16.777 6.19621 16.883 6.28994 16.9721C6.3829 17.0619 6.4935 17.1332 6.61536 17.1819C6.73722 17.2305 6.86793 17.2556 6.99994 17.2556C7.13195 17.2556 7.26266 17.2305 7.38452 17.1819C7.50638 17.1332 7.61698 17.0619 7.70994 16.9721L15.9999 9.01792V16.2917C15.9999 16.5458 16.1053 16.7896 16.2928 16.9693C16.4804 17.149 16.7347 17.25 16.9999 17.25C17.2652 17.25 17.5195 17.149 17.707 16.9693C17.8946 16.7896 17.9999 16.5458 17.9999 16.2917V6.70833C17.9984 6.5831 17.9712 6.45938 17.9199 6.34417Z" 
+                                    fill="currentColor"/>
+                                  </svg>
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        </template>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+        <a href="/productos" class={`${isActive('/productos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}>Productos </a>
+        <a href="/financiamiento" class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
+        <a href="/eventos" class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
+        <a href="/blog" class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a>
+      
+        <!-- </button> -->
+        
+      </div>
+
+      <Search 
+        marcas={marcasNavData} 
+        categorias={especialidades} 
+        subcategorias={subcategoriasData} 
+        products={productsData}
+        articles={articlesData}
+      />
+
+      <button
+        @click="open = !open"
+        class="lg:hidden text-gray-700 focus:outline-none"
+        aria-label="Abrir menú"
+        :aria-expanded="open.toString()"
+        aria-controls="mobileMainMenu"
+      >
+          <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg x-show="open" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+      </button>
+
+      <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded hidden lg:flex h-fit">Contáctanos</a>
     </div>
+
+
   </div>
 
   <!-- MOBILE MENU REDESIGN  -->

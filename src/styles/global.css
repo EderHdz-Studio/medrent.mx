@@ -1,3 +1,7 @@
+/* Utilidad personalizada para blur si Tailwind no la genera */
+
+/* --- Al final del archivo para asegurar prioridad sobre Tailwind --- */
+
 @import "tailwindcss";
 @import "./newsletter-module.css";
 

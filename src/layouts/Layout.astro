@@ -156,7 +156,7 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     </a>
     
     <!-- Header fixed -->
-    <div class="fixed top-0 left-0 w-full z-[100]">
+    <div class="fixed top-0 left-0 w-full z-[155]">
       <Upperbar site={site}/>
       <Navbar site={site}/>
     </div>
@@ -164,6 +164,9 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <!-- ESPACIADOR MENU FIXED -->
     <div class="h-[50px] lg:h-[109px]"></div> 
 
+    <!-- Overlay de blur: debajo del navbar y buscador, sobre el contenido principal -->
+    <!-- Overlay de blur: debajo del buscador (z-200), encima del contenido -->
+    <div id="blur-overlay" style="display:none;" class="fixed inset-0 z-[150] pointer-events-auto backdrop-blur-sm transition-opacity duration-200"></div>
     <main id="contenido-principal" class="scroll-mt-[109px]">
       <slot />
     </main>
@@ -173,6 +176,22 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <Footer site={site}/>
 
     <script type="module" src="/src/scripts/initLenis.ts"></script>
+    <script>
+      window.showBlurOverlay = function() {
+        const overlay = document.getElementById('blur-overlay');
+        if (overlay) {
+          overlay.style.display = 'block';
+          overlay.style.opacity = '1';
+        }
+      };
+      window.hideBlurOverlay = function() {
+        const overlay = document.getElementById('blur-overlay');
+        if (overlay) {
+          overlay.style.opacity = '0';
+          setTimeout(() => { overlay.style.display = 'none'; }, 200);
+        }
+      };
+    </script>
     
   </body>
 </html>
