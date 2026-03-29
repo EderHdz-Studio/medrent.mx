@@ -8,6 +8,7 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ProductSlider from '@components/sections/ProductSlider.astro';
 import FichaTecnica from '@components/product/TechnicalSheet.astro';
+import ShareButtons from '@components/product/ShareButtons.astro';
 import GalleryPopup from '@components/product/GalleryPopUp.astro';
 import PopUpSolicitarCotizacion from '@components/popup/popUpSolicitarCotizacion.astro';
 import ButtonPDPSticky from "@components/buttonPDPSticky.astro";
@@ -152,11 +153,8 @@ const pdpJsonLd = {
   
   <!-- Contenido Principal del Producto -->
   <main class="max-w-7xl mx-auto px-4 py-8">
-
     <section class="max-w-7xl mx-auto py-6">
-
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-
         <!-- =========================
           GALERÍA
         ========================== -->
@@ -203,50 +201,29 @@ const pdpJsonLd = {
                 })}
               </ul>
             </div>
+          </div>
+
+          <div id="mediaButtonsMobile" class="flex flex-row items-center gap-2 left-0 bottom-0 w-full z-20 px-2 py-2 justify-between bg-transparent relative">
+            <!-- Contenedor btns share -->
+            <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
+
             <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-30 pointer-events-none">
-            <span
-              id="mobile-gallery-counter"
-              class="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-text-default)] bg-[#F3FFFD] px-4 py-1 text-center text-[var(--color-text-default)] text-[16px] font-normal leading-6 tracking-[0.5px]"
-            >
-              1 / {product?.gallery?.length ?? 0}
-            </span>
+              <span
+                id="mobile-gallery-counter"
+                class="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-text-default)] bg-[#F3FFFD] px-4 py-1 text-center text-[var(--color-text-default)] text-[16px] font-normal leading-6 tracking-[0.5px]"
+              >
+                1 / {product?.gallery?.length ?? 0}
+              </span>
             </div>
+
+            <button class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent" title="zoom">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
+                </svg>
+            </button>
           </div>
         </div>
-        <style is:inline>
-          .badge-launch-mobile {
-            position: absolute;
-            left: 16px;
-            top: 16px;
-            z-index: 30;
-            display: inline-flex;
-            padding: 2px 4px;
-            justify-content: center;
-            align-items: center;
-            border-radius: 2px;
-            background: #006191;
-            color: #fff;
-            text-align: center;
-            font-family: Lato, sans-serif;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 500;
-            line-height: 1.43;
-            letter-spacing: 0.1px;
-          }
 
-          .badge-launch-mobile-tail {
-            position: absolute;
-            right: 8px;
-            bottom: -8px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-top: 8px solid #006191;
-          }
-        </style>
-
-        
         <!-- Galería de Imágenes (solo tablet/desktop) -->
         <div id="galleryProducto" class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start hidden sm:flex">
 
@@ -274,6 +251,17 @@ const pdpJsonLd = {
                 <div class="text-gray-400">Sin imagen</div>
               )}
             </div>
+
+            <div id="mediaButtons" class="flex flex-row items-center gap-2 left-0 bottom-0 w-full z-20 px-2 py-2 justify-between bg-transparent">
+              <!-- Contenedor btns share -->
+              <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
+                
+              <button class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent" title="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <!-- Miniaturas debajo de la imagen principal (tablet/desktop: 6 máx, overlay en la última) -->
@@ -291,35 +279,34 @@ const pdpJsonLd = {
                       const isVideo = /\.(mp4|webm|ogg)$/i.test(imagen);
                       // Si es la última visible y hay más, muestra el overlay '+N'
                       if (index === maxThumbnails - 1 && total > maxThumbnails) {
-                        return (
-                          <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)}>
-                            <button
-                              class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)] opacity-20"
-                              style="min-height:80px; max-height:80px;"
-                              data-thumbnail={imagen}
-                              data-type={isImage ? 'image' : isVideo ? 'video' : 'other'}
-                              data-index={index}
-                              type="button"
-                            >
-                              {isImage ? (
-                                <ImageResponsive
-                                  src={imagen}
-                                  alt={`Miniatura ${index + 1}`}
-                                  class="w-full h-full object-cover"
-                                  loading="lazy"
-                                  decoding="async"
-                                  sizes="80px"
-                                />
-                              ) : isVideo ? (
-                                <video src={imagen} class="w-full h-full object-cover" />
-                              ) : null}
-                              <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white text-lg font-bold rounded">
-                                +{total - maxThumbnails + 1}
-                              </div>
-                            </button>
-                          </div>
-                        );
-                      }
+                      return (
+                        <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)}>
+                          <button
+                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
+                            style="min-height:80px; max-height:80px;"
+                            data-gallery-popup="true"
+                            data-start-index={index}
+                            type="button"
+                          >
+                            {isImage ? (
+                              <ImageResponsive
+                                src={imagen}
+                                alt={`Miniatura ${index + 1}`}
+                                class="w-full h-full object-cover opacity-20"
+                                loading="lazy"
+                                decoding="async"
+                                sizes="80px"
+                              />
+                            ) : isVideo ? (
+                              <video src={imagen} class="w-full h-full object-cover opacity-20" />
+                            ) : null}
+                            <div class="absolute inset-0 bg-opacity-60 flex items-center justify-center text-[var(--color-primary)] text-lg font-bold rounded">
+                              +{total - maxThumbnails + 1}
+                            </div>
+                          </button>
+                        </div>
+                      );
+                    }
                       return (
                         <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)}>
                           <button
@@ -358,7 +345,6 @@ const pdpJsonLd = {
             </div>
           )}
         </div>
-
 
         <!-- INFO PRODUCTO -->
         <div class="space-y-6 lg:px-6 gap-2 flex flex-col ">
@@ -629,7 +615,7 @@ const pdpJsonLd = {
         </section>
       )}
 
-      <!-- btn sticky -->
+      <!-- Btn sticky -->
       <ButtonPDPSticky
         Images={product.gallery}
         product={product.name}
@@ -661,289 +647,252 @@ const pdpJsonLd = {
     <!-- Newsletter -->
     <Newsletter />
 
-    <!-- SCRIPT SEGURO SSR -->
-
-    <script is:inline>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggleButtons = document.querySelectorAll('[data-share-toggle]');
-        const encodedUrl = encodeURIComponent(window.location.href);
-
-        toggleButtons.forEach((button) => {
-          const container = button.closest(".relative");
-          if (!container) return;
-
-          const closeBtn = container.querySelector('[data-share-close]');
-          const actions = container.querySelector('[data-share-actions]');
-          const tooltip = container.querySelector('[data-copy-tooltip]');
-          const copyBtn = container.querySelector('[data-copy-url]');
-          const facebook = container.querySelector('[data-share-facebook]');
-          const linkedin = container.querySelector('[data-share-linkedin]');
-
-          if (facebook instanceof HTMLAnchorElement) {
-            facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-          }
-
-          if (linkedin instanceof HTMLAnchorElement) {
-            linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}`;
-          }
-
-          button.addEventListener("click", () => {
-            button.classList.add("opacity-0", "pointer-events-none");
-            actions?.classList.remove("opacity-0", "pointer-events-none");
-            actions?.classList.add("opacity-100");
-          });
-
-          closeBtn?.addEventListener("click", () => {
-            button.classList.remove("opacity-0", "pointer-events-none");
-            actions?.classList.add("opacity-0", "pointer-events-none");
-            actions?.classList.remove("opacity-100");
-          });
-
-          copyBtn?.addEventListener("click", async () => {
-            await navigator.clipboard.writeText(window.location.href);
-            tooltip?.classList.remove("opacity-0");
-            tooltip?.classList.add("opacity-100");
-
-            setTimeout(() => {
-              tooltip?.classList.add("opacity-0");
-              tooltip?.classList.remove("opacity-100");
-            }, 1500);
-          });
-        });
-      });
-    </script>
-
-
-    
-    
-
   </main>
 
-  <Newsletter />
+<!-- BTN Compartir url -->
+<script is:inline>
+  // Botón Copiar URL (compartir)
+  document.addEventListener('DOMContentLoaded', function() {
+      // Desktop
+      const copyBtnDesktop = document.getElementById('copy-url-btn');
+      if (copyBtnDesktop) {
+          copyBtnDesktop.addEventListener('click', async function(e) {
+              e.preventDefault();
+              try {
+                  await navigator.clipboard.writeText(window.location.href);
+                  const prevBg = copyBtnDesktop.style.backgroundColor;
+                  copyBtnDesktop.style.backgroundColor = '#B60D45';
+                  setTimeout(() => { copyBtnDesktop.style.backgroundColor = prevBg; }, 500);
+              } catch (err) {
+                  alert('No se pudo copiar la URL');
+              }
+          });
+      }
+      // Mobile
+      const copyBtnMobile = document.getElementById('copy-url-btn-mobile');
+      if (copyBtnMobile) {
+          copyBtnMobile.addEventListener('click', async function(e) {
+              e.preventDefault();
+              try {
+                  await navigator.clipboard.writeText(window.location.href);
+                  const prevBg = copyBtnMobile.style.backgroundColor;
+                  copyBtnMobile.style.backgroundColor = '#B60D45';
+                  setTimeout(() => { copyBtnMobile.style.backgroundColor = prevBg; }, 500);
+              } catch (err) {
+                  alert('No se pudo copiar la URL');
+              }
+          });
+      }
+  });
+</script>
 
+<!-- BTN SHARE -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.relative').forEach(container => {
+      const toggleBtn = container.querySelector('.share-toggle');
+      const closeBtn = container.querySelector('.share-close');
+      const actions = container.querySelector('.share-actions');
+      const tooltip = container.querySelector('.copy-tooltip');
+      const copyBtn = container.querySelector('.copy-url');
+      
+      // Buscar el contador dentro del mismo contenedor padre
+      const mediaButtons = container.closest('#mediaButtonsMobile, #mediaButtons');
+      const galleryCounter = mediaButtons?.querySelector('#mobile-gallery-counter');
+      
+      if (!toggleBtn) return;
+      
+      const url = encodeURIComponent(window.location.href);
+      
+      const facebook = container.querySelector('.share-facebook');
+      const whatsapp = container.querySelector('.share-whatsapp');
+      const twitter = container.querySelector('.share-twitter');
+      const linkedin = container.querySelector('.share-linkedin');
+      
+      if (facebook) facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+      if (whatsapp) whatsapp.href = `https://wa.me/?text=${url}`;
+      if (twitter) twitter.href = `https://twitter.com/intent/tweet?url=${url}`;
+      if (linkedin) linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`;
+      
+      toggleBtn.addEventListener('click', () => {
+        toggleBtn.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+        actions.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        actions.classList.add('opacity-100', 'scale-100');
+        if (galleryCounter) galleryCounter.style.opacity = '0';
+      });
+      
+      closeBtn?.addEventListener('click', () => {
+        toggleBtn.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+        actions.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        actions.classList.remove('opacity-100', 'scale-100');
+        if (galleryCounter) galleryCounter.style.opacity = '1';
+      });
+      
+      copyBtn?.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(window.location.href);
+        tooltip.classList.remove('opacity-0');
+        tooltip.classList.add('opacity-100');
+        setTimeout(() => {
+          tooltip.classList.add('opacity-0');
+          tooltip.classList.remove('opacity-100');
+        }, 1500);
+      });
+    });
+  });
+</script>
+
+<!-- BTN ZOOM -->
+<script is:inline>
+  let zoomActive = false;
+  let currentZoomBtn = null;
+  let currentMainImage = null;
+
+  function initZoom() {
+    const zoomBtn = document.querySelector('#mediaButtons button[title="Buscar"]');
+    const mainImage = document.getElementById('main-image-desktop');
+    
+    // Remover event listeners anteriores si existen
+    if (currentZoomBtn && currentZoomBtn !== zoomBtn) {
+      currentZoomBtn.removeEventListener('click', handleZoomClick);
+    }
+    if (currentMainImage && currentMainImage !== mainImage) {
+      currentMainImage.removeEventListener('mousemove', handleMouseMove);
+      currentMainImage.removeEventListener('mouseleave', handleMouseLeave);
+    }
+    
+    if (!zoomBtn || !mainImage) return;
+    
+    currentZoomBtn = zoomBtn;
+    currentMainImage = mainImage;
+    
+    // Resetear zoom visual
+    mainImage.style.cursor = 'default';
+    mainImage.style.transform = 'scale(1)';
+    mainImage.style.transformOrigin = 'center';
+    
+    // Agregar event listeners
+    zoomBtn.removeEventListener('click', handleZoomClick);
+    zoomBtn.addEventListener('click', handleZoomClick);
+    
+    mainImage.removeEventListener('mousemove', handleMouseMove);
+    mainImage.addEventListener('mousemove', handleMouseMove);
+    
+    mainImage.removeEventListener('mouseleave', handleMouseLeave);
+    mainImage.addEventListener('mouseleave', handleMouseLeave);
+  }
+  
+  function handleZoomClick(e) {
+    e.preventDefault();
+    zoomActive = !zoomActive;
+    
+    if (zoomActive) {
+      currentMainImage.style.cursor = 'zoom-in';
+      currentMainImage.style.transition = 'transform 0.2s ease';
+    } else {
+      currentMainImage.style.cursor = 'default';
+      currentMainImage.style.transform = 'scale(1)';
+      currentMainImage.style.transformOrigin = 'center';
+    }
+  }
+  
+  function handleMouseMove(e) {
+    if (!zoomActive) return;
+    if (!currentMainImage) return;
+    
+    const rect = currentMainImage.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    currentMainImage.style.transformOrigin = `${x}% ${y}%`;
+    currentMainImage.style.transform = 'scale(2)';
+  }
+  
+  function handleMouseLeave() {
+    if (zoomActive && currentMainImage) {
+      currentMainImage.style.transform = 'scale(1)';
+    }
+  }
+  
+  // Inicializar al cargar la página
+  document.addEventListener('DOMContentLoaded', initZoom);
+  
+  // Exponer función para que sea llamada desde otros scripts cuando cambie la imagen
+  window.reinitZoom = initZoom;
+</script>
+
+<!-- Slider mobile -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Slider mobile
     const slider = document.getElementById('glider-slideimagenesProducto');
     const counter = document.getElementById('mobile-gallery-counter');
-    if (!slider || !counter) return;
+    if (slider && counter) {
+      const slides = slider.querySelectorAll('li');
+      const total = slides.length;
+      if (total) {
+        let rafId = 0, snapTimer = 0;
+        const updateCounter = () => {
+          const width = slider.clientWidth || 1;
+          const index = Math.min(total - 1, Math.max(0, Math.round(slider.scrollLeft / width)));
+          counter.textContent = `${index + 1} / ${total}`;
+          return { width, index };
+        };
+        const onScroll = () => {
+          if (rafId) return;
+          rafId = requestAnimationFrame(() => {
+            const { width, index } = updateCounter();
+            if (snapTimer) clearTimeout(snapTimer);
+            snapTimer = setTimeout(() => slider.scrollTo({ left: index * width, behavior: 'smooth' }), 80);
+            rafId = 0;
+          });
+        };
+        slider.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', updateCounter);
+        updateCounter();
+      }
+    }
 
-    const slides = slider.querySelectorAll('li');
-    const total = slides.length;
-    if (!total) return;
-
-    let rafId = 0;
-    let snapTimer = 0;
-    const updateCounter = () => {
-      const width = slider.clientWidth || 1;
-      const index = Math.min(total - 1, Math.max(0, Math.round(slider.scrollLeft / width)));
-      counter.textContent = `${index + 1} / ${total}`;
-      return { width, index };
-    };
-
-    const onScroll = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        const { width, index } = updateCounter();
-        if (snapTimer) window.clearTimeout(snapTimer);
-        snapTimer = window.setTimeout(() => {
-          slider.scrollTo({ left: index * width, behavior: 'smooth' });
-        }, 80);
-        rafId = 0;
-      });
-    };
-
-    slider.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', updateCounter);
-    updateCounter();
-  });
-
-  // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
-  document.addEventListener('DOMContentLoaded', function() {
-    const thumbnails = document.querySelectorAll('[data-thumbnail]');
+    // Miniaturas desktop - cambiar imagen principal
+    const thumbnails = document.querySelectorAll('[data-thumbnail]:not([data-gallery-popup])');
     const mainMediaContainer = document.getElementById('main-media-container');
-    const thumbnailsScroll = document.getElementById('thumbnails-scroll');
-    const scrollDownBtn = document.getElementById('scroll-down-thumbnails');
-    const scrollUpBtn = document.getElementById('scroll-up-thumbnails');
     
-    thumbnails.forEach(thumbnail => {
-      thumbnail.addEventListener('click', function() {
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', function() {
         const newSrc = this.dataset.thumbnail;
         const type = this.dataset.type;
         if (mainMediaContainer && newSrc) {
-          // Actualizar el contenido del contenedor principal
           if (type === 'image') {
-            mainMediaContainer.innerHTML = `<img src='${newSrc}' alt='' class='w-full h-full object-contain max-h-[600px]' id='main-image' data-type='image' />`;
+            mainMediaContainer.innerHTML = `<img src='${newSrc}' alt='' class='w-full h-full object-contain max-h-[600px] rounded-lg' id='main-image-desktop' data-type='image' />`;
           } else if (type === 'video') {
-            mainMediaContainer.innerHTML = `<video src='${newSrc}' controls class='w-full h-full object-contain max-h-[600px]' id='main-image' data-type='video'></video>`;
+            mainMediaContainer.innerHTML = `<video src='${newSrc}' controls class='w-full h-full object-contain max-h-[600px] rounded-lg' id='main-image-desktop' data-type='video'></video>`;
           }
-          // Actualizar estilos de selección
-          thumbnails.forEach(thumb => {
-            thumb.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]';
+          if (window.reinitZoom) window.reinitZoom();
+          
+          document.querySelectorAll('[data-thumbnail]').forEach(t => {
+            t.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]';
           });
-          // Marcar como seleccionado el thumbnail actual
           this.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border-3 border-[var(--color-primary)]';
         }
       });
     });
 
-    // Scroll hacia abajo en la galería de miniaturas (5 miniaturas)
-    if (scrollDownBtn && thumbnailsScroll) {
-      scrollDownBtn.addEventListener('click', function() {
-        const thumbnailHeight = 80 + 12; // 80px alto + 12px gap
-        thumbnailsScroll.scrollBy({ top: thumbnailHeight * 5, behavior: 'smooth' });
+    // Popup galería
+    const popupBtn = document.querySelector('[data-gallery-popup="true"]');
+    if (popupBtn) {
+      popupBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const container = this.closest('.btnVerPopUpImagenes');
+        const images = container?.dataset.imagenes ? JSON.parse(container.dataset.imagenes) : [];
+        if (window.openGalleryPopup) {
+          window.openGalleryPopup(images, 5);
+        }
       });
     }
-    // Scroll hacia arriba en la galería de miniaturas (5 miniaturas)
-    if (scrollUpBtn && thumbnailsScroll) {
-      scrollUpBtn.addEventListener('click', function() {
-        const thumbnailHeight = 80 + 12;
-        thumbnailsScroll.scrollBy({ top: -thumbnailHeight * 5, behavior: 'smooth' });
-      });
-    }  
   });
-</script>  
-
-<script is:inline>
-    // Efecto de zoom: click en Buscar activa el zoom, mousemove sobre la imagen mueve el zoom, click en la imagen lo desactiva
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     const buscarBtn = document.querySelector('button[title="Buscar"]');
-    //     // Solo aplica zoom en desktop
-    //     const mainImage = () => document.getElementById('main-image-desktop');
-    //     let zoomActive = false;
-    //     if (buscarBtn) {
-    //         buscarBtn.addEventListener('click', function(e) {
-    //             e.preventDefault();
-    //             const img = mainImage();
-    //             if (!img || img.tagName !== 'IMG') return;
-    //             zoomActive = true;
-    //             img.classList.add('zoomed');
-    //         });
-    //     }
-    //     // Mousemove sobre la imagen mueve el zoom
-    //     document.addEventListener('mousemove', function(e) {
-    //         if (!zoomActive) return;
-    //         const img = mainImage();
-    //         if (!img || img.tagName !== 'IMG') return;
-    //         // Solo si el mouse está sobre la imagen
-    //         const rect = img.getBoundingClientRect();
-    //         if (
-    //             e.clientX < rect.left || e.clientX > rect.right ||
-    //             e.clientY < rect.top || e.clientY > rect.bottom
-    //         ) return;
-    //         const x = ((e.clientX - rect.left) / rect.width) * 100;
-    //         const y = ((e.clientY - rect.top) / rect.height) * 100;
-    //         img.style.transformOrigin = `${x}% ${y}%`;
-    //     });
-    //     // Click en la imagen desactiva el zoom
-    //     document.addEventListener('click', function(e) {
-    //         if (!zoomActive) return;
-    //         const img = mainImage();
-    //         if (!img || img.tagName !== 'IMG') return;
-    //         const rect = img.getBoundingClientRect();
-    //         if (
-    //             e.clientX >= rect.left && e.clientX <= rect.right &&
-    //             e.clientY >= rect.top && e.clientY <= rect.bottom
-    //         ) {
-    //             img.classList.remove('zoomed');
-    //             img.style.transformOrigin = '';
-    //             zoomActive = false;
-    //         }
-    //     });
-    // });
-    // Funcionalidad para cambiar imagen principal al hacer clic en miniaturas y scroll en galería
-    document.addEventListener('DOMContentLoaded', function() {
-        // Miniaturas: cambiar imagen principal al hacer clic y resaltar la seleccionada
-        const thumbnails = document.querySelectorAll('#thumbnails-scroll button[data-index]');
-        // Desktop/Tablet main image
-        let mainImage = document.getElementById('main-image-desktop');
-        // Al cargar, marcar la primera miniatura como seleccionada
-        if (thumbnails.length) {
-            thumbnails.forEach(b => {
-                b.style.borderColor = '';
-                b.style.borderWidth = '';
-            });
-            thumbnails[0].style.borderColor = '#006764';
-            thumbnails[0].style.borderWidth = '3px';
-        }
-        thumbnails.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Quitar borde de seleccion a todas
-                thumbnails.forEach(b => {
-                    b.style.borderColor = '';
-                    b.style.borderWidth = '';
-                });
-                // Agregar borde de seleccion al actual
-                this.style.borderColor = '#006764';
-                this.style.borderWidth = '3px';
-                const type = this.getAttribute('data-type');
-                const src = this.getAttribute('data-thumbnail');
-                // Reemplazar el nodo principal por el tipo correcto (img o video)
-                const container = document.getElementById('main-media-container');
-                if (!container) return;
-                if (type === 'image') {
-                    if (mainImage && mainImage.tagName === 'IMG') {
-                        mainImage.src = src;
-                        mainImage.setAttribute('data-type', 'image');
-                        mainImage.classList.remove('hidden');
-                    } else {
-                        // Si el actual es video, reemplazar por img
-                        const img = document.createElement('img');
-                        img.src = src;
-                        img.alt = '';
-                        img.className = 'w-full h-full object-contain max-h-[600px] rounded-lg';
-                        img.id = 'main-image-desktop';
-                        img.setAttribute('data-type', 'image');
-                        container.innerHTML = '';
-                        container.appendChild(img);
-                        mainImage = img;
-                    }
-                } else if (type === 'video') {
-                    if (mainImage && mainImage.tagName === 'VIDEO') {
-                        mainImage.src = src;
-                        mainImage.setAttribute('data-type', 'video');
-                        mainImage.classList.remove('hidden');
-                    } else {
-                        // Si el actual es img, reemplazar por video
-                        const video = document.createElement('video');
-                        video.src = src;
-                        video.controls = true;
-                        video.className = 'w-full h-full object-contain max-h-[600px] rounded-lg';
-                        video.id = 'main-image-desktop';
-                        video.setAttribute('data-type', 'video');
-                        container.innerHTML = '';
-                        container.appendChild(video);
-                        mainImage = video;
-                    }
-                }
-            });
-        });
-
-
-        const btnsVerPopUpImagenes = document.querySelectorAll('.btnVerPopUpImagenes');
-        btnsVerPopUpImagenes.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                const overlay = document.getElementById('gallery-popup-overlay');
-                if (overlay) overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                // Obtener imágenes desde data-imagenes (array de strings)
-                let images = [];
-                try {
-                  images = this.getAttribute('data-imagenes') ? JSON.parse(this.getAttribute('data-imagenes')) : [];
-                  if (!Array.isArray(images)) images = [];
-
-                  
-                } catch (err) {
-                  images = [];
-                }
-                // Recuperar el índice de la miniatura con +N
-                const index = this.querySelector('button')?.getAttribute('data-index');
-                const startIndex = index ? parseInt(index, 10) : 6;
-                openGalleryPopup(images, startIndex);
-            });
-        });
-    });
 </script>
 
+<!-- Pop up -->
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
     const openBtn = document.getElementById('open-event-popup');
@@ -958,7 +907,6 @@ const pdpJsonLd = {
   });
 </script>
 
-
 <PopUpSolicitarCotizacion 
   imagesForHero={product.gallery || []}
   productData={product}
@@ -968,7 +916,6 @@ const pdpJsonLd = {
 </Layout>
 
 <style>
-  /* Efecto de fondo hover */
   .faq-hover-fill-effect {
       position: absolute;
       bottom: 0;
@@ -983,15 +930,45 @@ const pdpJsonLd = {
       border-radius: 2px;
   }
 
+  .badge-launch-mobile {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    z-index: 30;
+    display: inline-flex;
+    padding: 2px 4px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+    background: #006191;
+    color: #fff;
+    text-align: center;
+    font-family: Lato, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.43;
+    letter-spacing: 0.1px;
+  }
+
+  .badge-launch-mobile-tail {
+    position: absolute;
+    right: 8px;
+    bottom: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-top: 8px solid #006191;
+  }
+
+  .relative.z-10 {
+      position: relative;
+      z-index: 10;
+  }
+
   @media (min-width: 768px) {
       .group:hover .faq-hover-fill-effect {
           transform: scaleY(1);
       }
-  }
-
-  /* Asegurar que el contenido esté por encima */
-  .relative.z-10 {
-      position: relative;
-      z-index: 10;
   }
 </style>
