@@ -293,8 +293,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 
                                 <!-- Agrupa los botones aquí -->
                                 <div class="flex gap-8">
-                                    <button class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&lt;</button>
-                                    <button class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&gt;</button>
+                                    <button id="prev-month-btn" class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&lt;</button>
+                                    <button id="next-month-btn" class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&gt;</button>
                                 </div>
                             </div>
                             <div id="calendario-dias" class="md:block hidden mt-4">
@@ -703,7 +703,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     // Configurar dayjs en español
     dayjs.locale('es');
 
-    // Función para actualizar calendario (movida fuera del DOMContentLoaded)
+    // Función para actualizar calendario
     function actualizarCalendario(mesKey: string) {
         const calendario = generarCalendario(mesKey + '-01');
         const mesActualElement = document.getElementById('mes-actual');
@@ -740,7 +740,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         }
     }
 
-    // Función para generar calendario (movida fuera del DOMContentLoaded)
+    // Función para generar calendario
     function generarCalendario(fechaBase: string) {
         const fecha = dayjs(fechaBase);
         const startOfMonth = fecha.startOf('month');
@@ -876,36 +876,53 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
         });
         
-        // CALENDARIO
-        let mesInicial = dayjs().format('YYYY-MM');
-
-        renderFilterOptions();
-        actualizarCalendario(mesInicial);
-    
+        // INICIALIZACIÓN DEL CALENDARIO Y FILTROS
+        
+        // Inicializar el calendario con la fecha actual del cliente
+        const fechaActualCliente = dayjs();
+        const mesActualKey = fechaActualCliente.format('YYYY-MM');
+        
+        // Primero, configurar el estado inicial de los meses
+        // Solo los meses con eventos deben estar abiertos
+        document.querySelectorAll('[data-month]').forEach(monthSection => {
+            const month = monthSection.getAttribute('data-month');
+            const monthContent = document.querySelector(`[data-month-content="${month}"]`);
+            const parentDiv = monthSection as HTMLElement;
+            const hasEventDays = monthSection.hasAttribute('data-event-days');
+            
+            if (monthContent && hasEventDays) {
+                // Mes con eventos: abierto por defecto
+                parentDiv.classList.add('open');
+                monthContent.classList.remove('month-hidden');
+            } else if (monthContent) {
+                // Mes sin eventos: cerrado por defecto
+                parentDiv.classList.remove('open');
+                monthContent.classList.add('month-hidden');
+            }
+        });
+        
+        // Actualizar el calendario para mostrar el mes actual
+        actualizarCalendario(mesActualKey);
+        
+        // Configurar toggles de meses
         document.querySelectorAll('[data-month-toggle]').forEach(toggle => {
             const monthKey = toggle.getAttribute('data-month-toggle');
             const content = document.querySelector(`[data-month-content="${monthKey}"]`);
             const parentDiv = toggle.closest('.space-y-6');
-                    if (content && parentDiv && monthKey) {
-                        content.classList.remove('hidden');
-                        content.classList.add('events-container');
+            if (content && parentDiv && monthKey) {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    parentDiv.classList.toggle('open');
+                    if (content.classList.contains('month-hidden')) {
+                        content.classList.remove('month-hidden');
+                        actualizarCalendario(monthKey);
+                    } else {
                         content.classList.add('month-hidden');
-                        toggle.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            parentDiv.classList.toggle('open');
-                            if (content.classList.contains('month-hidden')) {
-                                const mesKey = monthKey;
-                                actualizarCalendario(mesKey);
-                                // Removido el scroll automático al calendario
-                                content.classList.remove('month-hidden');
-                                void (content as HTMLElement).offsetHeight;
-                            } else {
-                                content.classList.add('month-hidden');
-                            }
-                        });
+                    }
+                });
             }
         });
-
+        
         // FILTROS de eventos
         function renderFilterOptions() {
             const filtersContainer = document.getElementById('event-filters');
@@ -937,7 +954,10 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
             const allCheckboxes = Array.from(document.querySelectorAll('#filter-event-type input, #filter-specialty input'));
             allCheckboxes.forEach((checkbox) => {
-                checkbox.addEventListener('change', applyFilters);
+                checkbox.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    applyFilters();
+                });
             });
 
             const clearFiltersBtn = document.getElementById('clear-filters');
@@ -973,25 +993,30 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
             // Mostrar/ocultar meses según filtrado
             const monthSections = Array.from(document.querySelectorAll('[data-month]')) as HTMLElement[];
+            let firstVisibleMonth = null;
+            
             monthSections.forEach(monthSection => {
                 const month = monthSection.dataset.month;
                 if (!month) return;
                 const cards = Array.from(monthSection.querySelectorAll('article[data-start-date]')) as HTMLElement[];
                 const hasVisible = cards.some((c) => (c.style.display !== 'none'));
                 const monthContent = monthSection.querySelector(`[data-month-content="${month}"]`) as HTMLElement | null;
+                const hasEventDays = monthSection.hasAttribute('data-event-days');
                 
-                // Los meses siempre se muestran (sin display: none)
+                // El mes siempre se muestra, pero el contenido se oculta/muestra según filtros
                 monthSection.style.display = '';
                 
                 if (monthContent) {
                     if (hasVisible) {
-                        // Si hay eventos visibles, mostramos el contenido
-                        monthSection.classList.add('open');
+                        // Hay eventos visibles: mostrar contenido
+                        if (!monthSection.classList.contains('open')) {
+                            monthSection.classList.add('open');
+                        }
                         monthContent.classList.remove('month-hidden');
+                        if (!firstVisibleMonth) firstVisibleMonth = month;
                     } else {
-                        // Si no hay eventos visibles, ocultamos el contenido pero mantenemos el mes visible
+                        // No hay eventos visibles: ocultar contenido pero mantener el header
                         monthContent.classList.add('month-hidden');
-                        // Opcional: cerrar el toggle visualmente
                         monthSection.classList.remove('open');
                     }
                 }
@@ -1002,19 +1027,25 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 selectedCard.classList.add('filtered-selected');
                 const date = selectedCard.dataset.startDate;
                 if (date) {
-                    // Usa la función global para abrir mes y scroll con offset
                     scrollToEventByDate(date);
                 } else {
                     selectedCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
 
-            // Si no hay elementos visibles, dejar el calendario con el mes actual
-            const firstVisibleMonth = monthSections.find(ms => ms.style.display !== 'none')?.dataset.month;
+            // Actualizar el calendario con el primer mes visible o el mes actual
             if (firstVisibleMonth) {
                 actualizarCalendario(firstVisibleMonth);
             } else {
-                actualizarCalendario(mesInicial);
+                const fechaActual = dayjs().format('YYYY-MM');
+                actualizarCalendario(fechaActual);
+            }
+            
+            // Actualizar contador de filtros
+            const filterCount = selectedTipos.length + selectedEspecialidades.length;
+            const filterCountSpan = document.getElementById('filter-count');
+            if (filterCountSpan) {
+                filterCountSpan.textContent = `(${filterCount})`;
             }
         }
 
@@ -1057,14 +1088,23 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
         });
 
-        document.addEventListener('click', () => {
-            closeAllDropdowns();
+        document.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const isFilterArea = target.closest('#event-filters') || 
+                                target.closest('#toggle-event-type') || 
+                                target.closest('#toggle-specialty') ||
+                                target.closest('.filter-dropdown');
+            
+            if (!isFilterArea) {
+                closeAllDropdowns();
+            }
         });
 
+        // Botones de navegación del calendario
         const prevMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:first-child');
         const nextMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:last-child');
-        let currentCalendarMonth = dayjs(mesInicial + '-01');
-        
+        let currentCalendarMonth = dayjs();
+
         function cambiarMes(direccion: string) {
             if (direccion === 'prev') {
                 currentCalendarMonth = currentCalendarMonth.subtract(1, 'month');
@@ -1073,11 +1113,13 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
             const mesKey = currentCalendarMonth.format('YYYY-MM');
             actualizarCalendario(mesKey);
+            
             const mesActualElement = document.getElementById('mes-actual');
             if (mesActualElement) {
                 const nombreMes = currentCalendarMonth.format('MMMM YYYY');
                 mesActualElement.textContent = nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1).toLowerCase();
             }
+            
             const seccionMes = document.querySelector(`[data-month="${mesKey}"]`);
             if (seccionMes) {
                 const header = document.querySelector('header');
@@ -1091,30 +1133,23 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         
         if (prevMonthBtn) prevMonthBtn.addEventListener('click', () => cambiarMes('prev'));
         if (nextMonthBtn) nextMonthBtn.addEventListener('click', () => cambiarMes('next'));
-    }); // Cierra el DOMContentLoaded
+    });
 
     // función scroll de la card con calendario
     function scrollToEventByDate(date: string) {
-        // Extraer el mes de la fecha
         const monthKey = date.substring(0, 7);
-
-        // Buscar el toggle del mes correspondiente
         const monthToggle = document.querySelector(`[data-month-toggle="${monthKey}"]`) as HTMLElement;
         const monthContent = document.querySelector(`[data-month-content="${monthKey}"]`) as HTMLElement;
         const parentDiv = monthToggle?.closest('.space-y-6') as HTMLElement;
 
-        // Si el mes está cerrado, abrirlo primero
         if (monthToggle && monthContent && parentDiv && monthContent.classList.contains('month-hidden')) {
             parentDiv.classList.add('open');
             monthContent.classList.remove('month-hidden');
-            // Actualizar el calendario para mostrar el mes correcto
             actualizarCalendario(monthKey);
-            // Esperar a que termine la animación de apertura
             setTimeout(() => {
                 scrollToSpecificEvent(date);
-            }, 350); // Tiempo de la transición CSS
+            }, 350);
         } else {
-            // El mes ya está abierto, hacer scroll directamente
             scrollToSpecificEvent(date);
         }
     }
@@ -1137,14 +1172,13 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const offsetPosition = rect.top + scrollTop - headerHeight - 30;
             window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            (eventoEncontrado as HTMLElement).style.transition = 'border 0.3s ease';
-            (eventoEncontrado as HTMLElement).style.border = '3px solid var(--color-primary)';
-            (eventoEncontrado as HTMLElement).style.outlineOffset = '2px';
-            setTimeout(() => { (eventoEncontrado as HTMLElement).style.border = ''; }, 2000);
+            eventoEncontrado.style.transition = 'border 0.3s ease';
+            eventoEncontrado.style.border = '3px solid var(--color-primary)';
+            eventoEncontrado.style.outlineOffset = '2px';
+            setTimeout(() => { eventoEncontrado.style.border = ''; }, 2000);
         }
     }
 
-    // Exponer la función globalmente
     window.scrollToEventByDate = scrollToEventByDate;
 </script>
 
