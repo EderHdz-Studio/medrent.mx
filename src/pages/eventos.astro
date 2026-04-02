@@ -268,7 +268,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             <div class="flex flex-col lg:flex-row gap-6">
                 
                 <!-- Columna izquierda - Calendario (45%) -->
-                <div class="lg:w-[45%] px-4 md:p-6 lg:p-6">
+                <div class="lg:w-[45%] px-4 md:p-6 lg:p-6 overflow-auto">
                     <div class="text-center font-sans" style="position: sticky; top: 120px;">
                         {/* Contador de eventos */}
                         <div class="text-left mb-2">
@@ -329,6 +329,40 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                             </div>
                                         );
                                     })}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel de filtros -->
+                        <div id="event-filters" class="mt-6 p-4 text-left">
+                            <div class="flex justify-between items-center mb-4 pb-2">
+                                <h3 class="font-bold text-[16px] text-[#09303A]">Filtros <span class="text-[#006764] ml-1" id="filter-count">(0)</span></h3>
+                                <button id="clear-filters" class="text-sm text-[#006764] hover:opacity-80 transition-opacity">Limpiar</button>
+                            </div>
+
+                            <!-- Tipo de evento -->
+                            <div class="mb-4">
+                                <button id="toggle-event-type" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium hover:bg-gray-50 transition-colors rounded-md">
+                                    <span class="text-[14px]">Tipo de evento</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="icon-chevron transition-transform duration-200">
+                                        <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46001 9.16994C8.27265 8.98369 8.0192 8.87915 7.75501 8.87915C7.49082 8.87915 7.23737 8.98369 7.05001 9.16994C6.95628 9.26291 6.88189 9.37351 6.83112 9.49537C6.78035 9.61723 6.75421 9.74793 6.75421 9.87994C6.75421 10.012 6.78035 10.1427 6.83112 10.2645C6.88189 10.3864 6.95628 10.497 7.05001 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#006764"/>
+                                    </svg>
+                                </button>
+                                <div id="dropdown-event-type" class="filter-dropdown hidden mt-2 pl-2 space-y-2">
+                                    <div id="filter-event-type" class="grid grid-cols-1 gap-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Especialidad -->
+                            <div class="mb-4">
+                                <button id="toggle-specialty" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium hover:bg-gray-50 transition-colors rounded-md">
+                                    <span class="text-[14px]">Especialidad</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="icon-chevron transition-transform duration-200">
+                                        <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46001 9.16994C8.27265 8.98369 8.0192 8.87915 7.75501 8.87915C7.49082 8.87915 7.23737 8.98369 7.05001 9.16994C6.95628 9.26291 6.88189 9.37351 6.83112 9.49537C6.78035 9.61723 6.75421 9.74793 6.75421 9.87994C6.75421 10.012 6.78035 10.1427 6.83112 10.2645C6.88189 10.3864 6.95628 10.497 7.05001 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#006764"/>
+                                    </svg>
+                                </button>
+                                <div id="dropdown-specialty" class="filter-dropdown hidden mt-2 pl-2 space-y-2">
+                                    <div id="filter-specialty" class="grid grid-cols-1 gap-2"></div>
                                 </div>
                             </div>
                         </div>
@@ -434,7 +468,9 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                             id={eventoId}
                                                             data-start-date={evento.startDate.split('T')[0]}
                                                             data-end-date={evento.endDate.split('T')[0]}
-                                                            class="bg-white border border-[var(--color-accent)] rounded-[16px] hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
+                                                            data-event-type={(evento.eventType || 'Otro').toString().toLowerCase()}
+                                                            data-event-specialty={(evento.especialidad || evento.specialty || evento.category || 'General').toString().toLowerCase()}
+                                                            class="bg-white border border-(--color-accent) rounded-2xl hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                             <div class="flex flex-col md:flex-row">
                                                                 <div class="w-full md:w-1/2">
                                                                     <ImageResponsive
@@ -842,6 +878,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         
         // CALENDARIO
         let mesInicial = dayjs().format('YYYY-MM');
+
+        renderFilterOptions();
         actualizarCalendario(mesInicial);
     
         document.querySelectorAll('[data-month-toggle]').forEach(toggle => {
@@ -867,7 +905,162 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         });
             }
         });
-        
+
+        // FILTROS de eventos
+        function renderFilterOptions() {
+            const filtersContainer = document.getElementById('event-filters');
+            if (!filtersContainer) return;
+            const events = Array.from(document.querySelectorAll('article[data-event-type]')) as HTMLElement[];
+
+            const tiposUnicos = Array.from(new Set(events.map(e => (e.dataset.eventType || 'otro').toLowerCase()))).sort();
+            const especialidadesUnicas = Array.from(new Set(events.map(e => (e.dataset.eventSpecialty || 'general').toLowerCase()))).sort();
+
+            const tipoContainer = document.getElementById('filter-event-type');
+            const especialidadContainer = document.getElementById('filter-specialty');
+
+            if (tipoContainer) {
+                tipoContainer.innerHTML = tiposUnicos.map(tipo => `
+                    <label class="inline-flex items-center gap-2 text-sm">
+                        <input type="checkbox" name="event-type-filter" value="${tipo}" />
+                        <span class="capitalize">${tipo}</span>
+                    </label>
+                `).join('');
+            }
+            if (especialidadContainer) {
+                especialidadContainer.innerHTML = especialidadesUnicas.map(espec => `
+                    <label class="inline-flex items-center gap-2 text-sm">
+                        <input type="checkbox" name="event-specialty-filter" value="${espec}" />
+                        <span class="capitalize">${espec}</span>
+                    </label>
+                `).join('');
+            }
+
+            const allCheckboxes = Array.from(document.querySelectorAll('#filter-event-type input, #filter-specialty input'));
+            allCheckboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+
+            const clearFiltersBtn = document.getElementById('clear-filters');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    allCheckboxes.forEach(input => (input as HTMLInputElement).checked = false);
+                    applyFilters();
+                });
+            }
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const selectedTipos = Array.from(document.querySelectorAll('input[name="event-type-filter"]:checked')).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
+            const selectedEspecialidades = Array.from(document.querySelectorAll('input[name="event-specialty-filter"]:checked')).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
+
+            const events = Array.from(document.querySelectorAll('article[data-event-type]')) as HTMLElement[];
+            let activeCard: HTMLElement | null = null;
+
+            events.forEach((card) => {
+                const type = (card.dataset.eventType || '').toLowerCase();
+                const specialty = (card.dataset.eventSpecialty || '').toLowerCase();
+                const matchType = selectedTipos.length === 0 || selectedTipos.includes(type);
+                const matchSpecialty = selectedEspecialidades.length === 0 || selectedEspecialidades.includes(specialty);
+                const visible = matchType && matchSpecialty;
+
+                card.style.display = visible ? '' : 'none';
+                if (visible && !activeCard) activeCard = card;
+                card.classList.toggle('filtered-selected', false);
+            });
+
+            // Mostrar/ocultar meses según filtrado
+            const monthSections = Array.from(document.querySelectorAll('[data-month]')) as HTMLElement[];
+            monthSections.forEach(monthSection => {
+                const month = monthSection.dataset.month;
+                if (!month) return;
+                const cards = Array.from(monthSection.querySelectorAll('article[data-start-date]')) as HTMLElement[];
+                const hasVisible = cards.some((c) => (c.style.display !== 'none'));
+                const monthContent = monthSection.querySelector(`[data-month-content="${month}"]`) as HTMLElement | null;
+                
+                // Los meses siempre se muestran (sin display: none)
+                monthSection.style.display = '';
+                
+                if (monthContent) {
+                    if (hasVisible) {
+                        // Si hay eventos visibles, mostramos el contenido
+                        monthSection.classList.add('open');
+                        monthContent.classList.remove('month-hidden');
+                    } else {
+                        // Si no hay eventos visibles, ocultamos el contenido pero mantenemos el mes visible
+                        monthContent.classList.add('month-hidden');
+                        // Opcional: cerrar el toggle visualmente
+                        monthSection.classList.remove('open');
+                    }
+                }
+            });
+
+            if (activeCard) {
+                const selectedCard = activeCard as HTMLElement;
+                selectedCard.classList.add('filtered-selected');
+                const date = selectedCard.dataset.startDate;
+                if (date) {
+                    // Usa la función global para abrir mes y scroll con offset
+                    scrollToEventByDate(date);
+                } else {
+                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            // Si no hay elementos visibles, dejar el calendario con el mes actual
+            const firstVisibleMonth = monthSections.find(ms => ms.style.display !== 'none')?.dataset.month;
+            if (firstVisibleMonth) {
+                actualizarCalendario(firstVisibleMonth);
+            } else {
+                actualizarCalendario(mesInicial);
+            }
+        }
+
+        renderFilterOptions();
+
+        // Dropdown toggles de filtros
+        const toggleEventType = document.getElementById('toggle-event-type');
+        const dropdownEventType = document.getElementById('dropdown-event-type');
+        const toggleSpecialty = document.getElementById('toggle-specialty');
+        const dropdownSpecialty = document.getElementById('dropdown-specialty');
+
+        const closeAllDropdowns = () => {
+            if (dropdownEventType) dropdownEventType.classList.add('hidden');
+            if (dropdownSpecialty) dropdownSpecialty.classList.add('hidden');
+            if (toggleEventType) toggleEventType.classList.remove('open');
+            if (toggleSpecialty) toggleSpecialty.classList.remove('open');
+        };
+
+        toggleEventType?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (dropdownEventType && toggleEventType) {
+                const isHidden = dropdownEventType.classList.contains('hidden');
+                closeAllDropdowns();
+                if (isHidden) {
+                    dropdownEventType.classList.remove('hidden');
+                    toggleEventType.classList.add('open');
+                }
+            }
+        });
+
+        toggleSpecialty?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (dropdownSpecialty && toggleSpecialty) {
+                const isHidden = dropdownSpecialty.classList.contains('hidden');
+                closeAllDropdowns();
+                if (isHidden) {
+                    dropdownSpecialty.classList.remove('hidden');
+                    toggleSpecialty.classList.add('open');
+                }
+            }
+        });
+
+        document.addEventListener('click', () => {
+            closeAllDropdowns();
+        });
+
         const prevMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:first-child');
         const nextMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:last-child');
         let currentCalendarMonth = dayjs(mesInicial + '-01');
@@ -979,8 +1172,18 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
   [data-month-toggle] svg.rotated {
     transform: rotate(180deg);
   }
-  
+
+  #toggle-event-type.open .icon-chevron,
+  #toggle-specialty.open .icon-chevron {
+    transform: rotate(180deg);
+  }
+
   .events-container.hidden {
     display: block !important;
+  }
+
+  article.filtered-selected {
+    border-color: #006764 !important;
+    box-shadow: 0 0 0 3px rgba(0, 103, 100, 0.15);
   }
 </style>
