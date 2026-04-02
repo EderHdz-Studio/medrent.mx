@@ -135,7 +135,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
               (() => {
                 const eventosList = Array.isArray(data?.events) ? data.events : [];
                 const slice = eventosList.slice(0, 12);
-                const itemListElement = slice.map((evento, index) => {
+                const itemListElement = slice.map((evento: any, index: number) => {
                   const startDate = evento?.startDate;
                   const endDate = evento?.endDate;
                   const title =
@@ -338,7 +338,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                             // Agrupar eventos por mes
                             const eventosPorMes: any = {};
                             
-                            eventosList.forEach((evento) => {
+                            eventosList.forEach((evento: any) => {
                                 const fechaInicio = dayjs(evento.startDate);
                                 const mesKey = fechaInicio.format('YYYY-MM');
                                 const mesNombreRaw = fechaInicio.format('MMMM YYYY');
@@ -401,7 +401,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                 </svg>
                                             </div>
                                             <div class="events-container space-y-6 month-content-hidden" data-month-content={mes.key}>
-                                                {mesData.eventos.map((evento) => {
+                                                {mesData.eventos.map((evento: any) => {
                                                     // Formatear fechas
                                                     const fechaInicio = dayjs(evento.startDate);
                                                     const fechaFin = dayjs(evento.endDate);
@@ -646,8 +646,77 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     import dayjs from 'dayjs';
     import 'dayjs/locale/es';
 
+    // Extender tipo de Window
+    declare global {
+        interface Window {
+            scrollToEventByDate: (date: string) => void;
+        }
+    }
+
     // Configurar dayjs en español
     dayjs.locale('es');
+
+    // Función para actualizar calendario (movida fuera del DOMContentLoaded)
+    function actualizarCalendario(mesKey: string) {
+        const calendario = generarCalendario(mesKey + '-01');
+        const mesActualElement = document.getElementById('mes-actual');
+        const calendarioDiasContainer = document.querySelector('#calendario-dinamico .grid.grid-cols-7.gap-1');
+        const seccionMes = document.querySelector(`[data-month="${mesKey}"]`);
+        let diasConEventos = [];
+        if (seccionMes) {
+            const eventDaysAttr = seccionMes.getAttribute('data-event-days');
+            if (eventDaysAttr) {
+                try { diasConEventos = JSON.parse(eventDaysAttr); } catch (e) {}
+            }
+        }
+        if (mesActualElement) mesActualElement.textContent = calendario.nombreMes;
+        if (calendarioDiasContainer) {
+            calendarioDiasContainer.innerHTML = calendario.dias.map((dayInfo: any) => {
+                const hasEvent = dayInfo.isCurrentMonth && diasConEventos.includes(dayInfo.day);
+                const fechaCompleta = `${mesKey}-${String(dayInfo.day).padStart(2, '0')}`;
+                let clases = `flex justify-center items-center w-10 h-10 rounded-full text-sm font-medium mx-auto `;
+                if (dayInfo.isToday) {
+                    clases += "border-3 border-[#006764] bg-transparent text-[#006764]";
+                } else if (hasEvent) {
+                    clases += "bg-[#006764] text-white cursor-pointer hover:opacity-80";
+                } else if (dayInfo.isCurrentMonth) {
+                    clases += "text-gray-700 hover:bg-gray-100 cursor-pointer";
+                } else {
+                    clases += "text-gray-300 cursor-default";
+                }
+                if (dayInfo.isCurrentMonth) {
+                    return `<div class="${clases}" data-fecha="${fechaCompleta}" onclick="window.scrollToEventByDate('${fechaCompleta}')">${dayInfo.day}</div>`;
+                } else {
+                    return `<div class="${clases}" data-fecha="${fechaCompleta}">${dayInfo.day}</div>`;
+                }
+            }).join('');
+        }
+    }
+
+    // Función para generar calendario (movida fuera del DOMContentLoaded)
+    function generarCalendario(fechaBase: string) {
+        const fecha = dayjs(fechaBase);
+        const startOfMonth = fecha.startOf('month');
+        const startOfWeek = startOfMonth.startOf('week');
+        const calendarDays = [];
+        let currentDay = startOfWeek;
+        for (let i = 0; i < 42; i++) {
+            calendarDays.push({
+                day: currentDay.date(),
+                isCurrentMonth: currentDay.month() === fecha.month(),
+                isToday: currentDay.isSame(dayjs(), 'day'),
+                fullDate: currentDay.format('YYYY-MM-DD')
+            });
+            currentDay = currentDay.add(1, 'day');
+        }
+        return {
+            dias: calendarDays,
+            nombreMes: (() => {
+                const raw = fecha.format('MMMM YYYY');
+                return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+            })()
+        };
+    }
 
     // Script unificado para eventos, popup y calendario
     document.addEventListener('DOMContentLoaded', function() {
@@ -665,28 +734,28 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         function resetPopupToInitial() {
             if (popupTitle) popupTitle.textContent = 'Título del evento';
             if (popupDescription) popupDescription.textContent = 'Descripción del evento';
-            if (popupImage) popupImage.style.display = 'block';
+            if (popupImage) (popupImage as HTMLDivElement).style.display = 'block';
             if (form) {
-                form.style.display = 'block';
-                form.reset();
+                (form as HTMLDivElement).style.display = 'block';
+                (form as HTMLFormElement).reset();
                 document.querySelector('.form-container')?.classList.remove('hidden');
                 document.querySelector('.form-success')?.classList.add('hidden');
                 document.querySelector('.form-error')?.classList.add('hidden');
             }
-            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative');
-            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4');
+            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative') as HTMLElement | null;
+            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4') as HTMLElement | null;
             if (leftColumn) leftColumn.style.display = 'block';
             if (rightColumn) rightColumn.style.display = 'block';
             if (status) {
-                status.innerHTML = '';
+                (status as HTMLElement).innerHTML = '';
                 status.style.display = 'none';
             }
         }
         
-        function openEventPopup(eventData) {
+        function openEventPopup(eventData: any) {
             if (!popupOverlay) return;
             resetPopupToInitial();
-            if (popupImage && eventData.img) { popupImage.src = eventData.img; popupImage.alt = eventData.title || 'Evento'; }
+            if (popupImage && eventData.img) { (popupImage as HTMLImageElement).src = eventData.img; (popupImage as HTMLImageElement).alt = eventData.title || 'Evento'; }
             if (popupTitle && eventData.title) popupTitle.textContent = eventData.title;
             if (popupDescription && eventData.description) popupDescription.textContent = eventData.description;
             if (mainContent) mainContent.style.filter = 'blur(8px)';
@@ -702,23 +771,24 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             resetPopupToInitial();
         }
         
-        function showFormMessage(type) {
-            if (form) form.style.display = 'none';
-            if (popupImage) popupImage.style.display = 'none';
-            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative');
-            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4');
+        function showFormMessage(type: string) {
+            if (form) (form as HTMLDivElement).style.display = 'none';
+            if (popupImage) (popupImage as HTMLDivElement).style.display = 'none';
+            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative') as HTMLElement | null;
+            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4') as HTMLElement | null;
             if (leftColumn) leftColumn.style.display = 'none';
             if (rightColumn) rightColumn.style.display = 'none';
             if (status) {
-                status.style.display = 'flex';
-                status.style.flexDirection = 'column';
-                status.style.alignItems = 'center';
-                status.style.justifyContent = 'center';
-                status.style.minHeight = '500px';
-                status.style.padding = '16px';
-                status.style.width = '100%';
+                const statusEl = status as HTMLElement;
+                statusEl.style.display = 'flex';
+                statusEl.style.flexDirection = 'column';
+                statusEl.style.alignItems = 'center';
+                statusEl.style.justifyContent = 'center';
+                statusEl.style.minHeight = '500px';
+                statusEl.style.padding = '16px';
+                statusEl.style.width = '100%';
                 if (type === 'success') {
-                    status.innerHTML = `<div class="w-full mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px] relative">
+                    statusEl.innerHTML = `<div class="w-full mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px] relative">
                         <svg xmlns="http://www.w3.org/2000/svg" width="104" height="104" viewBox="0 0 104 104" fill="none"><mask id="mask0_521_7249" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="104" height="104"><path d="M104 0H0V104H104V0Z" fill="white"/></mask><g mask="url(#mask0_521_7249)"><path d="M91 52C91 73.541 73.541 91 52 91C30.459 91 13 73.541 13 52C13 30.459 30.459 13 52 13C73.541 13 91 30.459 91 52Z" stroke="#006764" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M39 55.25L48.75 65L65 42.25" stroke="#006764" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
                         <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center font-lato">REGISTRO COMPLETADO</p>
                         <p class="text-[#171D1C] text-center font-lato text-lg md:text-xl lg:text-2xl font-bold leading-6 md:leading-8">¡Tu acceso al programa está listo!</p>
@@ -726,7 +796,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         <p class="text-[var--color-gray-dark)] text-xs md:text-sm text-center font-lato">Mientras tanto, explora más en <a href="/productos" class="text-[#006764] underline hover:no-underline">nuestro catálogo</a></p>
                     </div>`;
                 } else {
-                    status.innerHTML = `<div class="w-full mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px] relative">
+                    statusEl.innerHTML = `<div class="w-full mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px] relative">
                         <svg xmlns="http://www.w3.org/2000/svg" width="59" height="59" viewBox="0 0 59 59" fill="none"><path d="M28.6643 17.2084H36.8751V19.6667C36.8751 20.3187 37.1341 20.944 37.5952 21.405C38.0562 21.8661 38.6815 22.1251 39.3335 22.1251C39.9855 22.1251 40.6108 21.8661 41.0718 21.405C41.5328 20.944 41.7918 20.3187 41.7918 19.6667V17.2084H44.2502C44.9022 17.2084 45.5275 17.4674 45.9885 17.9284C46.4495 18.3895 46.7085 19.0147 46.7085 19.6667V27.0418H43.4143C42.7623 27.0418 42.137 27.3008 41.676 27.7618C41.215 28.2228 40.956 28.8481 40.956 29.5001C40.956 30.1521 41.215 30.7774 41.676 31.2384C42.137 31.6994 42.7623 31.9585 43.4143 31.9585H46.7085V35.2526C46.7085 35.9046 46.9675 36.5299 47.4285 36.9909C47.8896 37.452 48.5149 37.711 49.1669 37.711C49.8189 37.711 50.4441 37.452 50.9052 36.9909C51.3662 36.5299 51.6252 35.9046 51.6252 35.2526V19.6667C51.6252 17.7108 50.8482 15.8349 49.4651 14.4518C48.082 13.0687 46.2062 12.2917 44.2502 12.2917H41.7918V9.83336C41.7918 9.18137 41.5328 8.55608 41.0718 8.09505C40.6108 7.63402 39.9855 7.37502 39.3335 7.37502C38.6815 7.37502 38.0562 7.63402 37.5952 8.09505C37.1341 8.55608 36.8751 9.18137 36.8751 9.83336V12.2917H28.6643C28.0123 12.2917 27.387 12.5507 26.926 13.0117C26.4649 13.4728 26.2059 14.0981 26.2059 14.75C26.2059 15.402 26.4649 16.0273 26.926 16.4884C27.387 16.9494 28.0123 17.2084 28.6643 17.2084ZM53.3706 49.8798L49.4373 45.9464L9.12044 5.62959C8.89123 5.40038 8.61912 5.21856 8.31963 5.09451C8.02015 4.97046 7.69917 4.90662 7.37502 4.90662C7.05086 4.90662 6.72988 4.97046 6.4304 5.09451C6.13092 5.21856 5.85881 5.40038 5.62959 5.62959C5.16668 6.09251 4.90662 6.72036 4.90662 7.37502C4.90662 8.02968 5.16668 8.65753 5.62959 9.12044L10.325 13.7913C9.4124 14.4758 8.67099 15.3626 8.1591 16.3821C7.64722 17.4016 7.37883 18.526 7.37502 19.6667V44.2502C7.37502 46.2062 8.15203 48.082 9.53511 49.4651C10.9182 50.8482 12.7941 51.6252 14.75 51.6252H44.2502C45.349 51.6187 46.4325 51.3667 47.4214 50.8877L49.8798 53.346C50.1083 53.5765 50.3802 53.7593 50.6798 53.8842C50.9794 54.009 51.3007 54.0732 51.6252 54.0732C51.9497 54.0732 52.271 54.009 52.5706 53.8842C52.8702 53.7593 53.1421 53.5765 53.3706 53.346C53.8285 52.8854 54.0855 52.2624 54.0855 51.6129C54.0855 50.9635 53.8285 50.3404 53.3706 49.8798ZM12.2917 19.6667C12.2969 19.1657 12.4551 18.6783 12.7451 18.2697C13.0351 17.861 13.443 17.5508 13.9142 17.3805L23.5755 27.0418H12.2917V19.6667ZM14.75 46.7085C14.0981 46.7085 13.4728 46.4495 13.0117 45.9885C12.5507 45.5275 12.2917 44.9022 12.2917 44.2502V31.9585H28.4922L43.2422 46.7085H14.75Z" fill="#006764"/></svg>
                         <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center">Este mes no cuenta con eventos programados</p>
                         <p class="text-gray-600 text-xs md:text-sm text-center">Consulta otros meses para conocer nuestras próximas actividades académicas y clínicas.</p>
@@ -735,8 +805,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
         }
         
-        document.querySelectorAll('.event-popup-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
+        document.querySelectorAll('.event-popup-btn').forEach((button: Element) => {
+            button.addEventListener('click', function(this: HTMLElement, e: Event) {
                 e.preventDefault();
                 openEventPopup({
                     img: this.getAttribute('data-img') || '',
@@ -760,66 +830,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         });
         
         // CALENDARIO
-        function generarCalendario(fechaBase) {
-            const fecha = dayjs(fechaBase);
-            const startOfMonth = fecha.startOf('month');
-            const startOfWeek = startOfMonth.startOf('week');
-            const calendarDays = [];
-            let currentDay = startOfWeek;
-            for (let i = 0; i < 42; i++) {
-                calendarDays.push({
-                    day: currentDay.date(),
-                    isCurrentMonth: currentDay.month() === fecha.month(),
-                    isToday: currentDay.isSame(dayjs(), 'day'),
-                    fullDate: currentDay.format('YYYY-MM-DD')
-                });
-                currentDay = currentDay.add(1, 'day');
-            }
-            return {
-                dias: calendarDays,
-                nombreMes: (() => {
-                    const raw = fecha.format('MMMM YYYY');
-                    return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
-                })()
-            };
-        }
-        
-        function actualizarCalendario(mesKey) {
-            const calendario = generarCalendario(mesKey + '-01');
-            const mesActualElement = document.getElementById('mes-actual');
-            const calendarioDiasContainer = document.querySelector('#calendario-dinamico .grid.grid-cols-7.gap-1');
-            const seccionMes = document.querySelector(`[data-month="${mesKey}"]`);
-            let diasConEventos = [];
-            if (seccionMes) {
-                const eventDaysAttr = seccionMes.getAttribute('data-event-days');
-                if (eventDaysAttr) {
-                    try { diasConEventos = JSON.parse(eventDaysAttr); } catch (e) {}
-                }
-            }
-            if (mesActualElement) mesActualElement.textContent = calendario.nombreMes;
-            if (calendarioDiasContainer) {
-                calendarioDiasContainer.innerHTML = calendario.dias.map(dayInfo => {
-                    const hasEvent = dayInfo.isCurrentMonth && diasConEventos.includes(dayInfo.day);
-                    const fechaCompleta = `${mesKey}-${String(dayInfo.day).padStart(2, '0')}`;
-                    let clases = `flex justify-center items-center w-10 h-10 rounded-full text-sm font-medium mx-auto `;
-                    if (dayInfo.isToday) {
-                        clases += "border-3 border-[#006764] bg-transparent text-[#006764]";
-                    } else if (hasEvent) {
-                        clases += "bg-[#006764] text-white cursor-pointer hover:opacity-80";
-                    } else if (dayInfo.isCurrentMonth) {
-                        clases += "text-gray-700 hover:bg-gray-100 cursor-pointer";
-                    } else {
-                        clases += "text-gray-300 cursor-default";
-                    }
-                    if (dayInfo.isCurrentMonth) {
-                        return `<div class="${clases}" data-fecha="${fechaCompleta}" onclick="window.scrollToEventByDate('${fechaCompleta}')">${dayInfo.day}</div>`;
-                    } else {
-                        return `<div class="${clases}" data-fecha="${fechaCompleta}">${dayInfo.day}</div>`;
-                    }
-                }).join('');
-            }
-        }
-        
         let mesInicial = dayjs().format('YYYY-MM');
         actualizarCalendario(mesInicial);
     
@@ -827,31 +837,23 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const monthKey = toggle.getAttribute('data-month-toggle');
             const content = document.querySelector(`[data-month-content="${monthKey}"]`);
             const parentDiv = toggle.closest('.space-y-6');
-            if (content && parentDiv) {
-                content.classList.remove('hidden');
-                content.classList.add('events-container');
-                content.classList.add('month-hidden');
-                toggle.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    parentDiv.classList.toggle('open');
-                    if (content.classList.contains('month-hidden')) {
-                        const mesKey = monthKey;
-                        actualizarCalendario(mesKey);
-                        const calendarioSection = document.querySelector('#calendario-dinamico');
-                        if (calendarioSection) {
-                            const header = document.querySelector('header');
-                            const headerHeight = header ? header.offsetHeight : 100;
-                            const rect = calendarioSection.getBoundingClientRect();
-                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                            const offsetPosition = rect.top + scrollTop - headerHeight - 20;
-                            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                        }
-                        content.classList.remove('month-hidden');
-                        void content.offsetHeight;
-                    } else {
+                    if (content && parentDiv && monthKey) {
+                        content.classList.remove('hidden');
+                        content.classList.add('events-container');
                         content.classList.add('month-hidden');
-                    }
-                });
+                        toggle.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            parentDiv.classList.toggle('open');
+                            if (content.classList.contains('month-hidden')) {
+                                const mesKey = monthKey;
+                                actualizarCalendario(mesKey);
+                                // Removido el scroll automático al calendario
+                                content.classList.remove('month-hidden');
+                                void (content as HTMLElement).offsetHeight;
+                            } else {
+                                content.classList.add('month-hidden');
+                            }
+                        });
             }
         });
         
@@ -859,7 +861,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         const nextMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:last-child');
         let currentCalendarMonth = dayjs(mesInicial + '-01');
         
-        function cambiarMes(direccion) {
+        function cambiarMes(direccion: string) {
             if (direccion === 'prev') {
                 currentCalendarMonth = currentCalendarMonth.subtract(1, 'month');
             } else {
@@ -887,29 +889,54 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         if (nextMonthBtn) nextMonthBtn.addEventListener('click', () => cambiarMes('next'));
     }); // Cierra el DOMContentLoaded
 
-    // función scroll de la card con calendario (FUERA del DOMContentLoaded)
-    function scrollToEventByDate(date) {
+    // función scroll de la card con calendario
+    function scrollToEventByDate(date: string) {
+        // Extraer el mes de la fecha
+        const monthKey = date.substring(0, 7);
+
+        // Buscar el toggle del mes correspondiente
+        const monthToggle = document.querySelector(`[data-month-toggle="${monthKey}"]`) as HTMLElement;
+        const monthContent = document.querySelector(`[data-month-content="${monthKey}"]`) as HTMLElement;
+        const parentDiv = monthToggle?.closest('.space-y-6') as HTMLElement;
+
+        // Si el mes está cerrado, abrirlo primero
+        if (monthToggle && monthContent && parentDiv && monthContent.classList.contains('month-hidden')) {
+            parentDiv.classList.add('open');
+            monthContent.classList.remove('month-hidden');
+            // Actualizar el calendario para mostrar el mes correcto
+            actualizarCalendario(monthKey);
+            // Esperar a que termine la animación de apertura
+            setTimeout(() => {
+                scrollToSpecificEvent(date);
+            }, 350); // Tiempo de la transición CSS
+        } else {
+            // El mes ya está abierto, hacer scroll directamente
+            scrollToSpecificEvent(date);
+        }
+    }
+
+    function scrollToSpecificEvent(date: string) {
         const eventos = document.querySelectorAll('article[data-start-date]');
-        let eventoEncontrado = null;
+        let eventoEncontrado: HTMLElement | null = null;
         for (let evento of eventos) {
             const startDate = evento.getAttribute('data-start-date');
             const endDate = evento.getAttribute('data-end-date');
-            if (date >= startDate && date <= endDate) {
-                eventoEncontrado = evento;
+            if (startDate && endDate && date >= startDate && date <= endDate) {
+                eventoEncontrado = evento as HTMLElement;
                 break;
             }
         }
         if (eventoEncontrado) {
-            const header = document.querySelector('header');
+            const header = document.querySelector('header') as HTMLElement | null;
             const headerHeight = header ? header.offsetHeight : 100;
             const rect = eventoEncontrado.getBoundingClientRect();
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const offsetPosition = rect.top + scrollTop - headerHeight - 30;
             window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            eventoEncontrado.style.transition = 'border 0.3s ease';
-            eventoEncontrado.style.border = '3px solid var(--color-primary)';
-            eventoEncontrado.style.outlineOffset = '2px';
-            setTimeout(() => { eventoEncontrado.style.border = ''; }, 2000);
+            (eventoEncontrado as HTMLElement).style.transition = 'border 0.3s ease';
+            (eventoEncontrado as HTMLElement).style.border = '3px solid var(--color-primary)';
+            (eventoEncontrado as HTMLElement).style.outlineOffset = '2px';
+            setTimeout(() => { (eventoEncontrado as HTMLElement).style.border = ''; }, 2000);
         }
     }
 
@@ -919,16 +946,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
 
 <style>
-  /* Animaciones para dropdown de meses */
-  
-  /* Contenedor base - visible por defecto */
   .events-container {
     overflow: hidden;
     transition: all 0.3s ease;
     opacity: 1;
   }
   
-  /* Estado oculto - se usa para animar */
   .events-container.month-hidden {
     max-height: 0 !important;
     opacity: 0;
@@ -937,7 +960,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     visibility: hidden;
   }
   
-  /* Rotación de la flecha */
   [data-month-toggle] svg {
     transition: transform 0.3s ease;
   }
@@ -947,7 +969,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     transform: rotate(180deg);
   }
   
-  /* Eliminar el hidden de Tailwind que bloquea todo */
   .events-container.hidden {
     display: block !important;
   }
