@@ -27,7 +27,7 @@ try {
   data = {
     Eventos: [],
     title: 'Eventos médicos',
-    description: 'Mantente actualizado con los últimos avances...'
+    description: 'Mantente actualizado con los últimos avances'
   };
 }
 
@@ -270,7 +270,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 <!-- Columna izquierda - Calendario (45%) -->
                 <div class="lg:w-[45%] px-4 md:p-6 lg:p-6 overflow-auto">
                     <div class="text-center font-sans" style="position: sticky; top: 120px;">
-                        {/* Contador de eventos */}
+                         {/* Contador de eventos */}
                         <div class="text-left mb-2">
                             <span class="text-[var(--Schemes-Primary,#006764)] font-lato text-[14px] font-medium leading-[20px] tracking-[0.1px]">
                                 {(() => {
@@ -282,12 +282,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         </div>
                         
                         <h2 class="font-lato text-[28px] text-[#261819] font-500 text-left mb-4">
-                            EVENTOS medRent {now.year()}
+                            Eventos Medrent {now.year()}
                         </h2>
 
                         <div class="bg-[var(--color-secondary-light)] rounded-2xl p-6" id="calendario-dinamico">
-                            <div class="flex justify-between items-center...">
-                                <span id="mes-actual" class="...">
+                            <div class="flex justify-between items-center">
+                                <span id="mes-actual">
                                     {currentMonthTitleCase}
                                 </span>
                                 
@@ -308,6 +308,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                     <div class="text-center text-sm text-gray-500 font-medium py-2">VIE</div>
                                     <div class="text-center text-sm text-gray-500 font-medium py-2">SÁB</div>
                                 </div>
+
                                 <!-- Días del calendario generados dinámicamente -->
                                 <div class="grid grid-cols-7 gap-1">
                                     {calendarDays.map((dayInfo) => {
@@ -342,7 +343,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
                             <!-- Tipo de evento -->
                             <div class="mb-4">
-                                <button id="toggle-event-type" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium hover:bg-gray-50 transition-colors rounded-md">
+                                <button id="toggle-event-type" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium transition-colors rounded-md">
                                     <span class="text-[14px]">Tipo de evento</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="icon-chevron transition-transform duration-200">
                                         <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46001 9.16994C8.27265 8.98369 8.0192 8.87915 7.75501 8.87915C7.49082 8.87915 7.23737 8.98369 7.05001 9.16994C6.95628 9.26291 6.88189 9.37351 6.83112 9.49537C6.78035 9.61723 6.75421 9.74793 6.75421 9.87994C6.75421 10.012 6.78035 10.1427 6.83112 10.2645C6.88189 10.3864 6.95628 10.497 7.05001 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#006764"/>
@@ -355,7 +356,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
                             <!-- Especialidad -->
                             <div class="mb-4">
-                                <button id="toggle-specialty" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium hover:bg-gray-50 transition-colors rounded-md">
+                                <button id="toggle-specialty" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium transition-colors rounded-md">
                                     <span class="text-[14px]">Especialidad</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="icon-chevron transition-transform duration-200">
                                         <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46001 9.16994C8.27265 8.98369 8.0192 8.87915 7.75501 8.87915C7.49082 8.87915 7.23737 8.98369 7.05001 9.16994C6.95628 9.26291 6.88189 9.37351 6.83112 9.49537C6.78035 9.61723 6.75421 9.74793 6.75421 9.87994C6.75421 10.012 6.78035 10.1427 6.83112 10.2645C6.88189 10.3864 6.95628 10.497 7.05001 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#006764"/>
@@ -692,6 +693,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 <script>
     import dayjs from 'dayjs';
     import 'dayjs/locale/es';
+    let isFirstLoad = true;
 
     // Extender tipo de Window
     declare global {
@@ -1034,11 +1036,13 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
 
             // Actualizar el calendario con el primer mes visible o el mes actual
-            if (firstVisibleMonth) {
-                actualizarCalendario(firstVisibleMonth);
-            } else {
-                const fechaActual = dayjs().format('YYYY-MM');
-                actualizarCalendario(fechaActual);
+            if (!isFirstLoad) {
+                if (firstVisibleMonth) {
+                    actualizarCalendario(firstVisibleMonth);
+                } else {
+                    const fechaActual = dayjs().format('YYYY-MM');
+                    actualizarCalendario(fechaActual);
+                }
             }
             
             // Actualizar contador de filtros
@@ -1068,10 +1072,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             e.stopPropagation();
             if (dropdownEventType && toggleEventType) {
                 const isHidden = dropdownEventType.classList.contains('hidden');
-                closeAllDropdowns();
                 if (isHidden) {
                     dropdownEventType.classList.remove('hidden');
                     toggleEventType.classList.add('open');
+                } else {
+                    dropdownEventType.classList.add('hidden');
+                    toggleEventType.classList.remove('open');
                 }
             }
         });
@@ -1080,10 +1086,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             e.stopPropagation();
             if (dropdownSpecialty && toggleSpecialty) {
                 const isHidden = dropdownSpecialty.classList.contains('hidden');
-                closeAllDropdowns();
                 if (isHidden) {
                     dropdownSpecialty.classList.remove('hidden');
                     toggleSpecialty.classList.add('open');
+                } else {
+                    dropdownSpecialty.classList.add('hidden');
+                    toggleSpecialty.classList.remove('open');
                 }
             }
         });
