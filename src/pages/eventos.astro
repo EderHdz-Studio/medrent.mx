@@ -335,35 +335,35 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         </div>
 
                         <!-- Panel de filtros -->
-                        <div id="event-filters" class="mt-6 p-4 text-left">
+                        <div id="event-filters" class="mt-6 md:p-4 sm:p-0 text-left">
                             <div class="flex justify-between items-center mb-4 pb-2">
-                                <h3 class="font-bold text-[16px] text-[#09303A]">Filtros <span class="text-[#006764] ml-1" id="filter-count">(0)</span></h3>
-                                <button id="clear-filters" class="text-sm text-[#006764] hover:opacity-80 transition-opacity">Limpiar</button>
+                                <h3 class="font-bold text-[16px] text-[#09303A]">Filtros <span class="text-[#09303A] ml-1" id="filter-count">(0)</span></h3>
+                                <button id="clear-filters" class="text-sm text-[#006764] hover:underline cursor-pointer transition-opacity">Limpiar</button>
                             </div>
 
                             <!-- Tipo de evento -->
                             <div class="mb-4">
-                                <button id="toggle-event-type" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium transition-colors rounded-md">
-                                    <span class="text-[14px]">Tipo de evento</span>
+                                <button id="toggle-event-type" type="button" class="cursor-pointer border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium transition-colors rounded-md">
+                                    <span class="text-[14px] font-lato">Tipo de evento</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="icon-chevron transition-transform duration-200">
                                         <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46001 9.16994C8.27265 8.98369 8.0192 8.87915 7.75501 8.87915C7.49082 8.87915 7.23737 8.98369 7.05001 9.16994C6.95628 9.26291 6.88189 9.37351 6.83112 9.49537C6.78035 9.61723 6.75421 9.74793 6.75421 9.87994C6.75421 10.012 6.78035 10.1427 6.83112 10.2645C6.88189 10.3864 6.95628 10.497 7.05001 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#006764"/>
                                     </svg>
                                 </button>
                                 <div id="dropdown-event-type" class="filter-dropdown hidden mt-2 pl-2 space-y-2">
-                                    <div id="filter-event-type" class="grid grid-cols-1 gap-2"></div>
+                                    <div id="filter-event-type" class="cursor-pointer grid grid-cols-1 gap-4 mt-4"></div>
                                 </div>
                             </div>
 
                             <!-- Especialidad -->
                             <div class="mb-4">
-                                <button id="toggle-specialty" type="button" class="border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium transition-colors rounded-md">
-                                    <span class="text-[14px]">Especialidad</span>
+                                <button id="toggle-specialty" type="button" class="cursor-pointer border-b border-[#E5E9EA] w-full flex justify-between items-center py-2 text-[#09303A] font-medium transition-colors rounded-md">
+                                    <span class="text-[14px] font-lato">Especialidad</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="icon-chevron transition-transform duration-200">
                                         <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46001 9.16994C8.27265 8.98369 8.0192 8.87915 7.75501 8.87915C7.49082 8.87915 7.23737 8.98369 7.05001 9.16994C6.95628 9.26291 6.88189 9.37351 6.83112 9.49537C6.78035 9.61723 6.75421 9.74793 6.75421 9.87994C6.75421 10.012 6.78035 10.1427 6.83112 10.2645C6.88189 10.3864 6.95628 10.497 7.05001 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#006764"/>
                                     </svg>
                                 </button>
                                 <div id="dropdown-specialty" class="filter-dropdown hidden mt-2 pl-2 space-y-2">
-                                    <div id="filter-specialty" class="grid grid-cols-1 gap-2"></div>
+                                    <div id="filter-specialty" class="cursor-pointer grid grid-cols-1 gap-4 mt-4"></div>
                                 </div>
                             </div>
                         </div>
