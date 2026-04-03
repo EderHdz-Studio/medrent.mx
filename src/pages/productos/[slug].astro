@@ -167,7 +167,7 @@ const pdpJsonLd = {
                 <span class="badge-launch-mobile-tail" aria-hidden="true"></span>
               </div>
             )}
-            <div id="glider-slideimagenesProducto" class="w-full px-0 mobile-gallery-slider overflow-x-auto scroll-smooth" data-lenis-prevent>
+            <div id="glider-slideimagenesProducto" class="w-full px-0 mobile-gallery-slider overflow-x-auto scroll-smooth" data-lenis-prevent data-gallery-images={JSON.stringify(product.gallery)}>
               <ul class="flex snap-x snap-mandatory">
                 {product.gallery && product.gallery.map((item, index) => {
                   const isImage = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(item);
@@ -357,12 +357,12 @@ const pdpJsonLd = {
                     <GalleryPopup gallery={product.gallery} startIndex={6} />
                 )} */}
 
-                  <GalleryPopup gallery={product.gallery} />
-
                 </div>
             </div>
           )}
         </div>
+
+        <GalleryPopup gallery={product.gallery} />
 
         <!-- INFO PRODUCTO -->
         <div class="space-y-6 lg:px-6 gap-2 flex flex-col ">
@@ -781,19 +781,46 @@ const pdpJsonLd = {
     if (inactiveIcon) inactiveIcon.classList.toggle('hidden', active);
   }
 
+  function isTouchGalleryScreen() {
+    return window.matchMedia('(max-width: 1023px)').matches;
+  }
+
+  function getMobileGalleryImages() {
+    const slider = document.getElementById('glider-slideimagenesProducto');
+    if (!slider) return [];
+    try {
+      return JSON.parse(slider.dataset.galleryImages || '[]');
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function getCurrentMobileImageIndex() {
+    const slider = document.getElementById('glider-slideimagenesProducto');
+    const images = getMobileGalleryImages();
+    if (!slider || !images.length) return 0;
+    const width = slider.clientWidth || 1;
+    const index = Math.round(slider.scrollLeft / width);
+    return Math.min(Math.max(index, 0), images.length - 1);
+  }
+
   function initZoom() {
     const zoomButtons = getZoomButtons();
     const mainImage = document.getElementById('main-image-desktop');
-    if (!zoomButtons.length || !mainImage) return;
+    if (!zoomButtons.length) return;
 
     currentMainImage?.removeEventListener('mousemove', handleMouseMove);
     currentMainImage?.removeEventListener('mouseleave', handleMouseLeave);
 
-    currentMainImage = mainImage;
-    currentMainImage.style.cursor = zoomActive ? 'zoom-in' : 'default';
-    currentMainImage.style.transform = 'scale(1)';
-    currentMainImage.style.transformOrigin = 'center';
-    currentMainImage.style.transition = 'transform 0.2s ease';
+    if (mainImage) {
+      currentMainImage = mainImage;
+      currentMainImage.style.cursor = zoomActive ? 'zoom-in' : 'default';
+      currentMainImage.style.transform = 'scale(1)';
+      currentMainImage.style.transformOrigin = 'center';
+      currentMainImage.style.transition = 'transform 0.2s ease';
+    } else {
+      currentMainImage = null;
+    }
 
     zoomButtons.forEach((button) => {
       button.removeEventListener('click', handleZoomClick);
@@ -801,14 +828,25 @@ const pdpJsonLd = {
       updateZoomButtonState(button, zoomActive);
     });
 
-    currentMainImage.addEventListener('mousemove', handleMouseMove);
-    currentMainImage.addEventListener('mouseleave', handleMouseLeave);
+    if (currentMainImage) {
+      currentMainImage.addEventListener('mousemove', handleMouseMove);
+      currentMainImage.addEventListener('mouseleave', handleMouseLeave);
+    }
   }
 
   function handleZoomClick(event) {
     event.preventDefault();
-    zoomActive = !zoomActive;
 
+    if (isTouchGalleryScreen()) {
+      const images = getMobileGalleryImages();
+      const index = getCurrentMobileImageIndex();
+      if (Array.isArray(images) && images.length && typeof window.openGalleryPopup === 'function') {
+        window.openGalleryPopup(images, index);
+      }
+      return;
+    }
+
+    zoomActive = !zoomActive;
     currentMainImage.style.cursor = zoomActive ? 'zoom-in' : 'default';
     if (!zoomActive) {
       currentMainImage.style.transform = 'scale(1)';
