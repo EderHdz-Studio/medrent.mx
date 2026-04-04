@@ -16,8 +16,9 @@ const articles = Astro.props.articles || [];
 
   <div
     id="searchOverlay"
-    class="fixed inset-0 z-[200] flex items-start justify-center bg-transparent hidden p-2 rounded px-4 py-2 lg:px-2 lg:py-2"
+    class="fixed inset-0 z-[200] flex items-start justify-center bg-black/50 backdrop-blur-sm transition-all duration-300 hidden p-2 rounded px-4 py-2 lg:px-2 lg:py-2"
     tabindex="-1"
+    aria-hidden="true"
   >
     <div id="searchContainer" class="search-container relative w-full  flex flex-col items-center bg-white border border-gray-200 rounded-lg z-[210] p-0 max-h-[90vh] " 
     >
