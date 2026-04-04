@@ -13,7 +13,7 @@ const { classNames = "" } = Astro.props;
     </button>
     
     <!-- GRUPO DE SHARE -->
-    <div class="share-actions absolute left-0 top-0 flex items-center opacity-0 scale-95 cursor-pointer transition-all duration-300">
+    <div class="share-actions absolute left-0 top-0 flex items-center opacity-0 scale-95 cursor-pointer transition-all duration-300" style="z-index: 9999;">
       <button class="share-close w-10 h-10 flex items-center justify-center bg-[var(--color-primary)] rounded-l-[4px] rounded-r-none cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="white"/>
