@@ -167,7 +167,7 @@ const pdpJsonLd = {
                 <span class="badge-launch-mobile-tail" aria-hidden="true"></span>
               </div>
             )}
-            <div id="glider-slideimagenesProducto" class="w-full px-0 mobile-gallery-slider overflow-x-auto scroll-smooth" data-lenis-prevent>
+            <div id="glider-slideimagenesProducto" class="w-full px-0 mobile-gallery-slider overflow-x-auto scroll-smooth" data-lenis-prevent data-gallery-images={JSON.stringify(product.gallery)}>
               <ul class="flex snap-x snap-mandatory">
                 {product.gallery && product.gallery.map((item, index) => {
                   const isImage = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(item);
@@ -216,9 +216,18 @@ const pdpJsonLd = {
               </span>
             </div>
 
-            <button class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent" title="zoom">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <button
+              type="button"
+              data-zoom-button
+              aria-pressed="false"
+              title="Activar zoom"
+              class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent text-[#212121] transition-colors duration-200"
+            >
+                <svg class="zoom-icon-inactive w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
+                </svg>
+                <svg class="zoom-icon-active hidden w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.71 20.29L18 16.61C19.4401 14.8144 20.1375 12.5353 19.9488 10.2413C19.7601 7.94733 18.6997 5.81281 16.9855 4.27667C15.2714 2.74053 13.0338 1.91954 10.7329 1.9825C8.43207 2.04546 6.24275 2.98759 4.61517 4.61517C2.98759 6.24275 2.04546 8.43207 1.9825 10.7329C1.91954 13.0338 2.74053 15.2714 4.27667 16.9855C5.81281 18.6997 7.94733 19.7601 10.2413 19.9488C12.5353 20.1375 14.8144 19.4401 16.61 18L20.29 21.68C20.383 21.7738 20.4936 21.8482 20.6154 21.8989C20.7373 21.9497 20.868 21.9758 21 21.9758C21.132 21.9758 21.2627 21.9497 21.3846 21.8989C21.5065 21.8482 21.6171 21.7738 21.71 21.68C21.8903 21.4936 21.991 21.2444 21.991 20.985C21.991 20.7257 21.8903 20.4765 21.71 20.29ZM11 18C9.61556 18 8.26218 17.5895 7.11103 16.8203C5.95989 16.0511 5.06268 14.9579 4.53287 13.6788C4.00306 12.3997 3.86443 10.9923 4.13453 9.63439C4.40463 8.27653 5.07131 7.02925 6.05028 6.05028C7.02925 5.07131 8.27653 4.40463 9.63439 4.13453C10.9923 3.86443 12.3997 4.00306 13.6788 4.53287C14.9579 5.06268 16.0511 5.95989 16.8203 7.11103C17.5895 8.26218 18 9.61556 18 11C18 12.8565 17.2625 14.637 15.9498 15.9498C14.637 17.2625 12.8565 18 11 18ZM15 10H7.00003C6.73481 10 6.48046 10.1054 6.29292 10.2929C6.10538 10.4805 6.00003 10.7348 6.00003 11C6.00003 11.2652 6.10538 11.5196 6.29292 11.7071C6.48046 11.8947 6.73481 12 7.00003 12H15C15.2652 12 15.5196 11.8947 15.7071 11.7071C15.8947 11.5196 16 11.2652 16 11C16 10.7348 15.8947 10.4805 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10Z" fill="white"/>
                 </svg>
             </button>
           </div>
@@ -256,9 +265,18 @@ const pdpJsonLd = {
               <!-- Contenedor btns share -->
               <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
                 
-              <button class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent" title="Buscar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <button
+                type="button"
+                data-zoom-button
+                aria-pressed="false"
+                title="Activar zoom"
+                class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent text-[#212121] transition-colors duration-200"
+              >
+                <svg class="zoom-icon-inactive w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
+                </svg>
+                <svg class="zoom-icon-active hidden w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.71 20.29L18 16.61C19.4401 14.8144 20.1375 12.5353 19.9488 10.2413C19.7601 7.94733 18.6997 5.81281 16.9855 4.27667C15.2714 2.74053 13.0338 1.91954 10.7329 1.9825C8.43207 2.04546 6.24275 2.98759 4.61517 4.61517C2.98759 6.24275 2.04546 8.43207 1.9825 10.7329C1.91954 13.0338 2.74053 15.2714 4.27667 16.9855C5.81281 18.6997 7.94733 19.7601 10.2413 19.9488C12.5353 20.1375 14.8144 19.4401 16.61 18L20.29 21.68C20.383 21.7738 20.4936 21.8482 20.6154 21.8989C20.7373 21.9497 20.868 21.9758 21 21.9758C21.132 21.9758 21.2627 21.9497 21.3846 21.8989C21.5065 21.8482 21.6171 21.7738 21.71 21.68C21.8903 21.4936 21.991 21.2444 21.991 20.985C21.991 20.7257 21.8903 20.4765 21.71 20.29ZM11 18C9.61556 18 8.26218 17.5895 7.11103 16.8203C5.95989 16.0511 5.06268 14.9579 4.53287 13.6788C4.00306 12.3997 3.86443 10.9923 4.13453 9.63439C4.40463 8.27653 5.07131 7.02925 6.05028 6.05028C7.02925 5.07131 8.27653 4.40463 9.63439 4.13453C10.9923 3.86443 12.3997 4.00306 13.6788 4.53287C14.9579 5.06268 16.0511 5.95989 16.8203 7.11103C17.5895 8.26218 18 9.61556 18 11C18 12.8565 17.2625 14.637 15.9498 15.9498C14.637 17.2625 12.8565 18 11 18ZM15 10H7.00003C6.73481 10 6.48046 10.1054 6.29292 10.2929C6.10538 10.4805 6.00003 10.7348 6.00003 11C6.00003 11.2652 6.10538 11.5196 6.29292 11.7071C6.48046 11.8947 6.73481 12 7.00003 12H15C15.2652 12 15.5196 11.8947 15.7071 11.7071C15.8947 11.5196 16 11.2652 16 11C16 10.7348 15.8947 10.4805 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10Z" fill="white"/>
                 </svg>
               </button>
             </div>
@@ -339,12 +357,12 @@ const pdpJsonLd = {
                     <GalleryPopup gallery={product.gallery} startIndex={6} />
                 )} */}
 
-                  <GalleryPopup gallery={product.gallery} />
-
                 </div>
             </div>
           )}
         </div>
+
+        <GalleryPopup gallery={product.gallery} />
 
         <!-- INFO PRODUCTO -->
         <div class="space-y-6 lg:px-6 gap-2 flex flex-col ">
@@ -744,79 +762,116 @@ const pdpJsonLd = {
 <!-- BTN ZOOM -->
 <script is:inline>
   let zoomActive = false;
-  let currentZoomBtn = null;
   let currentMainImage = null;
 
-  function initZoom() {
-    const zoomBtn = document.querySelector('#mediaButtons button[title="Buscar"]');
-    const mainImage = document.getElementById('main-image-desktop');
-    
-    // Remover event listeners anteriores si existen
-    if (currentZoomBtn && currentZoomBtn !== zoomBtn) {
-      currentZoomBtn.removeEventListener('click', handleZoomClick);
-    }
-    if (currentMainImage && currentMainImage !== mainImage) {
-      currentMainImage.removeEventListener('mousemove', handleMouseMove);
-      currentMainImage.removeEventListener('mouseleave', handleMouseLeave);
-    }
-    
-    if (!zoomBtn || !mainImage) return;
-    
-    currentZoomBtn = zoomBtn;
-    currentMainImage = mainImage;
-    
-    // Resetear zoom visual
-    mainImage.style.cursor = 'default';
-    mainImage.style.transform = 'scale(1)';
-    mainImage.style.transformOrigin = 'center';
-    
-    // Agregar event listeners
-    zoomBtn.removeEventListener('click', handleZoomClick);
-    zoomBtn.addEventListener('click', handleZoomClick);
-    
-    mainImage.removeEventListener('mousemove', handleMouseMove);
-    mainImage.addEventListener('mousemove', handleMouseMove);
-    
-    mainImage.removeEventListener('mouseleave', handleMouseLeave);
-    mainImage.addEventListener('mouseleave', handleMouseLeave);
+  function getZoomButtons() {
+    return Array.from(document.querySelectorAll('[data-zoom-button]'));
   }
-  
-  function handleZoomClick(e) {
-    e.preventDefault();
-    zoomActive = !zoomActive;
-    
-    if (zoomActive) {
-      currentMainImage.style.cursor = 'zoom-in';
+
+  function updateZoomButtonState(button, active) {
+    button.setAttribute('aria-pressed', String(active));
+    button.classList.toggle('bg-[#006764]', active);
+    button.classList.toggle('bg-transparent', !active);
+    button.classList.toggle('text-white', active);
+    button.classList.toggle('text-[#212121]', !active);
+
+    const activeIcon = button.querySelector('.zoom-icon-active');
+    const inactiveIcon = button.querySelector('.zoom-icon-inactive');
+    if (activeIcon) activeIcon.classList.toggle('hidden', !active);
+    if (inactiveIcon) inactiveIcon.classList.toggle('hidden', active);
+  }
+
+  function isTouchGalleryScreen() {
+    return window.matchMedia('(max-width: 1023px)').matches;
+  }
+
+  function getMobileGalleryImages() {
+    const slider = document.getElementById('glider-slideimagenesProducto');
+    if (!slider) return [];
+    try {
+      return JSON.parse(slider.dataset.galleryImages || '[]');
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function getCurrentMobileImageIndex() {
+    const slider = document.getElementById('glider-slideimagenesProducto');
+    const images = getMobileGalleryImages();
+    if (!slider || !images.length) return 0;
+    const width = slider.clientWidth || 1;
+    const index = Math.round(slider.scrollLeft / width);
+    return Math.min(Math.max(index, 0), images.length - 1);
+  }
+
+  function initZoom() {
+    const zoomButtons = getZoomButtons();
+    const mainImage = document.getElementById('main-image-desktop');
+    if (!zoomButtons.length) return;
+
+    currentMainImage?.removeEventListener('mousemove', handleMouseMove);
+    currentMainImage?.removeEventListener('mouseleave', handleMouseLeave);
+
+    if (mainImage) {
+      currentMainImage = mainImage;
+      currentMainImage.style.cursor = zoomActive ? 'zoom-in' : 'default';
+      currentMainImage.style.transform = 'scale(1)';
+      currentMainImage.style.transformOrigin = 'center';
       currentMainImage.style.transition = 'transform 0.2s ease';
     } else {
-      currentMainImage.style.cursor = 'default';
+      currentMainImage = null;
+    }
+
+    zoomButtons.forEach((button) => {
+      button.removeEventListener('click', handleZoomClick);
+      button.addEventListener('click', handleZoomClick);
+      updateZoomButtonState(button, zoomActive);
+    });
+
+    if (currentMainImage) {
+      currentMainImage.addEventListener('mousemove', handleMouseMove);
+      currentMainImage.addEventListener('mouseleave', handleMouseLeave);
+    }
+  }
+
+  function handleZoomClick(event) {
+    event.preventDefault();
+
+    if (isTouchGalleryScreen()) {
+      const images = getMobileGalleryImages();
+      const index = getCurrentMobileImageIndex();
+      if (Array.isArray(images) && images.length && typeof window.openGalleryPopup === 'function') {
+        window.openGalleryPopup(images, index);
+      }
+      return;
+    }
+
+    zoomActive = !zoomActive;
+    currentMainImage.style.cursor = zoomActive ? 'zoom-in' : 'default';
+    if (!zoomActive) {
       currentMainImage.style.transform = 'scale(1)';
       currentMainImage.style.transformOrigin = 'center';
     }
+
+    getZoomButtons().forEach((button) => updateZoomButtonState(button, zoomActive));
   }
-  
-  function handleMouseMove(e) {
-    if (!zoomActive) return;
-    if (!currentMainImage) return;
-    
+
+  function handleMouseMove(event) {
+    if (!zoomActive || !currentMainImage) return;
     const rect = currentMainImage.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
     currentMainImage.style.transformOrigin = `${x}% ${y}%`;
     currentMainImage.style.transform = 'scale(2)';
   }
-  
+
   function handleMouseLeave() {
     if (zoomActive && currentMainImage) {
       currentMainImage.style.transform = 'scale(1)';
     }
   }
-  
-  // Inicializar al cargar la página
+
   document.addEventListener('DOMContentLoaded', initZoom);
-  
-  // Exponer función para que sea llamada desde otros scripts cuando cambie la imagen
   window.reinitZoom = initZoom;
 </script>
 
@@ -917,17 +972,17 @@ const pdpJsonLd = {
 
 <style>
   .faq-hover-fill-effect {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #EDF2F0;
-      transform: scaleY(0);
-      transform-origin: bottom center;
-      transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-      z-index: 1;
-      border-radius: 2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #EDF2F0;
+    transform: scaleY(0);
+    transform-origin: bottom center;
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1;
+    border-radius: 2px;
   }
 
   .badge-launch-mobile {
@@ -962,13 +1017,13 @@ const pdpJsonLd = {
   }
 
   .relative.z-10 {
-      position: relative;
-      z-index: 10;
+    position: relative;
+    z-index: 10;
   }
 
   @media (min-width: 768px) {
-      .group:hover .faq-hover-fill-effect {
-          transform: scaleY(1);
-      }
+    .group:hover .faq-hover-fill-effect {
+      transform: scaleY(1);
+    }
   }
 </style>
