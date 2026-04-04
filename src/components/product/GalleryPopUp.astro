@@ -1,10 +1,13 @@
+---
+import ShareButtons from '@components/product/ShareButtons.astro';
+---
 <!-- Popup Galería de Imágenes y Videos tipo newsletter -->
 <div id="gallery-popup-overlay" class="fixed inset-0 z-[9999] hidden">
   <!-- Fondo con blur y gradiente -->
   <div 
     id="gallery-blurred-background" 
     class="absolute inset-0 transition-all duration-300"
-    style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%); filter: blur(8px);">
+    style="background: rgba(23, 29, 28, 0.80); backdrop-filter: blur(7px);">
   </div>
   <!-- Popup Content -->
   <div class="relative z-[10000] flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto">
@@ -39,6 +42,36 @@
             style="background: #FFF; padding: 60px; box-sizing: border-box;">
             Tu navegador no soporta la reproducción de video.
           </video>
+        </div>
+
+        <div class="lg:hidden w-full mt-4">
+          <div id="popupMediaButtonsMobile" class="flex flex-row items-center gap-2 left-0 bottom-0 w-full z-20 px-2 py-2 justify-between bg-transparent relative">
+            <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
+
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-3 z-30 pointer-events-none">
+              <span
+                id="popup-mobile-gallery-counter"
+                class="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--color-text-default)] bg-[#F3FFFD] px-4 py-1 text-center text-[var(--color-text-default)] text-[16px] font-normal leading-6 tracking-[0.5px]"
+              >
+                1 / 0
+              </span>
+            </div>
+
+            <button
+              type="button"
+              data-zoom-button
+              aria-pressed="false"
+              title="Activar zoom"
+              class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent text-[#212121] transition-colors duration-200"
+            >
+              <svg class="zoom-icon-inactive w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
+              </svg>
+              <svg class="zoom-icon-active hidden w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.71 20.29L18 16.61C19.4401 14.8144 20.1375 12.5353 19.9488 10.2413C19.7601 7.94733 18.6997 5.81281 16.9855 4.27667C15.2714 2.74053 13.0338 1.91954 10.7329 1.9825C8.43207 2.04546 6.24275 2.98759 4.61517 4.61517C2.98759 6.24275 2.04546 8.43207 1.9825 10.7329C1.91954 13.0338 2.74053 15.2714 4.27667 16.9855C5.81281 18.6997 7.94733 19.7601 10.2413 19.9488C12.5353 20.1375 14.8144 19.4401 16.61 18L20.29 21.68C20.383 21.7738 20.4936 21.8482 20.6154 21.8989C20.7373 21.9497 20.868 21.9758 21 21.9758C21.132 21.9758 21.2627 21.9497 21.3846 21.8989C21.5065 21.8482 21.6171 21.7738 21.71 21.68C21.8903 21.4936 21.991 21.2444 21.991 20.985C21.991 20.7257 21.8903 20.4765 21.71 20.29ZM11 18C9.61556 18 8.26218 17.5895 7.11103 16.8203C5.95989 16.0511 5.06268 14.9579 4.53287 13.6788C4.00306 12.3997 3.86443 10.9923 4.13453 9.63439C4.40463 8.27653 5.07131 7.02925 6.05028 6.05028C7.02925 5.07131 8.27653 4.40463 9.63439 4.13453C10.9923 3.86443 12.3997 4.00306 13.6788 4.53287C14.9579 5.06268 16.0511 5.95989 16.8203 7.11103C17.5895 8.26218 18 9.61556 18 11C18 12.8565 17.2625 14.637 15.9498 15.9498C14.637 17.2625 12.8565 18 11 18ZM15 10H7.00003C6.73481 10 6.48046 10.1054 6.29292 10.2929C6.10538 10.4805 6.00003 10.7348 6.00003 11C6.00003 11.2652 6.10538 11.5196 6.29292 11.7071C6.48046 11.8947 6.73481 12 7.00003 12H15C15.2652 12 15.5196 11.8947 15.7071 11.7071C15.8947 11.5196 16 11.2652 16 11C16 10.7348 15.8947 10.4805 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10Z" fill="white"/>
+              </svg>
+            </button>
+          </div>
         </div>
         
         <span id="gallery-counter" class="absolute bottom-4 left-4 px-4 py-2 rounded-full bg-[rgba(0,0,0,0.75)] text-white font-medium text-[16px] z-[10001] backdrop-blur-sm" >
@@ -175,6 +208,20 @@
         exitManualFullscreen();
       }
     }
+
+    function setPopupZoomButtonState(active) {
+      const button = document.querySelector('#popupMediaButtonsMobile [data-zoom-button]');
+      if (!button) return;
+      button.setAttribute('aria-pressed', String(active));
+      const activeIcon = button.querySelector('.zoom-icon-active');
+      const inactiveIcon = button.querySelector('.zoom-icon-inactive');
+      if (activeIcon) activeIcon.classList.toggle('hidden', !active);
+      if (inactiveIcon) inactiveIcon.classList.toggle('hidden', active);
+      button.classList.toggle('bg-[#006764]', active);
+      button.classList.toggle('bg-transparent', !active);
+      button.classList.toggle('text-white', active);
+      button.classList.toggle('text-[#212121]', !active);
+    }
     
     // Hacer funciones globales
     window.exitManualFullscreen = exitManualFullscreen;
@@ -241,6 +288,7 @@
           if (isManualFullscreen) {
             exitManualFullscreen();
           }
+          setPopupZoomButtonState(false);
           
           overlay.classList.add('hidden');
           document.body.classList.remove('popup-open');
@@ -280,15 +328,57 @@
       const prevBtn = document.getElementById('gallery-prev');
       const nextBtn = document.getElementById('gallery-next');
       const counter = document.getElementById('gallery-counter');
+      const mobileCounter = document.getElementById('popup-mobile-gallery-counter');
+      const swipeContainer = document.getElementById('gallery-media-container');
       let current = indexMedia;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
       
-      // Resetear estado de fullscreen manual
-      isManualFullscreen = false;
-      if (videoElement) {
-        videoElement.classList.remove('manual-fullscreen-active');
-        document.body.classList.remove('video-fullscreen-manual');
+      function goPrev() {
+        if (mediaItems.length === 0) return;
+        if (isManualFullscreen) exitManualFullscreen();
+        videoElement.pause();
+        videoElement.currentTime = 0;
+        current = current === 0 ? mediaItems.length - 1 : current - 1;
+        updateMedia();
       }
 
+      function goNext() {
+        if (mediaItems.length === 0) return;
+        if (isManualFullscreen) exitManualFullscreen();
+        videoElement.pause();
+        videoElement.currentTime = 0;
+        current = current === mediaItems.length - 1 ? 0 : current + 1;
+        updateMedia();
+      }
+
+      function handleTouchStart(event) {
+        const touch = event.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchEndX = touchStartX;
+        touchEndY = touchStartY;
+      }
+
+      function handleTouchMove(event) {
+        const touch = event.touches[0];
+        touchEndX = touch.clientX;
+        touchEndY = touch.clientY;
+      }
+
+      function handleTouchEnd() {
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx > 0) {
+            goPrev();
+          } else {
+            goNext();
+          }
+        }
+      }
       function isVideoUrl(url) {
         if (!url) return false;
         const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv'];
@@ -327,7 +417,9 @@
           imageElement.classList.remove('hidden');
         }
 
-        counter.textContent = (current + 1) + ' / ' + mediaItems.length;
+        const label = (current + 1) + ' / ' + mediaItems.length;
+        if (counter) counter.textContent = label;
+        if (mobileCounter) mobileCounter.textContent = label;
       }
 
       prevBtn.replaceWith(prevBtn.cloneNode(true));
@@ -337,47 +429,24 @@
       const newNextBtn = document.getElementById('gallery-next');
       
       newPrevBtn.addEventListener('click', function() {
-        if (mediaItems.length === 0) return;
-        
-        // Salir de fullscreen manual si está activo
-        if (isManualFullscreen) {
-          exitManualFullscreen();
-        }
-        
-        videoElement.pause();
-        videoElement.currentTime = 0;
-        
-        if (current === 0) {
-          current = mediaItems.length - 1;
-        } else {
-          current--;
-        }
-        updateMedia();
+        goPrev();
       });
       
       newNextBtn.addEventListener('click', function() {
-        if (mediaItems.length === 0) return;
-        
-        // Salir de fullscreen manual si está activo
-        if (isManualFullscreen) {
-          exitManualFullscreen();
-        }
-        
-        videoElement.pause();
-        videoElement.currentTime = 0;
-        
-        if (current === mediaItems.length - 1) {
-          current = 0;
-        } else {
-          current++;
-        }
-        updateMedia();
+        goNext();
       });
+
+      if (swipeContainer && window.matchMedia('(max-width: 1024px)').matches) {
+        swipeContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+        swipeContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+        swipeContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+      }
       
       updateMedia();
       
       if (overlay) {
         overlay.classList.remove('hidden');
+        setPopupZoomButtonState(true);
         
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
@@ -443,25 +512,87 @@
     #gallery-main-image {
       max-width: 550px !important;
     }
+  }
+
+  @media (min-width: 481px) {
     #ImageGalery {
       width: 300px;
-      height: 300px;
-      min-height: 300px;
-      max-height: 300px;
-      max-width: 300px;
-      min-width: 300px;
-    }
-    #gallery-next,
-    #gallery-prev {
-      margin: 0;
-      padding: 0 6px;
+      height: 320px;
+      min-height: 535px;
+      max-height: 400px;
+      max-width: 400px;
+      min-width: 460px;
     }
   }
 
-  @media (min-width: 601px) {
+
+  @media (max-width: 480px) {
+    #ImageGalery {
+      width: 300px;
+      height: 320px;
+      min-height: 450px;
+      max-height: 400px;
+      max-width: 400px;
+      min-width: 380px;
+      overflow: hidden;
+    }
+    #gallery-counter {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 601px) and (max-width: 1023px) {
     #gallery-main-image {
       max-width: 600px !important;
       width: auto;
+    }
+    #gallery-counter {
+      display: none !important;
+    }
+    #ImageGalery {
+      width: 300px;
+      height: 400px;
+      min-height: 690px;
+      max-height: 440px;
+      max-width: 430px;
+      min-width: 600px;
+      overflow: hidden;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ImageGalery {
+      height: 378px;
+      min-height: 580px;
+      max-height: 420px;
+      max-width: 399px;
+      min-width: 600px;
+      overflow: hidden;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    #popupMediaButtonsMobile {
+      z-index: 30;
+      position: relative;
+    }
+    #popupMediaButtonsMobile [data-zoom-button] {
+      z-index: 30;
+      position: relative;
+    }
+  }
+
+  @media (max-width: 785px) {
+    #gallery-next,
+    #gallery-prev {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 784px) {
+    #gallery-next,
+    #gallery-prev {
+      display: flex !important;
     }
   }
 </style>
