@@ -31,6 +31,8 @@ const bootLenis = () => {
     autoRaf: false,
   });
 
+  // Exponer la instancia globalmente
+  window.lenis = lenis;
   let rafId = 0;
   const raf = (time: number) => {
     lenis.raf(time);
