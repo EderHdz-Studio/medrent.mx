@@ -94,6 +94,7 @@ const results = document.getElementById('searchResults');
 function openSearch() {
   overlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
+  if (window.lenis && typeof window.lenis.stop === 'function') window.lenis.stop();
   if (window.showBlurOverlay) window.showBlurOverlay();
   setTimeout(() => input.focus(), 50);
 }
@@ -101,6 +102,7 @@ function openSearch() {
 function closeSearch() {
   overlay.classList.add('hidden');
   document.body.style.overflow = '';
+  if (window.lenis && typeof window.lenis.start === 'function') window.lenis.start();
   input.value = '';
   results.innerHTML = '';
   results.classList.add('hidden');
