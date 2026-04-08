@@ -17,6 +17,7 @@ import Newsletter from "@components/FormNewsletter.astro";
 import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
 import PromotionSlider from "@components/sections/PromotionSlider.astro";
 import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
+import { isUsableBrandSlug } from "@lib/brandSlug";
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -91,9 +92,10 @@ const pdpGraph: any[] = [
     description: product.description,
     image: heroImageUrl ? [heroImageUrl] : undefined,
     category: ["Medical Device"],
-    brand: product.brand?.slug
-      ? { "@type": "Brand", "@id": `${baseUrl}/nuestras-marcas/${product.brand.slug}#brand` }
-      : undefined,
+    brand:
+      product.brand && isUsableBrandSlug(product.brand.slug)
+        ? { "@type": "Brand", "@id": `${baseUrl}/nuestras-marcas/${product.brand.slug}#brand` }
+        : undefined,
     datePublished: product.createdAt,
     offers: { "@id": offerId },
   },
@@ -367,13 +369,16 @@ const pdpJsonLd = {
         <!-- INFO PRODUCTO -->
         <div class="space-y-6 lg:px-6 gap-2 flex flex-col ">
 
-          {product.brand && (
+          {product.brand && isUsableBrandSlug(product.brand.slug) && (
             <a
               href={`/nuestras-marcas/${product.brand.slug}`}
               class="uppercase text-[var(--color-primary)] hover:underline text-sm m-0"
             >
               {product.brand.name}
             </a>
+          )}
+          {product.brand && !isUsableBrandSlug(product.brand.slug) && product.brand.name && (
+            <span class="uppercase text-[var(--color-primary)] text-sm m-0">{product.brand.name}</span>
           )}
 
           <h1 class="self-stretch m-0 uppercase font-bold text-[28px] leading-[36px] text-[var(--color-green-dark)] md:text-3xl md:leading-[1.2]">

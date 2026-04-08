@@ -14,10 +14,15 @@ import { getBrandBySlug, getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
 import { getAllSubcategories } from "@server/api/subcategories";
 import { formatSlugAsTitle } from "@lib/utils.js";
+import { isUsableBrandSlug } from "@lib/brandSlug";
 
 /* ---------------- ROUTE PARAM ---------------- */
 
 const { brand } = Astro.params;
+
+if (!isUsableBrandSlug(brand)) {
+  return Astro.redirect("/productos", 301);
+}
 
 /* ---------------- QUERY PARAMS ---------------- */
 

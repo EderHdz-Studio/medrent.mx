@@ -1,6 +1,7 @@
 ---
-import "../styles/global.css"; 
+import "../styles/global.css";
 import "lenis/dist/lenis.css";
+import "@glidejs/glide/dist/css/glide.core.min.css";
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const {
   title,
@@ -32,7 +33,6 @@ const resolvedOgImage = ogImage ?? `${siteOrigin}/favicon-512.png`;
 const resolvedTwitterTitle = twitterTitle ?? resolvedOgTitle;
 const resolvedTwitterDescription = twitterDescription ?? resolvedOgDescription;
 const resolvedTwitterImage = twitterImage ?? resolvedOgImage;
-const isLocalEnv = Astro.url.hostname === "localhost" || Astro.url.hostname === "127.0.0.1";
 
 import { SITE } from '@lib/site';
 const site = SITE;
@@ -46,6 +46,9 @@ import Navbar from "@components/layout/header/Navbar.astro";
 import StickyCta from "@components/layout/overlays/StickyCta.astro";
 
 // import LenisScroll from '@components/LenisScroll.astro';
+
+// GTM: no usar hostname del request (en SSR/Vercel no es el dominio publico).
+const isLocalEnv = import.meta.env.DEV;
 ---
 
 <!doctype html>
@@ -100,19 +103,7 @@ import StickyCta from "@components/layout/overlays/StickyCta.astro";
     <!-- 7. Schemas por página (Breadcrumb, etc.) -->
     <slot name="head" />
 
-    <!-- 8. CSS externo -->
-      <!-- Required Core stylesheet | https://github.com/glidejs/glide -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css"
-      onload="this.onload=null;this.rel='stylesheet'"
-    >
-    <noscript>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
-    </noscript>
-    <!-- Theme Glide and glider-js styles removed from global critical path.
-         We keep only glide.core globally and rely on local component styles. -->
+    <!-- 8. Glide core se importa en el frontmatter (Vite); evita carrera con el JS del carrusel -->
 
     <!-- 9. Scripts que deben cargarse temprano (GTM) -->
     {!isLocalEnv && (

@@ -2,6 +2,7 @@
 const { site } = Astro.props;
 import { strapiFetch } from "@server/strapiClient";
 import Search from "@components/layout/header/Search.astro";
+import { isUsableBrandSlug } from "@lib/brandSlug";
 import { getProducts } from "@server/api/products";
 import { getArticles } from "@server/api/articles";
 import { any } from "astro:schema";
@@ -163,7 +164,7 @@ const especialidades = categoriesData;
                 {marcasNavData.length > 0 ? (
                   marcasNavData.map((marca) => (
                     <a 
-                      href={`/nuestras-marcas/${marca.slug}`}
+                      href={isUsableBrandSlug(marca.slug) ? `/nuestras-marcas/${marca.slug}` : "/productos"}
                       class="p-2 cursor-pointer marcaLink group flex items-center justify-between gap-2 rounded transition-colors min-w-[140px] hover:text-[var(--color-primary)] hover:bg-[var(--color-secondary-light)]"
                       style="margin-bottom: 16px;"
                     >
@@ -538,7 +539,7 @@ const especialidades = categoriesData;
            {marcasNavData.length > 0 ? (
                 marcasNavData.map((marca) => (
                   <a 
-                    href={`/nuestras-marcas/${marca.slug}`}
+                    href={isUsableBrandSlug(marca.slug) ? `/nuestras-marcas/${marca.slug}` : "/productos"}
                     class="marcaLink flex items-center justify-between gap-2 text-gray-700 transition-colors p-4"
                   >
                     <span class="marcaName transition-colors">

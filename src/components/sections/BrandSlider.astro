@@ -1,5 +1,6 @@
 ---
 import ImageResponsive from "@components/media/ImageResponsive.astro";
+import { isUsableBrandSlug } from "@lib/brandSlug";
 type BrandItem = {
   slug?: string;
   name?: string;
@@ -31,7 +32,10 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
           <ul class="glide__slides">
             {marcasData.map((brand: BrandItem) => (
               <li class="glide__slide flex justify-center items-center p-6" style="width: 158px;">
-                <a href={'nuestras-marcas/' + brand.slug || '#'} class="hover-scale-img block">
+                <a
+                  href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
+                  class="hover-scale-img block"
+                >
                   <ImageResponsive
                     image={brand.logo}
                     alt={brand.name}

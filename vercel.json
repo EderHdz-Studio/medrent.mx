@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/team-medrent",
+      "destination": "/blog/autor/team-medrent",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",

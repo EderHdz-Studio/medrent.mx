@@ -8,6 +8,8 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ImageResponsive from '@components/media/ImageResponsive.astro';
 
 import { strapiFetch } from "@server/strapiClient";
+import { isUsableBrandSlug } from "@lib/brandSlug";
+
 const brands = await strapiFetch("/brands?populate=*");
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
@@ -32,9 +34,11 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
         />
         <script type="application/ld+json" set:html={
           (() => {
-            const list = Array.isArray(brands?.data) ? brands.data.slice(0, 12) : [];
+            const list = Array.isArray(brands?.data)
+              ? brands.data.filter((b) => isUsableBrandSlug(b?.slug)).slice(0, 12)
+              : [];
             const itemListElement = list.map((b, index) => {
-              const brandUrl = `${baseUrl}/nuestras-marcas/${b?.slug || ""}`;
+              const brandUrl = `${baseUrl}/nuestras-marcas/${b.slug}`;
               const brandId = `${brandUrl}#brand`;
               const imageUrl = b?.logo?.url;
               return {
@@ -182,7 +186,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 </h2>
                 <p class="text-[14px] md:text-[16px] font-normal text-[#212121]" set:html={brand.description} />
                 <a 
-                href={`/nuestras-marcas/${brand.slug}`} 
+                href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"} 
                 class="inline-flex items-center gap-1 mt-4 bg-white hover:bg-[var(--color-accent)] border-2 border-[var(--color-accent)] font-bold text-[14px] text-[var(--color-accent)] hover:text-white rounded transition-colors px-4 py-3"
                 >
                 Descubrir sus productos

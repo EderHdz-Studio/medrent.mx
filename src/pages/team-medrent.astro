@@ -1,0 +1,11 @@
+---
+/**
+ * Ruta corta compartida en redes / enlaces legacy.
+ * - `prerender: true` solo emite HTML con meta refresh (no 301 HTTP).
+ * - SSR devuelve 301 real y registra la ruta en `.vercel/output/config.json` → `_render`.
+ * `vercel.json` redirects no se fusionan con el Build Output API de este adapter.
+ */
+export const prerender = false;
+
+return Astro.redirect("/blog/autor/team-medrent", 301);
+---
