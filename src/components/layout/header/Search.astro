@@ -247,7 +247,7 @@ const art = articles.filter(a =>
           </div>
           ${mar.map(m => `
             <a
-              href="/nuestras-marcas/${m.slug}"
+              href="${m.slug && m.slug !== 'undefined' && m.slug !== 'null' ? `/nuestras-marcas/${m.slug}` : '/productos'}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${m.name}

@@ -1,5 +1,6 @@
 ---
 import type { Product } from "@lib/domain/product/types";
+import { isUsableBrandSlug } from "@lib/brandSlug";
 
 interface Props {
   product: Product;
@@ -38,14 +39,19 @@ const { product } = Astro.props;
     {/* Contenedor de contenido */}
     <div class="relative p-3 sm:p-4 flex flex-col flex-grow bg-white group-hover:bg-[var(--color-secondary-light)] transition-colors duration-300">
         <div class="relative z-10 flex flex-col gap-3 flex-grow">
-            <!-- {product.CatalogoMarca?.Marca && ( -->
+            {product?.brand?.name &&
+              (isUsableBrandSlug(product.brand.slug) ? (
                 <a
-                href={`/nuestras-marcas/${product?.brand?.slug}`}
-                class="uppercase text-[11px] sm:text-[12px] font-medium leading-[18px] tracking-[0.1px] text-[var(--color-primary)] hover:underline"
+                  href={`/nuestras-marcas/${product.brand.slug}`}
+                  class="uppercase text-[11px] sm:text-[12px] font-medium leading-[18px] tracking-[0.1px] text-[var(--color-primary)] hover:underline"
                 >
-                   {product?.brand?.name}
+                  {product.brand.name}
                 </a>
-            <!-- )} -->
+              ) : (
+                <span class="uppercase text-[11px] sm:text-[12px] font-medium leading-[18px] tracking-[0.1px] text-[var(--color-primary)]">
+                  {product.brand.name}
+                </span>
+              ))}
             <a
                 href={`/productos/${product.slug}`}
                 class="block hover:underline transition-all duration-300 product-link"

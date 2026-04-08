@@ -32,7 +32,6 @@ const resolvedOgImage = ogImage ?? `${siteOrigin}/favicon-512.png`;
 const resolvedTwitterTitle = twitterTitle ?? resolvedOgTitle;
 const resolvedTwitterDescription = twitterDescription ?? resolvedOgDescription;
 const resolvedTwitterImage = twitterImage ?? resolvedOgImage;
-const isLocalEnv = Astro.url.hostname === "localhost" || Astro.url.hostname === "127.0.0.1";
 
 import { SITE } from '@lib/site';
 const site = SITE;
@@ -46,6 +45,9 @@ import Navbar from "@components/layout/header/Navbar.astro";
 import StickyCta from "@components/layout/overlays/StickyCta.astro";
 
 // import LenisScroll from '@components/LenisScroll.astro';
+
+// GTM: no usar hostname del request (en SSR/Vercel no es el dominio publico).
+const isLocalEnv = import.meta.env.DEV;
 ---
 
 <!doctype html>
