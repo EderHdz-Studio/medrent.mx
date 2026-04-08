@@ -675,7 +675,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 <!-- Botón cerrar en esquina superior derecha del popup -->
                 <button 
                     id="close-event-popup"
-                    class="absolute top-4 right-4 text-white text-2xl leading-none bg-[#171D1C] border-none cursor-pointer z-10 px-2 py-1 rounded"
+                    class="absolute top-0 right-0 flex items-end justify-end text-white text-2xl leading-none bg-[#171D1C] border-none cursor-pointer z-10 px-2 py-1 rounded"
                 >
                     ×
                 </button>
@@ -711,7 +711,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         </div>
                         
 
-                        <BaseForm id="events-form" class="space-y-8  rounded">
+                        <BaseForm id="events-form" class="space-y-8 rounded flex flex-col gap-6">
                             <FormField
                             label="Nombre completo"
                             name="name"
@@ -956,7 +956,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             if (popupDescription) popupDescription.textContent = 'Descripción del evento';
             if (popupImage) (popupImage as HTMLDivElement).style.display = 'block';
             if (form) {
-                (form as HTMLDivElement).style.display = 'block';
+                (form as HTMLDivElement).style.display = 'flex';
                 (form as HTMLFormElement).reset();
                 document.querySelector('.form-container')?.classList.remove('hidden');
                 document.querySelector('.form-success')?.classList.add('hidden');
