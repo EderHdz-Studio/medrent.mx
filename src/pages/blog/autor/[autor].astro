@@ -1,70 +1,277 @@
 ---
+export const prerender = false;
+
 import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import ArticleCard from '@components/blog/articleCard.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import { buildClassificationTagByArticleKeyMap } from '@lib/blog/classification';
+import {
+  type NormalizedBlogArticle,
+  type NormalizedWriter,
+  normalizeBlogArticleFromApi,
+  normalizeWriterFromApi,
+  isBlogArticleListed,
+} from "@lib/strapi/blogArticle";
 
-// import { formatDate } from '@lib/utils.js';
-// import SocialMedia from '@components/blog/SocialMedia.astro';
+const TEAM_MEDRENT_SLUG = "team-medrent";
 
+/** Copy hero perfil colectivo — Wireframes Medrent (node 526:2818). */
+const TEAM_FIGMA_INTRO_P1 =
+  "Los artículos de este blog son elaborados por el equipo de Medrent, un grupo multidisciplinario especializado en tecnología médica y diagnóstico.";
+const TEAM_FIGMA_INTRO_P2 =
+  "Contamos con el respaldo y la colaboración de médicos reconocidos en la industria de la salud, quienes aportan su experiencia clínica para garantizar la precisión y relevancia de cada publicación.";
+
+const autorParam = Astro.params.autor?.trim();
+if (!autorParam) {
+  return Astro.redirect("/404");
+}
+
+let articlesResponse: { data?: unknown[] } = { data: [] };
+try {
+  articlesResponse = await strapiFetch(
+    "/blog-articles?populate[heroImage]=true&populate[speciality]=true&populate[writer][populate]=*&sort=publishedAt:desc&pagination[pageSize]=2000",
+  );
+} catch {
+  try {
+    articlesResponse = await strapiFetch(
+      "/blog-articles?populate=*&sort=publishedAt:desc&pagination[pageSize]=2000",
+    );
+  } catch {
+    /** Sin CMS, el perfil colectivo sigue siendo una URL válida; otros autores no se pueden resolver. */
+    if (autorParam !== TEAM_MEDRENT_SLUG) {
+      return Astro.redirect("/404");
+    }
+    articlesResponse = { data: [] };
+  }
+}
+
+const raw = Array.isArray(articlesResponse.data) ? articlesResponse.data : [];
+const articles: NormalizedBlogArticle[] = raw
+  .map((row) => normalizeBlogArticleFromApi(row))
+  .filter((a): a is NormalizedBlogArticle => a != null)
+  .filter(isBlogArticleListed);
+
+let author: {
+  slug: string;
+  fullName?: string;
+  shortDescription?: string;
+  longDescription?: unknown;
+  heroImage?: { url?: string };
+  speciality?: string;
+  articles: NormalizedBlogArticle[];
+};
+
+if (autorParam === TEAM_MEDRENT_SLUG) {
+  /**
+   * En Strapi suele existir un Writer con slug `team-medrent` (histórico: getStaticPaths agrupaba por ese slug).
+   * Además, en plantillas el fallback sin escritor enlaza a esta misma URL.
+   * Hay que unir ambos conjuntos; si solo filtráramos "sin slug", desaparecerían los artículos del autor CMS.
+   */
+  const withTeamSlug = articles.filter((a) => a.writer?.slug === TEAM_MEDRENT_SLUG);
+  const withoutWriterSlug = articles.filter((a) => {
+    const s = a.writer?.slug;
+    return typeof s !== "string" || s.trim().length === 0;
+  });
+  const mergedByArticleSlug = new Map<string, NormalizedBlogArticle>();
+  let noSlugIdx = 0;
+  for (const a of [...withTeamSlug, ...withoutWriterSlug]) {
+    const key =
+      typeof a.slug === "string" && a.slug.length > 0 ? a.slug : `__ns_${noSlugIdx++}`;
+    mergedByArticleSlug.set(key, a);
+  }
+  const teamArticles = Array.from(mergedByArticleSlug.values());
+
+  const w: NormalizedWriter | undefined = withTeamSlug[0]?.writer;
+  author = {
+    slug: TEAM_MEDRENT_SLUG,
+    fullName: w?.fullName || "Team Medrent",
+    shortDescription:
+      w?.shortDescription ||
+      `${TEAM_FIGMA_INTRO_P1} ${TEAM_FIGMA_INTRO_P2}`,
+    longDescription: w?.longDescription ?? [],
+    heroImage: w?.heroImage,
+    speciality: (w?.speciality && w.speciality.trim()) || "BACKOFFICE",
+    articles: teamArticles,
+  };
+} else {
+  const forSlug = articles.filter((a) => a.writer?.slug === autorParam);
+  if (forSlug.length === 0) {
+    return Astro.redirect("/404");
+  }
+  const w: NormalizedWriter | undefined = forSlug[0].writer;
+  author = {
+    slug: autorParam,
+    fullName: w?.fullName,
+    shortDescription: w?.shortDescription,
+    longDescription: w?.longDescription,
+    heroImage: w?.heroImage,
+    speciality: w?.speciality,
+    articles: forSlug,
+  };
+}
+
+function articleDateMs(a: NormalizedBlogArticle) {
+  return new Date(a.publishedAt || a.createdAt || 0).getTime();
+}
+
+const requestUrl = new URL(Astro.request.url);
+const sortParam = requestUrl.searchParams.get("sort") || "published_desc";
+const authorsListPage = Math.max(
+  1,
+  parseInt(requestUrl.searchParams.get("authorsPage") || "1", 10) || 1,
+);
+
+let displayArticles = [...author.articles];
+if (sortParam === "published_asc") {
+  displayArticles.sort((a, b) => articleDateMs(a) - articleDateMs(b));
+} else if (sortParam === "title_asc") {
+  displayArticles.sort((a, b) =>
+    (a.title || "").localeCompare(b.title || "", "es", { sensitivity: "base" }),
+  );
+} else {
+  displayArticles.sort((a, b) => articleDateMs(b) - articleDateMs(a));
+}
+
+type OtherAuthor = {
+  slug: string;
+  fullName?: string;
+  heroImage?: { url?: string };
+  speciality?: string;
+};
+const otherBySlug = new Map<string, OtherAuthor>();
+for (const a of articles) {
+  const w = a.writer;
+  const s = w?.slug;
+  if (typeof s !== "string" || !s.trim() || s === TEAM_MEDRENT_SLUG) continue;
+  if (s === autorParam) continue;
+  if (!otherBySlug.has(s)) {
+    otherBySlug.set(s, {
+      slug: s,
+      fullName: w?.fullName,
+      heroImage: w?.heroImage,
+      speciality: w?.speciality,
+    });
+  }
+}
+const otherAuthorsAll = Array.from(otherBySlug.values()).sort((x, y) =>
+  (x.fullName || x.slug).localeCompare(y.fullName || y.slug, "es", {
+    sensitivity: "base",
+  }),
+);
+const AUTHORS_PER_PAGE = 7;
+const authorsTotalPages = Math.max(1, Math.ceil(otherAuthorsAll.length / AUTHORS_PER_PAGE));
+const authorsPageSafe = Math.min(authorsListPage, authorsTotalPages);
+const otherAuthorsSlice = otherAuthorsAll.slice(
+  (authorsPageSafe - 1) * AUTHORS_PER_PAGE,
+  authorsPageSafe * AUTHORS_PER_PAGE,
+);
+
+function withQuery(overrides: Record<string, string | null>) {
+  const u = new URL(Astro.request.url);
+  for (const [k, v] of Object.entries(overrides)) {
+    if (v === null || v === "") u.searchParams.delete(k);
+    else u.searchParams.set(k, v);
+  }
+  const q = u.searchParams.toString();
+  return q ? `${u.pathname}?${q}` : u.pathname;
+}
+
+let classificationTagByArticleKey = new Map<string, string>();
+try {
+  const clsRes = await strapiFetch(
+    "/article-classifications?pagination[pageSize]=100&sort=tag:asc&populate[articles]=true",
+  );
+  if (Array.isArray(clsRes?.data)) {
+    classificationTagByArticleKey = buildClassificationTagByArticleKeyMap(clsRes.data);
+  }
+} catch {
+  try {
+    const clsRes = await strapiFetch(
+      "/article-classifications?pagination[pageSize]=100&sort=tag:asc",
+    );
+    if (Array.isArray(clsRes?.data)) {
+      classificationTagByArticleKey = buildClassificationTagByArticleKeyMap(clsRes.data);
+    }
+  } catch {
+    classificationTagByArticleKey = new Map();
+  }
+}
+
+const authorName = author.fullName || "Autor";
 const breadcrumbItems = [
   { name: "INICIO", href: "/" },
   { name: "BLOG", href: "/blog" },
   { name: "AUTOR" },
 ];
 
-export async function getStaticPaths() {
-  /** Los autores vienen como relación en `blog-articles` (no hay colección REST `/writers` expuesta). */
-  let articlesResponse;
-  try {
-    articlesResponse = await strapiFetch(
-      "/blog-articles?populate[heroImage]=true&populate[speciality]=true&populate[writer][populate]=*&sort=publishedAt:desc&pagination[pageSize]=2000",
-    );
-  } catch {
-    return [];
-  }
-
-  const raw = articlesResponse.data || [];
-  const articles = raw.filter((a: { isActive?: boolean }) => a.isActive === true);
-  const bySlug = new Map<
-    string,
-    { articles: typeof articles; [key: string]: unknown }
-  >();
-
-  for (const article of articles) {
-    const w = article.writer as { slug?: string } | undefined;
-    if (!w?.slug) continue;
-    const existing = bySlug.get(w.slug);
-    if (!existing) {
-      bySlug.set(w.slug, { ...w, articles: [article] });
-    } else {
-      existing.articles.push(article);
-    }
-  }
-
-  return Array.from(bySlug.entries()).map(([slug, author]) => ({
-    params: { autor: slug },
-    props: { author },
-  }));
+function pickMediaUrl(m?: { url?: string }): string | undefined {
+  const u = m?.url;
+  return typeof u === "string" && u.trim().length > 0 ? u : undefined;
 }
-const { author } = Astro.props as { author: any };
+
+/** Imagen del CMS (hero/cover del Writer o avatar); sin inventar assets locales. */
+let authorPortraitUrl: string | undefined;
+if (autorParam === TEAM_MEDRENT_SLUG) {
+  for (const a of author.articles) {
+    const w = a.writer;
+    if (!w) continue;
+    authorPortraitUrl = pickMediaUrl(w.heroImage) || pickMediaUrl(w.avatar);
+    if (authorPortraitUrl) break;
+  }
+} else {
+  const w = author.articles[0]?.writer;
+  authorPortraitUrl = pickMediaUrl(w?.heroImage) || pickMediaUrl(w?.avatar);
+}
+
+/**
+ * Misma entrada que en el admin (`api::writer.writer`): a veces la relación
+ * writer dentro de `blog-articles` no trae todos los medios; el listado `/writers` sí.
+ */
+if (!authorPortraitUrl) {
+  try {
+    const wRes = await strapiFetch(
+      `/writers?filters[slug][$eq]=${encodeURIComponent(autorParam)}&populate=*`,
+    );
+    const rows = wRes?.data;
+    const rawWriter = Array.isArray(rows) && rows[0] ? rows[0] : null;
+    const nw = normalizeWriterFromApi(rawWriter);
+    if (nw) {
+      authorPortraitUrl = pickMediaUrl(nw.heroImage) || pickMediaUrl(nw.avatar);
+    }
+  } catch {
+    /** Endpoint no público o UID distinto en el proyecto. */
+  }
+}
+
+const useTealIsotypeHero = !authorPortraitUrl;
+const showTeamFigmaIntro =
+  autorParam === TEAM_MEDRENT_SLUG &&
+  (!Array.isArray(author.longDescription) || author.longDescription.length === 0);
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
-const authorHeroImageUrl = author?.heroImage?.url || logoUrl;
-const authorSlug = author?.slug || "autor";
+/** Misma ruta que `Layout.astro` (origen actual del documento; evita URL absoluta rota en preview). */
+const heroBrandLogoSrc = "/favicon-512.png";
+const logoUrl = `${baseUrl}${heroBrandLogoSrc}`;
+const authorHeroImageUrl = authorPortraitUrl || logoUrl;
+const authorSlug = author.slug;
 const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;
 const postlistId = `${canonicalUrl}#postlist`;
+
+/** Paginación en cliente (mismo criterio que PLP de productos). */
+const AUTHOR_GRID_PAGE_SIZE = 9;
+const totalAuthorArticles = displayArticles.length;
+const initialAuthorArticlesShown = Math.min(AUTHOR_GRID_PAGE_SIZE, totalAuthorArticles);
 ---
 
 <Layout
-  title={`${author?.fullName || "Autor"} | Autor en Blog MedRent`}
+  title={`${authorName} | Autor en Blog MedRent`}
   description={author?.shortDescription || "Perfil de autor del Blog MedRent con artículos de tecnología médica."}
-  keywords={`${author?.fullName || "autor"}; blog MedRent; tecnología médica`}
+  keywords={`${authorName}; blog MedRent; tecnología médica`}
   pageType="blog"
   ogImage={authorHeroImageUrl}
 >
@@ -74,14 +281,13 @@ const postlistId = `${canonicalUrl}#postlist`;
       items={[
         { name: "Inicio", url: `${baseUrl}/` },
         { name: "Blog", url: `${baseUrl}/blog` },
-        { name: author?.fullName || "Autor", url: canonicalUrl },
+        { name: authorName, url: canonicalUrl },
       ]}
     />
     <script type="application/ld+json" set:html={
       (() => {
-        const articles = Array.isArray(author?.articles) ? author.articles : [];
-        const slice = articles.slice(0, 10);
-        const totalArticles = articles.length;
+        const list = displayArticles;
+        const slice = list.slice(0, 10);
         const itemListElement = slice.map((a, index) => {
           const postUrl = a?.slug ? `${baseUrl}/blog/${a.slug}` : canonicalUrl;
           return {
@@ -92,7 +298,7 @@ const postlistId = `${canonicalUrl}#postlist`;
               "@type": "BlogPosting",
               "@id": `${postUrl}#post`,
               headline: a?.title || "Blog MedRent",
-              datePublished: a?.createdAt,
+              datePublished: a?.publishedAt || a?.createdAt,
             },
           };
         });
@@ -104,7 +310,7 @@ const postlistId = `${canonicalUrl}#postlist`;
               "@type": "WebPage",
               "@id": `${canonicalUrl}#webpage`,
               url: canonicalUrl,
-              name: `${author?.fullName || "Autor"} | Autor en Blog MedRent`,
+              name: `${authorName} | Autor en Blog MedRent`,
               description:
                 author?.shortDescription ||
                 "Perfil de autor del Blog MedRent con artículos de tecnología médica.",
@@ -121,12 +327,12 @@ const postlistId = `${canonicalUrl}#postlist`;
             {
               "@type": "Person",
               "@id": personId,
-              name: author?.fullName || "Autor",
+              name: authorName,
               description: author?.shortDescription,
-              image: author?.heroImage?.url
+              image: authorPortraitUrl
                 ? {
                     "@type": "ImageObject",
-                    url: author?.heroImage?.url,
+                    url: authorPortraitUrl,
                   }
                 : undefined,
               url: canonicalUrl,
@@ -136,7 +342,7 @@ const postlistId = `${canonicalUrl}#postlist`;
               "@type": "ProfilePage",
               "@id": `${canonicalUrl}#profile`,
               url: canonicalUrl,
-              name: `${author?.fullName || "Autor"} — Autor`,
+              name: `${authorName} — Autor`,
               description: author?.shortDescription,
               isPartOf: { "@id": `${baseUrl}/#website` },
               publisher: { "@id": `${baseUrl}/#organization` },
@@ -147,10 +353,10 @@ const postlistId = `${canonicalUrl}#postlist`;
             {
               "@type": "ItemList",
               "@id": postlistId,
-              name: `Artículos de ${author?.fullName || "Autor"}`,
+              name: `Artículos de ${authorName}`,
               itemListOrder:
                 "https://schema.org/ItemListOrderDescending",
-              numberOfItems: totalArticles,
+              numberOfItems: displayArticles.length,
               itemListElement,
             },
           ],
@@ -160,74 +366,280 @@ const postlistId = `${canonicalUrl}#postlist`;
   </Fragment>
 
   <Fragment slot="metas">
-    <!-- <meta id="description" content={pageDescription}>
-    <meta property="og:title" content={pageTitle}>
-    <meta property="og:description" content={pageDescription}>
-    <meta property="og:type" content="article">
-    <meta property="og:image" content={author?.ImagenHeroArticulo?.url ? buildImageUrl(author.ImagenHeroArticulo.url) : "/images/og/default.jpg"}>
-    <meta id="twitter:card" content="summary_large_image">
-    <meta id="twitter:title" content={pageTitle}>
-    <meta id="twitter:description" content={pageDescription}>
-    <meta id="twitter:image" content={author?.ImagenHeroArticulo?.url ? buildImageUrl(author.ImagenHeroArticulo.url) : "/images/og/default.jpg"}> -->
   </Fragment>
 
- <section class="heroAutor max-w-[1280px] w-full flex flex-col items-center justify-center bg-[var(--color-secondary-light)] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
-    <div class="containerHero w-full flex flex-col md:flex-row items-center gap-6 pt-16 px-4 sm:px-6 md:px-8 pb-4 md:pb-6 lg:py-16 lg:px-8">
-      <div class="breadcrumb-fixed-wrapper max-w-7xl px-4" style="position:absolute;top:0;left:0;width:100%;z-index:30;pointer-events:auto;">
-        <Breadcrumb textColor="text-dark" items={breadcrumbItems} />
+  <section class="heroAutor relative mx-auto w-full max-w-[1280px] bg-[var(--color-secondary-light)] rounded-b-[24px]">
+    <div class="containerHero flex w-full flex-col items-stretch gap-6 px-4 pb-10 pt-20 sm:px-6 md:flex-row md:items-center md:gap-6 md:px-8 md:py-16 lg:px-8">
+      <div class="breadcrumb-fixed-wrapper pointer-events-auto absolute left-0 top-0 z-30 w-full max-w-7xl px-4 sm:px-6 md:px-8">
+        <Breadcrumb textColor="text-dark" surface="light" items={breadcrumbItems} />
       </div>
 
-  <section class="heroAutor max-w-[1280px] w-full flex flex-col items-center justify-center bg-[var(--color-secondary-light)] min-h-[260px] mx-auto" style="border-radius:0 0 24px 24px;">
-    <div class="containerHero w-full flex flex-col md:flex-row items-center gap-6 pt-16 px-4 sm:px-6 md:px-8 pb-4 md:pb-6 lg:py-16 lg:px-8">
-      <style>
-        .heroAutor { position: relative; }
-        .breadcrumb-fixed-wrapper { pointer-events: auto; }
-      </style>
-
-      {/* Columna texto */}
-      <div class="w-full md:w-1/2 flex flex-col items-start text-left md:px-8 md:py-6">
-        <span class="text-sm font-medium text-[var(--color-primary)] tracking-widest mb-2 uppercase font-lato">{author?.speciality || ''}</span>
-        <h1 class="text-[#261819] font-lato text-[32px] font-light">{authorName}</h1>
-        <div class="text-[#261819] font-lato text-[16px] font-light">
-          <BlocksRenderer content={author?.longDescription || []} />
-        </div>
+      <div class="flex w-full flex-[1] flex-col items-start gap-2 px-0 py-6 text-left md:px-8 md:py-6">
+        {author.speciality ? (
+          <p class="font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)] uppercase">
+            {author.speciality}
+          </p>
+        ) : null}
+        <h1 class="font-lato text-[32px] font-bold leading-10 text-[#171d1c]">
+          {authorName}
+        </h1>
+        {showTeamFigmaIntro ? (
+          <div class="mt-2 max-w-prose space-y-4 font-lato text-[16px] leading-6 tracking-[0.5px] text-[#171d1c]">
+            <p class="mb-0 font-bold">{TEAM_FIGMA_INTRO_P1}</p>
+            <p class="mb-0">{TEAM_FIGMA_INTRO_P2}</p>
+          </div>
+        ) : (
+          <>
+            {autorParam !== TEAM_MEDRENT_SLUG && author.shortDescription ? (
+              <p class="mt-2 max-w-prose font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#3d4948]">
+                {author.shortDescription}
+              </p>
+            ) : null}
+            {Array.isArray(author.longDescription) && author.longDescription.length > 0 ? (
+              <div class="mt-4 max-w-prose space-y-3 font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#171d1c]">
+                <BlocksRenderer content={author.longDescription} />
+              </div>
+            ) : null}
+          </>
+        )}
       </div>
-      {/* Columna imagen */}
-      <div class="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0">
-        <img src={author?.heroImage?.url || ''} alt={authorName} class="w-full rounded-xl shadow-md" loading="lazy" />
+
+      <div class="flex w-full flex-[1] justify-center md:mt-0">
+        {useTealIsotypeHero ? (
+          <div class="flex min-h-[280px] w-full max-w-[560px] items-center justify-center rounded-[24px] bg-[var(--color-primary)] px-8 py-10 md:min-h-[364px]">
+            <img
+              src={heroBrandLogoSrc}
+              alt="MedRent"
+              width={200}
+              height={200}
+              class="h-auto w-full max-h-[200px] max-w-[220px] object-contain object-center brightness-0 invert"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        ) : (
+          <div class="w-full max-w-[560px] overflow-hidden rounded-[24px] shadow-md">
+            <img
+              src={authorPortraitUrl!}
+              alt={authorName}
+              width={512}
+              height={364}
+              class="h-auto max-h-[364px] w-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        )}
       </div>
     </div>
   </section>
 
-  <main class="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-6 xl:px-8 xl:py-6 2xl:px-8 2xl:py-6">
+  <main class="mx-auto w-full max-w-[1280px] px-4 py-6 sm:px-6 md:px-8 md:py-8">
+    <section class="flex w-full max-w-[1216px] flex-col gap-6">
+      <div class="flex flex-col items-stretch justify-end gap-4 pt-6 sm:flex-row sm:items-end sm:justify-between">
+        <div class="flex min-w-0 flex-col gap-1">
+          <h2 class="font-lato text-[32px] font-bold leading-10 text-[#171d1c]">
+            {author.articles.length}{" "}
+            {author.articles.length === 1 ? "Artículo" : "Artículos"}
+          </h2>
+          {author.articles.length > 0 ? (
+            <p
+              id="autor-articles-count-top"
+              class="font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[var(--color-text-default)]"
+            >
+              Mostrando {initialAuthorArticlesShown} de {totalAuthorArticles}
+            </p>
+          ) : null}
+        </div>
+        <form method="get" class="flex shrink-0 items-center gap-2 rounded-lg border border-solid border-[#171d1c] px-4 py-2 font-lato">
+          <input type="hidden" name="authorsPage" value="1" aria-hidden="true" />
+          <label for="blog-autor-sort" class="whitespace-nowrap text-[16px] leading-6 tracking-[0.5px] text-[#171d1c]">
+            Ordenar por:
+          </label>
+          <select
+            id="blog-autor-sort"
+            name="sort"
+            class="cursor-pointer border-0 bg-transparent pr-6 text-[16px] leading-6 tracking-[0.5px] text-[#171d1c] focus:outline-none focus:ring-0"
+            onchange="this.form.submit()"
+          >
+            <option value="published_desc" selected={sortParam === "published_desc"}>Más recientes</option>
+            <option value="published_asc" selected={sortParam === "published_asc"}>Más antiguos</option>
+            <option value="title_asc" selected={sortParam === "title_asc"}>Título (A–Z)</option>
+          </select>
+        </form>
+      </div>
+
     {author.articles.length > 0 ? (
-      <section>
-        <h2 class="mb-4 mt-4 font-lato text-[28px] font-light text-[#261819] md:mb-6 md:mt-0">
-          {author.articles.length} {author.articles.length === 1 ? "artículo" : "artículos"}
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {author.articles.map((articulo) => (
-            // console.log(articulo)
-            <ArticleCard article={articulo} />
+      <>
+        <div
+          id="autor-articulos-grid"
+          class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3"
+        >
+          {displayArticles.map((articulo, idx) => (
+            <div
+              data-autor-articulo
+              class:list={[idx >= AUTHOR_GRID_PAGE_SIZE ? "hidden" : ""]}
+            >
+              <ArticleCard article={articulo} tagByArticleKey={classificationTagByArticleKey} />
+            </div>
           ))}
         </div>
-      </section>
+        <div class="flex flex-col items-center gap-2 pt-2">
+          <button
+            type="button"
+            id="btn-autor-load-more-articles"
+            class:list={[
+              "medrent-btn-primary inline-flex cursor-pointer items-center gap-2 border-0 text-base font-bold leading-6 tracking-[0.5px]",
+              totalAuthorArticles <= AUTHOR_GRID_PAGE_SIZE ? "hidden" : "",
+            ]}
+          >
+            Ver más artículos
+            <span class="text-lg leading-none" aria-hidden="true">+</span>
+          </button>
+          <p
+            id="autor-articles-count-bottom"
+            class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#171d1c]"
+          >
+            Mostrando {initialAuthorArticlesShown} de {totalAuthorArticles} artículos
+          </p>
+        </div>
+      </>
     ) : (
-      <section>
-        <h2 class="mb-4 mt-4 font-lato text-[28px] font-light text-[#261819] md:mb-6 md:mt-0">
-          {author.articles.length} {author.articles.length === 1 ? "artículo" : "artículos"}
-        </h2>
-        <div class="flex flex-col items-center justify-center rounded-[24px] bg-[#FFF8F7] backdrop-blur-[6px] py-12 px-4 md:px-12  mx-auto mt-6 w-full">
+      <div class="flex w-full flex-col items-center gap-6">
+        <div class="flex w-full flex-col items-center justify-center rounded-[24px] bg-[#FFF8F7] px-4 py-12 backdrop-blur-[6px] md:px-12">
           <svg xmlns="http://www.w3.org/2000/svg" width="59" height="59" viewBox="0 0 59 59" fill="none" class="mb-4">
             <path d="M17.2085 19.6667C16.5565 19.6667 15.9312 19.9258 15.4702 20.3868C15.0091 20.8478 14.7501 21.4731 14.7501 22.1251C14.7501 22.7771 15.0091 23.4024 15.4702 23.8634C15.9312 24.3244 16.5565 24.5834 17.2085 24.5834H19.6668C20.3188 24.5834 20.9441 24.3244 21.4051 23.8634C21.8661 23.4024 22.1252 22.7771 22.1252 22.1251C22.1252 21.4731 21.8661 20.8478 21.4051 20.3868C20.9441 19.9258 20.3188 19.6667 19.6668 19.6667H17.2085ZM29.5002 49.1669H12.2918C11.6398 49.1669 11.0145 48.9079 10.5535 48.4468C10.0924 47.9858 9.83344 47.3605 9.83344 46.7085V12.2917C9.83344 11.6397 10.0924 11.0144 10.5535 10.5534C11.0145 10.0924 11.6398 9.83337 12.2918 9.83337H24.5835V17.2084C24.5835 19.1644 25.3605 21.0403 26.7436 22.4233C28.1267 23.8064 30.0025 24.5834 31.9585 24.5834H39.3336V27.0418C39.3336 27.6938 39.5926 28.3191 40.0536 28.7801C40.5146 29.2411 41.1399 29.5001 41.7919 29.5001C42.4439 29.5001 43.0692 29.2411 43.5302 28.7801C43.9912 28.3191 44.2502 27.6938 44.2502 27.0418V22.1251C44.2502 22.1251 44.2502 22.1251 44.2502 21.9776C44.2246 21.7518 44.1752 21.5293 44.1027 21.3138V21.0926C43.9845 20.8398 43.8269 20.6075 43.6357 20.4043L28.8856 5.65419C28.6824 5.46297 28.45 5.3053 28.1973 5.1871C28.1239 5.17668 28.0494 5.17668 27.976 5.1871L27.1893 4.91669H12.2918C10.3358 4.91669 8.45993 5.6937 7.07684 7.07678C5.69376 8.45987 4.91675 10.3357 4.91675 12.2917V46.7085C4.91675 48.6645 5.69376 50.5404 7.07684 51.9235C8.45993 53.3065 10.3358 54.0836 12.2918 54.0836H29.5002C30.1522 54.0836 30.7775 53.8246 31.2385 53.3635C31.6995 52.9025 31.9585 52.2772 31.9585 51.6252C31.9585 50.9732 31.6995 50.3479 31.2385 49.8869C30.7775 49.4259 30.1522 49.1669 29.5002 49.1669ZM29.5002 13.2996L35.8673 19.6667H31.9585C31.3065 19.6667 30.6812 19.4077 30.2202 18.9467C29.7592 18.4857 29.5002 17.8604 29.5002 17.2084V13.2996ZM51.2074 37.2931C49.3326 35.5047 46.8412 34.5069 44.2502 34.5069C41.6593 34.5069 39.1679 35.5047 37.2931 37.2931C35.919 38.6687 34.9836 40.4209 34.605 42.3281C34.2265 44.2353 34.4219 46.2119 35.1664 48.008C35.911 49.8042 37.1714 51.3393 38.7883 52.4194C40.4051 53.4994 42.3059 54.0758 44.2502 54.0758C46.1946 54.0758 48.0954 53.4994 49.7122 52.4194C51.3291 51.3393 52.5895 49.8042 53.3341 48.008C54.0786 46.2119 54.274 44.2353 53.8955 42.3281C53.5169 40.4209 52.5815 38.6687 51.2074 37.2931ZM39.3336 44.2502C39.3336 42.9462 39.8516 41.6956 40.7736 40.7736C41.6957 39.8515 42.9463 39.3335 44.2502 39.3335C44.6737 39.339 45.0948 39.3968 45.504 39.5056L39.5056 45.5039C39.3968 45.0947 39.339 44.6736 39.3336 44.2502ZM47.7165 47.7164C47.1071 48.3101 46.354 48.7354 45.531 48.9508C44.708 49.1663 43.8432 49.1645 43.0211 48.9456L48.9948 42.9964C49.1037 43.4057 49.1615 43.8268 49.1669 44.2502C49.1614 45.5521 48.6398 46.7986 47.7165 47.7164ZM27.0418 44.2502C27.6938 44.2502 28.3191 43.9912 28.7802 43.5302C29.2412 43.0691 29.5002 42.4438 29.5002 41.7918C29.5002 41.1398 29.2412 40.5146 28.7802 40.0535C28.3191 39.5925 27.6938 39.3335 27.0418 39.3335H17.2085C16.5565 39.3335 15.9312 39.5925 15.4702 40.0535C15.0091 40.5146 14.7501 41.1398 14.7501 41.7918C14.7501 42.4438 15.0091 43.0691 15.4702 43.5302C15.9312 43.9912 16.5565 44.2502 17.2085 44.2502H27.0418ZM31.9585 29.5001H17.2085C16.5565 29.5001 15.9312 29.7591 15.4702 30.2202C15.0091 30.6812 14.7501 31.3065 14.7501 31.9585C14.7501 32.6105 15.0091 33.2357 15.4702 33.6968C15.9312 34.1578 16.5565 34.4168 17.2085 34.4168H31.9585C32.6105 34.4168 33.2358 34.1578 33.6968 33.6968C34.1579 33.2357 34.4169 32.6105 34.4169 31.9585C34.4169 31.3065 34.1579 30.6812 33.6968 30.2202C33.2358 29.7591 32.6105 29.5001 31.9585 29.5001Z" fill="var(--color-primary)"/>
           </svg>
-          <div class="text-[#261819] text-center font-lato text-[24px] font-bold leading-8 mb-2">Aún no hay artículos publicados :(</div>
-          <div class="text-[#261819] text-center font-lato text-[14px] font-normal leading-5 tracking-[0.25px]">
-            Este autor forma parte del ecosistema Medrent y pronto compartirá contenido especializado.<br/>
+          <div class="mb-2 text-center font-lato text-[24px] font-bold leading-8 text-[#261819]">Aún no hay artículos publicados :(</div>
+          <div class="text-center font-lato text-[14px] font-normal leading-5 tracking-[0.25px] text-[#261819]">
+            Este autor forma parte del ecosistema Medrent y pronto compartirá contenido especializado.<br />
             Te invitamos a explorar otros artículos o conocer a nuestros expertos.
           </div>
         </div>
-      </section>
+        <a
+          href="/blog"
+          class="medrent-btn-primary inline-flex items-center gap-2 text-base font-bold leading-6 tracking-[0.5px] no-underline"
+        >
+          Ver más artículos
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="shrink-0">
+            <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white" />
+          </svg>
+        </a>
+      </div>
     )}
+    </section>
+
+    {otherAuthorsAll.length > 0 ? (
+      <section class="mx-auto mt-14 w-full max-w-[1216px] border-t border-[#E8EEED] pt-12" aria-labelledby="otros-autores-heading">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <h2 id="otros-autores-heading" class="font-lato text-[32px] font-bold leading-10 text-[#171d1c]">
+            Otros autores
+          </h2>
+          {authorsTotalPages > 1 ? (
+            <nav class="flex flex-wrap items-center justify-center gap-2 sm:justify-end" aria-label="Paginación de autores">
+              {authorsPageSafe > 1 ? (
+                <a
+                  href={withQuery({ authorsPage: String(authorsPageSafe - 1) })}
+                  class="rounded-full border border-[#171d1c] px-3 py-1 font-lato text-[14px] font-medium text-[#171d1c] no-underline hover:bg-[var(--color-secondary-light)]"
+                >
+                  Anterior
+                </a>
+              ) : (
+                <span class="rounded-full border border-[#E8EEED] px-3 py-1 font-lato text-[14px] text-[#9ca3a2]">Anterior</span>
+              )}
+              <span class="rounded-full border border-[#171d1c] px-3 py-1 font-lato text-[14px] font-medium text-[#171d1c]">
+                {authorsPageSafe} / {authorsTotalPages}
+              </span>
+              {authorsPageSafe < authorsTotalPages ? (
+                <a
+                  href={withQuery({ authorsPage: String(authorsPageSafe + 1) })}
+                  class="rounded-full border border-[#171d1c] px-3 py-1 font-lato text-[14px] font-medium text-[#171d1c] no-underline hover:bg-[var(--color-secondary-light)]"
+                >
+                  Siguiente
+                </a>
+              ) : (
+                <span class="rounded-full border border-[#E8EEED] px-3 py-1 font-lato text-[14px] text-[#9ca3a2]">Siguiente</span>
+              )}
+            </nav>
+          ) : null}
+        </div>
+        <ul class="mt-8 flex list-none flex-wrap justify-center gap-x-10 gap-y-10 p-0 sm:justify-start">
+          {otherAuthorsSlice.map((oa) => {
+            const href = `/blog/autor/${oa.slug}`;
+            const img = oa.heroImage?.url;
+            const label = oa.fullName || oa.slug;
+            const initials = label
+              .split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((w) => w[0])
+              .join("")
+              .toUpperCase() || "?";
+            return (
+              <li class="w-[120px] shrink-0 text-center sm:w-[102px]">
+                <a href={href} class="flex flex-col items-center gap-2 no-underline">
+                  <span class="flex h-[102px] w-[102px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--color-secondary-light)] ring-1 ring-[#E8EEED]">
+                    {img ? (
+                      <img src={img} alt="" width={102} height={102} class="h-full w-full object-cover" loading="lazy" />
+                    ) : (
+                      <span class="font-lato text-[18px] font-semibold text-[var(--color-primary)]">{initials}</span>
+                    )}
+                  </span>
+                  {oa.speciality ? (
+                    <span class="font-lato text-[12px] font-medium uppercase leading-4 tracking-wide text-[var(--color-primary)]">
+                      {oa.speciality}
+                    </span>
+                  ) : null}
+                  <span class="text-center font-lato text-[14px] font-normal leading-5 text-[#171d1c] underline-offset-2 hover:underline">
+                    {label}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ) : null}
   </main>
+
+  <script
+    is:inline
+    define:vars={{
+      totalAuthorArticles,
+      authorGridPageSize: AUTHOR_GRID_PAGE_SIZE,
+    }}
+  >
+    (() => {
+      const pageSize = authorGridPageSize;
+      const items = Array.from(document.querySelectorAll("[data-autor-articulo]"));
+      if (items.length === 0) return;
+
+      const btn = document.getElementById("btn-autor-load-more-articles");
+      const bottom = document.getElementById("autor-articles-count-bottom");
+      const top = document.getElementById("autor-articles-count-top");
+      let visible = Math.min(pageSize, items.length);
+
+      function sync() {
+        items.forEach((el, i) => {
+          el.classList.toggle("hidden", i >= visible);
+        });
+        const shown = Math.min(visible, items.length);
+        const short = `Mostrando ${shown} de ${totalAuthorArticles}`;
+        if (top) top.textContent = short;
+        if (bottom) bottom.textContent = `${short} artículos`;
+        if (btn) {
+          const done = visible >= items.length;
+          btn.hidden = done;
+          btn.classList.toggle("hidden", done);
+        }
+      }
+
+      btn?.addEventListener("click", () => {
+        visible = Math.min(visible + pageSize, items.length);
+        sync();
+      });
+
+      sync();
+    })();
+  </script>
 </Layout>
