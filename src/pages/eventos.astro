@@ -1,4 +1,7 @@
 ---
+/** Fecha “actual” en servidor en cada petición (no congelada al build) */
+export const prerender = false;
+
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import Layout from '../layouts/Layout.astro';
@@ -10,6 +13,7 @@ import CheckboxField from "@components/forms/CheckboxField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import ImageResponsive from "@components/media/ImageResponsive.astro";
 import SlideArticles from '@components/blog/slideArticles.astro';
+import { fetchBlogSliderData } from "@lib/blog/blogSliderData";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 
@@ -39,17 +43,18 @@ try {
 // }
 
 
-let articulos = null;
+/** Blog: vitrina 9 artículos más nuevos (3 por vista en desktop), misma fuente que home. */
+let articulosRelacionados: any[] = [];
+let classificationTagByArticleKey = new Map<string, string>();
+
 try {
-    const relacionados = await strapiFetch('/blog-articles?sort=publishedAt:desc&populate[heroImage]=true&populate[writer][populate][avatar]=true');
-    
-    // La respuesta de strapiFetch probablemente ya viene como data
-    articulos = relacionados?.data || relacionados || [];
-    
-    //console.log('Artículos cargados:', articulos);
+    const blogSlider = await fetchBlogSliderData();
+    articulosRelacionados = blogSlider.articulos;
+    classificationTagByArticleKey = blogSlider.tagByArticleKey;
 } catch (e) {
-    //console.error('Error cargando artículos:', e);
-    articulos = [];
+    console.error("Error blog slider (eventos):", e);
+    articulosRelacionados = [];
+    classificationTagByArticleKey = new Map();
 }
 
 // Configurar dayjs en español
@@ -262,14 +267,19 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         </div>
     </section>
     
-    <!-- Sección Calendario y Eventos -->
-    <section class="w-full bg-white py-6 md:py-8">
+    <!-- Sección Calendario y Eventos (overflow visible para que position:sticky del sidebar funcione con Lenis/grid) -->
+    <section class="w-full bg-white py-6 md:py-8 overflow-visible">
         <div class="max-w-[1320px] mx-auto px-0 lg:px-4">
-            <div class="flex flex-col lg:flex-row gap-6">
+            <!-- items-start: la celda izquierda no copia la altura del listado; el aside usa position:sticky + max-height al viewport (scroll interno). -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 
-                <!-- Columna izquierda - Calendario (45%) -->
-                <div class="lg:w-[45%] px-4 md:p-6 lg:p-6 overflow-auto">
-                    <div class="text-center font-sans" style="position: sticky; top: 120px;">
+                <!-- Sticky + scroll en el wrapper de columna (no en aside): sticky+overflow en el mismo nodo rompe sticky en Chrome/Safari; Lenis captura wheel en el contenedor con data-lenis-prevent -->
+                <div
+                    class="eventos-plp-filters-scroll min-w-0 lg:col-span-1 lg:self-start px-4 md:p-6 lg:min-h-0"
+                    data-lenis-prevent
+                >
+                    <aside class="w-full min-w-0" aria-label="Calendario y filtros de eventos">
+                        <div class="text-center font-sans">
                          {/* Contador de eventos */}
                         <div class="text-left mb-2">
                             <span class="text-[var(--Schemes-Primary,#006764)] font-lato text-[14px] font-medium leading-[20px] tracking-[0.1px]">
@@ -281,11 +291,13 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                             </span>
                         </div>
                         
-                        <h2 class="font-lato text-[28px] text-[#261819] font-500 text-left mb-4">
-                            Eventos Medrent {now.year()}
+                        <h2 class="font-lato text-[28px] leading-[36px] text-[#261819] font-medium text-left mb-4">
+                            Eventos Medrent{' '}
+                            <span id="eventos-medrent-year">{now.year()}</span>
                         </h2>
 
-                        <div class="bg-[var(--color-secondary-light)] rounded-2xl p-6" id="calendario-dinamico">
+                        <!-- Por debajo del breakpoint md el calendario no se muestra (lista de eventos y filtros sí) -->
+                        <div class="hidden md:block bg-[var(--color-secondary-light)] rounded-2xl p-6" id="calendario-dinamico">
                             <div class="flex justify-between items-center">
                                 <span id="mes-actual">
                                     {currentMonthTitleCase}
@@ -293,11 +305,11 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 
                                 <!-- Agrupa los botones aquí -->
                                 <div class="flex gap-8">
-                                    <button id="prev-month-btn" class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&lt;</button>
-                                    <button id="next-month-btn" class="text-gray-400 color-[#6D7A78] hover:text-gray-600 hidden md:block">&gt;</button>
+                                    <button id="prev-month-btn" type="button" class="text-gray-400 color-[#6D7A78] hover:text-gray-600">&lt;</button>
+                                    <button id="next-month-btn" type="button" class="text-gray-400 color-[#6D7A78] hover:text-gray-600">&gt;</button>
                                 </div>
                             </div>
-                            <div id="calendario-dias" class="md:block hidden mt-4">
+                            <div id="calendario-dias" class="mt-4">
                                 <!-- Headers de días -->
                                 <div class="grid grid-cols-7 mb-3">
                                     <div class="text-center text-sm text-gray-500 font-medium py-2">DOM</div>
@@ -310,7 +322,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 </div>
 
                                 <!-- Días del calendario generados dinámicamente -->
-                                <div class="grid grid-cols-7 gap-1">
+                                <div id="calendario-grid-dias" class="grid grid-cols-7 gap-1">
                                     {calendarDays.map((dayInfo) => {
                                         const hasEvent = dayInfo.isCurrentMonth && eventDays.includes(dayInfo.day);
                                         return (
@@ -333,12 +345,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Panel de filtros -->
-                        <div id="event-filters" class="mt-6 md:p-4 sm:p-0 text-left">
+                        <div id="event-filters" class="mt-6 md:p-4 sm:p-0 text-left pb-8 lg:pb-12">
                             <div class="flex justify-between items-center mb-4 pb-2">
-                                <h3 class="font-bold text-[16px] text-[#09303A]">Filtros <span class="text-[#09303A] ml-1" id="filter-count">(0)</span></h3>
-                                <button id="clear-filters" class="text-sm text-[#006764] hover:underline cursor-pointer transition-opacity">Limpiar</button>
+                                <h3 id="filters-title" class="font-bold text-[16px] text-[#09303A]">Filtros (0)</h3>
+                                <button type="button" id="clear-filters" class="text-sm text-[#006764] hover:underline cursor-pointer transition-opacity">Limpiar</button>
                             </div>
 
                             <!-- Tipo de evento -->
@@ -367,12 +379,13 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </aside>
                 </div>
                 
-                <!-- Columna derecha - Cards de eventos (55%) -->
-                <div class="lg:w-[65%] px-4 md:p-6 lg:p-6">
-                    <div class="space-y-8">
+                <!-- Cards de eventos: 2 columnas del grid; lg:pt-8 alinea el título de mes (h3) con "Eventos Medrent {año}" (h2) compensando la fila "N EVENTOS" + mb-2 de la columna izquierda -->
+                <div class="min-w-0 lg:col-span-2 px-4 md:p-6">
+                    <!-- Sin gap vertical entre meses: los hovers de fila se ven como lista continua (estilo FAQ PDP) -->
+                    <div class="flex flex-col gap-0 lg:pt-8">
                         {(() => {
                             // Verificar si hay eventos
                             const eventosList = data?.events || [];
@@ -413,21 +426,35 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 eventosPorMes[mesKey].eventos.push(evento);
                             });
                             
-                            // Obtener todos los meses del año actual
-                            const currentYear = now.year();
-                            const allMonths = [];
-                            for (let i = 0; i < 12; i++) {
-                                const monthDate = dayjs(`${currentYear}-${String(i + 1).padStart(2, '0')}-01`);
-                                allMonths.push({
-                                    key: monthDate.format('YYYY-MM'),
-                                    nombre: monthDate.format('MMMM').charAt(0).toUpperCase() + monthDate.format('MMMM').slice(1).toLowerCase(),
-                                    nombreCompleto: monthDate.format('MMMM YYYY').charAt(0).toUpperCase() + monthDate.format('MMMM YYYY').slice(1).toLowerCase(),
-                                    hasEvents: eventosPorMes[monthDate.format('YYYY-MM')] ? true : false
-                                });
-                            }
-                            
-                            // Ordenar meses
-                            const mesesOrdenados = Object.keys(eventosPorMes).sort();
+                            // Meses por año: siempre el año civil en curso + cualquier año que aparezca en fechas de eventos
+                            const yearsSet = new Set([now.year()]);
+                            Object.keys(eventosPorMes).forEach((k) => {
+                                const y = Number.parseInt(k.slice(0, 4), 10);
+                                if (Number.isFinite(y)) yearsSet.add(y);
+                            });
+                            const sortedYears = [...yearsSet].sort((a, b) => a - b);
+                            const allMonths: {
+                                key: string;
+                                nombre: string;
+                                nombreCompleto: string;
+                                hasEvents: boolean;
+                            }[] = [];
+                            sortedYears.forEach((yearNum) => {
+                                for (let i = 0; i < 12; i++) {
+                                    const monthDate = dayjs(`${yearNum}-${String(i + 1).padStart(2, '0')}-01`);
+                                    const key = monthDate.format('YYYY-MM');
+                                    allMonths.push({
+                                        key,
+                                        nombre:
+                                            monthDate.format('MMMM').charAt(0).toUpperCase() +
+                                            monthDate.format('MMMM').slice(1).toLowerCase(),
+                                        nombreCompleto:
+                                            monthDate.format('MMMM YYYY').charAt(0).toUpperCase() +
+                                            monthDate.format('MMMM YYYY').slice(1).toLowerCase(),
+                                        hasEvents: Boolean(eventosPorMes[key]),
+                                    });
+                                }
+                            });
                             
                             // Renderizar todos los meses (con y sin eventos)
                             return allMonths.map((mes) => {
@@ -437,16 +464,23 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 if (tieneEventos && mesData) {
                                     // Renderizar meses CON eventos
                                     return (
-                                        <div class="space-y-6" data-month={mes.key} data-event-days={JSON.stringify([...mesData.diasConEventos])}>
-                                            <div class="flex justify-between items-center pb-6 border-b border-[#BCC9C8] cursor-pointer group" data-month-toggle={mes.key}>
-                                                <h3 class="text-[#261819] font-lato text-[28px] font-light mb-0">
-                                                    {mesData.nombre}
-                                                </h3>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="transition-transform duration-300 group-[.open]:rotate-180">
-                                                    <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46 9.16994C8.27264 8.98369 8.01919 8.87915 7.755 8.87915C7.49082 8.87915 7.23736 8.98369 7.05 9.16994C6.95627 9.26291 6.88188 9.37351 6.83111 9.49537C6.78034 9.61723 6.7542 9.74793 6.7542 9.87994C6.7542 10.012 6.78034 10.1427 6.83111 10.2645C6.88188 10.3864 6.95627 10.497 7.05 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#171D1C"/>
-                                                </svg>
+                                        <div class="eventos-month-section flex flex-col gap-0" data-month={mes.key} data-event-days={JSON.stringify([...mesData.diasConEventos])}>
+                                            <div
+                                                class="eventos-month-toggle-label group relative m-0 cursor-pointer overflow-hidden rounded-[2px] px-2 py-4"
+                                                style="border-bottom: 1px solid var(--color-primary);"
+                                                data-month-toggle={mes.key}
+                                            >
+                                                <div class="eventos-month-hover-fill" aria-hidden="true"></div>
+                                                <div class="relative z-10 flex items-center justify-between gap-4">
+                                                    <h3 class="mb-0 font-lato text-[28px] leading-[36px] font-medium text-[#261819]">
+                                                        {mesData.nombre}
+                                                    </h3>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="transition-transform duration-300 group-[.open]:rotate-180">
+                                                        <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46 9.16994C8.27264 8.98369 8.01919 8.87915 7.755 8.87915C7.49082 8.87915 7.23736 8.98369 7.05 9.16994C6.95627 9.26291 6.88188 9.37351 6.83111 9.49537C6.78034 9.61723 6.7542 9.74793 6.7542 9.87994C6.7542 10.012 6.78034 10.1427 6.83111 10.2645C6.88188 10.3864 6.95627 10.497 7.05 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#171D1C"/>
+                                                    </svg>
+                                                </div>
                                             </div>
-                                            <div class="events-container space-y-6 month-content-hidden" data-month-content={mes.key}>
+                                            <div class="events-container mt-6 space-y-6" data-month-content={mes.key}>
                                                 {mesData.eventos.map((evento: any) => {
                                                     // Formatear fechas
                                                     const fechaInicio = dayjs(evento.startDate);
@@ -488,8 +522,16 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                                         <p class="text-[var(--color-accent)] text-[14px] uppercase font-bold mb-2">
                                                                             {evento.eventType}
                                                                         </p>
-                                                                        <h3 class="text-[#261819] text-[22px] font-bold mb-1">
-                                                                            {evento.title}
+                                                                        <h3 class="mb-1 p-0">
+                                                                            <button
+                                                                                type="button"
+                                                                                class="event-popup-btn text-left w-full bg-transparent p-0 border-0 cursor-pointer font-lato text-[#261819] text-[22px] font-bold hover:underline underline-offset-2 decoration-[#261819]"
+                                                                                data-title={evento.title || ''}
+                                                                                data-description={evento.subtitle || ''}
+                                                                                data-img={evento.image?.url || ''}
+                                                                            >
+                                                                                {evento.title}
+                                                                            </button>
                                                                         </h3>
                                                                         <p class="text-[#261819] text-[16px] font-medium mb-4">
                                                                             {evento.subtitle}
@@ -545,16 +587,23 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 } else {
                                     // Renderizar meses SIN eventos con dropdown
                                     return (
-                                        <div class="space-y-6" data-month={mes.key}>
-                                            <div class="flex justify-between items-center pb-6 border-b border-[#BCC9C8] cursor-pointer group" data-month-toggle={mes.key}>
-                                                <h3 class="text-[#261819] font-lato text-[28px] font-light mb-0">
-                                                    {mes.nombreCompleto}
-                                                </h3>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="transition-transform duration-300 group-[.open]:rotate-180">
-                                                    <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46 9.16994C8.27264 8.98369 8.01919 8.87915 7.755 8.87915C7.49082 8.87915 7.23736 8.98369 7.05 9.16994C6.95627 9.26291 6.88188 9.37351 6.83111 9.49537C6.78034 9.61723 6.7542 9.74793 6.7542 9.87994C6.7542 10.012 6.78034 10.1427 6.83111 10.2645C6.88188 10.3864 6.95627 10.497 7.05 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#171D1C"/>
-                                                </svg>
+                                        <div class="eventos-month-section flex flex-col gap-0" data-month={mes.key}>
+                                            <div
+                                                class="eventos-month-toggle-label group relative m-0 cursor-pointer overflow-hidden rounded-[2px] px-2 py-4"
+                                                style="border-bottom: 1px solid var(--color-primary);"
+                                                data-month-toggle={mes.key}
+                                            >
+                                                <div class="eventos-month-hover-fill" aria-hidden="true"></div>
+                                                <div class="relative z-10 flex items-center justify-between gap-4">
+                                                    <h3 class="mb-0 font-lato text-[28px] leading-[36px] font-medium text-[#261819]">
+                                                        {mes.nombreCompleto}
+                                                    </h3>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="transition-transform duration-300 group-[.open]:rotate-180">
+                                                        <path d="M17 9.16994C16.8126 8.98369 16.5592 8.87915 16.295 8.87915C16.0308 8.87915 15.7774 8.98369 15.59 9.16994L12 12.7099L8.46 9.16994C8.27264 8.98369 8.01919 8.87915 7.755 8.87915C7.49082 8.87915 7.23736 8.98369 7.05 9.16994C6.95627 9.26291 6.88188 9.37351 6.83111 9.49537C6.78034 9.61723 6.7542 9.74793 6.7542 9.87994C6.7542 10.012 6.78034 10.1427 6.83111 10.2645C6.88188 10.3864 6.95627 10.497 7.05 10.5899L11.29 14.8299C11.383 14.9237 11.4936 14.9981 11.6154 15.0488C11.7373 15.0996 11.868 15.1257 12 15.1257C12.132 15.1257 12.2627 15.0996 12.3846 15.0488C12.5064 14.9981 12.617 14.9237 12.71 14.8299L17 10.5899C17.0937 10.497 17.1681 10.3864 17.2189 10.2645C17.2697 10.1427 17.2958 10.012 17.2958 9.87994C17.2958 9.74793 17.2697 9.61723 17.2189 9.49537C17.1681 9.37351 17.0937 9.26291 17 9.16994Z" fill="#171D1C"/>
+                                                    </svg>
+                                                </div>
                                             </div>
-                                            <div class="events-container hidden space-y-6" data-month-content={mes.key}>
+                                            <div class="events-container mt-6 space-y-6" data-month-content={mes.key}>
                                                 <div class="rounded-3xl bg-[#F5FAF9] backdrop-blur-sm p-8 flex flex-col items-center justify-center gap-4 text-center" style=" height: 384px;">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="59" height="59" viewBox="0 0 59 59" fill="none">
                                                         <path d="M28.6643 17.2085H36.8751V19.6669C36.8751 20.3189 37.1341 20.9441 37.5952 21.4052C38.0562 21.8662 38.6815 22.1252 39.3335 22.1252C39.9855 22.1252 40.6108 21.8662 41.0718 21.4052C41.5328 20.9441 41.7918 20.3189 41.7918 19.6669V17.2085H44.2502C44.9022 17.2085 45.5275 17.4675 45.9885 17.9285C46.4495 18.3896 46.7085 19.0149 46.7085 19.6669V27.0419H43.4143C42.7623 27.0419 42.137 27.3009 41.676 27.7619C41.215 28.2229 40.956 28.8482 40.956 29.5002C40.956 30.1522 41.215 30.7775 41.676 31.2385C42.137 31.6996 42.7623 31.9586 43.4143 31.9586H46.7085V35.2528C46.7085 35.9047 46.9675 36.53 47.4285 36.9911C47.8896 37.4521 48.5149 37.7111 49.1669 37.7111C49.8189 37.7111 50.4441 37.4521 50.9052 36.9911C51.3662 36.53 51.6252 35.9047 51.6252 35.2528V19.6669C51.6252 17.7109 50.8482 15.835 49.4651 14.4519C48.082 13.0688 46.2062 12.2918 44.2502 12.2918H41.7918V9.83348C41.7918 9.18149 41.5328 8.5562 41.0718 8.09517C40.6108 7.63414 39.9855 7.37514 39.3335 7.37514C38.6815 7.37514 38.0562 7.63414 37.5952 8.09517C37.1341 8.5562 36.8751 9.18149 36.8751 9.83348V12.2918H28.6643C28.0123 12.2918 27.387 12.5508 26.926 13.0119C26.4649 13.4729 26.2059 14.0982 26.2059 14.7502C26.2059 15.4022 26.4649 16.0275 26.926 16.4885C27.387 16.9495 28.0123 17.2085 28.6643 17.2085ZM53.3706 49.8799L49.4373 45.9466L9.12044 5.62972C8.89123 5.4005 8.61912 5.21868 8.31963 5.09463C8.02015 4.97059 7.69917 4.90674 7.37502 4.90674C7.05086 4.90674 6.72988 4.97059 6.4304 5.09463C6.13092 5.21868 5.85881 5.4005 5.62959 5.62972C5.16668 6.09263 4.90662 6.72048 4.90662 7.37514C4.90662 8.0298 5.16668 8.65765 5.62959 9.12056L10.325 13.7914C9.4124 14.4759 8.67099 15.3627 8.1591 16.3822C7.64722 17.4017 7.37883 18.5261 7.37502 19.6669V44.2503C7.37502 46.2063 8.15203 48.0821 9.53511 49.4652C10.9182 50.8483 12.7941 51.6253 14.75 51.6253H44.2502C45.349 51.6188 46.4325 51.3668 47.4214 50.8878L49.8798 53.3462C50.1083 53.5766 50.3802 53.7595 50.6798 53.8843C50.9794 54.0091 51.3007 54.0733 51.6252 54.0733C51.9497 54.0733 52.271 54.0091 52.5706 53.8843C52.8702 53.7595 53.1421 53.5766 53.3706 53.3462C53.8285 52.8856 54.0855 52.2625 54.0855 51.613C54.0855 50.9636 53.8285 50.3405 53.3706 49.8799ZM12.2917 19.6669C12.2969 19.1658 12.4551 18.6784 12.7451 18.2698C13.0351 17.8612 13.443 17.5509 13.9142 17.3806L23.5755 27.0419H12.2917V19.6669ZM14.75 46.7086C14.0981 46.7086 13.4728 46.4496 13.0117 45.9886C12.5507 45.5276 12.2917 44.9023 12.2917 44.2503V31.9586H28.4922L43.2422 46.7086H14.75Z" fill="#006764"/>
@@ -582,10 +631,16 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     <PromotionSlider />
 
 
+    <!-- Sin `defer-section`: content-visibility hace que Glide monte con ancho 0 y el carrusel queda roto -->
     <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
-        <span class="mb-2 uppercase text-[12px] font-bold leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
-        <h3 class=" mb-6 font-normal text-[28px] text-[#212121]">Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.</h3>
-        <SlideArticles articulos={articulos} />
+        <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
+        <h3 class="mb-6 font-lato medrent-headline-section">
+            Explora artículos y noticias sobre tecnología médica, innovación y cuidado especializado para mejorar la salud y el bienestar.
+        </h3>
+        <SlideArticles
+            articulos={articulosRelacionados}
+            tagByArticleKey={classificationTagByArticleKey}
+        />
     </section>
     
 </Layout>
@@ -604,17 +659,19 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
 <!-- Popup de Evento -->
 <div id="event-popup-overlay" class="fixed inset-0 z-50 hidden">
-    <!-- Background with blur and gradient -->
-    <div 
-        id="event-blurred-background" 
-        class="absolute inset-0 transition-all duration-300"
-        style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%); filter: blur(8px);"
-    >
-    </div>
-    
+    <!-- Misma capa que PDP (popUpSolicitarCotizacion): backdrop-filter sobre el viewport, sin blur al <main> -->
+    <div
+        id="event-blurred-background"
+        class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300"
+        aria-hidden="true"
+    ></div>
+
     <!-- Popup Content -->
-    <div id="PopupContent" class="relative z-10 flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto">
-        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-auto relative h-[85%] md:h-[85%] lg:h-auto">
+    <div
+        id="PopupContent"
+        class="relative z-10 flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto rounded-2xl pointer-events-none"
+    >
+        <div class="pointer-events-auto bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-auto relative h-[85%] md:h-[85%] lg:h-auto">
                 <!-- Botón cerrar en esquina superior derecha del popup -->
                 <button 
                     id="close-event-popup"
@@ -705,17 +762,85 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     // Configurar dayjs en español
     dayjs.locale('es');
 
+    /** Mismo offset que Layout: espaciador lg h-[109px], móvil h-[50px] */
+    function getLayoutHeaderOffsetPx(): number {
+        return window.matchMedia('(min-width: 1024px)').matches ? 109 : 50;
+    }
+
+    function parseEventFilterUrlValues(params: URLSearchParams, key: string): string[] {
+        const raw = params.get(key);
+        if (!raw) return [];
+        return [...new Set(raw.split(',').map((s) => s.trim()).filter(Boolean))];
+    }
+
+    function updateEventsFilterUrl() {
+        const params = new URLSearchParams();
+        const eventTypes = Array.from(
+            document.querySelectorAll('input[data-filter="eventType"]:checked')
+        ).map((el) => (el as HTMLInputElement).value);
+        const specialties = Array.from(
+            document.querySelectorAll('input[data-filter="specialty"]:checked')
+        ).map((el) => (el as HTMLInputElement).value);
+        if (eventTypes.length) params.set('eventType', eventTypes.join(','));
+        if (specialties.length) params.set('specialty', specialties.join(','));
+        const qs = params.toString();
+        const newUrl = window.location.pathname + (qs ? `?${qs}` : '');
+        if (document.documentElement.dataset.eventosClientFilters === '1') {
+            window.history.pushState({}, '', newUrl);
+        } else {
+            window.location.href = newUrl;
+        }
+    }
+
+    function updateEventsFiltersTitle() {
+        const title = document.getElementById('filters-title');
+        if (!title) return;
+        const n = document.querySelectorAll('#event-filters input[data-filter]:checked').length;
+        title.textContent = `Filtros (${n})`;
+    }
+
+    /** Evita que `change` dispare applyFilters+URL al setear checkboxes por URL o Limpiar */
+    let suppressFilterChange = 0;
+    function runWithSuppressFilterChange(fn: () => void) {
+        suppressFilterChange++;
+        try {
+            fn();
+        } finally {
+            suppressFilterChange--;
+        }
+    }
+
+    function setEventFiltersFromUrl() {
+        runWithSuppressFilterChange(() => {
+            const params = new URLSearchParams(window.location.search);
+            const types = parseEventFilterUrlValues(params, 'eventType');
+            const specs = parseEventFilterUrlValues(params, 'specialty');
+            document.querySelectorAll('#event-filters input[data-filter="eventType"]').forEach((input) => {
+                if (input instanceof HTMLInputElement) input.checked = types.includes(input.value);
+            });
+            document.querySelectorAll('#event-filters input[data-filter="specialty"]').forEach((input) => {
+                if (input instanceof HTMLInputElement) input.checked = specs.includes(input.value);
+            });
+            updateEventsFiltersTitle();
+        });
+    }
+
     // Función para actualizar calendario
     function actualizarCalendario(mesKey: string) {
         const calendario = generarCalendario(mesKey + '-01');
         const mesActualElement = document.getElementById('mes-actual');
-        const calendarioDiasContainer = document.querySelector('#calendario-dinamico .grid.grid-cols-7.gap-1');
+        const calendarioDiasContainer = document.getElementById('calendario-grid-dias');
         const seccionMes = document.querySelector(`[data-month="${mesKey}"]`);
-        let diasConEventos = [];
+        let diasConEventos: number[] = [];
         if (seccionMes) {
             const eventDaysAttr = seccionMes.getAttribute('data-event-days');
             if (eventDaysAttr) {
-                try { diasConEventos = JSON.parse(eventDaysAttr); } catch (e) {}
+                try {
+                    const parsed = JSON.parse(eventDaysAttr) as unknown;
+                    if (Array.isArray(parsed)) {
+                        diasConEventos = parsed.filter((d): d is number => typeof d === 'number');
+                    }
+                } catch (e) {}
             }
         }
         if (mesActualElement) mesActualElement.textContent = calendario.nombreMes;
@@ -725,7 +850,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 const fechaCompleta = `${mesKey}-${String(dayInfo.day).padStart(2, '0')}`;
                 let clases = `flex justify-center items-center w-10 h-10 rounded-full text-sm font-medium mx-auto `;
                 if (dayInfo.isToday) {
-                    clases += "border-3 border-[#006764] bg-transparent text-[#006764]";
+                    clases += "border-4 border-[#006764] bg-transparent text-[#006764]";
                 } else if (hasEvent) {
                     clases += "bg-[#006764] text-white cursor-pointer hover:opacity-80";
                 } else if (dayInfo.isCurrentMonth) {
@@ -767,16 +892,62 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         };
     }
 
+    /** Navegación del calendario (< >) y alineación con la lista de meses al hacer scroll */
+    let currentCalendarMonth = dayjs();
+    let lastScrollSyncedMonthKey: string | null = null;
+    let suppressScrollCalendarSyncUntil = 0;
+
+    /**
+     * Mes que corresponde a lo que el usuario está leyendo en la lista (columna derecha).
+     * Último mes cuyo título [data-month-toggle] ya cruzó la línea bajo el header (como un TOC).
+     * Evita saltar a abril solo porque el centro del título de marzo quedó “lejos” del ancla
+     * mientras aún hay cards de marzo en pantalla (bug de distancia mínima al centro).
+     */
+    function getEventosMonthKeyClosestToListAnchor(): string | null {
+        const sections = Array.from(
+            document.querySelectorAll('.eventos-month-section[data-month]'),
+        ) as HTMLElement[];
+        if (!sections.length) return null;
+        const anchorY = getLayoutHeaderOffsetPx() + 56;
+        let activeKey: string | null = null;
+        for (const section of sections) {
+            const key = section.dataset.month;
+            if (!key) continue;
+            const toggle = section.querySelector('[data-month-toggle]');
+            if (!toggle) continue;
+            const top = toggle.getBoundingClientRect().top;
+            if (top <= anchorY) {
+                activeKey = key;
+            }
+        }
+        if (activeKey !== null) return activeKey;
+        const first = sections[0]?.dataset.month;
+        return first ?? null;
+    }
+
+    function trySyncEventosCalendarioConMesEnLista() {
+        if (typeof performance !== 'undefined' && performance.now() < suppressScrollCalendarSyncUntil) return;
+        const mk = getEventosMonthKeyClosestToListAnchor();
+        if (!mk || mk === lastScrollSyncedMonthKey) return;
+        lastScrollSyncedMonthKey = mk;
+        currentCalendarMonth = dayjs(`${mk}-01`);
+        actualizarCalendario(mk);
+    }
+
     // Script unificado para eventos, popup y calendario
     document.addEventListener('DOMContentLoaded', function() {
+        document.documentElement.dataset.eventosClientFilters = '1';
+
+        const yearHeading = document.getElementById('eventos-medrent-year');
+        if (yearHeading) yearHeading.textContent = String(new Date().getFullYear());
+
         // Popup
         const popupOverlay = document.getElementById('event-popup-overlay');
         const popupTitle = document.getElementById('event-popup-title');
         const popupDescription = document.getElementById('event-popup-description');
         const popupImage = document.getElementById('event-popup-image');
         const closePopupBtn = document.getElementById('close-event-popup');
-        const mainContent = document.querySelector('section');
-        
+
         const form = document.getElementById("events-form");
         const status = document.getElementById("status");
         
@@ -807,14 +978,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             if (popupImage && eventData.img) { (popupImage as HTMLImageElement).src = eventData.img; (popupImage as HTMLImageElement).alt = eventData.title || 'Evento'; }
             if (popupTitle && eventData.title) popupTitle.textContent = eventData.title;
             if (popupDescription && eventData.description) popupDescription.textContent = eventData.description;
-            if (mainContent) mainContent.style.filter = 'blur(8px)';
             popupOverlay.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
         
         function closeEventPopup() {
             if (!popupOverlay) return;
-            if (mainContent) mainContent.style.filter = 'none';
             popupOverlay.classList.add('hidden');
             document.body.style.overflow = 'auto';
             resetPopupToInitial();
@@ -886,37 +1055,49 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         
         // Primero, configurar el estado inicial de los meses
         // Solo los meses con eventos deben estar abiertos
-        document.querySelectorAll('[data-month]').forEach(monthSection => {
+        document.querySelectorAll('.eventos-month-section[data-month]').forEach((monthSection) => {
             const month = monthSection.getAttribute('data-month');
-            const monthContent = document.querySelector(`[data-month-content="${month}"]`);
+            const monthContent = month
+                ? monthSection.querySelector(`[data-month-content="${month}"]`)
+                : null;
             const parentDiv = monthSection as HTMLElement;
             const hasEventDays = monthSection.hasAttribute('data-event-days');
             
             if (monthContent && hasEventDays) {
                 // Mes con eventos: abierto por defecto
                 parentDiv.classList.add('open');
-                monthContent.classList.remove('month-hidden');
+                monthContent.classList.remove('month-hidden', 'hidden');
             } else if (monthContent) {
-                // Mes sin eventos: cerrado por defecto
+                // Mes sin eventos: cerrado por defecto (solo .month-hidden; no usar Tailwind hidden)
                 parentDiv.classList.remove('open');
                 monthContent.classList.add('month-hidden');
             }
         });
         
-        // Actualizar el calendario para mostrar el mes actual
+        // Calendario: mes del cliente; luego se alinea al mes de la lista más próximo al ancla (scroll)
+        currentCalendarMonth = dayjs(`${mesActualKey}-01`);
+        lastScrollSyncedMonthKey = mesActualKey;
         actualizarCalendario(mesActualKey);
-        
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                trySyncEventosCalendarioConMesEnLista();
+            });
+        });
+
         // Configurar toggles de meses
         document.querySelectorAll('[data-month-toggle]').forEach(toggle => {
             const monthKey = toggle.getAttribute('data-month-toggle');
-            const content = document.querySelector(`[data-month-content="${monthKey}"]`);
-            const parentDiv = toggle.closest('.space-y-6');
+            const parentDiv = toggle.closest('.eventos-month-section');
+            const content = parentDiv?.querySelector(`[data-month-content="${monthKey}"]`) ?? null;
             if (content && parentDiv && monthKey) {
                 toggle.addEventListener('click', (e) => {
                     e.preventDefault();
                     parentDiv.classList.toggle('open');
                     if (content.classList.contains('month-hidden')) {
-                        content.classList.remove('month-hidden');
+                        content.classList.remove('month-hidden', 'hidden');
+                        currentCalendarMonth = dayjs(`${monthKey}-01`);
+                        lastScrollSyncedMonthKey = monthKey;
+                        suppressScrollCalendarSyncUntil = performance.now() + 400;
                         actualizarCalendario(monthKey);
                     } else {
                         content.classList.add('month-hidden');
@@ -925,7 +1106,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
         });
         
-        // FILTROS de eventos
+        // FILTROS (patrón PLP: data-filter, URL con pushState, título Filtros (n))
         function renderFilterOptions() {
             const filtersContainer = document.getElementById('event-filters');
             if (!filtersContainer) return;
@@ -938,45 +1119,33 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const especialidadContainer = document.getElementById('filter-specialty');
 
             if (tipoContainer) {
-                tipoContainer.innerHTML = tiposUnicos.map(tipo => `
-                    <label class="inline-flex items-center gap-2 text-sm">
-                        <input type="checkbox" name="event-type-filter" value="${tipo}" />
-                        <span class="capitalize">${tipo}</span>
+                tipoContainer.innerHTML = tiposUnicos.map((tipo) => `
+                    <label class="flex items-center mt-2 cursor-pointer">
+                        <input type="checkbox" data-filter="eventType" value="${tipo}" class="mr-2 accent-[var(--color-primary)]" />
+                        <span class="text-sm capitalize">${tipo}</span>
                     </label>
                 `).join('');
             }
             if (especialidadContainer) {
-                especialidadContainer.innerHTML = especialidadesUnicas.map(espec => `
-                    <label class="inline-flex items-center gap-2 text-sm">
-                        <input type="checkbox" name="event-specialty-filter" value="${espec}" />
-                        <span class="capitalize">${espec}</span>
+                especialidadContainer.innerHTML = especialidadesUnicas.map((espec) => `
+                    <label class="flex items-center mt-2 cursor-pointer">
+                        <input type="checkbox" data-filter="specialty" value="${espec}" class="mr-2 accent-[var(--color-primary)]" />
+                        <span class="text-sm capitalize">${espec}</span>
                     </label>
                 `).join('');
             }
 
-            const allCheckboxes = Array.from(document.querySelectorAll('#filter-event-type input, #filter-specialty input'));
-            allCheckboxes.forEach((checkbox) => {
-                checkbox.addEventListener('change', (e) => {
-                    e.stopPropagation();
-                    applyFilters();
-                });
-            });
-
-            const clearFiltersBtn = document.getElementById('clear-filters');
-            if (clearFiltersBtn) {
-                clearFiltersBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    allCheckboxes.forEach(input => (input as HTMLInputElement).checked = false);
-                    applyFilters();
-                });
-            }
-
+            setEventFiltersFromUrl();
             applyFilters();
         }
 
         function applyFilters() {
-            const selectedTipos = Array.from(document.querySelectorAll('input[name="event-type-filter"]:checked')).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
-            const selectedEspecialidades = Array.from(document.querySelectorAll('input[name="event-specialty-filter"]:checked')).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
+            const selectedTipos = Array.from(
+                document.querySelectorAll('input[data-filter="eventType"]:checked')
+            ).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
+            const selectedEspecialidades = Array.from(
+                document.querySelectorAll('input[data-filter="specialty"]:checked')
+            ).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
 
             const events = Array.from(document.querySelectorAll('article[data-event-type]')) as HTMLElement[];
             let activeCard: HTMLElement | null = null;
@@ -994,8 +1163,10 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             });
 
             // Mostrar/ocultar meses según filtrado
-            const monthSections = Array.from(document.querySelectorAll('[data-month]')) as HTMLElement[];
-            let firstVisibleMonth = null;
+            const monthSections = Array.from(
+                document.querySelectorAll('.eventos-month-section[data-month]')
+            ) as HTMLElement[];
+            let firstVisibleMonth: string | null = null;
             
             monthSections.forEach(monthSection => {
                 const month = monthSection.dataset.month;
@@ -1014,7 +1185,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         if (!monthSection.classList.contains('open')) {
                             monthSection.classList.add('open');
                         }
-                        monthContent.classList.remove('month-hidden');
+                        monthContent.classList.remove('month-hidden', 'hidden');
                         if (!firstVisibleMonth) firstVisibleMonth = month;
                     } else {
                         // No hay eventos visibles: ocultar contenido pero mantener el header
@@ -1024,7 +1195,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 }
             });
 
-            if (activeCard) {
+            if (!isFirstLoad && activeCard) {
                 const selectedCard = activeCard as HTMLElement;
                 selectedCard.classList.add('filtered-selected');
                 const date = selectedCard.dataset.startDate;
@@ -1038,20 +1209,47 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             // Actualizar el calendario con el primer mes visible o el mes actual
             if (!isFirstLoad) {
                 if (firstVisibleMonth) {
+                    lastScrollSyncedMonthKey = firstVisibleMonth;
+                    currentCalendarMonth = dayjs(`${firstVisibleMonth}-01`);
                     actualizarCalendario(firstVisibleMonth);
                 } else {
                     const fechaActual = dayjs().format('YYYY-MM');
+                    lastScrollSyncedMonthKey = fechaActual;
+                    currentCalendarMonth = dayjs(`${fechaActual}-01`);
                     actualizarCalendario(fechaActual);
                 }
             }
-            
-            // Actualizar contador de filtros
-            const filterCount = selectedTipos.length + selectedEspecialidades.length;
-            const filterCountSpan = document.getElementById('filter-count');
-            if (filterCountSpan) {
-                filterCountSpan.textContent = `(${filterCount})`;
-            }
+
+            updateEventsFiltersTitle();
+            isFirstLoad = false;
         }
+
+        document.addEventListener('change', (e) => {
+            const t = e.target;
+            if (!(t instanceof HTMLInputElement)) return;
+            if (!t.matches('#event-filters input[data-filter]')) return;
+            if (suppressFilterChange) return;
+            updateEventsFiltersTitle();
+            updateEventsFilterUrl();
+            applyFilters();
+        });
+
+        document.getElementById('clear-filters')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            runWithSuppressFilterChange(() => {
+                document.querySelectorAll('#event-filters input[data-filter]').forEach((input) => {
+                    if (input instanceof HTMLInputElement) input.checked = false;
+                });
+            });
+            updateEventsFiltersTitle();
+            updateEventsFilterUrl();
+            applyFilters();
+        });
+
+        window.addEventListener('popstate', () => {
+            setEventFiltersFromUrl();
+            applyFilters();
+        });
 
         renderFilterOptions();
 
@@ -1109,17 +1307,18 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         });
 
         // Botones de navegación del calendario
-        const prevMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:first-child');
-        const nextMonthBtn = document.querySelector('#calendario-dinamico .flex.gap-8 button:last-child');
-        let currentCalendarMonth = dayjs();
+        const prevMonthBtn = document.getElementById('prev-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
 
         function cambiarMes(direccion: string) {
+            suppressScrollCalendarSyncUntil = performance.now() + 700;
             if (direccion === 'prev') {
                 currentCalendarMonth = currentCalendarMonth.subtract(1, 'month');
             } else {
                 currentCalendarMonth = currentCalendarMonth.add(1, 'month');
             }
             const mesKey = currentCalendarMonth.format('YYYY-MM');
+            lastScrollSyncedMonthKey = mesKey;
             actualizarCalendario(mesKey);
             
             const mesActualElement = document.getElementById('mes-actual');
@@ -1130,17 +1329,29 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             
             const seccionMes = document.querySelector(`[data-month="${mesKey}"]`);
             if (seccionMes) {
-                const header = document.querySelector('header');
-                const headerHeight = header ? header.offsetHeight : 100;
+                const headerHeight = getLayoutHeaderOffsetPx();
                 const rect = seccionMes.getBoundingClientRect();
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                 const offsetPosition = rect.top + scrollTop - headerHeight - 30;
-                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
             }
         }
         
         if (prevMonthBtn) prevMonthBtn.addEventListener('click', () => cambiarMes('prev'));
         if (nextMonthBtn) nextMonthBtn.addEventListener('click', () => cambiarMes('next'));
+
+        let scrollListaRaf = 0;
+        window.addEventListener(
+            'scroll',
+            () => {
+                if (scrollListaRaf) return;
+                scrollListaRaf = requestAnimationFrame(() => {
+                    scrollListaRaf = 0;
+                    trySyncEventosCalendarioConMesEnLista();
+                });
+            },
+            { passive: true }
+        );
     });
 
     // función scroll de la card con calendario
@@ -1148,11 +1359,14 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         const monthKey = date.substring(0, 7);
         const monthToggle = document.querySelector(`[data-month-toggle="${monthKey}"]`) as HTMLElement;
         const monthContent = document.querySelector(`[data-month-content="${monthKey}"]`) as HTMLElement;
-        const parentDiv = monthToggle?.closest('.space-y-6') as HTMLElement;
+        const parentDiv = monthToggle?.closest('.eventos-month-section') as HTMLElement;
 
         if (monthToggle && monthContent && parentDiv && monthContent.classList.contains('month-hidden')) {
             parentDiv.classList.add('open');
-            monthContent.classList.remove('month-hidden');
+            monthContent.classList.remove('month-hidden', 'hidden');
+            lastScrollSyncedMonthKey = monthKey;
+            currentCalendarMonth = dayjs(`${monthKey}-01`);
+            suppressScrollCalendarSyncUntil = performance.now() + 500;
             actualizarCalendario(monthKey);
             setTimeout(() => {
                 scrollToSpecificEvent(date);
@@ -1174,16 +1388,18 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
         }
         if (eventoEncontrado) {
-            const header = document.querySelector('header') as HTMLElement | null;
-            const headerHeight = header ? header.offsetHeight : 100;
-            const rect = eventoEncontrado.getBoundingClientRect();
+            const el = eventoEncontrado;
+            const headerHeight = getLayoutHeaderOffsetPx();
+            const rect = el.getBoundingClientRect();
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const offsetPosition = rect.top + scrollTop - headerHeight - 30;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            eventoEncontrado.style.transition = 'border 0.3s ease';
-            eventoEncontrado.style.border = '3px solid var(--color-primary)';
-            eventoEncontrado.style.outlineOffset = '2px';
-            setTimeout(() => { eventoEncontrado.style.border = ''; }, 2000);
+            window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
+            el.style.transition = 'border 0.3s ease';
+            el.style.border = '3px solid var(--color-primary)';
+            el.style.outlineOffset = '2px';
+            setTimeout(() => {
+                el.style.border = '';
+            }, 2000);
         }
     }
 
@@ -1202,8 +1418,30 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     max-height: 0 !important;
     opacity: 0;
     padding: 0;
-    margin: 0;
+    margin: 0 !important;
     visibility: hidden;
+  }
+
+  /* Mismo hover que FAQ PDP (productos/[slug].astro .faq-hover-fill-effect) */
+  .eventos-month-hover-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #edf2f0;
+    transform: scaleY(0);
+    transform-origin: bottom center;
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1;
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .eventos-month-toggle-label.group:hover .eventos-month-hover-fill {
+      transform: scaleY(1);
+    }
   }
   
   [data-month-toggle] svg {
@@ -1220,12 +1458,92 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     transform: rotate(180deg);
   }
 
-  .events-container.hidden {
-    display: block !important;
-  }
-
-  article.filtered-selected {
+  article[data-event-type].filtered-selected {
     border-color: #006764 !important;
     box-shadow: 0 0 0 3px rgba(0, 103, 100, 0.15);
+  }
+
+  /* Columna izquierda: sticky + altura ≈ viewport; reservar hueco para CTA fijo #BtnWhatsappDemo (Layout) */
+  .eventos-plp-filters-scroll {
+    scroll-padding-bottom: 32px;
+  }
+
+  @media (min-width: 1024px) {
+    .eventos-plp-filters-scroll {
+      --plp-sticky-top: 109px;
+      /*
+        CTA inferior fijo (#BtnWhatsappDemo, ~78–96px + sombra) con z-50 tapa el sidebar (z-25).
+        Sin esta reserva, el max-height del panel llega al borde del viewport y los filtros quedan ocultos detrás del CTA.
+      */
+      --plp-sticky-bottom-safe: calc(100px + env(safe-area-inset-bottom, 0px));
+      /* -webkit-sticky: mismo nodo no debe mezclar overflow con el aside (ver markup) */
+      position: -webkit-sticky;
+      position: sticky;
+      top: var(--plp-sticky-top);
+      z-index: 25;
+      align-self: start;
+      width: 100%;
+      min-height: 0;
+      max-height: calc(100svh - var(--plp-sticky-top) - var(--plp-sticky-bottom-safe));
+      max-height: calc(100dvh - var(--plp-sticky-top) - var(--plp-sticky-bottom-safe));
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 4px;
+      padding-bottom: 32px;
+    }
+  }
+
+  /* WebKit: thumb/track transparentes hasta hover (máx. altura sin barra visual fija) */
+  @media (min-width: 1024px) {
+    .eventos-plp-filters-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+    .eventos-plp-filters-scroll::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 999px;
+    }
+    .eventos-plp-filters-scroll::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 999px;
+    }
+  }
+
+  @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    .eventos-plp-filters-scroll:hover::-webkit-scrollbar-thumb {
+      background: var(--color-primary);
+    }
+    .eventos-plp-filters-scroll:hover::-webkit-scrollbar-track {
+      background: rgba(0, 103, 100, 0.14);
+    }
+  }
+
+  /* Touch / coarse pointer: barra siempre visible para UX de arrastre */
+  @media (min-width: 1024px) and (not (hover: hover)), (min-width: 1024px) and (pointer: coarse) {
+    .eventos-plp-filters-scroll::-webkit-scrollbar-thumb {
+      background: var(--color-primary);
+    }
+    .eventos-plp-filters-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 103, 100, 0.14);
+    }
+  }
+
+  /* Firefox */
+  @media (min-width: 1024px) {
+    .eventos-plp-filters-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+  }
+  @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    .eventos-plp-filters-scroll:hover {
+      scrollbar-color: var(--color-primary) rgba(0, 103, 100, 0.14);
+    }
+  }
+  @media (min-width: 1024px) and (not (hover: hover)), (min-width: 1024px) and (pointer: coarse) {
+    .eventos-plp-filters-scroll {
+      scrollbar-color: var(--color-primary) rgba(0, 103, 100, 0.14);
+    }
   }
 </style>

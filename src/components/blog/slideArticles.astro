@@ -5,38 +5,47 @@ const { articulos, tagByArticleKey } = Astro.props as {
   articulos: any[] | null;
   tagByArticleKey?: Map<string, string> | null;
 };
-//console.log('Artículos cargados:', articulos);
+const total = articulos?.length ?? 0;
 ---
 
-<div class="w-full">
-  <div id="blog-vitrina-articulos" data-prefixid="BlogArticulos" data-total-items={String(articulos?.length || 0)} class="glide js-blog-slider w-full">
-    <div class="glide__track" data-glide-el="track">
-      <ul class="glide__slides">
-        {articulos && articulos.map((articulo: any) => (
-          <li class="glide__slide h-full">
-            <div class="group rounded-[16px] overflow-hidden relative h-full min-h-[340px] flex flex-col">
+<div
+  class="blog-slider-root w-full min-w-0"
+  data-prefixid="BlogArticulos"
+  data-total-items={String(total)}
+>
+  <div
+    class="blog-slider-viewport flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    tabindex="0"
+    aria-label="Artículos del blog"
+  >
+    {
+      articulos &&
+        articulos.map((articulo: any) => (
+          <article
+            class="blog-slider-item snap-start shrink-0 min-w-0 w-[min(100%,22rem)] sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)] lg:max-w-none flex-[0_0_auto]"
+          >
+            <div class="blog-slider-card-shell group rounded-[16px] overflow-hidden relative h-full min-h-[340px] flex flex-col min-w-0">
               <ArticleCard article={articulo} tagByArticleKey={tagByArticleKey} />
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+          </article>
+        ))
+    }
   </div>
 </div>
 
 <div
   class="flex flex-row items-center mt-6 w-full gap-4 justify-between flex-wrap min-[501px]:flex-nowrap"
 >
-  <!-- Botón Ver más -->
   <a href="/blog" class="medrent-btn-primary h-fit shrink-0 group">
     <span class="hidden min-[440px]:inline">Ver más artículos</span>
     <span class="inline min-[440px]:hidden">Ver más</span>
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="white"/>
+      <path
+        d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z"
+        fill="white"></path>
     </svg>
   </a>
 
-  <!-- Controles (flechas + contador) -->
   <div
     id="controls-BlogArticulos"
     class="flex items-center md:gap-4 sm:gap-0 justify-center shrink-0 border-2 border-[var(--color-primary)] rounded-full p-2 md:px-4 md:py-3"
@@ -45,10 +54,12 @@ const { articulos, tagByArticleKey } = Astro.props as {
       id="prev-btn-BlogArticulos"
       type="button"
       aria-label="Anterior"
-      class="prevBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white cursor-pointer transition"
+      class="prevBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white cursor-pointer transition hover:bg-black"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
+        <path
+          d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z"
+          fill="#006764"></path>
       </svg>
     </button>
     <span id="contador-BlogArticulos" class="font-semibold text-base min-w-[72px] text-center">1 / 1</span>
@@ -56,105 +67,123 @@ const { articulos, tagByArticleKey } = Astro.props as {
       id="next-btn-BlogArticulos"
       type="button"
       aria-label="Siguiente"
-      class="nextBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white cursor-pointer transition"
+      class="nextBtn group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white cursor-pointer transition hover:bg-black"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+        <path
+          d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z"
+          fill="#006764"></path>
       </svg>
     </button>
   </div>
 </div>
 
 <script>
-const initBlogSliders = async () => {
-  const { default: Glide } = await import('@glidejs/glide');
-  document.querySelectorAll('.js-blog-slider[data-prefixid]').forEach((el) => {
-    if (el.dataset.mounted === 'true') return;
-    el.dataset.mounted = 'true';
+  function getSlidesToShow(): number {
+    const w = window.innerWidth;
+    if (w < 640) return 1;
+    if (w < 1024) return 2;
+    return 3;
+  }
 
-    const prefixId = el.dataset.prefixid;
-    const totalItems = Number(el.dataset.totalItems || 0);
-    const isDesktop = window.innerWidth >= 1024;
-    const glider = new Glide(el, {
-      rewind: false,
-      type: 'slider',
-      bound: true,
-      perView: 3,
-      gap: 24,
-      dragThreshold: isDesktop ? false : 80,
-      swipeThreshold: isDesktop ? false : 80,
-      startAt: 0,
-      breakpoints: {
-        1024: { perView: 2, gap: 16 },
-        768: { perView: 1, gap: 12 }
+  function initBlogSliders() {
+    document.querySelectorAll('.blog-slider-root[data-prefixid]').forEach((root) => {
+      if (!(root instanceof HTMLElement) || root.dataset.mounted === 'true') return;
+      root.dataset.mounted = 'true';
+
+      const prefixId = root.dataset.prefixid;
+      if (!prefixId) return;
+      const viewport = root.querySelector('.blog-slider-viewport');
+      if (!(viewport instanceof HTMLElement)) return;
+      const vp = viewport;
+
+      const totalItems = Number(root.dataset.totalItems || 0);
+      const contador = document.getElementById(`contador-${prefixId}`);
+      const controls = document.getElementById(`controls-${prefixId}`);
+      const prevBtn = document.getElementById(`prev-btn-${prefixId}`);
+      const nextBtn = document.getElementById(`next-btn-${prefixId}`);
+
+      function getPageStepPx(): number {
+        const items = vp.querySelectorAll('.blog-slider-item');
+        if (!items.length) return vp.clientWidth;
+        const first = items[0];
+        if (!(first instanceof HTMLElement)) return vp.clientWidth;
+        const style = window.getComputedStyle(vp);
+        const gap = parseFloat(style.columnGap || style.gap || '24') || 24;
+        const n = getSlidesToShow();
+        return n * first.offsetWidth + (n - 1) * gap;
       }
-    });
 
-    const contador = document.getElementById(`contador-${prefixId}`);
-    const controls = document.getElementById(`controls-${prefixId}`);
-    const prevBtn = document.getElementById(`prev-btn-${prefixId}`);
-    const nextBtn = document.getElementById(`next-btn-${prefixId}`);
+      function updateContador() {
+        if (!contador) return;
+        const slidesToShow = getSlidesToShow();
+        const totalPages = Math.max(1, Math.ceil(totalItems / slidesToShow));
+        const maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth);
+        const step = getPageStepPx();
+        let page = 1;
+        if (maxScroll > 1 && step > 0) {
+          page = Math.min(totalPages, Math.floor(vp.scrollLeft / step + 0.01) + 1);
+          if (vp.scrollLeft >= maxScroll - 4) page = totalPages;
+        }
+        contador.textContent = `${page} / ${totalPages}`;
 
-    function getSlidesToShow() {
-      const width = window.innerWidth;
-      if (width < 768) return 1;
-      if (width < 1024) return 2;
-      return 3;
-    }
-
-    function updateContador() {
-      if (!contador) return;
-      const total = totalItems;
-      const slidesToShow = getSlidesToShow();
-      const totalPages = Math.max(1, Math.ceil(total / slidesToShow));
-      const currentIndex = glider.index;
-      const lastStart = Math.max(0, total - slidesToShow);
-      const currentPage = currentIndex >= lastStart
-        ? totalPages
-        : Math.min(totalPages, Math.floor(currentIndex / slidesToShow) + 1);
-      contador.textContent = `${currentPage} / ${totalPages}`;
-
-      if (controls) {
-        const isMobileViewport = window.innerWidth < 768;
-        const shouldShowControls = isMobileViewport
-          ? total > 1
-          : total > slidesToShow;
-        controls.style.display = shouldShowControls ? '' : 'none';
+        if (controls) {
+          const mobile = window.innerWidth < 640;
+          const show = mobile ? totalItems > 1 : totalItems > slidesToShow;
+          controls.style.display = show ? '' : 'none';
+        }
       }
-    }
 
-    prevBtn?.addEventListener('click', (event) => {
-      event.preventDefault();
-      const perView = getSlidesToShow();
-      const target = Math.max(0, glider.index - perView);
-      glider.go(`=${target}`);
+      function equalizeCardHeights() {
+        const cards = root.querySelectorAll('.blog-slider-card-shell');
+        if (!cards.length) return;
+        cards.forEach((c) => {
+          if (c instanceof HTMLElement) c.style.minHeight = '';
+        });
+        let maxH = 0;
+        cards.forEach((c) => {
+          if (c instanceof HTMLElement) maxH = Math.max(maxH, c.offsetHeight);
+        });
+        if (!maxH) return;
+        cards.forEach((c) => {
+          if (c instanceof HTMLElement) c.style.minHeight = `${maxH}px`;
+        });
+      }
+
+      function scrollByDirection(dir: -1 | 1) {
+        const maxScroll = Math.max(0, vp.scrollWidth - vp.clientWidth);
+        const step = getPageStepPx();
+        const next = Math.max(0, Math.min(maxScroll, vp.scrollLeft + dir * step));
+        vp.scrollTo({ left: next, behavior: 'smooth' });
+      }
+
+      prevBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollByDirection(-1);
+      });
+      nextBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollByDirection(1);
+      });
+
+      vp.addEventListener('scroll', () => updateContador(), { passive: true });
+      window.addEventListener('resize', () => {
+        updateContador();
+        equalizeCardHeights();
+      });
+
+      updateContador();
+      requestAnimationFrame(() => {
+        equalizeCardHeights();
+        updateContador();
+      });
     });
+  }
 
-    nextBtn?.addEventListener('click', (event) => {
-      event.preventDefault();
-      const perView = getSlidesToShow();
-      const total = totalItems;
-      const lastStart = Math.max(0, total - perView);
-      const target = Math.min(lastStart, glider.index + perView);
-      glider.go(`=${target}`);
-    });
-
-    glider.on('run.after', updateContador);
-    glider.on('mount.after', updateContador);
-    window.addEventListener('resize', updateContador);
-    window.addEventListener('orientationchange', updateContador);
-    glider.mount();
-    updateContador();
-  });
-};
-
-const safeInitBlogSlider = () => {
-  initBlogSliders().catch(() => {});
-};
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', safeInitBlogSlider, { once: true });
-} else {
-  safeInitBlogSlider();
-}
+  const run = () => initBlogSliders();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run, { once: true });
+  } else {
+    run();
+  }
 </script>

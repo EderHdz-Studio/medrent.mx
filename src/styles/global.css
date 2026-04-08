@@ -306,6 +306,11 @@ div.citaBlogAuthor span {
 .sliderArticulosRelacionados .glider-slide {
   padding: 12px;
 }
+/*
+  Blog vitrina: NO poner width:100% en .glide__slide — Glide asigna ancho en px por slide;
+  forzar 100% aquí hace que cada ítem ocupe todo el track y solo se vea una card.
+  glide.core va en Layout (import); aquí solo padding.
+*/
 .sliderArticulosRelacionados .glide__slide {
   padding: 0;
 }
