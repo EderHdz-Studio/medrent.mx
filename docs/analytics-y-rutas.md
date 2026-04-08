@@ -14,3 +14,9 @@ Cuando un producto o marca en el CMS no tiene `slug`, las plantillas pueden gene
 - **Enlaces:** `src/lib/brandSlug.ts` expone `isUsableBrandSlug()` para que tarjetas, navbar, búsqueda, slider de marcas y PDP no enlacen a esa URL; en su lugar se usa texto sin enlace o se apunta a `/productos` según el componente.
 
 Tras desplegar, conviene comprobar con una petición HTTP que `/nuestras-marcas/undefined` devuelva `301` con `Location: /productos`.
+
+## Sitemap (`sitemap-pages.xml`)
+
+- No incluir `/aplicaciones`: no hay página en esa ruta (404); el listado por especialidad vive bajo `/especialidades` y `/especialidades/[slug]`.
+- Las URLs de categorías se arman con `getCategories()` para no omitir especialidades (p. ej. neurovascular). Si Strapi falla en el request, se usa una lista de respaldo.
+- Entradas estáticas añadidas: `/productos`, `/blog`, `/contacto`, `/eventos`.
