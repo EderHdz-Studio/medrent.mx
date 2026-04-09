@@ -92,7 +92,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
         <!-- Columna 2: Formulario -->
         <div class="p-4 md:p-6 lg:pt-20 lg:pr-[134px] lg:pb-6 lg:pl-[115px]">
             <!-- Columna 2: Formulario -->
-            <BaseForm id="contact-form" class="space-y-6 bg-white rounded">
+            <BaseForm id="contact-form" class="space-y-6 bg-white rounded flex flex-col gap-6">
                 <FormField
                     label="Nombre completo"
                     name="name"
@@ -112,7 +112,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
 
 
                 <!-- Institución o clínica -->
-                <div class="relative">
+                <div class="relative mb-0">
                     <label
                         class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs"
                         >Nombre de institución o clínica*</label
@@ -133,7 +133,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 />    
 
                 <!-- Estado de la República -->
-                <div class="relative">
+                <div class="relative mb-0">
                     <label
                         class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs"
                         >Estado de la república*</label
@@ -199,7 +199,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 </div>
 
                 <!-- ¿Cómo nos conociste? -->
-                <div class="relative">
+                <div class="relative mb-0">
                     <label
                         class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >¿Por qué medio nos conociste?*</label
@@ -209,12 +209,12 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                         type="text"
                         placeholder="Ej: Congreso, recomendación, redes..."
                         required
-                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
+                        class="w-full border-2 border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0 hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
                     />
                 </div>
 
                 <!-- Mensaje -->
-                <div class="relative">
+                <div class="relative mb-0">
                     <label
                         class="absolute -top-3 left-3  bg-[var(--color-green-dark)]  px-2 text-sm text-[#FFF] rounded-xs"
                         >Mensaje</label
@@ -224,7 +224,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                         id="message"
                         rows="4"
                         placeholder="Cuéntanos tus dudas o necesidades..."
-                        class="w-full border border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
+                        class="w-full border-2 border-[var(--color-green-dark)]  px-4 py-3 rounded placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none focus:ring-0"
                     ></textarea>
                 </div>
 

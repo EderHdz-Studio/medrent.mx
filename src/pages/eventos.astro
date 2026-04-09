@@ -662,7 +662,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     <!-- Misma capa que PDP (popUpSolicitarCotizacion): backdrop-filter sobre el viewport, sin blur al <main> -->
     <div
         id="event-blurred-background"
-        class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300"
+        class="absolute inset-0 transition-all duration-300"
+        style="background: rgba(23, 29, 28, 0.80); backdrop-filter: blur(7px);"
         aria-hidden="true"
     ></div>
 
@@ -675,7 +676,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 <!-- Botón cerrar en esquina superior derecha del popup -->
                 <button 
                     id="close-event-popup"
-                    class="absolute top-4 right-4 text-white text-2xl leading-none bg-[#171D1C] border-none cursor-pointer z-10 px-2 py-1 rounded"
+                    class="absolute top-0 right-0 flex items-end justify-end text-white text-2xl leading-none bg-[#171D1C] border-none cursor-pointer z-10 px-2 py-1 rounded"
                 >
                     ×
                 </button>
@@ -697,21 +698,21 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                     <!-- Contenido derecha -->
                     <div class="lg:w-1/2 p-4 lg:p-8">
 
-                        <div class="mb-2" id="event-popup-text">
+                        <div class="mb-8 flex flex-col items-start gap-2 flex-1 self-stretch" id="event-popup-text">
                             <p class="text-[var(--color-accent)] text-[14px] uppercase font-bold mb-2"> EXCLUSIVIDAD MÉDICA </p>
                             <!-- Título -->
-                            <h2 id="event-popup-title" class="text-[#261819] text-[22px] mb-4">
+                            <h2 id="event-popup-title" class="text-[#261819] text-[22px] font-bold">
                                 Título del evento
                             </h2>
                             
                             <!-- Descripción -->
-                            <p id="event-popup-description" class="text-[#5A4043] text-[16px] leading-relaxed" style="font-family: Lato;">
+                            <p id="event-popup-description" class="text-[#5A4043] text-[16px] text-base font-normal leading-6 tracking-[0.5px]">
                                 Descripción del evento
                             </p>
                         </div>
                         
 
-                        <BaseForm id="events-form" class="space-y-8  rounded">
+                        <BaseForm id="events-form" class="space-y-8 rounded flex flex-col gap-6">
                             <FormField
                             label="Nombre completo"
                             name="name"
@@ -956,7 +957,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             if (popupDescription) popupDescription.textContent = 'Descripción del evento';
             if (popupImage) (popupImage as HTMLDivElement).style.display = 'block';
             if (form) {
-                (form as HTMLDivElement).style.display = 'block';
+                (form as HTMLDivElement).style.display = 'flex';
                 (form as HTMLFormElement).reset();
                 document.querySelector('.form-container')?.classList.remove('hidden');
                 document.querySelector('.form-success')?.classList.add('hidden');
