@@ -4,7 +4,8 @@ import { getApplicationsByCategory } from "@server/api/applications";
 import { getCategories } from "@server/api/categories";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
-
+import PromotionSlider from '@components/sections/PromotionSlider.astro';
+import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
 
 export async function getStaticPaths() {
   const categories = await getCategories();
@@ -228,7 +229,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                   </div>
                 </div>
 
-                {/* Texto: sin fondo; hereda surface de la sección */}
+                {/* Texto sin fondo; hereda surface de la sección */}
                 <div class="flex w-full flex-col justify-between gap-2 px-0 py-6 md:w-1/2 md:px-6 md:py-0">
                   <div class="flex flex-col gap-2">
                     <p class="text-[14px] font-medium text-[var(--color-primary)]">APLICACIÓN</p>
@@ -276,18 +277,6 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                   </a>
                 </div>
               </div>
-              {/* Columna de Boton solo para mobile */}
-                {/* <div class="btnMobile block sm:hidden px-4">
-                    <a 
-                    href={`/especialidades/${categoria}/${aplicacion.slug}`}
-                    class="w-full inline-flex items-center justify-center bg-[#212121] text-white px-4 py-3 mt-4 rounded text-sm font-medium hover:bg-gray-800 transition-colors w-fit gap-2 self-start"
-                    >
-                    Saber más
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                    </svg>
-                    </a>
-                </div> */}
               </div>
             ))}
           </div>
@@ -298,7 +287,6 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
 
   
   <!-- <h1>{category}</h1>
-  ddddd
   <ul>
     {applications.map((app) => (
       <li>
@@ -308,5 +296,11 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
       </li>
     ))}
   </ul> -->
+
+  <!-- Slider de promociones -->
+  <PromotionSlider />
+
+  <!-- Slider de especialidades -->
+  <EspecialidadesSlider />
 
 </Layout>

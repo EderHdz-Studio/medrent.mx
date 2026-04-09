@@ -1,17 +1,29 @@
 ---
-/**
- * Carrusel de especialidades con la misma UX que ProductSlider (Glide, contador, flechas).
- */
 import ImageResponsive from "@components/media/ImageResponsive.astro";
-import type { HomeEspecialidadItem } from "@lib/homeEspecialidades";
+import { strapiFetch } from "@server/strapiClient";
 
+// Props opcionales
 interface Props {
-  items: HomeEspecialidadItem[];
   prefixId?: string;
 }
 
-const { items, prefixId = "Especialidades" } = Astro.props as Props;
-const list = Array.isArray(items) ? items : [];
+const { prefixId = "Especialidades" } = Astro.props as Props;
+
+let list: any[] = [];
+
+try {
+  const response = await strapiFetch("/categories?populate=figure");
+  list = response.data.map((item: any) => ({
+    name: item.name,
+    slug: item.slug,
+    iconImage: item.figure?.url || "/placeholder.svg",
+    isActive: item.isActive ?? true
+  }));
+  
+} catch (error) {
+  console.error('Error fetching categories for slider:', error);
+  list = [];
+}
 ---
 
 {
