@@ -17,7 +17,7 @@ import ShareButtons from '@components/product/ShareButtons.astro';
         </svg>
     </button>
 
-    <div id="ImageGalery" class="rounded-lg shadow-xl max-w-4xl w-full overflow-auto relative h-auto lg:h-auto flex flex-col items-center justify-center z-[10000]" style="width: auto;">
+    <div id="ImageGalery" class="rounded-lg shadow-xl max-w-4xl w-full overflow-hidden relative h-auto lg:h-auto flex flex-col items-center justify-center z-[10000]" style="width: auto; touch-action: pan-y;">
       <!-- Botón cerrar -->
       <button id="close-gallery-popup" type="button" class="cursor-pointer absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(33,33,33,0.95)] text-white z-[10001] group hover:bg-[#000] hover:scale-110 transition-all duration-200" >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="transition-transform duration-200 ease-in-out">
@@ -412,8 +412,8 @@ import ShareButtons from '@components/product/ShareButtons.astro';
           videoElement.style.margin = '0';
           videoElement.style.border = 'none';
         } else {
-          imageElement.src = currentItem;
-          imageElement.alt = 'Imagen galería';
+          
+          imageElement.alt = 'Imagen galería';imageElement.src = currentItem;
           imageElement.classList.remove('hidden');
         }
 
@@ -447,6 +447,43 @@ import ShareButtons from '@components/product/ShareButtons.astro';
       if (overlay) {
         overlay.classList.remove('hidden');
         setPopupZoomButtonState(true);
+        
+        const zoomButton = document.querySelector('#popupMediaButtonsMobile [data-zoom-button]');
+        if (zoomButton) {
+          // Remover listeners anteriores para evitar duplicados
+          const newZoomButton = zoomButton.cloneNode(true);
+          zoomButton.parentNode.replaceChild(newZoomButton, zoomButton);
+          
+          // Función para cerrar el popup con btn -zoom
+          const closePopupFn = function() {
+            if (overlay) {
+              if (isManualFullscreen) {
+                exitManualFullscreen();
+              }
+              setPopupZoomButtonState(false);
+              
+              overlay.classList.add('hidden');
+              document.body.classList.remove('popup-open');
+              document.body.style.overflow = '';
+              document.body.style.position = '';
+              document.body.style.top = '';
+              document.body.style.width = '';
+              
+              if (videoElement) {
+                videoElement.pause();
+                videoElement.currentTime = 0;
+              }
+              
+              document.documentElement.style.paddingRight = '';
+            }
+          };
+          
+          newZoomButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closePopupFn();
+          });
+        }
         
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
@@ -524,8 +561,7 @@ import ShareButtons from '@components/product/ShareButtons.astro';
       min-width: 460px;
     }
   }
-
-
+  
   @media (max-width: 480px) {
     #ImageGalery {
       width: 300px;
