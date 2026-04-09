@@ -207,7 +207,7 @@ export function initForm(formId) {
   if (!phoneHelper && phoneWrapper) {
     phoneHelper = document.createElement("div");
     phoneHelper.className =
-      "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
+      "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     phoneWrapper.appendChild(phoneHelper);
   }
 
@@ -227,7 +227,7 @@ export function initForm(formId) {
       // phoneHelper.innerHTML = 'Incluye lada internacional. Ej.: +52 55 1234 5678';
       phoneHelper.innerHTML = "";
       phoneHelper.className =
-        "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
+        "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -283,7 +283,7 @@ export function initForm(formId) {
     if (input === phoneInput && phoneHelper) {
       phoneHelper.innerHTML = "Número válido";
       phoneHelper.className =
-        "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
+        "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -309,7 +309,7 @@ export function initForm(formId) {
       phoneHelper.innerHTML =
         "<strong>El número ingresado no tiene la cantidad correcta de dígitos.</strong><br>10 dígitos.";
       phoneHelper.className =
-        "phone-helper text-[12px] mt-1 text-left text-[#171D1C]";
+        "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 

@@ -292,7 +292,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                       <button
                         id="blog-filters-toggle"
                         type="button"
-                        class="flex h-fit w-fit shrink-0 items-center gap-2 rounded-lg border border-[#171D1C] bg-white py-1.5 pl-1 pr-2 font-lato text-[13px] font-medium leading-5 tracking-[0.02em] text-[#171D1C] shadow-sm transition hover:bg-[#171D1C]/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:text-[14px]"
+                        class="flex h-fit w-fit shrink-0 items-center gap-2 rounded-lg border border-[#171D1C] bg-white py-1.5 pl-1 pr-2 font-lato text-[13px] font-medium leading-5 tracking-[0.02em] text-[var(--color-text-default)] shadow-sm transition hover:bg-[#171D1C]/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:text-[14px]"
                         aria-expanded="false"
                         aria-controls="blog-filters-panel"
                       >
@@ -421,7 +421,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
             <div class="flex h-fit w-full flex-col gap-4 pl-[4px] pr-[8px] sm:flex-row sm:items-center sm:justify-between">
               <h2
                 id="blog-lo-mas-nuevo-heading"
-                class="min-w-0 self-stretch font-lato text-[24px] font-bold leading-[32px] text-[#171D1C] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]"
+                class="min-w-0 self-stretch font-lato text-[24px] font-bold leading-[32px] text-[var(--color-text-default)] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]"
               >
                 Lo más nuevo
               </h2>
@@ -433,7 +433,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                     aria-expanded="false"
                     aria-haspopup="listbox"
                     aria-controls="blog-sort-menu"
-                    class="box-border flex h-fit w-fit min-h-0 max-w-full items-center justify-between gap-2 rounded-[8px] border border-[#171D1C] bg-white py-2 pl-[8px] pr-[8px] text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[#171D1C] transition-[color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+                    class="box-border flex h-fit w-fit min-h-0 max-w-full items-center justify-between gap-2 rounded-[8px] border border-[#171D1C] bg-white py-2 pl-[8px] pr-[8px] text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] transition-[color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                   >
                     <span id="blog-sort-label" class="min-w-0 flex-1 truncate">Ordenar por:</span>
                     <svg
@@ -550,7 +550,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
           <div id="blog-client-simple" class="hidden w-full">
             <p
               id="blog-empty-filtered"
-              class="hidden w-full py-10 text-center font-lato text-[16px] font-normal leading-6 text-[#171D1C]"
+              class="hidden w-full py-10 text-center font-lato text-[16px] font-normal leading-6 text-[var(--color-text-default)]"
               role="status"
             >
               No hay artículos para mostrar con el filtro u orden seleccionado.
@@ -570,7 +570,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
               </button>
               <p
                 id="blog-grid-count-simple"
-                class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#171D1C]"
+                class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[var(--color-text-default)]"
               >
               </p>
             </div>
@@ -581,7 +581,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
             <section id="blog-ultimas-section" aria-labelledby="blog-ultimas-publicaciones-heading">
               <h2
                 id="blog-ultimas-publicaciones-heading"
-                class="mb-6 font-lato text-[24px] font-bold leading-[32px] text-[#171D1C] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]"
+                class="mb-6 font-lato text-[24px] font-bold leading-[32px] text-[var(--color-text-default)] md:text-[28px] md:leading-[36px] lg:text-[32px] lg:leading-[40px]"
               >
                 Últimas publicaciones
               </h2>
@@ -607,7 +607,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 )}
                 <p
                   id="blog-grid-count"
-                  class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[#171D1C]"
+                  class="text-center font-lato text-[16px] font-normal leading-6 tracking-[0.5px] text-[var(--color-text-default)]"
                 >
                   Mostrando {Math.min(6, articulosActivos.length - 3)} de{" "}
                   {articulosActivos.length - 3} artículos
