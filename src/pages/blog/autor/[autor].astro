@@ -97,20 +97,50 @@ if (autorParam === TEAM_MEDRENT_SLUG) {
     articles: teamArticles,
   };
 } else {
+  // BUSCAR AUTOR PRIMERO EN ARTÍCULOS
   const forSlug = articles.filter((a) => a.writer?.slug === autorParam);
-  if (forSlug.length === 0) {
-    return Astro.redirect("/404");
+  
+  if (forSlug.length > 0) {
+    // El autor tiene artículos
+    const w: NormalizedWriter | undefined = forSlug[0].writer;
+    author = {
+      slug: autorParam,
+      fullName: w?.fullName,
+      shortDescription: w?.shortDescription,
+      longDescription: w?.longDescription,
+      heroImage: w?.heroImage,
+      speciality: w?.speciality,
+      articles: forSlug,
+    };
+  } else {
+    // EL AUTOR NO TIENE ARTÍCULOS - Buscar en endpoint /writers
+    try {
+      const writerRes = await strapiFetch(
+        `/writers?filters[slug][$eq]=${encodeURIComponent(autorParam)}&populate=*`
+      );
+      const rows = writerRes?.data;
+      const rawWriter = Array.isArray(rows) && rows[0] ? rows[0] : null;
+      const nw = normalizeWriterFromApi(rawWriter);
+      
+      if (nw) {
+        // Autor encontrado en Strapi, pero sin artículos
+        author = {
+          slug: autorParam,
+          fullName: nw.fullName,
+          shortDescription: nw.shortDescription,
+          longDescription: nw.longDescription,
+          heroImage: nw.heroImage,
+          speciality: nw.speciality,
+          articles: [], // Array vacío - sin artículos
+        };
+      } else {
+        // No existe el autor en Strapi
+        return Astro.redirect("/404");
+      }
+    } catch {
+      return Astro.redirect("/404");
+    }
   }
-  const w: NormalizedWriter | undefined = forSlug[0].writer;
-  author = {
-    slug: autorParam,
-    fullName: w?.fullName,
-    shortDescription: w?.shortDescription,
-    longDescription: w?.longDescription,
-    heroImage: w?.heroImage,
-    speciality: w?.speciality,
-    articles: forSlug,
-  };
 }
 
 function articleDateMs(a: NormalizedBlogArticle) {
