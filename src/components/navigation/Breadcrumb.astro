@@ -26,9 +26,9 @@ const navLayout =
     ? 'relative'
     : 'absolute';
 ---
-<div class={`mx-auto flex w-full max-w-[1280px] flex-col justify-start ${outerBg}`}>
+<div class={`mx-auto flex w-full max-w-[1280px] flex-col justify-start ${outerBg} relative`}>
   <nav
-    class={`mx-auto flex w-full max-w-[1280px] items-center px-8 py-2 font-lato ${navLayout} ${className || ""}`}
+    class={`mx-auto flex w-full max-w-[1280px] items-center px-4 md:px-8 py-2 font-lato mt-2 ${navLayout} ${className || ""}`}
     aria-label="Breadcrumb"
   >
     <ol class={`scrollbar-hide flex touch-pan-x items-center gap-2 overflow-x-auto whitespace-nowrap ${listTypography}`}>
