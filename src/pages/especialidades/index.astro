@@ -149,7 +149,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     </section>
 
     <div class="max-w-7xl m-auto">
-    <section class="flex flex-col gap-6">
+    <section class="flex flex-col gap-4 md:gap-6">
         {especialidades.map((categoria, index) => (
             <div class={`flex flex-col md:flex-row w-full bg-white rounded-lg gap-6 p-4 md:p-6 lg:px-[135px] lg:py-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
                 <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-center"> 
@@ -180,6 +180,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                       sizes="(min-width: 1024px) 50vw, 100vw"
                       loading="lazy"
                       decoding="async"
+                      style="border-radius: 24px;"
                     /> 
                 </div> 
 
@@ -189,4 +190,23 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     </div>
 
     <TestimonialsSlider />
+
+    <div class="max-w-7xl m-auto">
+      <section class="flex flex-col gap-4 p-4 md:flex-row md:gap-6 md:py-[64px] md:px-[24px] lg:py-[132px] lg:px-[137px] mb-4">
+        <div class="w-full md:w-1/2 lg:w-1/2 flex justify-center"> 
+          <p  class="leading-9 text-[24px] md:text-[28px] font-bold bg-[linear-gradient(266deg,var(--Schemes-Secondary-Container,#007BB6)_0%,var(--Schemes-Primary-Container,#00827F)_100.77%)] bg-clip-text text-transparent" style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;"> 
+            Soluciones tecnológicas para procedimientos neuroquirúrgicos que integran visualización avanzada, neuronavegación, instrumental especializado y tecnologías de apoyo quirúrgico, diseñadas para mejorar la precisión, la seguridad y la toma de decisiones clínicas en entornos de alta complejidad.
+          </p> 
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/2 flex justify-center"> 
+          <p class="text-[var(--color-text-default)] text-[16px]"> 
+            Nuestro objetivo es acercar a los profesionales de la salud equipos de neurodiagnóstico, rehabilitación, ultrasonido y otras especialidades médicas, desarrollados para elevar la precisión clínica, optimizar los flujos de atención y fortalecer la práctica médica diaria.
+            <br> <br>
+            Creemos en una innovación médica accesible, en un diagnóstico confiable y en el potencial de la tecnología biomédica para transformar la práctica clínica y mejorar de manera tangible la calidad de vida de los pacientes.
+          </p> 
+        </div>
+      </section>
+    </div>
+        
+
 </Layout>
