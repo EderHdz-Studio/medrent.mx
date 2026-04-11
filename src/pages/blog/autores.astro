@@ -1,0 +1,192 @@
+---
+// /blog/autores/index.astro
+export const prerender = false;
+
+import Layout from '@layouts/Layout.astro';
+import { strapiFetch } from "@server/strapiClient";
+import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+
+// Obtener todos los escritores desde Strapi
+let writers: any[] = [];
+try {
+  const response = await strapiFetch('/writers?populate[avatar]=true&populate[heroImage]=true&populate[articles]=true&sort=fullName:asc');
+  writers = Array.isArray(response?.data) ? response.data : [];
+} catch (error) {
+  console.error('Error fetching writers:', error);
+  writers = [];
+}
+
+// Paginación
+const AUTORES_POR_PAGINA = 12;
+const url = new URL(Astro.request.url);
+const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+const totalPages = Math.ceil(writers.length / AUTORES_POR_PAGINA);
+const start = (page - 1) * AUTORES_POR_PAGINA;
+const writersPaginated = writers.slice(start, start + AUTORES_POR_PAGINA);
+
+// Breadcrumb
+const breadcrumbItems = [
+  { name: "INICIO", href: "/" },
+  { name: "BLOG", href: "/blog" },
+  { name: "AUTORES" },
+];
+
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+---
+
+<Layout
+  title="Autores | Blog MedRent"
+  description="Conoce a los autores y especialistas que comparten su conocimiento en tecnología médica y diagnóstico en el blog de MedRent."
+  keywords="autores; blog MedRent; especialistas; tecnología médica"
+  pageType="blog"
+>
+  <Fragment slot="head">
+    <BreadcrumbSchema
+      id={breadcrumbId}
+      items={[
+        { name: "Inicio", url: `${baseUrl}/` },
+        { name: "Blog", url: `${baseUrl}/blog` },
+        { name: "Autores", url: canonicalUrl },
+      ]}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": `${canonicalUrl}#collection`,
+      url: canonicalUrl,
+      name: "Autores del Blog MedRent",
+      description: "Conoce a los autores y especialistas que comparten su conocimiento en tecnología médica.",
+      isPartOf: { "@id": `${baseUrl}/blog#website` },
+      numberOfItems: writers.length,
+    })} />
+  </Fragment>
+
+    <section class="heroAutor relative mx-auto w-full overflow-hidden bg-[var(--color-secondary-light)] rounded-b-[24px]">
+        <div class="containerHero flex w-full flex-col items-stretch gap-6 px-4 pb-10 pt-20 sm:px-6 md:flex-row md:items-center md:gap-6 md:px-8 md:py-16 lg:px-8">
+            <!-- Breadcrumb corregido -->
+            <div class="breadcrumb-fixed-wrapper pointer-events-auto absolute left-0 top-0 z-30 w-full px-4 sm:px-6 md:px-8">
+                <div class="max-w-7xl mx-auto">
+                    <Breadcrumb textColor="text-dark" surface="light" items={breadcrumbItems} />
+                </div>
+            </div>
+
+            <div class="flex w-full flex-[1] flex-col gap-2 max-w-7xl mx-auto px-4 py-4 md:px-8 md:py-4 xl:px-10 xl:py-4 text-left justify-start items-start">
+                <p class="font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)] uppercase">
+                AUTORES EN MEDRENT
+                </p>
+                <h1 class="font-lato text-[32px] font-bold leading-10 text-[var(--color-text-default)]">
+                Voces expertas que respaldan cada artículo
+                </h1>
+                <div class="mt-2x space-y-4 font-lato text-[16px] leading-6 tracking-[0.5px] text-[var(--color-text-default)]">
+                <p class="mb-4">
+                    Los contenidos de MedRent son desarrollados por un equipo especializado en tecnología médica avanzada, con experiencia en neurociencias, neuromodulación, rehabilitación y diagnóstico especializado, en colaboración con profesionales de la salud que validan cada publicación desde la práctica clínica.
+                </p>
+                <p class="mb-0">
+                    Nuestro compromiso es ofrecer información técnica, precisa y basada en evidencia, orientada a apoyar la toma de decisiones médicas y el uso responsable de tecnología en entornos clínicos y hospitalarios.
+                </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="mx-auto w-full max-w-[1280px] gap-4 flex flex-col items-center gap-6 p-6 md:p-8">
+        <div class="mt-2 font-lato text-[var(--color-text-default)] text-[32px] font-bold leading-10">
+            {writers.length} {writers.length === 1 ? 'autor' : 'autores'}
+        </div>
+        {writersPaginated.length > 0 ? (
+        <>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+                {writersPaginated.map((writer) => {
+                    const heroImage = writer.heroImage?.url;
+                    const initials = (writer.fullName || writer.slug)
+                        .split(/\s+/)
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((w: string) => w[0])
+                        .join('')
+                        .toUpperCase() || '?';
+                    
+                    const articleCount = writer.articles?.length || 0;
+                    
+                    return (
+                        <a
+                            href={`/blog/autor/${writer.slug}`}
+                            class="group flex h-full flex-col overflow-hidden rounded-2xl transition-all no-underline"
+                        >
+                            {/* PARTE DE ARRIBA: imagen que ocupa TODO el contenedor de 218px */}
+                            <div class="relative h-[218px] bg-[var(--color-secondary-light)] w-full max-w-[560px] flex-shrink-0 overflow-hidden rounded-[24px] shadow-md">
+                                {heroImage ? (
+                                    <img
+                                        src={heroImage}
+                                        alt={writer.fullName}
+                                        class="h-auto max-h-[364px] w-full"
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <div class="flex h-full w-full items-center justify-center bg-[var(--color-primary)]">
+                                        <span class="text-4xl font-bold text-white">{initials}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* PARTE DE ABAJO: contenido con blur */}
+                            <div class="flex h-full flex-1 flex-col items-start gap-2 self-stretch bg-[#F5FAF9] p-6 backdrop-blur-[6px]">
+                                {writer.speciality && (
+                                    <p class="font-lato uppercase text-[var(--color-primary)] text-[14px] font-bold leading-5 tracking-[0.1px]">
+                                        {writer.speciality}
+                                    </p>
+                                )}
+                                <h2 class="text-[var(--color-text-default)] font-lato text-[22px] font-bold leading-[28px]">
+                                    {writer.fullName}
+                                </h2>
+                                {writer.shortDescription && (
+                                    <p class="flex-1 text-[var(--color-text-secondary)] font-lato text-base font-normal leading-6 tracking-[0.5px]">
+                                        {writer.shortDescription}
+                                    </p>
+                                )}
+                                <p class="mt-2 text-[var(--color-primary)] font-lato text-base font-medium leading-6 tracking-[0.15px]">
+                                    {articleCount} {articleCount === 1 ? 'Artículo' : 'Artículos'}
+                                </p>
+                            </div>
+                        </a>
+                    );
+                })}
+            </div>
+
+            {/* Paginación */}
+            {totalPages > 1 && (
+                <nav class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Paginación de autores">
+                    {page > 1 && (
+                        <a
+                            href={`/blog/autores?page=${page - 1}`}
+                            class="rounded-full border border-[#171d1c] px-4 py-2 font-lato text-sm font-medium text-[var(--color-text-default)] no-underline transition hover:bg-[var(--color-secondary-light)]"
+                        >
+                            ← Anterior
+                        </a>
+                    )}
+                    <span class="px-4 py-2 font-lato text-sm text-[var(--color-text-default)]">
+                        Página {page} de {totalPages}
+                    </span>
+                    {page < totalPages && (
+                        <a
+                            href={`/blog/autores?page=${page + 1}`}
+                            class="rounded-full border border-[#171d1c] px-4 py-2 font-lato text-sm font-medium text-[var(--color-text-default)] no-underline transition hover:bg-[var(--color-secondary-light)]"
+                        >
+                            Siguiente →
+                        </a>
+                    )}
+                </nav>
+            )}
+        </>
+        ) : (
+            <div class="flex flex-col items-center justify-center rounded-2xl bg-[var(--color-secondary-light)] py-16">
+                <p class="font-lato text-lg text-[var(--color-text-default)]">
+                    No hay autores disponibles por el momento.
+                </p>
+            </div>
+        )}
+    </div> 
+</Layout>
