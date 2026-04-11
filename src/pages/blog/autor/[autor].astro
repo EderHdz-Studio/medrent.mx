@@ -646,8 +646,26 @@ try {
 
   <section class="w-full mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-6 max-w-[1280px] flex flex-col gap-2 md:gap-0 lg:gap-0">
     <div class="flex flex-col items-stretch md:justify-between mb-8 gap-4">
-      <div class="tittle-glider text-left w-full md:w-auto lg:mb-6"> 
+      <div class="tittle-glider text-left w-full md:w-auto lg:mb-6 flex items-center justify-between"> 
         <h2 class="text-[var-(--color-text-default)] font-lato text-[32px] font-bold leading-[40px]">Otros autores</h2> 
+        {/* Controles solo en desktop/tablet */}
+        {todosEscritores && todosEscritores.length > 5 && (
+          <div class="hidden md:flex items-center gap-[24px] mt-8">
+            <div class="botones-glider flex justify-start gap-4 w-full md:w-auto items-center rounded-full border-2 border-[#006764] bg-white" style="padding: 12px 16px;">
+              <button aria-label="Anterior" class="prevBtnAutor group flex items-center justify-center w-[56px] h-[32px] cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
+                </svg>
+              </button>
+              <label class="autores-label text-black text-center text-[16px] font-light tracking-[2.5px]">1/{todosEscritores.length}</label>
+              <button aria-label="Siguiente" class="nextBtnAutor group flex items-center justify-center w-[56px] h-[32px] cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       {Array.isArray(todosEscritores) && todosEscritores.length > 7 && (
         <div class="botones-glider hidden lg:flex justify-center order-3 md:order-none md:justify-end items-center gap-4 w-full md:w-auto md:relative md:bottom-[36px]"> 
@@ -663,31 +681,57 @@ try {
           </button> 
         </div>
       )}
-      <div id="glider-autores" class={'glider px-0 gap-4 flex w-full p-6 lg:pt-0'}>
-        {todosEscritores && todosEscritores.map((writer:any) => (
-          <a href={'/blog/autor/' + writer.slug} class="min-w-[155px]">  
-            <div
-              class="mb-2 rounded-full bg-center bg-cover bg-no-repeat transition-all duration-500 block w-[102px] h-[102px] aspect-square w-auto mx-auto"
-              style={{ backgroundImage: `url(${writer.avatar.url})` }}
-              aria-label={writer.fullName || writer.slug}
-            >
-            </div>
-            <div class="flex flex-col gap-2 p-2 text-center bg-white/80 backdrop-blur rounded-b-[16px]">
-              <div class="text-[var(--color-primary)] text-center font-lato text-[11px] font-bold leading-[16px] tracking-[0.5px]">{writer.speciality}</div>
-              <div class="text-[var(--color-text-default)] text-center font-lato text-[14px] font-bold leading-[20px] tracking-[0.25px]">{writer.fullName}</div>
-            </div>
-          </a> 
-        ))}
+      <div id="glider-autores" class="glider-container relative w-full overflow-hidden">
+        <div class="glider-track flex gap-8 scroll-smooth snap-x snap-mandatory overflow-hidden lg:flex-wrap justify-flex-start items-start self-stretch py-6" id="gliderTrack">
+          {todosEscritores && todosEscritores.map((writer: any, index: number) => (
+            <a 
+              href={'/blog/autores/' + writer.slug} 
+              class="glider-slide flex-shrink-0 w-[155px] snap-start lg:w-auto"
+              data-slide-index={index}
+            >  
+              <div
+                class="mb-2 rounded-full bg-center bg-cover bg-no-repeat transition-all duration-500 block w-[102px] h-[102px] aspect-square mx-auto"
+                style={{ backgroundImage: `url(${writer.avatar.url})` }}
+                aria-label={writer.fullName || writer.slug}
+              >
+              </div>
+              <div class="flex flex-col gap-2 p-2 text-center bg-white/80 backdrop-blur rounded-b-[16px]">
+                <div class="text-[var(--color-primary)] text-center font-lato text-[11px] font-bold leading-[16px] tracking-[0.5px]">{writer.speciality}</div>
+                <div class="text-[var(--color-text-default)] text-center font-lato text-[14px] font-bold leading-[20px] tracking-[0.25px]">{writer.fullName}</div>
+              </div>
+            </a> 
+          ))}
+        </div>
       </div>
-      
-      <!-- Botón Ver más autores -->
-      <div class="flex justify-center mt-8">
-        <a 
-          href="/blog/autores"
-          class="medrent-btn-primary inline-flex cursor-pointer items-center gap-2 border-0 text-base font-bold leading-6 tracking-[0.5px]"
-        >
-          Ver más autores
-        </a>
+
+
+      <div class="flex justify-center flex-row-reverse items-center gap-3 m-0 p-0 max-sm:flex max-sm:flex-row-reverse max-sm:items-center max-sm:justify-center max-sm:gap-3">
+        {/* Controles de flechitas solo en mobile */}
+        {todosEscritores && todosEscritores.length > 2 && (
+          <div class="flex max-[530px]:flex min-[530px]:hidden items-center justify-center gap-4 rounded-full border-2 border-[#006764] bg-white px-4 py-3">
+            <button aria-label="Anterior" class="prevBtnAutor group flex items-center justify-center cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764"/>
+              </svg>
+            </button>
+            <label class="autores-label text-black text-center text-[16px] font-light tracking-[2.5px]">1/{todosEscritores.length}</label>
+            <button aria-label="Siguiente" class="nextBtnAutor group flex items-center justify-center cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764"/>
+              </svg>
+            </button>
+          </div>
+        )}
+        
+        <!-- Botón Ver más autores -->
+        <div class="flex justify-center">
+          <a 
+            href="/blog/autores"
+            class="medrent-btn-primary inline-flex cursor-pointer items-center gap-2 border-0 text-base font-bold leading-6 tracking-[0.5px]"
+          >
+            Ver más autores
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -734,3 +778,83 @@ try {
     })();
   </script>
 </Layout>
+
+
+<script is:inline>
+  // Glider de autores
+  let currentAutorSlide = 0;
+  const autorSlides = document.querySelectorAll('#gliderTrack .glider-slide');
+  const autorPrevBtns = document.querySelectorAll('.prevBtnAutor');
+  const autorNextBtns = document.querySelectorAll('.nextBtnAutor');
+  const autorLabels = document.querySelectorAll('.autores-label');
+  const autorTrack = document.getElementById('gliderTrack');
+
+  function updateAutorLabel() {
+    autorLabels.forEach(label => {
+      if (label) {
+        label.textContent = `${currentAutorSlide + 1}/${autorSlides.length}`;
+      }
+    });
+  }
+
+  function scrollToSlide(index) {
+    if (autorTrack && autorSlides[index]) {
+      const slide = autorSlides[index];
+      const scrollPosition = slide.offsetLeft;
+      autorTrack.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  function nextAutorSlide() {
+    if (autorSlides.length > 0) {
+      currentAutorSlide = (currentAutorSlide + 1) % autorSlides.length;
+      scrollToSlide(currentAutorSlide);
+      updateAutorLabel();
+    }
+  }
+
+  function prevAutorSlide() {
+    if (autorSlides.length > 0) {
+      currentAutorSlide = (currentAutorSlide - 1 + autorSlides.length) % autorSlides.length;
+      scrollToSlide(currentAutorSlide);
+      updateAutorLabel();
+    }
+  }
+
+  // Detectar scroll manual para actualizar el índice
+  function handleScroll() {
+    if (autorTrack && autorSlides.length > 0) {
+      const scrollLeft = autorTrack.scrollLeft;
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+      
+      autorSlides.forEach((slide, idx) => {
+        const slideLeft = slide.offsetLeft;
+        const distance = Math.abs(scrollLeft - slideLeft);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = idx;
+        }
+      });
+      
+      if (currentAutorSlide !== closestIndex) {
+        currentAutorSlide = closestIndex;
+        updateAutorLabel();
+      }
+    }
+  }
+
+  if (autorSlides.length > 0) {
+    autorPrevBtns.forEach(btn => btn.addEventListener('click', prevAutorSlide));
+    autorNextBtns.forEach(btn => btn.addEventListener('click', nextAutorSlide));
+    
+    if (autorTrack) {
+      autorTrack.addEventListener('scroll', handleScroll);
+    }
+    
+    updateAutorLabel();
+  }
+</script>

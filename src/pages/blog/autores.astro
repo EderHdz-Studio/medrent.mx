@@ -6,6 +6,7 @@ import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import Newsletter from '@components/FormNewsletter.astro';
 
 // Obtener todos los escritores desde Strapi
 let writers: any[] = [];
@@ -188,5 +189,8 @@ const breadcrumbId = `${canonicalUrl}#breadcrumb`;
                 </p>
             </div>
         )}
-    </div> 
+    </div>
+
+    <!-- Newsletter -->
+    <Newsletter />
 </Layout>
