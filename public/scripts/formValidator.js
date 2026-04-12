@@ -66,7 +66,7 @@ export function initForm(formId) {
         estadoSelectedSpan.classList.remove("text-[var(--color-green-dark)]");
         estadoSelectedSpan.classList.add("text-[#A0A0A0]");
       }
-      if (estadoLabel) estadoLabel.style.background = "#3D4948";
+      if (estadoLabel) estadoLabel.style.background = "var(--color-green-dark)";
       return false;
     }
 
@@ -217,7 +217,7 @@ export function initForm(formId) {
     input.style.removeProperty("border");
     const container = input.closest(".relative");
     const label = container?.querySelector("label");
-    if (label) label.style.background = "#3D4948";
+    if (label) label.style.background = "var(--color-green-dark)";
     if (input.tagName === "SELECT") {
       input.classList.remove("success");
       input.classList.remove("error");

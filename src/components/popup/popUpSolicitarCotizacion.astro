@@ -286,10 +286,10 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (isValid) {
         nameInput.style.setProperty('border', '3px solid #006764', 'important');
-        if (label) label.style.background = '#3D4948';
+        if (label) label.style.background = 'var(--color-green-dark)';
       } else {
-        nameInput.style.setProperty('border', '2px solid #3D4948', 'important');
-        if (label) label.style.background = '#3D4948';
+        nameInput.style.setProperty('border', '2px solid var(--color-green-dark)', 'important');
+        if (label) label.style.background = 'var(--color-green-dark)';
       }
       
       return isValid;
@@ -314,10 +314,10 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (isValid) {
         emailInput.style.setProperty('border', '3px solid #006764', 'important');
-        if (label) label.style.background = '#3D4948';
+        if (label) label.style.background = 'var(--color-green-dark)';
       } else {
-        emailInput.style.setProperty('border', '2px solid #3D4948', 'important');
-        if (label) label.style.background = '#3D4948';
+        emailInput.style.setProperty('border', '2px solid var(--color-green-dark)', 'important');
+        if (label) label.style.background = 'var(--color-green-dark)';
       }
       
       return isValid;
@@ -338,8 +338,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const label = phoneInput.parentElement.querySelector('label');
       const isValid = phoneInput.value.trim().length > 0;
       
-      phoneInput.style.setProperty('border', isValid ? '3px solid #006764' : '2px solid #3D4948', 'important');
-      if (label) label.style.background = isValid ? '#3D4948' : '#3D4948';
+      phoneInput.style.setProperty('border', isValid ? '3px solid #006764' : '2px solid var(--color-green-dark)', 'important');
+      if (label) label.style.background = isValid ? 'var(--color-green-dark)' : 'var(--color-green-dark)';
       
       return isValid;
     }
@@ -360,10 +360,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (isValid) {
         selectInput.classList.remove('text-[#A0A0A0]');
         selectInput.style.setProperty('border', '3px solid #006764', 'important');
-        if (label) label.style.background = '#3D4948';
+        if (label) label.style.background = 'var(--color-green-dark)';
       } else {
         selectInput.style.setProperty('border', '2px solid #171D1C', 'important');
-        if (label) label.style.background = '#3D4948';
+        if (label) label.style.background = 'var(--color-green-dark)';
       }
       
       return isValid;
@@ -626,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function() {
   button[type="submit"]:disabled {
     opacity: 0.5;
     cursor: not-allowed !important;
-    background-color: #3D4948 !important;
+    background-color: var(--color-green-dark) !important;
   }
   
   button[type="submit"]:not(:disabled):hover {
