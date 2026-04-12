@@ -124,83 +124,76 @@ if (Array.isArray(cachedTestimonials) && cachedTestimonials.length > 0) {
 </section>
 
 <script>
-const { default: Glide } = await import('@glidejs/glide');
+const safeInit = async () => {
+  const { default: Glide } = await import('@glidejs/glide');
 
-const safeInit = () => {
-
-    const glide = new Glide('#slideTestimonials', {
-        type: 'slider',
-        perView: 3,
-        gap: 24,
-        animationDuration: 500, 
-        animationTimingFunc: 'ease-in-out',
-        rewind: false,
-        breakpoints: {
-            1024: {
-                perView: 2,
-                peek: {
-                    before: 0,
-                    after: 80
-                }
-            },
-            840: {
-                perView: 1.0001,
-                gap: 16,
-                peek: {
-                    before: 0,
-                    after: 60
-                }
-            }
+  const glide = new Glide('#slideTestimonials', {
+    type: 'slider',
+    perView: 3,
+    gap: 24,
+    animationDuration: 500,
+    animationTimingFunc: 'ease-in-out',
+    rewind: false,
+    breakpoints: {
+      1024: {
+        perView: 2,
+        peek: {
+          before: 0,
+          after: 80
         }
-    });
-
-    const updateCounter = () => {
-        const perView = glide.settings.perView;
-        const totalSlides = glide._c.Html.slides.length;
-
-        const totalPages = Math.ceil(totalSlides / perView);
-        const currentPage = Math.floor(glide.index / perView) + 1;
-
-        const counter = document.querySelector('#testimonialCounter');
-
-        if (counter) {
-        counter.textContent = `${currentPage} / ${totalPages}`;
+      },
+      840: {
+        perView: 1.0001,
+        gap: 16,
+        peek: {
+          before: 0,
+          after: 60
         }
-    };
+      }
+    }
+  });
 
-    glide.on(['mount.after', 'run.after', 'resize'], updateCounter);
+  const updateCounter = () => {
+    const perView = glide.settings.perView;
+    const totalSlides = glide._c.Html.slides.length;
 
-    glide.mount();
+    const totalPages = Math.ceil(totalSlides / perView);
+    const currentPage = Math.floor(glide.index / perView) + 1;
 
+    const counter = document.querySelector('#testimonialCounter');
+
+    if (counter) {
+      counter.textContent = `${currentPage} / ${totalPages}`;
+    }
+  };
+
+  glide.on(['mount.after', 'run.after', 'resize'], updateCounter);
+
+  glide.mount();
 
   // Flechas manuales por página
-    const prevBtn = document.querySelector('[data-glide-dir="<"]');
-    const nextBtn = document.querySelector('[data-glide-dir=">"]');
+  const prevBtn = document.querySelector('[data-glide-dir="<"]');
+  const nextBtn = document.querySelector('[data-glide-dir=">"]');
 
-    const getMaxIndex = () => {
-        const perView = glide.settings.perView;
-        const totalSlides = glide._c.Html.slides.length;
+  const getMaxIndex = () => {
+    const perView = glide.settings.perView;
+    const totalSlides = glide._c.Html.slides.length;
 
-        return Math.floor((totalSlides - 1) / perView) * perView;
-    };
+    return Math.floor((totalSlides - 1) / perView) * perView;
+  };
 
-    prevBtn?.addEventListener('click', () => {
-        const perView = glide.settings.perView;
+  prevBtn?.addEventListener('click', () => {
+    const perView = glide.settings.perView;
+    const newIndex = Math.max(0, glide.index - perView);
+    glide.go(`=${newIndex}`);
+  });
 
-        const newIndex = Math.max(0, glide.index - perView);
-
-        glide.go(`=${newIndex}`);
-    });
-
-    nextBtn?.addEventListener('click', () => {
-        const perView = glide.settings.perView;
-        const maxIndex = getMaxIndex();
-
-        const newIndex = Math.min(maxIndex, glide.index + perView);
-
-        glide.go(`=${newIndex}`);
-    });
-
+  nextBtn?.addEventListener('click', () => {
+    const perView = glide.settings.perView;
+    const maxIndex = getMaxIndex();
+    const newIndex = Math.min(maxIndex, glide.index + perView);
+    glide.go(`=${newIndex}`);
+  });
 };
 
 if (document.readyState === 'loading')
