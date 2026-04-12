@@ -665,3 +665,7 @@ select:autofill {
 .glide__slide {
   height: auto!important;
 }
+
+.containerNextSpecialty:has(#nextSpecialty:hover) {
+  background-color: rgb(255 255 255 / 0.2);
+}

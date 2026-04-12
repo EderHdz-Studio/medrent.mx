@@ -30,7 +30,7 @@ const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = `${baseUrl}/favicon-512.png`;
 
 // console.log('Datos de especialidad:', especialidad);
-// console.log('Subcategorías:', especialidad?.subcategories);
+console.log(categories);
 ---
 
 <Layout
@@ -122,6 +122,82 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     }></script>
   </Fragment>
 
+  <!-- Sticky Next Specialty -->
+  <div id="nextSpecialtySticky" class="fixed  left-0 right-0 z-40 px-0 lg:px-4 mt-[6px] lg:mt-0  
+    transition-all duration-500
+    opacity-0 translate-y-4 pointer-events-none">
+    
+    <div class="max-w-7xl mx-auto">
+
+      <div class="relative flex items-center  bg-[var(--color-primary)] from-[var(--color-primary)]  to-[var(--color-primary-dark)]  rounded-b-[24px]  overflow-hidden  shadow-lg  min-h-[72px]">
+
+
+        <!-- Previous Button -->
+         {(() => {
+            const items = Array.isArray(categories) ? categories : [];
+            const currentIdx = items.findIndex((item) => item.slug === category);
+            const prevIdx = currentIdx === 0 ? items.length - 1 : currentIdx - 1;
+            const nextIdx = currentIdx === items.length - 1 ? 0 : currentIdx + 1;
+     
+            const prevItem = items[prevIdx];
+            const nextItem = items[nextIdx];
+            return (
+              <div>
+                <a 
+                  id="prevSpecialty"
+                  href={prevItem ? `/especialidades/${prevItem.slug}` : "#"}
+                  class="ml-4 md:ml-8 flex items-center justify-center  py-2 px-4 rounded-full  bg-white/10  hover:bg-white/20  transition  backdrop-blur-sm  text-white cursor-pointer"
+                  aria-label="Especialidad anterior"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="mx-2 h-8">
+                    <path d="M17 11L9.41 11L12.71 7.71C12.8983 7.5217 13.0041 7.26631 13.0041 7C13.0041 6.7337 12.8983 6.47831 12.71 6.29C12.5217 6.1017 12.2663 5.99591 12 5.99591C11.7337 5.99591 11.4783 6.1017 11.29 6.29L6.29 11.29C6.19896 11.3851 6.1276 11.4973 6.08 11.62C5.97998 11.8635 5.97998 12.1365 6.08 12.38C6.1276 12.5028 6.19896 12.6149 6.29 12.71L11.29 17.71C11.383 17.8037 11.4936 17.8781 11.6154 17.9289C11.7373 17.9797 11.868 18.0058 12 18.0058C12.132 18.0058 12.2627 17.9797 12.3846 17.9289C12.5064 17.8781 12.617 17.8037 12.71 17.71C12.8037 17.617 12.8781 17.5064 12.9289 17.3846C12.9797 17.2627 13.0058 17.132 13.0058 17C13.0058 16.868 12.9797 16.7373 12.9289 16.6154C12.8781 16.4936 12.8037 16.383 12.71 16.29L9.41 13L17 13C17.2652 13 17.5196 12.8946 17.7071 12.7071C17.8946 12.5196 18 12.2652 18 12C18 11.7348 17.8946 11.4804 17.7071 11.2929C17.5196 11.1054 17.2652 11 17 11Z" fill="white"/>
+                  </svg>
+                </a>
+              </div>
+
+
+              <div class="containerNextSpecialty flex mt-[10px] mb-[10px] mr-4 md:mr-6 ml-4 flex-1 items-center justify-center  w-12  md:w-14 rounded-full  bg-white/10  transition  backdrop-blur-sm  text-white px-4 py-2">
+                <div class="w-3/4 md:w-1/2 text-center">
+                  <label class="text-[14px]">Siguiente especialidad</label>
+                </div>
+
+                <div class="w-1/4 md:w-1/2">
+                  <a 
+                    id="nextSpecialty" 
+                    href={nextItem ? `/especialidades/${nextItem.slug}` : "#"}
+                    class="items-center justify-center rounded-full  bg-white  w-full flex h-[32px] cursor-pointer " aria-label="Especialidad anterior">              
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M6.99998 13L14.59 13L11.29 16.29C11.1017 16.4783 10.9959 16.7337 10.9959 17C10.9959 17.2663 11.1017 17.5217 11.29 17.71C11.4783 17.8983 11.7337 18.0041 12 18.0041C12.2663 18.0041 12.5217 17.8983 12.71 17.71L17.71 12.71C17.801 12.6149 17.8724 12.5028 17.92 12.38C18.02 12.1365 18.02 11.8635 17.92 11.62C17.8724 11.4972 17.801 11.3851 17.71 11.29L12.71 6.29C12.617 6.19627 12.5064 6.12188 12.3846 6.07111C12.2627 6.02034 12.132 5.9942 12 5.9942C11.868 5.9942 11.7373 6.02034 11.6154 6.07111C11.4935 6.12188 11.3829 6.19627 11.29 6.29C11.1963 6.38296 11.1219 6.49356 11.0711 6.61542C11.0203 6.73728 10.9942 6.86799 10.9942 7C10.9942 7.13201 11.0203 7.26272 11.0711 7.38458C11.1219 7.50644 11.1963 7.61704 11.29 7.71L14.59 11L6.99998 11C6.73477 11 6.48041 11.1054 6.29287 11.2929C6.10534 11.4804 5.99998 11.7348 5.99998 12C5.99998 12.2652 6.10534 12.5196 6.29287 12.7071C6.48041 12.8946 6.73477 13 6.99998 13Z" fill="#171D1C"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Right Image -->
+              <div class="relative h-full w-32 md:w-40 hidden md:block overflow-hidden min-w-[214px]">
+                <img 
+                  id="nextSpecialtyImage"
+                  src={nextItem?.heroImage?.url || "https://balanced-amusement-bd4a404315.media.strapiapp.com/image_14_7aa0fcd37b.webp"}
+                  alt={nextItem?.name ? `Siguiente especialidad: ${nextItem.name}` : "Siguiente especialidad"}
+                  class="w-full h-[68px] object-cover"
+                />
+                <!-- Gradient overlay -->
+                <div 
+                  class="absolute inset-0 
+                        bg-gradient-to-l 
+                        from-transparent 
+                        via-[var(--color-primary)]/60 
+                        to-[var(--color-primary)]
+                        to-90%"
+                ></div>
+              </div>
+        
+            );
+          })()}
+      </div>
+    </div>
+  </div>
+
   <div class="w-full max-w-7xl mx-auto flex flex-col ">
     <!-- Hero Section de la Categoría -->
     <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none">
@@ -139,7 +215,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
       </div>
 
       <!-- Fila 1 -->
-      <div class="flex flex-col w-full h-auto rounded-b-[24px] md:rounded-none lg:flex-row mb-8">
+      <div class="heroEspeciality flex flex-col w-full h-auto rounded-b-[24px] md:rounded-none lg:flex-row mb-8">
         <!-- Columna: Imagen -->
         <div
           class="w-full h-[262px] min-h-[400px] relative overflow-hidden bg-cover bg-center md:rounded-none lg:rounded-bl-[24px]"
@@ -302,5 +378,29 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
 
   <!-- Slider de especialidades -->
   <EspecialidadesSlider />
+<script>
+const sticky = document.getElementById('nextSpecialtySticky');
+const hero = document.querySelector('.heroEspeciality');
 
+if (sticky && hero) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Hero visible → ocultar sticky
+          sticky.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        } else {
+          // Hero fuera → mostrar sticky
+          sticky.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        }
+      });
+    },
+    {
+      threshold: 0
+    }
+  );
+
+  observer.observe(hero);
+}
+</script>
 </Layout>
