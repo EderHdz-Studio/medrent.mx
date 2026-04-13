@@ -685,7 +685,7 @@ try {
         <div class="glider-track flex gap-8 scroll-smooth snap-x snap-mandatory overflow-hidden lg:flex-wrap justify-flex-start items-start self-stretch py-6" id="gliderTrack">
           {todosEscritores && todosEscritores.map((writer: any, index: number) => (
             <a 
-              href={'/blog/autores/' + writer.slug} 
+              href={`/blog/autor/${writer.slug}`} 
               class="glider-slide flex-shrink-0 w-[155px] snap-start lg:w-auto"
               data-slide-index={index}
             >  
