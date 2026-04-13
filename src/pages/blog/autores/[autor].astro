@@ -1,0 +1,10 @@
+---
+export const prerender = false;
+
+const autorParam = Astro.params.autor?.trim();
+if (!autorParam) {
+  return Astro.redirect('/404');
+}
+
+return Astro.redirect(`/blog/autor/${autorParam}`, 301);
+---
