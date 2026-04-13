@@ -1,11 +1,10 @@
 ---
 import { strapiFetch } from "@server/strapiClient";
 
-const response = await strapiFetch("/promo-sliders?populate=*", {
-  sort: "displayOrder:asc"
-});
+const response = await strapiFetch(
+  "/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc"
+);
 
-// Mapeo para Strapi v5 (sin "attributes")
 const promotions = response.data.map((item: any) => ({
   id: item.id,
   title: item.title,
