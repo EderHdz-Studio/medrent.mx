@@ -1,6 +1,5 @@
 ---
 import { strapiFetch } from "@server/strapiClient";
-
 const response = await strapiFetch(
   "/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc"
 );
