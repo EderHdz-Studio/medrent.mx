@@ -1,28 +1,18 @@
 ---
 import { strapiFetch } from "@server/strapiClient";
-
-// Usando la misma sintaxis que en tu otro código
 const response = await strapiFetch(
-  "/promo-sliders?" + new URLSearchParams({
-    "populate[desktopImage]": "*",
-    "populate[mobileImage]": "*",
-    "sort[0]": "displayOrder:asc",
-    "filters[isActive][$eq]": "true"
-  }).toString()
+  "/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc"
 );
 
-// Mapeo para Strapi v5
-const promotions = (response.data || [])
-  .filter((item: any) => item.isActive === true)
-  .map((item: any) => ({
-    id: item.id,
-    title: item.title,
-    url: item.url,
-    utmParams: item.utmParams,
-    displayOrder: item.displayOrder,
-    desktopImage: item.desktopImage,
-    mobileImage: item.mobileImage,
-  }));
+const promotions = response.data.map((item: any) => ({
+  id: item.id,
+  title: item.title,
+  url: item.url,
+  utmParams: item.utmParams,
+  displayOrder: item.displayOrder,
+  desktopImage: item.desktopImage,
+  mobileImage: item.mobileImage,
+}));
 
 // Props del componente
 const { disableHorizontalPadding = false, pdpSectionTitle = false } = Astro.props;
