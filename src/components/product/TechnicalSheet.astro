@@ -1,20 +1,32 @@
 ---
 const { data, archivoPDF } = Astro.props;
+
+// archivoPDF viene como array, extraemos el primer elemento
+const urlDocumento = Array.isArray(archivoPDF) && archivoPDF.length > 0 
+    ? archivoPDF[0] 
+    : archivoPDF;
+
+// Validación: existe y es string no vacío
+const tieneDocumento = urlDocumento && 
+                       typeof urlDocumento === 'string' && 
+                       urlDocumento.trim() !== '';
 ---
 
 <!-- Ficha Técnica -->
 {data && data.length > 0 && (
     <section id="fichaTecnica" class="max-w-7xl mx-auto py-8">
-        <p class="text-[var(--color-primary)]  text-[14px] font-medium m-0">
+        <p class="text-[var(--color-primary)] text-[14px] font-medium m-0">
             FICHA TÉCNICA
         </p>
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-3">
             <h2 class="pdp-section-title">
                 Características de producto
             </h2>
-            {archivoPDF && (
+            
+            {/* Mostrar SOLO si hay documento válido */}
+            {tieneDocumento && (
                 <a
-                    href={archivoPDF}
+                    href={urlDocumento}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="border-2 border-[var(--color-primary)] text-[var(--color-primary)] font-bold rounded transition-colors flex items-center justify-center gap-2 cursor-pointer group px-4 py-2 w-full md:w-auto hover:bg-[var(--color-primary)] hover:text-white"
