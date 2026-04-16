@@ -1,7 +1,6 @@
 ---
 const { data, archivoPDF } = Astro.props;
 
-// archivoPDF viene como array, extraemos el primer elemento
 const urlDocumento = Array.isArray(archivoPDF) && archivoPDF.length > 0 
     ? archivoPDF[0] 
     : archivoPDF;
