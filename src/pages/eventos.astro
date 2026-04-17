@@ -1,21 +1,17 @@
 ---
 /** Fecha “actual” en servidor en cada petición (no congelada al build) */
 export const prerender = false;
-
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import Layout from '../layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
-import BaseForm from "@components/forms/BaseForm.astro";
-import FormField from "@components/forms/FormField.astro";
-import CheckboxField from "@components/forms/CheckboxField.astro";
-import SubmitButton from "@components/forms/SubmitButton.astro";
 import ImageResponsive from "@components/media/ImageResponsive.astro";
 import SlideArticles from '@components/blog/slideArticles.astro';
 import { fetchBlogSliderData } from "@lib/blog/blogSliderData";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import PopupEvento from '@components/popup/popupEvento.astro';
 
 import JsonLd from "@components/seo/JsonLd.astro";
 import { buildEventsSchema } from "@seo/schemas/events";
@@ -131,7 +127,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         />
     </Fragment>
 
-    <div class="absolute w-full z-2">
+    <div class="absolute w-full z-2 ">
         <Breadcrumb
         textColor="text-dark"
         items={[
@@ -558,111 +554,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     
 </Layout>
 
-<!-- Definir datos del popup -->
-<!-- <script define:vars={{ 
-  popupData: {
-    titulo: data.PopUpTitulo || 'Eventos MedRent',
-    descripcion: data.PopUpDescripcion || 'Descubre nuestros eventos y accede a beneficios exclusivos.',
-    imagen: data.PopUpImagen?.url
-  }
-}}>
-  // Hacer los datos disponibles globalmente
-  window.popupData = popupData;
-</script> -->
-
-<!-- Popup de Evento -->
-<div id="event-popup-overlay" class="fixed inset-0 z-50 hidden">
-    <!-- Misma capa que PDP (popUpSolicitarCotizacion): backdrop-filter sobre el viewport, sin blur al <main> -->
-    <div
-        id="event-blurred-background"
-        class="absolute inset-0 transition-all duration-300"
-        style="background: rgba(23, 29, 28, 0.80); backdrop-filter: blur(7px);"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Popup Content -->
-    <div
-        id="PopupContent"
-        class="relative z-10 flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto rounded-[24px] pointer-events-none mx-auto"
-    >
-        <div class="pointer-events-auto bg-white rounded-[24px] shadow-xl max-w-4xl w-full overflow-auto relative h-[85%] md:h-[85%] lg:h-auto  border-2 border-[var(--color-primary)]">
-                <!-- Botón cerrar en esquina superior derecha del popup -->
-                <button 
-                    id="close-event-popup"
-                    class="absolute top-0 right-0 flex items-end justify-end text-white text-2xl leading-none  border-none cursor-pointer z-10 p-4 "
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171D1C"/>
-                    </svg>
-                </button>
-                
-                <!-- Contenido del popup -->
-                <div class="flex flex-col lg:flex-row relative">
-
-                    <!-- Imagen izquierda que cubre toda la altura -->
-                    <div class="containerImageCover lg:w-1/2 relative">
-                        <img
-                            id="event-popup-image"
-                            src=""
-                            alt="Evento"
-                            class="w-full h-auto min-h-0 object-contain md:h-64 md:min-h-[500px] md:object-cover lg:h-full lg:min-h-[500px] lg:object-cover"
-                            loading="lazy"
-                            decoding="async"
-                        />
-                    </div>
-                    
-                    <!-- Contenido derecha -->
-                    <div class="lg:w-1/2 p-4 lg:p-8" id="contentRightPopUp">
-
-                        <div class="mb-8 flex flex-col items-start gap-2 flex-1 self-stretch" id="event-popup-text">
-                            <p class="text-[var(--color-accent)] text-[14px] uppercase font-bold mb-2"> EXCLUSIVIDAD MÉDICA </p>
-                            <!-- Título -->
-                            <h2 id="event-popup-title" class="text-[#261819] text-[22px] font-bold">
-                                Título del evento
-                            </h2>
-                            
-                            <!-- Descripción -->
-                            <p id="event-popup-description" class="text-[#5A4043] text-[16px] text-base font-normal leading-6 tracking-[0.5px]">
-                                Descripción del evento
-                            </p>
-                        </div>
-                        
-
-                        <BaseForm id="events-form" class="space-y-8 rounded flex flex-col gap-6" type="popupEventos" successTitle="¡Registro exitoso!" successText="Gracias por registrarte. Pronto recibirás más información.">
-                            <FormField
-                            label="Nombre completo"
-                            name="name"
-                            placeholder="Ej: Dra. Carolina Ávila"
-                            />
-                            <FormField
-                            label="Correo electrónico"
-                            name="email"
-                            type="email"
-                            placeholder="Ej: carolina.avila@hospitalneuro.mx"
-                            />
-                            <CheckboxField
-                            id="aviso"
-                            label="He leído y acepto el"
-                            link="/aviso-de-privacidad"
-                            />
-                            <SubmitButton text="Acceder a mis beneficios"></SubmitButton>
-                        </BaseForm>
-
-                        <script type="module">
-                            import { initForm } from "/scripts/formValidator.js";
-
-                            document.addEventListener("DOMContentLoaded", () => {
-                                initForm("events-form");
-                            });
-                        </script>    
-                    </div>
-                </div>
-
-                <div id="status" class="text-center mt-2 text-sm"></div>
-        </div>
-    </div>
-</div>
-
+<PopupEvento />
 
 <script>
     import dayjs from 'dayjs';
@@ -858,139 +750,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         const yearHeading = document.getElementById('eventos-medrent-year');
         if (yearHeading) yearHeading.textContent = String(new Date().getFullYear());
 
-        // Popup
-        const popupOverlay = document.getElementById('event-popup-overlay');
-        const popupTitle = document.getElementById('event-popup-title');
-        const popupDescription = document.getElementById('event-popup-description');
-        const popupImage = document.getElementById('event-popup-image');
-        const closePopupBtn = document.getElementById('close-event-popup');
-
-        const successTitle = document.querySelector('.successTitle');
-        const successText = document.querySelector('.successText');
-
-        const form = document.getElementById("events-form");
-        const status = document.getElementById("status");
-        
-        function resetPopupToInitial() {
-            if (popupTitle) popupTitle.textContent = 'Título del evento';
-            if (popupDescription) popupDescription.textContent = 'Descripción del evento';
-            if (popupImage) (popupImage as HTMLDivElement).style.display = 'block';
-            if (form) {
-                (form as HTMLDivElement).style.display = 'flex';
-                (form as HTMLFormElement).reset();
-                document.querySelector('.form-container')?.classList.remove('hidden');
-                document.querySelector('.form-success')?.classList.add('hidden');
-                document.querySelector('.form-error')?.classList.add('hidden');
-            }
-            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative') as HTMLElement | null;
-            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4') as HTMLElement | null;
-            if (leftColumn) leftColumn.style.display = 'block';
-            if (rightColumn) rightColumn.style.display = 'block';
-            if (status) {
-                (status as HTMLElement).innerHTML = '';
-                status.style.display = 'none';
-            }
-        }
-        
-        function openEventPopup(eventData: any) {
-            if (!popupOverlay) return;
-            resetPopupToInitial();
-            if (popupImage && eventData.img) { (popupImage as HTMLImageElement).src = eventData.img; (popupImage as HTMLImageElement).alt = eventData.title || 'Evento'; }
-            if (popupTitle && eventData.title) popupTitle.textContent = eventData.title;
-            if (popupDescription && eventData.description) popupDescription.textContent = eventData.description;
-            popupOverlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            if(successTitle) successTitle.textContent = eventData.titleRegisterSuccess || '¡Registro exitoso!';
-            if(successText) successText.textContent = eventData.instructionsRegisterSuccess || 'Gracias por registrarte. Pronto recibirás más información.';
-        }
-
-        function closeEventPopup() {
-            if (!popupOverlay) return;
-            popupOverlay.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            resetPopupToInitial();
-            resetPopup();
-        }
-
-        function resetPopup() {
-
-            let containerImageCover = document.querySelector(".containerImageCover");
-            containerImageCover ? containerImageCover.style.display = "block" : null;
-
-            let eventPopupText = document.getElementById("event-popup-text");
-            eventPopupText ? eventPopupText.style.display = "block" : null;
-
-            let contentRightPopUp = document.getElementById("contentRightPopUp");
-            contentRightPopUp ? (contentRightPopUp.style.padding = "32px", contentRightPopUp.style.width = "50%") : null;
-
-            let PopupContent = document.getElementById("PopupContent");
-            PopupContent ? (PopupContent.style.maxWidth = "unset") : null;
-
-        }
-
-        
-        function showFormMessage(type: string) {
-            if (form) (form as HTMLDivElement).style.display = 'none';
-            if (popupImage) (popupImage as HTMLDivElement).style.display = 'none';
-            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative') as HTMLElement | null;
-            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4') as HTMLElement | null;
-            if (leftColumn) leftColumn.style.display = 'none';
-            if (rightColumn) rightColumn.style.display = 'none';
-            if (status) {
-                const statusEl = status as HTMLElement;
-                statusEl.style.display = 'flex';
-                statusEl.style.flexDirection = 'column';
-                statusEl.style.alignItems = 'center';
-                statusEl.style.justifyContent = 'center';
-                statusEl.style.minHeight = '500px';
-                statusEl.style.padding = '16px';
-                statusEl.style.width = '100%';
-                if (type === 'success') {
-                    statusEl.innerHTML = `<div class="w-full mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px] relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="104" height="104" viewBox="0 0 104 104" fill="none"><mask id="mask0_521_7249" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="104" height="104"><path d="M104 0H0V104H104V0Z" fill="white"/></mask><g mask="url(#mask0_521_7249)"><path d="M91 52C91 73.541 73.541 91 52 91C30.459 91 13 73.541 13 52C13 30.459 30.459 13 52 13C73.541 13 91 30.459 91 52Z" stroke="#006764" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M39 55.25L48.75 65L65 42.25" stroke="#006764" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
-                        <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center font-lato">REGISTRO COMPLETADO</p>
-                        <p class="text-[var(--color-text-default)] text-center font-lato text-lg md:text-xl lg:text-2xl font-bold leading-6 md:leading-8">¡Tu acceso al programa está listo!</p>
-                        <p class="text-[var(--color-text-default)] font-400 text-sm md:text-base lg:text-xl text-center font-lato">Gracias por registrarte. En breve recibirás un correo con tu código QR.</p>
-                        <p class="text-[var--color-gray-dark)] text-xs md:text-sm text-center font-lato">Mientras tanto, explora más en <a href="/productos" class="text-[#006764] underline hover:no-underline">nuestro catálogo</a></p>
-                    </div>`;
-                } else {
-                    statusEl.innerHTML = `<div class="w-full mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px] relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="59" height="59" viewBox="0 0 59 59" fill="none"><path d="M28.6643 17.2084H36.8751V19.6667C36.8751 20.3187 37.1341 20.944 37.5952 21.405C38.0562 21.8661 38.6815 22.1251 39.3335 22.1251C39.9855 22.1251 40.6108 21.8661 41.0718 21.405C41.5328 20.944 41.7918 20.3187 41.7918 19.6667V17.2084H44.2502C44.9022 17.2084 45.5275 17.4674 45.9885 17.9284C46.4495 18.3895 46.7085 19.0147 46.7085 19.6667V27.0418H43.4143C42.7623 27.0418 42.137 27.3008 41.676 27.7618C41.215 28.2228 40.956 28.8481 40.956 29.5001C40.956 30.1521 41.215 30.7774 41.676 31.2384C42.137 31.6994 42.7623 31.9585 43.4143 31.9585H46.7085V35.2526C46.7085 35.9046 46.9675 36.5299 47.4285 36.9909C47.8896 37.452 48.5149 37.711 49.1669 37.711C49.8189 37.711 50.4441 37.452 50.9052 36.9909C51.3662 36.5299 51.6252 35.9046 51.6252 35.2526V19.6667C51.6252 17.7108 50.8482 15.8349 49.4651 14.4518C48.082 13.0687 46.2062 12.2917 44.2502 12.2917H41.7918V9.83336C41.7918 9.18137 41.5328 8.55608 41.0718 8.09505C40.6108 7.63402 39.9855 7.37502 39.3335 7.37502C38.6815 7.37502 38.0562 7.63402 37.5952 8.09505C37.1341 8.55608 36.8751 9.18137 36.8751 9.83336V12.2917H28.6643C28.0123 12.2917 27.387 12.5507 26.926 13.0117C26.4649 13.4728 26.2059 14.0981 26.2059 14.75C26.2059 15.402 26.4649 16.0273 26.926 16.4884C27.387 16.9494 28.0123 17.2084 28.6643 17.2084ZM53.3706 49.8798L49.4373 45.9464L9.12044 5.62959C8.89123 5.40038 8.61912 5.21856 8.31963 5.09451C8.02015 4.97046 7.69917 4.90662 7.37502 4.90662C7.05086 4.90662 6.72988 4.97046 6.4304 5.09451C6.13092 5.21856 5.85881 5.40038 5.62959 5.62959C5.16668 6.09251 4.90662 6.72036 4.90662 7.37502C4.90662 8.02968 5.16668 8.65753 5.62959 9.12044L10.325 13.7913C9.4124 14.4758 8.67099 15.3626 8.1591 16.3821C7.64722 17.4016 7.37883 18.526 7.37502 19.6667V44.2502C7.37502 46.2062 8.15203 48.082 9.53511 49.4651C10.9182 50.8482 12.7941 51.6252 14.75 51.6252H44.2502C45.349 51.6187 46.4325 51.3667 47.4214 50.8877L49.8798 53.346C50.1083 53.5765 50.3802 53.7593 50.6798 53.8842C50.9794 54.009 51.3007 54.0732 51.6252 54.0732C51.9497 54.0732 52.271 54.009 52.5706 53.8842C52.8702 53.7593 53.1421 53.5765 53.3706 53.346C53.8285 52.8854 54.0855 52.2624 54.0855 51.6129C54.0855 50.9635 53.8285 50.3404 53.3706 49.8798ZM12.2917 19.6667C12.2969 19.1657 12.4551 18.6783 12.7451 18.2697C13.0351 17.861 13.443 17.5508 13.9142 17.3805L23.5755 27.0418H12.2917V19.6667ZM14.75 46.7085C14.0981 46.7085 13.4728 46.4495 13.0117 45.9885C12.5507 45.5275 12.2917 44.9022 12.2917 44.2502V31.9585H28.4922L43.2422 46.7085H14.75Z" fill="#006764"/></svg>
-                        <p class="text-[#006764] font-bold text-base md:text-lg lg:text-xl text-center">Este mes no cuenta con eventos programados</p>
-                        <p class="text-gray-600 text-xs md:text-sm text-center">Consulta otros meses para conocer nuestras próximas actividades académicas y clínicas.</p>
-                    </div>`;
-                }
-            }
-        }
-        
-        document.querySelectorAll('.event-popup-btn').forEach((button: Element) => {
-            button.addEventListener('click', function(this: HTMLElement, e: Event) {
-                e.preventDefault();
-                openEventPopup({
-                    img: this.getAttribute('data-img') || '',
-                    title: this.getAttribute('data-title') || 'Evento MedRent',
-                    description: this.getAttribute('data-description') || 'Descripción del evento',
-                    titleRegisterSuccess: this.getAttribute('data-titleRegisterSuccess') || '',
-                    instructionsRegisterSuccess: this.getAttribute('data-instructionsRegisterSuccess') || ''
-                });
-            });
-        });
-        
-        if (closePopupBtn) closePopupBtn.addEventListener('click', closeEventPopup);
-        if (popupOverlay) {
-            popupOverlay.addEventListener('click', (e) => {
-                if (e.target === popupOverlay) closeEventPopup();
-            });
-        }
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && popupOverlay && !popupOverlay.classList.contains('hidden')) {
-                closeEventPopup();
-            }
-        });
-        
         // INICIALIZACIÓN DEL CALENDARIO Y FILTROS
-        
         // Inicializar el calendario con la fecha actual del cliente
         const fechaActualCliente = dayjs();
         const mesActualKey = fechaActualCliente.format('YYYY-MM');

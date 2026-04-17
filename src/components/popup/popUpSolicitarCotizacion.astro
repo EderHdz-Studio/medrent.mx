@@ -16,8 +16,8 @@ const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.prop
     <!-- Capa detrás del modal: oscurece y difumina el viewport (backdrop-filter), sin afectar al card -->
     <div
         id="event-blurred-background"
-        class="absolute inset-0 transition-all duration-300"
-        style="background: rgba(23, 29, 28, 0.80); backdrop-filter: blur(7px);"
+        class="absolute inset-0 transition-all duration-300  bg-black/50 backdrop-blur-sm transition-all duration-300"
+        
         aria-hidden="true"
     ></div>
     <!-- Popup Content -->
