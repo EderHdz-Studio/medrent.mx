@@ -29,15 +29,18 @@ import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro"
 
 <section id="newsletter-section" class="newsletter-module">
   <div class="newsletter-module__inner">
-    <div id="newsletter-default" class="newsletter-module__default transition-opacity duration-400 ease-in-out">
-      <NewsletterHeading>¡Suscríbete al newsletter de Medrent!</NewsletterHeading>
-      <NewsletterLead>
-        Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones
-        exclusivas sobre nuestras soluciones.
-      </NewsletterLead>
-      <NewsletterSubscribeForm />
+    <!-- Contenedor relativo para que ambos ocupen el mismo espacio -->
+    <div style="position: relative; min-height: 300px;">
+      <div id="newsletter-default" class="newsletter-module__default transition-opacity duration-400 ease-in-out" style="transition: opacity 0.4s ease-in-out;">
+        <NewsletterHeading>¡Suscríbete al newsletter de Medrent!</NewsletterHeading>
+        <NewsletterLead>
+          Recibe en tu correo las últimas novedades en tecnología médica, consejos especializados y actualizaciones
+          exclusivas sobre nuestras soluciones.
+        </NewsletterLead>
+        <NewsletterSubscribeForm />
+      </div>
+      <NewsletterSuccessBanner />
     </div>
-    <NewsletterSuccessBanner />
   </div>
 </section>
 
@@ -115,45 +118,46 @@ import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro"
     }
 
     function showSuccessMessage() {
-      defaultContent.classList.add("opacity-0");
-
+      // Ocultar default con opacidad
+      defaultContent.style.opacity = "0";
+      defaultContent.style.pointerEvents = "none";
+      
+      // Mostrar success en la misma posición con flex
+      successContent.style.position = "absolute";
+      successContent.style.top = "0";
+      successContent.style.left = "0";
+      successContent.style.right = "0";
+      successContent.style.opacity = "0";
+      successContent.classList.remove("hidden");
+      successContent.style.display = "flex"; // Asegurar flex
+      
       setTimeout(function () {
-        defaultContent.classList.add("hidden");
-
-        successContent.classList.remove("hidden");
-        successContent.style.display = "flex";
-
-        void successContent.offsetWidth;
-
-        successContent.classList.remove("opacity-0");
-        successContent.classList.add("opacity-100");
-
+        successContent.style.opacity = "1";
+      }, 50);
+      
+      // Después de 10 segundos, volver al formulario
+      setTimeout(function () {
+        // Ocultar success
+        successContent.style.opacity = "0";
+        
         setTimeout(function () {
-          successContent.classList.remove("opacity-100");
-          successContent.classList.add("opacity-0");
-
-          setTimeout(function () {
-            successContent.classList.add("hidden");
-            successContent.style.display = "";
-
-            form.reset();
+          successContent.classList.add("hidden");
+          successContent.style.display = "";
+          successContent.style.position = "";
+          
+          // Resetear formulario
+          if (form) form.reset();
+          if (input) {
             input.style.setProperty("border", "1px solid #006764", "important");
-            if (label) label.style.background = "#006764";
-
-            defaultContent.classList.add("opacity-0");
-            defaultContent.classList.remove("hidden");
-
-            void defaultContent.offsetWidth;
-
-            defaultContent.classList.remove("opacity-0");
-            defaultContent.classList.add("opacity-100");
-
-            setTimeout(function () {
-              defaultContent.classList.remove("opacity-100");
-            }, 400);
-          }, 400);
-        }, 5000);
-      }, 400);
+          }
+          if (label) label.style.background = "#006764";
+          
+          // Mostrar default nuevamente
+          defaultContent.style.opacity = "1";
+          defaultContent.style.pointerEvents = "auto";
+          defaultContent.style.position = "";
+        }, 400);
+      }, 10000); // 10 segundos
     }
   });
 </script>

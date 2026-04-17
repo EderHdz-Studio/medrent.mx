@@ -709,7 +709,7 @@ const pdpJsonLd = {
 
 <!-- BTN SHARE -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.relative').forEach(container => {
       const toggleBtn = container.querySelector('.share-toggle');
       const closeBtn = container.querySelector('.share-close');
@@ -717,7 +717,6 @@ const pdpJsonLd = {
       const tooltip = container.querySelector('.copy-tooltip');
       const copyBtn = container.querySelector('.copy-url');
       
-      // Buscar el contador dentro del mismo contenedor padre
       const mediaButtons = container.closest('#mediaButtonsMobile, #mediaButtons');
       const galleryCounter = mediaButtons?.querySelector('#mobile-gallery-counter');
       
@@ -735,17 +734,24 @@ const pdpJsonLd = {
       if (twitter) twitter.href = `https://twitter.com/intent/tweet?url=${url}`;
       if (linkedin) linkedin.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`;
       
-      toggleBtn.addEventListener('click', () => {
+      // Estado inicial: actions ocultos y NO clickeables
+      actions.style.pointerEvents = 'none';
+      
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         toggleBtn.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
-        actions.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        actions.classList.remove('opacity-0', 'scale-95');
         actions.classList.add('opacity-100', 'scale-100');
+        actions.style.pointerEvents = 'auto'; // Permitir clicks cuando está visible
         if (galleryCounter) galleryCounter.style.opacity = '0';
       });
       
-      closeBtn?.addEventListener('click', () => {
+      closeBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         toggleBtn.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
-        actions.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        actions.classList.add('opacity-0', 'scale-95');
         actions.classList.remove('opacity-100', 'scale-100');
+        actions.style.pointerEvents = 'none'; // Deshabilitar clicks cuando está oculto
         if (galleryCounter) galleryCounter.style.opacity = '1';
       });
       
