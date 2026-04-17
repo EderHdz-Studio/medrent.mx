@@ -166,11 +166,21 @@ export function initForm(formId) {
       let PopupContent = document.getElementById("PopupContent");
       PopupContent ? (PopupContent.style.maxWidth = "430px") : null;
 
+    }else{
+      // ImagenPopup
+      let PopupContent = document.getElementById("ImagenPopup");
+      PopupContent ? (PopupContent.style.display = "none") : null;
+
+      let contentRightPopUp = document.getElementById("ContenidoPopup");
+      contentRightPopUp ? contentRightPopUp.style.width = "100%" : null;
+
+      let ContenidoPopup = document.getElementById("ContenidoPopup");
+      ContenidoPopup ? (ContenidoPopup.style.maxWidth = "430px") : null;
     }
   }
   
     function resetPopup() {
-      const inputTypeForm = document.querySelector('input[name="formType"]')?.value || null;
+      const inputTypeForm = document.querySelector('#PopupContent input[name="formType"]')?.value || null;
     
       if(inputTypeForm == 'popupEventos'){
         let containerImageCover = document.querySelector(".containerImageCover");
@@ -184,7 +194,17 @@ export function initForm(formId) {
 
         let PopupContent = document.getElementById("PopupContent");
         PopupContent ? (PopupContent.style.maxWidth = "unset") : null;
+      }else{
+        let PopupContent = document.getElementById("ImagenPopup");
+        PopupContent ? (PopupContent.style.display = "block") : null;
+        let contentRightPopUp = document.getElementById("ContenidoPopup");
+        if(contentRightPopUp){
+          contentRightPopUp.style.width = "50%";
+          contentRightPopUp.style.background = "#F5FAF9"
+
+        }
       }
+
 
     }
 
@@ -210,6 +230,7 @@ export function initForm(formId) {
     if (state === "error") {
       errorBox?.classList.remove("hidden");
       clearPopup();
+      document.querySelector("#ContenidoPopup") ? document.querySelector("#ContenidoPopup").style.background = "#FFF8F7" : null;
     }
   }
 
@@ -235,8 +256,12 @@ export function initForm(formId) {
   // Asegura que el formulario se muestre correctamente al dar click en el botón de reintentar
   errorRetryBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-     resetPopup()
-      setState("form");
+    resetInitialForm()
+  });
+
+  function resetInitialForm(){
+    resetPopup()
+    setState("form");
     setTimeout(() => {
       // setState("form");
       form.reset();
@@ -246,8 +271,17 @@ export function initForm(formId) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = "Agendar una DEMO";
       }
-    }, 500); // pequeño delay para asegurar el cambio de estado
-  });
+    }, 500); 
+  }
+
+
+  const closeEventPopup = document.querySelector("#close-event-popup");
+  if(closeEventPopup){
+    closeEventPopup?.addEventListener("click", (e) => {
+      setState("form");
+    });
+  }
+
 
   /* =============================
      UTILIDADES VISUALES
@@ -520,37 +554,7 @@ export function initForm(formId) {
     const phoneInput = phoneWrapper.querySelector(".phone-input");
     const dropdown = phoneWrapper.querySelector(".country-dropdown");
 
-    // if (phoneInput && dropdown) {
 
-    //   const openDropdown = () => dropdown.classList.remove('hidden');
-    //   const closeDropdown = () => dropdown.classList.add('hidden');
-
-    //   phoneInput.addEventListener('focus', openDropdown);
-    //   phoneInput.addEventListener('click', (e) => {
-    //     e.stopPropagation();
-    //     openDropdown();
-    //   });
-
-    //   dropdown.querySelectorAll('.country-option').forEach(option => {
-    //     option.addEventListener('click', (e) => {
-    //       e.stopPropagation();
-
-    //       const code = option.dataset.code;
-    //       const current = phoneInput.value.replace(/^\+\d+\s*/, '');
-
-    //       phoneInput.value = code + ' ' + current;
-    //       phoneInput.focus();
-    //       closeDropdown();
-    //       validateAll();
-    //     });
-    //   });
-
-    //   document.addEventListener('click', (e) => {
-    //     if (!phoneWrapper.contains(e.target)) {
-    //       closeDropdown();
-    //     }
-    //   });
-    // }
   }
 
   /* =============================
@@ -656,7 +660,9 @@ export function initForm(formId) {
             setState("error");
           }
 
-
+          setTimeout(() => {
+            resetInitialForm()
+          }, 5000); // 5 segundos para mostrar el mensaje antes de resetear el formulario
 
           sendFormEvent({ formId: formId, status: response.status });
           return response;
