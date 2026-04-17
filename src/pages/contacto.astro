@@ -259,16 +259,22 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 <h3 class="uppercase text-[#87F4EF] font-Lato text-[28px] font-700 tracking-wide">Información de contacto</h3>
                 <div>
                     <p class="font-semibold text-white">Teléfono</p>
-                    <a href="https://wa.me/{site.contact}" target="_blank" rel="noopener noreferrer" class="text-[#87F4EF] underline">
+                    <!-- <a href="https://wa.me/{site.contact}" target="_blank" rel="noopener noreferrer" class="text-[#87F4EF] underline">
                         {site.contactText}
+                    </a> -->
+                    <a id="btnWhatsapp" href="https://wa.me/525559854347" target="_blank" rel="noopener noreferrer" class="text-[#87F4EF] underline">
+                        +52 55 59 85 43 47
                     </a>
                 </div>
 
                 <div>
                     <p class="font-semibold text-white">Correo</p>
-                    <a href="mailto:{site.email}" class="text-[#87F4EF]">
-                        {site.email}
-                    </a>
+                        <a href="https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A{site.email}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="text-[#87F4EF] underline">
+                            {site.email}
+                        </a>
                 </div>
 
                 <div>
