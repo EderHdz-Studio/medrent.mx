@@ -1,0 +1,202 @@
+---
+import BaseForm from "@components/forms/BaseForm.astro";
+import FormField from "@components/forms/FormField.astro";
+import CheckboxField from "@components/forms/CheckboxField.astro";
+import SubmitButton from "@components/forms/SubmitButton.astro";
+---
+
+<!-- Popup de Evento -->
+<div id="event-popup-overlay" class="fixed inset-0 z-50 hidden">
+    <!-- Misma capa que PDP (popUpSolicitarCotizacion): backdrop-filter sobre el viewport, sin blur al <main> -->
+    <div
+        id="event-blurred-background"
+        class="absolute inset-0 transition-all duration-300  bg-black/50 backdrop-blur-sm transition-all duration-300"
+        
+        aria-hidden="true"
+    ></div>
+
+    <!-- Popup Content -->
+    <div
+        id="PopupContent"
+        class="relative z-10 flex items-center justify-center min-h-screen p-4 h-[85%] md:h-[85%] lg:h-auto md:mt-12 overflow-y-auto rounded-[16px] pointer-events-none mx-auto"
+    >
+        <div class="pointer-events-auto bg-white rounded-[16px] shadow-xl max-w-4xl w-full overflow-auto relative h-[85%] md:h-[85%] lg:h-auto  border-2 border-[var(--color-primary)]">
+            <!-- Botón cerrar en esquina superior derecha del popup -->
+            <button 
+                id="close-event-popup"
+                class="absolute top-0 right-0 flex items-end justify-end text-white text-2xl leading-none  border-none cursor-pointer z-10 p-4 "
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171D1C"/>
+                </svg>
+            </button>
+            
+            <!-- Contenido del popup -->
+            <div class="flex flex-col lg:flex-row relative">
+
+                <!-- Imagen izquierda que cubre toda la altura -->
+                <div class="containerImageCover lg:w-1/2 relative">
+                    <img
+                        id="event-popup-image"
+                        src=""
+                        alt="Evento"
+                        class="w-full h-auto min-h-0 object-contain md:h-64 md:min-h-[500px] md:object-cover lg:h-full lg:min-h-[500px] lg:object-cover"
+                        loading="lazy"
+                        decoding="async"
+                    />
+                </div>
+                
+                <!-- Contenido derecha -->
+                <div class="lg:w-1/2 p-4 lg:p-8" id="contentRightPopUp">
+
+                    <div class="mb-8 flex flex-col items-start gap-2 flex-1 self-stretch" id="event-popup-text">
+                        <p class="text-[var(--color-accent)] text-[14px] uppercase font-bold mb-2"> EXCLUSIVIDAD MÉDICA </p>
+                        <!-- Título -->
+                        <h2 id="event-popup-title" class="text-[#261819] text-[22px] font-bold">
+                            Título del evento
+                        </h2>
+                        
+                        <!-- Descripción -->
+                        <p id="event-popup-description" class="text-[#5A4043] text-[16px] text-base font-normal leading-6 tracking-[0.5px]">
+                            Descripción del evento
+                        </p>
+                    </div>
+                    
+
+                    <BaseForm id="events-form" class="space-y-8 rounded flex flex-col gap-6" type="popupEventos" successTitle="¡Registro exitoso!" successText="Gracias por registrarte. Pronto recibirás más información.">
+                        <FormField
+                        label="Nombre completo"
+                        name="name"
+                        placeholder="Ej: Dra. Carolina Ávila"
+                        />
+                        <FormField
+                        label="Correo electrónico"
+                        name="email"
+                        type="email"
+                        placeholder="Ej: carolina.avila@hospitalneuro.mx"
+                        />
+                        <CheckboxField
+                            id="avisoPop"
+                            label="He leído y acepto el"
+                            link="/aviso-de-privacidad"
+                        />
+                        <SubmitButton text="Acceder a mis beneficios"></SubmitButton>
+                    </BaseForm>
+
+                    <script type="module">
+                        import { initForm } from "/scripts/formValidator.js";
+
+                        document.addEventListener("DOMContentLoaded", () => {
+                            initForm("events-form");
+                        });
+                    </script>    
+                </div>
+            </div>
+
+            <div id="status" class="text-center mt-2 text-sm"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+          // Popup
+        const popupOverlay = document.getElementById('event-popup-overlay');
+        const popupTitle = document.getElementById('event-popup-title');
+        const popupDescription = document.getElementById('event-popup-description');
+        const popupImage = document.getElementById('event-popup-image');
+        const closePopupBtn = document.getElementById('close-event-popup');
+
+        const successTitle = document.querySelector('#PopupContent .successTitle');
+        const successText = document.querySelector('#PopupContent .successText');
+
+        const form = document.getElementById("events-form");
+        const status = document.getElementById("status");
+        
+        function resetPopupToInitial() {
+            if (popupTitle) popupTitle.textContent = 'Título del evento';
+            if (popupDescription) popupDescription.textContent = 'Descripción del evento';
+            if (popupImage) (popupImage as HTMLDivElement).style.display = 'block';
+            if (form) {
+                (form as HTMLDivElement).style.display = 'flex';
+                (form as HTMLFormElement).reset();
+                document.querySelector('#PopupContent .form-container')?.classList.remove('hidden');
+                document.querySelector('#PopupContent .form-success')?.classList.add('hidden');
+                document.querySelector('#PopupContent .form-error')?.classList.add('hidden');
+            }
+            const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative') as HTMLElement | null;
+            const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4') as HTMLElement | null;
+            if (leftColumn) leftColumn.style.display = 'block';
+            if (rightColumn) rightColumn.style.display = 'block';
+            if (status) {
+                (status as HTMLElement).innerHTML = '';
+                status.style.display = 'none';
+            }
+        }
+        
+        function openEventPopup(eventData: any) {
+            console.log('Abriendo popup con datos:', eventData);
+            if (!popupOverlay) return;
+            resetPopupToInitial();
+            if (popupImage && eventData.img) { (popupImage as HTMLImageElement).src = eventData.img; (popupImage as HTMLImageElement).alt = eventData.title || 'Evento'; }
+            if (popupTitle && eventData.title) popupTitle.textContent = eventData.title;
+            if (popupDescription && eventData.description) popupDescription.textContent = eventData.description;
+            popupOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            if(successTitle) successTitle.textContent = eventData.titleRegisterSuccess || '¡Registro exitoso!';
+            if(successText) successText.textContent = eventData.instructionsRegisterSuccess || 'Gracias por registrarte. Pronto recibirás más información.';
+        }
+
+        function closeEventPopup() {
+            if (!popupOverlay) return;
+            popupOverlay.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            resetPopupToInitial();
+            resetPopup();
+        }
+
+        function resetPopup() {
+
+            let containerImageCover = document.querySelector(".containerImageCover");
+            containerImageCover ? containerImageCover.style.display = "block" : null;
+
+            let eventPopupText = document.getElementById("event-popup-text");
+            eventPopupText ? eventPopupText.style.display = "block" : null;
+
+            let contentRightPopUp = document.getElementById("contentRightPopUp");
+            contentRightPopUp ? (contentRightPopUp.style.padding = "32px", contentRightPopUp.style.width = "50%") : null;
+
+            let PopupContent = document.getElementById("PopupContent");
+            PopupContent ? (PopupContent.style.maxWidth = "unset") : null;
+
+        }
+
+        document.querySelectorAll('.event-popup-btn').forEach((button: Element) => {
+            button.addEventListener('click', function(this: HTMLElement, e: Event) {
+                e.preventDefault();
+                openEventPopup({
+                    img: this.getAttribute('data-img') || '',
+                    title: this.getAttribute('data-title') || 'Evento MedRent',
+                    description: this.getAttribute('data-description') || 'Descripción del evento',
+                    titleRegisterSuccess: this.getAttribute('data-titleRegisterSuccess') || '',
+                    instructionsRegisterSuccess: this.getAttribute('data-instructionsRegisterSuccess') || ''
+                });
+            });
+        });
+        
+        if (closePopupBtn) closePopupBtn.addEventListener('click', closeEventPopup);
+        if (popupOverlay) {
+            popupOverlay.addEventListener('click', (e) => {
+                if (e.target === popupOverlay) closeEventPopup();
+            });
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && popupOverlay && !popupOverlay.classList.contains('hidden')) {
+                closeEventPopup();
+            }
+        });
+    });
+</script>

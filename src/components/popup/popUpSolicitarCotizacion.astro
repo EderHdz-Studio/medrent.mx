@@ -16,8 +16,8 @@ const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.prop
     <!-- Capa detrás del modal: oscurece y difumina el viewport (backdrop-filter), sin afectar al card -->
     <div
         id="event-blurred-background"
-        class="absolute inset-0 transition-all duration-300"
-        style="background: rgba(23, 29, 28, 0.80); backdrop-filter: blur(7px);"
+        class="absolute inset-0 transition-all duration-300  bg-black/50 backdrop-blur-sm transition-all duration-300"
+        
         aria-hidden="true"
     ></div>
     <!-- Popup Content -->
@@ -55,9 +55,9 @@ const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.prop
                 </div>
                 
                 <!-- Contenido derecha -->
-                <div id="ContenidoPopup" class="lg:w-1/2 p-4 lg:p-8 bg-[#F5FAF9] flex flex-col min-h-[500px]">
+                <div id="ContenidoPopup" class="lg:w-1/2 p-4 lg:p-8 bg-[#F5FAF9] flex flex-col">
                   <!-- Nuevo formulario con BaseForm y componentes reutilizables -->
-                  <BaseForm id="pdp-form" class="space-y-6 mt-6 flex-1 flex-col">
+                  <BaseForm id="pdp-form" class="space-y-6 mt-6 flex flex-col gap-6">
                     <FormField
                       label="Nombre completo"
                       name="name"
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (type === 'success') {
       status.innerHTML = `
-        <div class="w-full max-w-md mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px]">
+        <div class="w-full max-w-md mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] ">
           <button onclick="resetToForm()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none border-none cursor-pointer z-10 bg-transparent p-2 rounded">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171D1C"/>
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
     } else {
       status.innerHTML = `
-        <div class="w-full max-w-md mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] min-h-[500px]">
+        <div class="w-full max-w-md mx-auto p-6 md:p-8 flex flex-col items-center justify-center gap-4 rounded-3xl border border-[#006764] bg-[#F5FAF9] shadow-[0_20px_24px_-4px_rgba(49,48,48,0.10),0_8px_10px_-6px_rgba(49,48,48,0.04)] ">
           <button onclick="resetToForm()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none border-none cursor-pointer z-10 bg-transparent p-2 rounded">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z" fill="#171D1C"/>
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           form.style.display = 'block';
           form.reset();
-        }, 38000);
+        }, 5000);
         
         return;
 
@@ -636,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
   #ContenidoPopup {
     display: flex;
     flex-direction: column;
-    min-height: 500px;
+    /* min-height: 500px; */
   }
 
   #event-status {

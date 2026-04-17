@@ -27,6 +27,7 @@ export default defineConfig({
         '@layouts': '/src/layouts',
         '@lib': '/src/lib',
         '@pages': '/src/pages',
+        '@seo': '/src/seo',
       },
     },
     build: {
