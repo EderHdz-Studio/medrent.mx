@@ -46,6 +46,8 @@ export function initForm(formId) {
   const errorBox = wrapper?.querySelector(".form-error");
   const errorRetryBtn = errorBox?.querySelector("button.retry-btn");
 
+
+
   function validateEstado() {
     if (!estadoInput) return true;
     const value = estadoInput.value;
@@ -146,6 +148,51 @@ export function initForm(formId) {
     }
   }
 
+
+
+  function clearPopup() {
+    const inputTypeForm = document.querySelector('input[name="formType"]')?.value || null;
+    
+    if(inputTypeForm == 'popupEventos'){
+      let containerImageCover = document.querySelector(".containerImageCover");
+      containerImageCover ? containerImageCover.style.display = "none" : null;
+
+      let eventPopupText = document.getElementById("event-popup-text");
+      eventPopupText ? eventPopupText.style.display = "none" : null;
+
+      let contentRightPopUp = document.getElementById("contentRightPopUp");
+      contentRightPopUp ? (contentRightPopUp.style.padding = "0", contentRightPopUp.style.width = "100%") : null;
+
+      let PopupContent = document.getElementById("PopupContent");
+      PopupContent ? (PopupContent.style.maxWidth = "430px") : null;
+
+    }
+  }
+  
+    function resetPopup() {
+      const inputTypeForm = document.querySelector('input[name="formType"]')?.value || null;
+    
+      if(inputTypeForm == 'popupEventos'){
+        let containerImageCover = document.querySelector(".containerImageCover");
+        containerImageCover ? containerImageCover.style.display = "block" : null;
+
+        let eventPopupText = document.getElementById("event-popup-text");
+        eventPopupText ? eventPopupText.style.display = "block" : null;
+
+        let contentRightPopUp = document.getElementById("contentRightPopUp");
+        contentRightPopUp ? (contentRightPopUp.style.padding = "16px", contentRightPopUp.style.width = "50%") : null;
+
+        let PopupContent = document.getElementById("PopupContent");
+        PopupContent ? (PopupContent.style.maxWidth = "unset") : null;
+      }
+
+    }
+
+
+  
+
+
+
   function setState(state) {
     formContainer?.classList.add("hidden");
     successBox?.classList.add("hidden");
@@ -157,10 +204,12 @@ export function initForm(formId) {
 
     if (state === "success") {
       successBox?.classList.remove("hidden");
+      clearPopup();
     }
 
     if (state === "error") {
       errorBox?.classList.remove("hidden");
+      clearPopup();
     }
   }
 
@@ -186,8 +235,10 @@ export function initForm(formId) {
   // Asegura que el formulario se muestre correctamente al dar click en el botón de reintentar
   errorRetryBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    setTimeout(() => {
+     resetPopup()
       setState("form");
+    setTimeout(() => {
+      // setState("form");
       form.reset();
       resetInputsVisual();
       validateAll();
@@ -195,7 +246,7 @@ export function initForm(formId) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = "Agendar una DEMO";
       }
-    }, 50); // pequeño delay para asegurar el cambio de estado
+    }, 500); // pequeño delay para asegurar el cambio de estado
   });
 
   /* =============================
@@ -605,6 +656,8 @@ export function initForm(formId) {
             setState("error");
           }
 
+
+
           sendFormEvent({ formId: formId, status: response.status });
           return response;
         })
@@ -622,6 +675,11 @@ export function initForm(formId) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalSubmitText;
       }
+
+
+
+
+
     }
   });
   // form.addEventListener('submit', async (e) => {
