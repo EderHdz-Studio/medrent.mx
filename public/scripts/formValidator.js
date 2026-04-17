@@ -151,7 +151,7 @@ export function initForm(formId) {
 
 
   function clearPopup() {
-    const inputTypeForm = document.querySelector('input[name="formType"]')?.value || null;
+    const inputTypeForm = document.querySelector('#PopupContent input[name="formType"]')?.value || null;
     
     if(inputTypeForm == 'popupEventos'){
       let containerImageCover = document.querySelector(".containerImageCover");

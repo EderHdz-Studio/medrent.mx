@@ -76,9 +76,9 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
                         placeholder="Ej: carolina.avila@hospitalneuro.mx"
                         />
                         <CheckboxField
-                        id="aviso"
-                        label="He leído y acepto el"
-                        link="/aviso-de-privacidad"
+                            id="avisoPop"
+                            label="He leído y acepto el"
+                            link="/aviso-de-privacidad"
                         />
                         <SubmitButton text="Acceder a mis beneficios"></SubmitButton>
                     </BaseForm>
@@ -109,8 +109,8 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
         const popupImage = document.getElementById('event-popup-image');
         const closePopupBtn = document.getElementById('close-event-popup');
 
-        const successTitle = document.querySelector('.successTitle');
-        const successText = document.querySelector('.successText');
+        const successTitle = document.querySelector('#PopupContent .successTitle');
+        const successText = document.querySelector('#PopupContent .successText');
 
         const form = document.getElementById("events-form");
         const status = document.getElementById("status");
@@ -122,9 +122,9 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
             if (form) {
                 (form as HTMLDivElement).style.display = 'flex';
                 (form as HTMLFormElement).reset();
-                document.querySelector('.form-container')?.classList.remove('hidden');
-                document.querySelector('.form-success')?.classList.add('hidden');
-                document.querySelector('.form-error')?.classList.add('hidden');
+                document.querySelector('#PopupContent .form-container')?.classList.remove('hidden');
+                document.querySelector('#PopupContent .form-success')?.classList.add('hidden');
+                document.querySelector('#PopupContent .form-error')?.classList.add('hidden');
             }
             const leftColumn = document.querySelector('.lg\\:w-1\\/2.relative') as HTMLElement | null;
             const rightColumn = document.querySelector('.lg\\:w-1\\/2.p-4') as HTMLElement | null;
@@ -137,6 +137,7 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
         }
         
         function openEventPopup(eventData: any) {
+            console.log('Abriendo popup con datos:', eventData);
             if (!popupOverlay) return;
             resetPopupToInitial();
             if (popupImage && eventData.img) { (popupImage as HTMLImageElement).src = eventData.img; (popupImage as HTMLImageElement).alt = eventData.title || 'Evento'; }
