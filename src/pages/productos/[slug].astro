@@ -18,6 +18,7 @@ import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astr
 import PromotionSlider from "@components/sections/PromotionSlider.astro";
 import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
 import { isUsableBrandSlug } from "@lib/brandSlug";
+import ProductVariants from '@components/product/ProductVariants.astro';
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -442,6 +443,8 @@ const pdpJsonLd = {
                 ))}
             </div>
           )}
+
+          <ProductVariants currentProductSlug={slug} />
 
           <!-- Preguntas Frecuentes -->
           {product?.faqItem && product.faqItem.length > 0 && (
