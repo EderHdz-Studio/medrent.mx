@@ -16,43 +16,54 @@ const totalProducts = products.length;
       Mostrando {Math.min(9, totalProducts)} de {totalProducts}
     </p>
 
-    <div class="relative w-fit max-w-full min-w-0 shrink-0 sm:ml-auto">
-      <button
-        id="sort-products-btn"
-        type="button"
-        aria-expanded="false"
-        aria-haspopup="listbox"
-        aria-controls="sort-products-menu"
-        class="box-border flex h-fit w-fit min-h-0 max-w-full items-center justify-between gap-2 rounded-[8px] border border-[#171D1C] bg-white py-2 pl-[8px] pr-[8px] text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] transition-[color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
-      >
-        <span id="sort-products-label" class="min-w-0 flex-1 truncate">Ordenar por:</span>
-        <!-- Cerrado: chevron abajo · Abierto: rotate-180 → chevron arriba -->
-        <svg
-          id="sort-products-icon"
-          class="size-6 shrink-0 rotate-0 transition-transform duration-200 ease-out"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path d="M7.00005 14.83C7.18741 15.0162 7.44087 15.1208 7.70505 15.1208C7.96924 15.1208 8.22269 15.0162 8.41005 14.83L12.0001 11.29L15.5401 14.83C15.7274 15.0162 15.9809 15.1208 16.2451 15.1208C16.5092 15.1208 16.7627 15.0162 16.9501 14.83C17.0438 14.737 17.1182 14.6264 17.1689 14.5046C17.2197 14.3827 17.2458 14.252 17.2458 14.12C17.2458 13.988 17.2197 13.8573 17.1689 13.7354C17.1182 13.6136 17.0438 13.503 16.9501 13.41L12.7101 9.17C12.6171 9.07627 12.5065 9.00187 12.3846 8.9511C12.2628 8.90034 12.1321 8.8742 12.0001 8.8742C11.868 8.8742 11.7373 8.90034 11.6155 8.9511C11.4936 9.00187 11.383 9.07627 11.2901 9.17L7.00005 13.41C6.90632 13.503 6.83193 13.6136 6.78116 13.7354C6.73039 13.8573 6.70425 13.988 6.70425 14.12C6.70425 14.252 6.73039 14.3827 6.78116 14.5046C6.83193 14.6264 6.90632 14.737 7.00005 14.83Z" fill="#171D1C"/>
+    <div class="flex items-center gap-3">
+      <!-- Botón de filtros para mobile -->
+      <button id="mobile-filter-btn-duplicate" class="mobile-filter-btn-duplicate">
+        Filtros (<span id="mobile-filter-count-duplicate">0</span>)
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15.816 5C15.6124 4.41545 15.2318 3.90877 14.7273 3.55023C14.2227 3.19168 13.619 2.99905 13 2.99905C12.381 2.99905 11.7773 3.19168 11.2727 3.55023C10.7682 3.90877 10.3876 4.41545 10.184 5H3V7H10.184C10.3876 7.58454 10.7682 8.09123 11.2727 8.44977C11.7773 8.80831 12.381 9.00094 13 9.00094C13.619 9.00094 14.2227 8.80831 14.7273 8.44977C15.2318 8.09123 15.6124 7.58454 15.816 7H21V5H15.816ZM13 7C12.8022 7 12.6089 6.94135 12.4444 6.83147C12.28 6.72159 12.1518 6.56541 12.0761 6.38268C12.0004 6.19996 11.9806 5.99889 12.0192 5.80491C12.0578 5.61093 12.153 5.43275 12.2929 5.29289C12.4327 5.15304 12.6109 5.0578 12.8049 5.01921C12.9989 4.98063 13.2 5.00043 13.3827 5.07612C13.5654 5.15181 13.7216 5.27998 13.8315 5.44443C13.9414 5.60888 14 5.80222 14 6C14 6.26522 13.8946 6.51957 13.7071 6.70711C13.5196 6.89464 13.2652 7 13 7Z" fill="#171D1C"/>
+          <path d="M7 9C6.38174 9.00256 5.77937 9.19608 5.2753 9.55409C4.77123 9.91209 4.39008 10.4171 4.184 11H3V13H4.184C4.38765 13.5845 4.76815 14.0912 5.27275 14.4498C5.77734 14.8083 6.381 15.0009 7 15.0009C7.619 15.0009 8.22266 14.8083 8.72725 14.4498C9.23185 14.0912 9.61235 13.5845 9.816 13H21V11H9.816C9.60992 10.4171 9.22877 9.91209 8.7247 9.55409C8.22063 9.19608 7.61826 9.00256 7 9ZM7 13C6.80222 13 6.60888 12.9414 6.44443 12.8315C6.27998 12.7216 6.15181 12.5654 6.07612 12.3827C6.00043 12.2 5.98063 11.9989 6.01921 11.8049C6.0578 11.6109 6.15304 11.4327 6.29289 11.2929C6.43275 11.153 6.61093 11.0578 6.80491 11.0192C6.99889 10.9806 7.19996 11.0004 7.38268 11.0761C7.56541 11.1518 7.72159 11.28 7.83147 11.4444C7.94135 11.6089 8 11.8022 8 12C8 12.2652 7.89464 12.5196 7.70711 12.7071C7.51957 12.8946 7.26522 13 7 13Z" fill="#212121"/>
+          <path d="M16 15C15.3817 15.0026 14.7794 15.1961 14.2753 15.5541C13.7712 15.9121 13.3901 16.4171 13.184 17H3V19H13.184C13.3876 19.5845 13.7682 20.0912 14.2727 20.4498C14.7773 20.8083 15.381 21.0009 16 21.0009C16.619 21.0009 17.2227 20.8083 17.7273 20.4498C18.2318 20.0912 18.6124 19.5845 18.816 19H21V17H18.816C18.6099 16.4171 18.2288 15.9121 17.7247 15.5541C17.2206 15.1961 16.6183 15.0026 16 15ZM16 19C15.8022 19 15.6089 18.9414 15.4444 18.8315C15.28 18.7216 15.1518 18.5654 15.0761 18.3827C15.0004 18.2 14.9806 17.9989 15.0192 17.8049C15.0578 17.6109 15.153 17.4327 15.2929 17.2929C15.4327 17.153 15.6109 17.0578 15.8049 17.0192C15.9989 16.9806 16.2 17.0004 16.3827 17.0761C16.5654 17.1518 16.7216 17.28 16.8315 17.4444C16.9414 17.6089 17 17.8022 17 18C17 18.2652 16.8946 18.5196 16.7071 18.7071C16.5196 18.8946 16.2652 19 16 19Z" fill="#212121"/>
         </svg>
       </button>
-      <div id="sort-products-menu" class="absolute left-0 top-[calc(100%+6px)] z-20 hidden w-full min-w-full overflow-hidden rounded-[8px] border border-[var(--color-text-default)] bg-white shadow-sm">
-        <button type="button" data-sort="default" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
-          Todos
+
+      <div class="relative w-fit max-w-full min-w-0 shrink-0">
+        <button
+          id="sort-products-btn"
+          type="button"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-controls="sort-products-menu"
+          class="box-border flex h-fit w-fit min-h-0 max-w-full items-center justify-between gap-2 rounded-[8px] border border-[#171D1C] bg-white py-2 pl-[8px] pr-[8px] text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] transition-[color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+        >
+          <span id="sort-products-label" class="min-w-0 flex-1 truncate">Ordenar por:</span>
+          <svg
+            id="sort-products-icon"
+            class="size-6 shrink-0 rotate-0 transition-transform duration-200 ease-out"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path d="M7.00005 14.83C7.18741 15.0162 7.44087 15.1208 7.70505 15.1208C7.96924 15.1208 8.22269 15.0162 8.41005 14.83L12.0001 11.29L15.5401 14.83C15.7274 15.0162 15.9809 15.1208 16.2451 15.1208C16.5092 15.1208 16.7627 15.0162 16.9501 14.83C17.0438 14.737 17.1182 14.6264 17.1689 14.5046C17.2197 14.3827 17.2458 14.252 17.2458 14.12C17.2458 13.988 17.2197 13.8573 17.1689 13.7354C17.1182 13.6136 17.0438 13.503 16.9501 13.41L12.7101 9.17C12.6171 9.07627 12.5065 9.00187 12.3846 8.9511C12.2628 8.90034 12.1321 8.8742 12.0001 8.8742C11.868 8.8742 11.7373 8.90034 11.6155 8.9511C11.4936 9.00187 11.383 9.07627 11.2901 9.17L7.00005 13.41C6.90632 13.503 6.83193 13.6136 6.78116 13.7354C6.73039 13.8573 6.70425 13.988 6.70425 14.12C6.70425 14.252 6.73039 14.3827 6.78116 14.5046C6.83193 14.6264 6.90632 14.737 7.00005 14.83Z" fill="#171D1C"/>
+          </svg>
         </button>
-        <button type="button" data-sort="new" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
-          Lanzamientos
-        </button>
-        <button type="button" data-sort="az" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
-          A-Z
-        </button>
-        <button type="button" data-sort="za" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
-          Z-A
-        </button>
+        <div id="sort-products-menu" class="absolute left-0 top-[calc(100%+6px)] z-[9999] hidden w-full min-w-full overflow-hidden rounded-[8px] border border-[var(--color-text-default)] bg-white shadow-sm">
+          <button type="button" data-sort="default" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
+            Todos
+          </button>
+          <button type="button" data-sort="new" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
+            Lanzamientos
+          </button>
+          <button type="button" data-sort="az" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
+            A-Z
+          </button>
+          <button type="button" data-sort="za" class="w-full px-4 py-2 text-left font-lato text-[16px] font-normal leading-[24px] tracking-[0.5px] text-[var(--color-text-default)] hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] cursor-pointer">
+            Z-A
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -97,6 +108,29 @@ const totalProducts = products.length;
   )}
 </section>
 
+<style>
+  .mobile-filter-btn-duplicate {
+    display: none;
+    padding: 6px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    border: 1px solid #171D1C;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  @media (max-width: 1024px) {
+    .mobile-filter-btn-duplicate {
+      display: flex !important;
+    }
+  }
+</style>
+
 <script is:inline define:vars={{ totalProducts }}>
   (() => {
     document.documentElement.dataset.plpClientFilters = "1";
@@ -112,6 +146,72 @@ const totalProducts = products.length;
     const sortMenu = document.getElementById("sort-products-menu");
     const topCounter = document.getElementById("product-count-top");
     const bottomCounter = document.getElementById("product-count-bottom");
+    const sortContainer = document.querySelector('.flex.items-center.gap-3'); // Contenedor del botón y sort
+
+    // Función para cambiar layout del contenedor de ordenamiento
+    function setSortContainerLayout(mode) {
+      if (!sortContainer) return;
+      
+      const windowWidth = window.innerWidth;
+      
+      // Solo aplicar cambios en pantallas de 500px o menos
+      if (windowWidth <= 500) {
+        if (mode === "new") {
+          sortContainer.style.display = "flex";
+          sortContainer.style.flexDirection = "column";
+          sortContainer.style.alignItems = "flex-start";
+          sortContainer.style.gap = "12px";
+          sortContainer.style.width = "100%";
+        } else {
+          sortContainer.style.display = "flex";
+          sortContainer.style.flexDirection = "row";
+          sortContainer.style.alignItems = "center";
+          sortContainer.style.gap = "12px";
+          sortContainer.style.width = "auto";
+        }
+      } else {
+        // Para pantallas más grandes, siempre en row
+        sortContainer.style.display = "flex";
+        sortContainer.style.flexDirection = "row";
+        sortContainer.style.alignItems = "center";
+        sortContainer.style.gap = "12px";
+        sortContainer.style.width = "auto";
+      }
+    }
+
+    window.addEventListener('resize', function() {
+      setSortContainerLayout(currentSort);
+    });
+
+    // Sincronizar el botón duplicado con el original
+    const originalBtn = document.getElementById('mobile-filter-btn');
+    const duplicateBtn = document.getElementById('mobile-filter-btn-duplicate');
+    const originalCount = document.getElementById('mobile-filter-count');
+    const duplicateCount = document.getElementById('mobile-filter-count-duplicate');
+    
+    // Sincronizar contador
+    function syncCount() {
+      if (originalCount && duplicateCount) {
+        duplicateCount.textContent = originalCount.textContent;
+      }
+    }
+    
+    // Abrir dropdown desde el botón duplicado
+    if (duplicateBtn && originalBtn) {
+      duplicateBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (originalBtn) {
+          originalBtn.click();
+        }
+      });
+    }
+    
+    // Observar cambios en el contador original
+    if (originalCount) {
+      const observer = new MutationObserver(syncCount);
+      observer.observe(originalCount, { childList: true, characterData: true, subtree: true });
+      syncCount();
+    }
 
     const syncSortLabel = () => {
       if (sortLabel) {
@@ -160,6 +260,7 @@ const totalProducts = products.length;
 
     const applySort = (mode) => {
       currentSort = mode;
+      setSortContainerLayout(mode); // Cambiar layout del contenedor
       applyCurrentView();
     };
 
@@ -189,7 +290,6 @@ const totalProducts = products.length;
       visible = Math.min(pageSize, items.length);
 
       syncSortLabel();
-
       render();
     };
 
@@ -211,7 +311,14 @@ const totalProducts = products.length;
       sortMenu.querySelectorAll("[data-sort]").forEach((option) => {
         option.addEventListener("click", () => {
           const mode = option.getAttribute("data-sort") || "default";
+          
+          // Cambiar layout del contenedor
+          setSortContainerLayout(mode);
+          
+          // Aplicar el ordenamiento
           applySort(mode);
+          
+          // Cerrar el menú
           sortMenu.classList.add("hidden");
           sortBtn.setAttribute("aria-expanded", "false");
           sortIcon?.classList.remove("rotate-180");
@@ -233,6 +340,8 @@ const totalProducts = products.length;
       applyCurrentView();
     });
 
+    // Inicializar
+    setSortContainerLayout(currentSort);
     applyCurrentView();
   })();
 </script>
