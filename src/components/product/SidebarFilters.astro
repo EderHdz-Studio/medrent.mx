@@ -24,14 +24,40 @@ const {
   categories?: FilterCategory[];
   subcategories?: FilterSubcategory[];
 } = Astro.props;
-
-  // console.log('categories----:', categories[0].subcategories);
 ---
 
+<!-- Mobile Filter Button - SOLO visible en mobile -->
+<button id="mobile-filter-btn" class="mobile-filter-btn" style="display: none;">
+  Filtros (<span id="mobile-filter-count">0</span>)
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <path d="M15.816 5C15.6124 4.41545 15.2318 3.90877 14.7273 3.55023C14.2227 3.19168 13.619 2.99905 13 2.99905C12.381 2.99905 11.7773 3.19168 11.2727 3.55023C10.7682 3.90877 10.3876 4.41545 10.184 5H3V7H10.184C10.3876 7.58454 10.7682 8.09123 11.2727 8.44977C11.7773 8.80831 12.381 9.00094 13 9.00094C13.619 9.00094 14.2227 8.80831 14.7273 8.44977C15.2318 8.09123 15.6124 7.58454 15.816 7H21V5H15.816ZM13 7C12.8022 7 12.6089 6.94135 12.4444 6.83147C12.28 6.72159 12.1518 6.56541 12.0761 6.38268C12.0004 6.19996 11.9806 5.99889 12.0192 5.80491C12.0578 5.61093 12.153 5.43275 12.2929 5.29289C12.4327 5.15304 12.6109 5.0578 12.8049 5.01921C12.9989 4.98063 13.2 5.00043 13.3827 5.07612C13.5654 5.15181 13.7216 5.27998 13.8315 5.44443C13.9414 5.60888 14 5.80222 14 6C14 6.26522 13.8946 6.51957 13.7071 6.70711C13.5196 6.89464 13.2652 7 13 7Z" fill="#171D1C"/>
+    <path d="M7 9C6.38174 9.00256 5.77937 9.19608 5.2753 9.55409C4.77123 9.91209 4.39008 10.4171 4.184 11H3V13H4.184C4.38765 13.5845 4.76815 14.0912 5.27275 14.4498C5.77734 14.8083 6.381 15.0009 7 15.0009C7.619 15.0009 8.22266 14.8083 8.72725 14.4498C9.23185 14.0912 9.61235 13.5845 9.816 13H21V11H9.816C9.60992 10.4171 9.22877 9.91209 8.7247 9.55409C8.22063 9.19608 7.61826 9.00256 7 9ZM7 13C6.80222 13 6.60888 12.9414 6.44443 12.8315C6.27998 12.7216 6.15181 12.5654 6.07612 12.3827C6.00043 12.2 5.98063 11.9989 6.01921 11.8049C6.0578 11.6109 6.15304 11.4327 6.29289 11.2929C6.43275 11.153 6.61093 11.0578 6.80491 11.0192C6.99889 10.9806 7.19996 11.0004 7.38268 11.0761C7.56541 11.1518 7.72159 11.28 7.83147 11.4444C7.94135 11.6089 8 11.8022 8 12C8 12.2652 7.89464 12.5196 7.70711 12.7071C7.51957 12.8946 7.26522 13 7 13Z" fill="#212121"/>
+    <path d="M16 15C15.3817 15.0026 14.7794 15.1961 14.2753 15.5541C13.7712 15.9121 13.3901 16.4171 13.184 17H3V19H13.184C13.3876 19.5845 13.7682 20.0912 14.2727 20.4498C14.7773 20.8083 15.381 21.0009 16 21.0009C16.619 21.0009 17.2227 20.8083 17.7273 20.4498C18.2318 20.0912 18.6124 19.5845 18.816 19H21V17H18.816C18.6099 16.4171 18.2288 15.9121 17.7247 15.5541C17.2206 15.1961 16.6183 15.0026 16 15ZM16 19C15.8022 19 15.6089 18.9414 15.4444 18.8315C15.28 18.7216 15.1518 18.5654 15.0761 18.3827C15.0004 18.2 14.9806 17.9989 15.0192 17.8049C15.0578 17.6109 15.153 17.4327 15.2929 17.2929C15.4327 17.153 15.6109 17.0578 15.8049 17.0192C15.9989 16.9806 16.2 17.0004 16.3827 17.0761C16.5654 17.1518 16.7216 17.28 16.8315 17.4444C16.9414 17.6089 17 17.8022 17 18C17 18.2652 16.8946 18.5196 16.7071 18.7071C16.5196 18.8946 16.2652 19 16 19Z" fill="#212121"/>
+  </svg>
+</button>
+
+<!-- Mobile Dropdown Filters (oculto por defecto) - Ahora ocupa 80% -->
+<div id="mobile-filters-dropdown" class="mobile-filters-dropdown" style="display: none;">
+  <div class="mobile-filters-header">
+    <h3>Filtros</h3>
+    <button id="close-mobile-filters" class="close-filters-btn">✕</button>
+  </div>
+  <div class="mobile-filters-content">
+    <!-- Aquí se moverá el sidebar-filters-container -->
+  </div>
+  <!-- Botón Actualizar -->
+  <div class="mobile-filters-footer">
+    <button id="apply-filters-btn" class="apply-filters-btn">
+      Aplicar
+    </button>
+  </div>
+</div>
+
+<!-- Sidebar Filters ORIGINAL - Ahora se usa en ambos responsives -->
 <div class="sidebar-filters-container">
 
   <!-- HEADER -->
-  <div class="sticky top-0 z-20 -mx-1 px-1 py-2 mb-4 flex justify-between items-center bg-[var(--color-secondary-light)] border-b border-[rgba(23,29,28,0.12)]">
+  <div class="sticky top-0 z-20 -mx-1 px-1 py-2 mb-4 flex justify-between items-center bg-[var(--color-secondary-light)] border-b border-[rgba(23,29,28,0.12)] filtersDesktop">
     <h3 id="filters-title" class="text-[16px] font-bold text-[var(--color-primary)]">Filtros (0)</h3>
     <button id="clear-filters" class="text-[16px] text-on-surface-variant underline cursor-pointer hover:text-[var(--color-primary)] transition-colors duration-300">
       Limpiar
@@ -78,7 +104,7 @@ const {
     <div class="filter-content mt-3 transition-all duration-300 ease-in-out overflow-hidden max-h-0" id="subcategory">
       {categories.map((cat: FilterCategory) => (
         <div class="mb-2">
-          <button class="subcat-toggle flex justify-between w-full  cursor-pointer" data-target={ 'subcat-' + cat.slug } id={ 'btn-subcat-' + cat.slug }>
+          <button class="subcat-toggle flex justify-between w-full cursor-pointer" data-target={ 'subcat-' + cat.slug } id={ 'btn-subcat-' + cat.slug }>
             <span class="text-[16px] text-[var(--color-primary)]">{cat.name}</span>
             <span class="arrow transition-transform duration-300">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -136,9 +162,295 @@ const {
 
 </div>
 
+<style>
+/* Mobile Filter Button Styles */
+.mobile-filter-btn {
+  display: flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex: 1 0 0;
+  border-radius: 8px;
+  border: 1px solid #171D1C;
+  background: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+/* Mobile Dropdown Styles - Ocupa 80% */
+.mobile-filters-dropdown {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80%;
+  background: white;
+  z-index: 1000;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-filters-dropdown.open {
+  transform: translateX(0);
+  display: flex !important;
+}
+
+.mobile-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid rgba(23, 29, 28, 0.12);
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.mobile-filters-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close-filters-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-filters-content {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Footer con botón Actualizar */
+.mobile-filters-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(23, 29, 28, 0.12);
+  position: sticky;
+  bottom: 0;
+  background: white;
+  flex-shrink: 0;
+}
+
+.apply-filters-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--color-primary, #00827F);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.apply-filters-btn:hover {
+  background: var(--color-primary-dark, #006b68);
+}
+
+.apply-filters-btn:active {
+  transform: scale(0.98);
+}
+
+/* Overlay para cuando el dropdown está abierto */
+.mobile-filters-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 999;
+  display: none;
+  transition: background 0.3s ease;
+  pointer-events: none;
+}
+
+.mobile-filters-overlay.show {
+  display: block;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+}
+
+/* Desktop/tablet - ocultar elementos mobile */
+@media (min-width: 1025px) {
+  .mobile-filter-btn,
+  .mobile-filters-dropdown,
+  .mobile-filters-overlay {
+    display: none !important;
+  }
+  .sidebar-filters-container {
+    display: block !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .mobile-filter-btn {
+    display: flex !important;
+  }
+  .filtersDesktop {
+    display: none !important;
+  }
+}
+</style>
+
+
+<script>
+(function() {
+  const isMobile = window.innerWidth <= 1024;
+  
+  if (isMobile) {
+    // Crear overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-filters-overlay';
+    document.body.appendChild(overlay);
+    
+    const mobileBtn = document.getElementById('mobile-filter-btn');
+    const mobileDropdown = document.getElementById('mobile-filters-dropdown');
+    const closeBtn = document.getElementById('close-mobile-filters');
+    const applyBtn = document.getElementById('apply-filters-btn');
+    const sidebarFilters = document.querySelector('.sidebar-filters-container');
+    const mobileContent = document.querySelector('.mobile-filters-content');
+    
+    // Guardar referencia al contenedor padre original
+    let originalParent = null;
+    let originalNextSibling = null;
+    
+    // Mover los filtros al dropdown
+    function moveFiltersToDropdown() {
+      if (sidebarFilters && mobileContent) {
+        // Guardar posición original si no se ha guardado
+        if (!originalParent && sidebarFilters.parentNode) {
+          originalParent = sidebarFilters.parentNode;
+          originalNextSibling = sidebarFilters.nextSibling;
+        }
+        mobileContent.innerHTML = '';
+        mobileContent.appendChild(sidebarFilters);
+        // Asegurar que se muestre
+        sidebarFilters.style.display = 'block';
+      }
+    }
+    
+    // Mover los filtros de vuelta
+    function moveFiltersBack() {
+      if (sidebarFilters && originalParent) {
+        if (originalNextSibling) {
+          originalParent.insertBefore(sidebarFilters, originalNextSibling);
+        } else {
+          originalParent.appendChild(sidebarFilters);
+        }
+        // Ocultar en mobile
+        sidebarFilters.style.display = 'none';
+      }
+    }
+    
+    // Función para aplicar filtros y recargar la página
+    function applyFiltersAndReload() {
+      // Construir URL con los filtros seleccionados
+      const params = new URLSearchParams();
+      
+      ["brand", "category", "subcategory"].forEach(key => {
+        const checked = Array.from(
+          document.querySelectorAll(`input[data-filter="${key}"]:checked`)
+        ).flatMap((el) => (el instanceof HTMLInputElement ? [el.value] : []));
+        
+        if (checked.length) {
+          params.set(key, checked.join(","));
+        }
+      });
+      
+      const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
+      
+      // Cerrar dropdown
+      mobileDropdown.classList.remove('open');
+      overlay.classList.remove('show');
+      
+      setTimeout(function() {
+        moveFiltersBack();
+        document.body.style.overflow = '';
+        // Recargar la página con los nuevos filtros
+        window.location.href = newUrl;
+      }, 300);
+    }
+    
+    // Abrir dropdown
+    if (mobileBtn && mobileDropdown) {
+      mobileBtn.addEventListener('click', function() {
+        moveFiltersToDropdown();
+        mobileDropdown.classList.add('open');
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+    
+    // Cerrar dropdown sin aplicar filtros
+    function closeDropdown() {
+      mobileDropdown.classList.remove('open');
+      overlay.classList.remove('show');
+      setTimeout(function() {
+        moveFiltersBack();
+        document.body.style.overflow = '';
+      }, 300);
+    }
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeDropdown);
+    }
+    
+    overlay.addEventListener('click', closeDropdown);
+    
+    // Aplicar filtros al hacer clic en Actualizar
+    if (applyBtn) {
+      applyBtn.addEventListener('click', applyFiltersAndReload);
+    }
+    
+    // Actualizar contador en botón mobile
+    function updateMobileCount() {
+      const count = document.querySelectorAll('input[data-filter]:checked').length;
+      const mobileCountSpan = document.getElementById('mobile-filter-count');
+      if (mobileCountSpan) mobileCountSpan.textContent = count;
+    }
+    
+    // Escuchar cambios en checkboxes para actualizar el contador
+    document.addEventListener('change', function(e) {
+      if (e.target && e.target.matches('input[data-filter]')) {
+        setTimeout(updateMobileCount, 100);
+      }
+    });
+    
+    // Inicializar contador y ocultar sidebar en mobile
+    updateMobileCount();
+    
+    // Asegurar que el sidebar esté oculto al cargar en mobile
+    if (sidebarFilters) {
+      sidebarFilters.style.display = 'none';
+    }
+  }
+})();
+</script>
+
 <script>
   const isHTMLElement = (element) => element instanceof HTMLElement;
-
   // Dropdown toggle
   document.querySelectorAll(".filter-toggle").forEach(button => {
     button.addEventListener("click", () => {
@@ -153,7 +465,6 @@ const {
         target.style.maxHeight = target.scrollHeight + "px";
         setTimeout(() => {
           if (!target.classList.contains("open")) return;
-          // Evita cortes cuando el contenido interno crece por wraps o submenus.
           target.style.maxHeight = "none";
         }, 320);
       } else {
@@ -172,7 +483,7 @@ const {
     });
   });
 
-  // Dropdown hijos de especialidad en Aplicación clínica (event delegation, ejecución directa)
+  // Dropdown hijos de especialidad en Aplicación clínica
   document.addEventListener("click", function(e) {
     if (!(e.target instanceof Element)) return;
     const btn = e.target.closest('.subcat-toggle');
@@ -217,15 +528,7 @@ const {
     return new URLSearchParams(window.location.search);
   }
 
-  /**
-   * @param {URLSearchParams} params
-   * @param {string} key
-   */
-  /**
-   * @param {URLSearchParams} params
-   * @param {string} key
-   */
-  function getFilterValues(params: URLSearchParams, key: string) {
+  function getFilterValues(params, key) {
     const values = params
       .getAll(key)
       .flatMap((value) => value.split(","))
@@ -233,7 +536,6 @@ const {
       .filter(Boolean);
     return Array.from(new Set(values));
   }
-
 
   function setInitialState() {
     const params = getParams();
@@ -248,8 +550,7 @@ const {
       }
     });
 
-    // En mobile, los dropdowns siempre deben aparecer cerrados al cargar
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 1024;
     ["category", "subcategory", "brand"].forEach(key => {
       const container = document.getElementById(key);
       const arrow = document.querySelector(`.filter-toggle[data-target="${key}"] .arrow`);
@@ -269,7 +570,6 @@ const {
       }
     });
 
-    // Forzar todos los dropdowns hijos a estar cerrados y ocultos al cargar
     document.querySelectorAll('.subcat-content').forEach(el => {
       if (!isHTMLElement(el)) return;
       el.classList.remove('open');
@@ -319,7 +619,11 @@ const {
     if (!(target instanceof HTMLInputElement)) return;
     if (target.matches("input[data-filter]")) {
       updateFiltersTitle();
-      updateUrl();
+      // Solo actualizar automáticamente en desktop/tablet (NO en mobile)
+      // Usamos matchMedia para mayor precisión
+      if (!window.matchMedia('(max-width: 1024px)').matches) {
+        updateUrl();
+      }
     }
   });
 
