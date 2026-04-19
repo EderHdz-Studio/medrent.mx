@@ -22,8 +22,8 @@ import { buildEventsSchema } from "@seo/schemas/events";
 let data: any = {};
 // let dataPromociones: any[] = [];
 
-try {
-  const response = await strapiFetch("/events-page?populate[events][populate]=image&populate=heroImage");  
+try { 
+  const response = await strapiFetch("/events-page?populate[events][populate][image]=true&populate[events][populate][category]=true&populate=heroImage");
   data = response.data;
 } catch (error) {
   console.error('Error fetching events:', error);
@@ -409,7 +409,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                             data-start-date={evento.startDate.split('T')[0]}
                                                             data-end-date={evento.endDate.split('T')[0]}
                                                             data-event-type={(evento.eventType || 'Otro').toString().toLowerCase()}
-                                                            data-event-specialty={(evento.especialidad || evento.specialty || evento.category || 'General').toString().toLowerCase()}
+                                                            data-event-category={(evento.category?.name || evento.category?.name || 'general').toString().toLowerCase()}
                                                             class="bg-white border border-[var(--color-gray-dark)] rounded-2xl hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                             <div class="flex flex-col md:flex-row">
                                                                 <div class="w-full md:w-1/2">
@@ -468,7 +468,15 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                                                     <path d="M12 2C10.0222 2 8.08879 2.58649 6.4443 3.6853C4.79981 4.78412 3.51809 6.3459 2.76121 8.17317C2.00433 10.0004 1.8063 12.0111 2.19215 13.9509C2.578 15.8907 3.53041 17.6725 4.92894 19.0711C6.32746 20.4696 8.10929 21.422 10.0491 21.8079C11.9889 22.1937 13.9996 21.9957 15.8268 21.2388C17.6541 20.4819 19.2159 19.2002 20.3147 17.5557C21.4135 15.9112 22 13.9778 22 12C21.9971 9.34874 20.9425 6.80691 19.0678 4.93219C17.1931 3.05746 14.6513 2.00295 12 2ZM12 20C10.4178 20 8.87104 19.5308 7.55544 18.6518C6.23985 17.7727 5.21447 16.5233 4.60897 15.0615C4.00347 13.5997 3.84504 11.9911 4.15372 10.4393C4.4624 8.88743 5.22433 7.46197 6.34315 6.34315C7.46197 5.22433 8.88743 4.4624 10.4393 4.15372C11.9911 3.84504 13.5997 4.00346 15.0615 4.60896C16.5233 5.21447 17.7727 6.23984 18.6518 7.55544C19.5308 8.87103 20 10.4177 20 12C19.9976 14.121 19.1539 16.1544 17.6542 17.6542C16.1544 19.1539 14.121 19.9976 12 20ZM14.0981 9.63379L13 10.2681V7C13 6.73478 12.8946 6.48043 12.7071 6.29289C12.5196 6.10536 12.2652 6 12 6C11.7348 6 11.4804 6.10536 11.2929 6.29289C11.1054 6.48043 11 6.73478 11 7V12C11 12.1755 11.0463 12.3479 11.1341 12.4999C11.2218 12.6519 11.3481 12.7782 11.5 12.8659C11.652 12.9537 11.8245 13 12 13C12.1755 13 12.348 12.9539 12.5 12.8662L15.0981 11.3662C15.212 11.3006 15.3117 11.2132 15.3918 11.109C15.4718 11.0048 15.5305 10.8858 15.5646 10.7589C15.5986 10.632 15.6073 10.4997 15.5902 10.3694C15.5731 10.2392 15.5305 10.1135 15.4648 9.99974C15.3991 9.88595 15.3117 9.78622 15.2074 9.70624C15.1032 9.62626 14.9842 9.56761 14.8573 9.53362C14.7304 9.49964 14.598 9.49099 14.4678 9.50818C14.3375 9.52537 14.2119 9.56805 14.0981 9.63379Z" fill="var(--color-green-dark)"/>
                                                                                 </svg>
                                                                                 <span class="text-[#261819] text-[16px] font-normal">
-                                                                                    {evento.startTime}
+                                                                                    {(() => {
+                                                                                        const time = evento.startTime;
+                                                                                        if (!time) return '';
+                                                                                        const [hours, minutes] = time.split(':');
+                                                                                        const hour = parseInt(hours, 10);
+                                                                                        const ampm = hour >= 12 ? 'PM' : 'AM';
+                                                                                        const hour12 = hour % 12 || 12;
+                                                                                        return `${hour12}:${minutes} ${ampm}`;
+                                                                                    })()}
                                                                                 </span>
                                                                             </div>
                                                                         </div>
@@ -815,7 +823,11 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const events = Array.from(document.querySelectorAll('article[data-event-type]')) as HTMLElement[];
 
             const tiposUnicos = Array.from(new Set(events.map(e => (e.dataset.eventType || 'otro').toLowerCase()))).sort();
-            const especialidadesUnicas = Array.from(new Set(events.map(e => (e.dataset.eventSpecialty || 'general').toLowerCase()))).sort();
+            
+            // Obtener categorías únicas de los eventos
+            const categoriasUnicas = Array.from(new Set(
+                events.map(e => (e.dataset.eventCategory || 'general').toLowerCase())
+            )).filter(cat => cat !== 'general').sort();
 
             const tipoContainer = document.getElementById('filter-event-type');
             const especialidadContainer = document.getElementById('filter-specialty');
@@ -828,11 +840,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                     </label>
                 `).join('');
             }
+            
             if (especialidadContainer) {
-                especialidadContainer.innerHTML = especialidadesUnicas.map((espec) => `
+                especialidadContainer.innerHTML = categoriasUnicas.map((cat) => `
                     <label class="flex items-center mt-2 cursor-pointer">
-                        <input type="checkbox" data-filter="specialty" value="${espec}" class="mr-2 accent-[var(--color-primary)]" />
-                        <span class="text-sm capitalize">${espec}</span>
+                        <input type="checkbox" data-filter="specialty" value="${cat}" class="mr-2 accent-[var(--color-primary)]" />
+                        <span class="text-sm capitalize">${cat}</span>
                     </label>
                 `).join('');
             }
@@ -845,7 +858,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const selectedTipos = Array.from(
                 document.querySelectorAll('input[data-filter="eventType"]:checked')
             ).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
-            const selectedEspecialidades = Array.from(
+            
+            const selectedCategorias = Array.from(
                 document.querySelectorAll('input[data-filter="specialty"]:checked')
             ).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
 
@@ -854,10 +868,11 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
             events.forEach((card) => {
                 const type = (card.dataset.eventType || '').toLowerCase();
-                const specialty = (card.dataset.eventSpecialty || '').toLowerCase();
+                const category = (card.dataset.eventCategory || '').toLowerCase();
+                
                 const matchType = selectedTipos.length === 0 || selectedTipos.includes(type);
-                const matchSpecialty = selectedEspecialidades.length === 0 || selectedEspecialidades.includes(specialty);
-                const visible = matchType && matchSpecialty;
+                const matchCategory = selectedCategorias.length === 0 || selectedCategorias.includes(category);
+                const visible = matchType && matchCategory;
 
                 card.style.display = visible ? '' : 'none';
                 if (visible && !activeCard) activeCard = card;
@@ -876,21 +891,17 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 const cards = Array.from(monthSection.querySelectorAll('article[data-start-date]')) as HTMLElement[];
                 const hasVisible = cards.some((c) => (c.style.display !== 'none'));
                 const monthContent = monthSection.querySelector(`[data-month-content="${month}"]`) as HTMLElement | null;
-                const hasEventDays = monthSection.hasAttribute('data-event-days');
                 
-                // El mes siempre se muestra, pero el contenido se oculta/muestra según filtros
                 monthSection.style.display = '';
                 
                 if (monthContent) {
                     if (hasVisible) {
-                        // Hay eventos visibles: mostrar contenido
                         if (!monthSection.classList.contains('open')) {
                             monthSection.classList.add('open');
                         }
                         monthContent.classList.remove('month-hidden', 'hidden');
                         if (!firstVisibleMonth) firstVisibleMonth = month;
                     } else {
-                        // No hay eventos visibles: ocultar contenido pero mantener el header
                         monthContent.classList.add('month-hidden');
                         monthSection.classList.remove('open');
                     }
@@ -908,7 +919,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 }
             }
 
-            // Actualizar el calendario con el primer mes visible o el mes actual
             if (!isFirstLoad) {
                 if (firstVisibleMonth) {
                     lastScrollSyncedMonthKey = firstVisibleMonth;
