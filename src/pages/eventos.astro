@@ -22,8 +22,8 @@ import { buildEventsSchema } from "@seo/schemas/events";
 let data: any = {};
 // let dataPromociones: any[] = [];
 
-try {
-  const response = await strapiFetch("/events-page?populate[events][populate]=image&populate=heroImage");  
+try { 
+  const response = await strapiFetch("/events-page?populate[events][populate][image]=true&populate[events][populate][category]=true&populate=heroImage");
   data = response.data;
 } catch (error) {
   console.error('Error fetching events:', error);
@@ -409,7 +409,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                             data-start-date={evento.startDate.split('T')[0]}
                                                             data-end-date={evento.endDate.split('T')[0]}
                                                             data-event-type={(evento.eventType || 'Otro').toString().toLowerCase()}
-                                                            data-event-specialty={(evento.especialidad || evento.specialty || evento.category || 'General').toString().toLowerCase()}
+                                                            data-event-category={(evento.category?.name || evento.category?.name || 'general').toString().toLowerCase()}
                                                             class="bg-white border border-[var(--color-gray-dark)] rounded-2xl hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
                                                             <div class="flex flex-col md:flex-row">
                                                                 <div class="w-full md:w-1/2">
@@ -815,7 +815,11 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const events = Array.from(document.querySelectorAll('article[data-event-type]')) as HTMLElement[];
 
             const tiposUnicos = Array.from(new Set(events.map(e => (e.dataset.eventType || 'otro').toLowerCase()))).sort();
-            const especialidadesUnicas = Array.from(new Set(events.map(e => (e.dataset.eventSpecialty || 'general').toLowerCase()))).sort();
+            
+            // Obtener categorías únicas de los eventos
+            const categoriasUnicas = Array.from(new Set(
+                events.map(e => (e.dataset.eventCategory || 'general').toLowerCase())
+            )).filter(cat => cat !== 'general').sort();
 
             const tipoContainer = document.getElementById('filter-event-type');
             const especialidadContainer = document.getElementById('filter-specialty');
@@ -828,11 +832,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                     </label>
                 `).join('');
             }
+            
             if (especialidadContainer) {
-                especialidadContainer.innerHTML = especialidadesUnicas.map((espec) => `
+                especialidadContainer.innerHTML = categoriasUnicas.map((cat) => `
                     <label class="flex items-center mt-2 cursor-pointer">
-                        <input type="checkbox" data-filter="specialty" value="${espec}" class="mr-2 accent-[var(--color-primary)]" />
-                        <span class="text-sm capitalize">${espec}</span>
+                        <input type="checkbox" data-filter="specialty" value="${cat}" class="mr-2 accent-[var(--color-primary)]" />
+                        <span class="text-sm capitalize">${cat}</span>
                     </label>
                 `).join('');
             }
@@ -845,7 +850,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             const selectedTipos = Array.from(
                 document.querySelectorAll('input[data-filter="eventType"]:checked')
             ).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
-            const selectedEspecialidades = Array.from(
+            
+            const selectedCategorias = Array.from(
                 document.querySelectorAll('input[data-filter="specialty"]:checked')
             ).map((el: Element) => (el as HTMLInputElement).value.toLowerCase());
 
@@ -854,10 +860,11 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
             events.forEach((card) => {
                 const type = (card.dataset.eventType || '').toLowerCase();
-                const specialty = (card.dataset.eventSpecialty || '').toLowerCase();
+                const category = (card.dataset.eventCategory || '').toLowerCase();
+                
                 const matchType = selectedTipos.length === 0 || selectedTipos.includes(type);
-                const matchSpecialty = selectedEspecialidades.length === 0 || selectedEspecialidades.includes(specialty);
-                const visible = matchType && matchSpecialty;
+                const matchCategory = selectedCategorias.length === 0 || selectedCategorias.includes(category);
+                const visible = matchType && matchCategory;
 
                 card.style.display = visible ? '' : 'none';
                 if (visible && !activeCard) activeCard = card;
@@ -876,21 +883,17 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 const cards = Array.from(monthSection.querySelectorAll('article[data-start-date]')) as HTMLElement[];
                 const hasVisible = cards.some((c) => (c.style.display !== 'none'));
                 const monthContent = monthSection.querySelector(`[data-month-content="${month}"]`) as HTMLElement | null;
-                const hasEventDays = monthSection.hasAttribute('data-event-days');
                 
-                // El mes siempre se muestra, pero el contenido se oculta/muestra según filtros
                 monthSection.style.display = '';
                 
                 if (monthContent) {
                     if (hasVisible) {
-                        // Hay eventos visibles: mostrar contenido
                         if (!monthSection.classList.contains('open')) {
                             monthSection.classList.add('open');
                         }
                         monthContent.classList.remove('month-hidden', 'hidden');
                         if (!firstVisibleMonth) firstVisibleMonth = month;
                     } else {
-                        // No hay eventos visibles: ocultar contenido pero mantener el header
                         monthContent.classList.add('month-hidden');
                         monthSection.classList.remove('open');
                     }
@@ -908,7 +911,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 }
             }
 
-            // Actualizar el calendario con el primer mes visible o el mes actual
             if (!isFirstLoad) {
                 if (firstVisibleMonth) {
                     lastScrollSyncedMonthKey = firstVisibleMonth;
