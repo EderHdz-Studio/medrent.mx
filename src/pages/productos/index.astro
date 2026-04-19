@@ -49,9 +49,11 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 const totalProducts = products.length;
 const seoPlpTitle = "MEDRENT";
-const seoPlpDescription =
-  "Tecnología médica confiable para diagnóstico, terapia y rehabilitación. MedRent acerca soluciones clínicas de marcas líderes para optimizar la práctica médica y mejorar resultados terapéuticos en todo México.";
+const seoPlpDescription ="Tecnología médica confiable para diagnóstico, terapia y rehabilitación. MedRent acerca soluciones clínicas de marcas líderes para optimizar la práctica médica y mejorar resultados terapéuticos en todo México.";
 ---
+
+
+
 
 <Layout
   title="Catálogo de productos | Equipos médicos y consumibles | MedRent"
@@ -173,4 +175,14 @@ const seoPlpDescription =
 
     <PLPProductsSection products={products} />
   </PLPLayout>
+
+
+  <script is:inline define:vars={{ products }}>
+    /* Event: view_item_list */
+    setTimeout(() => {
+      window.view_item_list(products, "Productos")
+    }, 2000);
+  </script>
+
 </Layout>
+

@@ -205,4 +205,11 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 
     <PLPProductsSection products={products} />
   </PLPLayout>
+
+  <script is:inline define:vars={{ products, subcategoryName  }}>
+    /* Event: view_item_list */
+    setTimeout(() => {
+      window.view_item_list(products, subcategoryName)
+    }, 2000);
+  </script>
 </Layout>

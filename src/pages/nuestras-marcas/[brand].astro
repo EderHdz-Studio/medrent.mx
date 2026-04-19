@@ -201,4 +201,11 @@ const seoPlpTitle = brandData?.SEO?.title || "MEDRENT";
 
     <PLPProductsSection products={products} />
   </PLPLayout>
+
+  <script is:inline define:vars={{ products, brandName  }}>
+    /* Event: view_item_list */
+    setTimeout(() => {
+      window.view_item_list(products, brandName)
+    }, 2000);
+  </script>
 </Layout>

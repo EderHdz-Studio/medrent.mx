@@ -106,7 +106,7 @@ const isLocalEnv = import.meta.env.DEV;
     <!-- 8. Glide core se importa en el frontmatter (Vite); evita carrera con el JS del carrusel -->
 
     <!-- 9. Scripts que deben cargarse temprano (GTM) -->
-    {!isLocalEnv && (
+    {/* {!isLocalEnv && ( */}
       <>
         <!-- Google Tag Manager -->
         <script is:inline>
@@ -118,7 +118,7 @@ const isLocalEnv = import.meta.env.DEV;
         <!-- End Google Tag Manager -->
         <script src="/scripts/setEventsDataLayer.js" defer></script>
       </>
-    )}
+    {/* )} */}
 
   </head>
   

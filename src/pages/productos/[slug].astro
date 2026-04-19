@@ -54,7 +54,7 @@ const heroImageUrl =
 
 const productId = `${baseUrl}/entity/product/${product.slug}#id`;
 const offerId = `${baseUrl}/entity/offer/${product.slug}#offer`;
-
+const item_variant  = product?.relatedProducts?.length + ' Canales, ' + product?.variants?.length + ' Derivaciones';
 const firstVariant = Array.isArray((product as any)?.variants)
   ? (product as any).variants[0]
   : undefined;
@@ -672,6 +672,13 @@ const pdpJsonLd = {
   <Newsletter />
 
   </main>
+
+  <script is:inline define:vars={{ product, item_variant  }}>
+    /* Event: view_item_list */
+    setTimeout(() => {
+      window.view_item(product, item_variant)
+    }, 2000);
+  </script>
 
 <!-- BTN Compartir url -->
 <script is:inline>

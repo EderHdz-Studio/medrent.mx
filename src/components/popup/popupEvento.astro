@@ -63,7 +63,7 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
                     </div>
                     
 
-                    <BaseForm id="events-form" class="space-y-8 rounded flex flex-col gap-6" type="popupEventos" successTitle="¡Registro exitoso!" successText="Gracias por registrarte. Pronto recibirás más información.">
+                    <BaseForm id="form-evento" class="space-y-8 rounded flex flex-col gap-6" type="popupEventos" successTitle="¡Registro exitoso!" successText="Gracias por registrarte. Pronto recibirás más información.">
                         <FormField
                         label="Nombre completo"
                         name="name"
@@ -87,7 +87,7 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
                         import { initForm } from "/scripts/formValidator.js";
 
                         document.addEventListener("DOMContentLoaded", () => {
-                            initForm("events-form");
+                            initForm("");
                         });
                     </script>    
                 </div>
@@ -112,7 +112,7 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
         const successTitle = document.querySelector('#PopupContent .successTitle');
         const successText = document.querySelector('#PopupContent .successText');
 
-        const form = document.getElementById("events-form");
+        const form = document.getElementById("form-evento");
         const status = document.getElementById("status");
         
         function resetPopupToInitial() {

@@ -57,7 +57,7 @@ const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.prop
                 <!-- Contenido derecha -->
                 <div id="ContenidoPopup" class="lg:w-1/2 p-4 lg:p-8 bg-[#F5FAF9] flex flex-col">
                   <!-- Nuevo formulario con BaseForm y componentes reutilizables -->
-                  <BaseForm id="pdp-form" class="space-y-6 mt-6 flex flex-col gap-6">
+                  <BaseForm id="form-pdp" class="space-y-6 mt-6 flex flex-col gap-6">
                     <FormField
                       label="Nombre completo"
                       name="name"
@@ -87,7 +87,7 @@ const { imagesForHero, productData, aplicacionData, categoriaData } = Astro.prop
                     import { initForm } from "/scripts/formValidator.js";
 
                     document.addEventListener("DOMContentLoaded", () => {
-                        initForm("pdp-form");
+                        initForm("form-pdp");
                     });
                 </script>
                 <!-- Msj success or error -->
