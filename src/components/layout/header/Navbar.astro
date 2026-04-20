@@ -8,9 +8,6 @@ import { getArticles } from "@server/api/articles";
 import { any } from "astro:schema";
 import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
-
-console.log(siteConfig)
-
 const currentPath = Astro.url.pathname;
 
 // --- CACHE EN MEMORIA POR DEPLOY ---

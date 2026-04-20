@@ -21,10 +21,6 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
 
-import { getSiteConfig } from "@server/siteConfig";
-const siteConfig = await getSiteConfig();
-
-console.log(siteConfig)
 ---
 
 
