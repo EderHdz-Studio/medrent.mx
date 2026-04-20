@@ -80,6 +80,8 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
+const seoText = subcategoryData?.SEO?.seoText || "";
+
 ---
 
 <Layout
@@ -194,6 +196,7 @@ const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
     productCount={products.length}
     seoTitle={seoPlpTitle}
     seoDescription={seoPlpDescription}
+    seoText={seoText}
   >
     <Fragment slot="filters">
       <SidebarFilters

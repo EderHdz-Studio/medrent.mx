@@ -1,0 +1,95 @@
+---
+const { seoText } = Astro.props;
+import { BlocksRenderer } from '@strapi/blocks-react-renderer';
+---
+
+<style>
+:global(#seo-blocks-content h1),
+:global(#seo-blocks-content h2),
+:global(#seo-blocks-content h3) {
+    color:var(--color-text-default);
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 36px;
+    margin: 8px 0;
+}
+:global(#seo-blocks-content a) {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: underline;
+}
+:global(#seo-blocks-content p) {
+    color: var(--color-text-default);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+}
+</style>
+
+
+{ seoText == '' ? null : ( 
+    <div id="seo-blocks-container" class="relative max-w-[800px] mx-auto px-4 py-6 md:px-6 md:py-16 lg:px-2 lg:py-16">
+        <div id="seo-blocks-content" class="closed" style="position:relative;">
+            <label class=" uppercase font-bold text-[var(--color-primary)]">MEDRENT</label>
+            <!-- <h2 class="mb-6 text-[28px] not-italic font-bold">{data?.seoTitle || "Más sobre nuestros productos"}</h2> -->
+            <BlocksRenderer content={seoText} />
+        </div>
+
+        <button id="seo-blocks-toggle" type="button"
+            class="cursor-pointer mt-4 px-4 py-2 rounded-[4px] bg-[var(--color-dark)] text-white font-kallisto text-[14px] font-bold flex items-center justify-between gap-2 transition-colors w-auto"
+            onclick="toggleSeoBlocks()"
+        >
+            <span id="seo-blocks-toggle-text">Ver más</span>
+            <span id="seo-blocks-toggle-icon">
+                <svg id="seo-blocks-svg-plus" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline">
+                    <path d="M19 11H13V5C13 4.73478 12.8946 4.48043 12.7071 4.29289C12.5196 4.10536 12.2652 4 12 4C11.7348 4 11.4804 4.10536 11.2929 4.29289C11.1054 4.48043 11 4.73478 11 5V11H5C4.73478 11 4.48043 11.1054 4.29289 11.2929C4.10536 11.4804 4 11.7348 4 12C4 12.2652 4.10536 12.5196 4.29289 12.7071C4.48043 12.8946 4.73478 13 5 13H11V19C11 19.2652 11.1054 19.5196 11.2929 19.7071C11.4804 19.8946 11.7348 20 12 20C12.2652 20 12.5196 19.8946 12.7071 19.7071C12.8946 19.5196 13 19.2652 13 19V13H19C19.2652 13 19.5196 12.8946 19.7071 12.7071C19.8946 12.5196 20 12.2652 20 12C20 11.7348 19.8946 11.4804 19.7071 11.2929C19.5196 11.1054 19.2652 11 19 11Z" fill="white"/>
+                </svg>
+                <svg id="seo-blocks-svg-minus" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:none">
+                    <path d="M19 13C19.2652 13 19.5196 12.8946 19.7071 12.7071C19.8946 12.5196 20 12.2652 20 12C20 11.7348 19.8946 11.4804 19.7071 11.2929C19.5196 11.1054 19.2652 11 19 11H5C4.73478 11 4.48043 11.1054 4.29289 11.2929C4.10536 11.4804 4 11.7348 4 12C4 12.2652 4.10536 12.5196 4.29289 12.7071C4.48043 12.8946 4.73478 13 5 13H19Z" fill="white"/>
+                </svg>
+            </span>
+        </button>
+    </div>
+) }
+
+<script is:inline>
+        window.toggleSeoBlocks = function() {
+            if (!window.seoBlocksExpanded) window.seoBlocksExpanded = false;
+            const container = document.getElementById('seo-blocks-content');
+            const btn = document.getElementById('seo-blocks-toggle');
+            const icon = document.getElementById('seo-blocks-toggle-icon');
+            const text = document.getElementById('seo-blocks-toggle-text');
+            const svgPlus = document.getElementById('seo-blocks-svg-plus');
+            const svgMinus = document.getElementById('seo-blocks-svg-minus');
+            if (!container || !btn || !icon || !text || !svgPlus || !svgMinus) return;
+            if (!window.seoBlocksExpanded) {
+                container.style.maxHeight = String(container.scrollHeight) + 'px';
+                container.style.opacity = '1';
+                text.textContent = 'Ver menos';
+                svgPlus.style.display = 'none';
+                svgMinus.style.display = 'inline';
+                container.classList.remove('closed');
+            } else {
+                container.style.maxHeight = '250px';
+                container.style.opacity = '0.8';
+                text.textContent = 'Ver más';
+                svgPlus.style.display = 'inline';
+                svgMinus.style.display = 'none';
+                container.classList.add('closed');
+            }
+            window.seoBlocksExpanded = !window.seoBlocksExpanded;
+        }
+    window.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('seo-blocks-content');
+        if (container) {
+            container.style.maxHeight = '250px';
+            container.style.overflow = 'hidden';
+            container.style.transition = 'max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s';
+            container.style.opacity = '0.8';
+            container.classList.add('closed');
+        }
+    });
+</script>

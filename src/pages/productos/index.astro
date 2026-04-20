@@ -13,6 +13,9 @@ import { getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
 import { getAllSubcategories } from "@server/api/subcategories";
 
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
+
 /* ---------------- QUERY PARAMS ---------------- */
 
 const url = new URL(Astro.request.url);
@@ -156,7 +159,7 @@ const seoPlpDescription ="Tecnología médica confiable para diagnóstico, terap
   </section>
 
   <!-- PLP -->
-  <PLPLayout seoTitle={seoPlpTitle} seoDescription={seoPlpDescription}>
+  <PLPLayout seoTitle={seoPlpTitle} seoDescription={seoPlpDescription}  seoText={siteConfig.seoTextPLP}>
     <Fragment slot="filters">
       <div class="mb-6 self-stretch">
         <h1 class="font-lato text-[28px] font-bold leading-[36px] bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent">

@@ -1,5 +1,9 @@
 ---
 const { site } = Astro.props;
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
+
+console.log(siteConfig)
 ---
 <!-- Upperbar -->
 <div class="sticky hidden lg:block text-white text-[11px] tracking-[0.5px] font-light" style="background: var(--gradient-surface-dark);">
@@ -16,7 +20,7 @@ const { site } = Astro.props;
                 contacto@medrent.mx
             </a>
             <span class="hover:text-white text-white text-[11px] tracking-[0.5px] font-light">
-                | &nbsp;&nbsp; L - V: 9:00 AM — 6:00 PM.
+                | &nbsp;&nbsp;{ siteConfig?.businessHours || "Lun-Dom: 9am - 6pm"}
             </span>
         </div>
         <div class="flex items-center gap-2">

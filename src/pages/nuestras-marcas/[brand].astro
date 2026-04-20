@@ -78,6 +78,7 @@ const seoPlpDescription =
   brandData?.description ||
   "";
 const seoPlpTitle = brandData?.SEO?.title || "MEDRENT";
+const seoText = brandData?.SEO?.seoText || "";
 ---
 
 <Layout
@@ -190,6 +191,7 @@ const seoPlpTitle = brandData?.SEO?.title || "MEDRENT";
     productCount={products.length}
     seoTitle={seoPlpTitle}
     seoDescription={seoPlpDescription}
+    seoText={seoText}
   >
     <Fragment slot="filters">
       <SidebarFilters
@@ -201,6 +203,8 @@ const seoPlpTitle = brandData?.SEO?.title || "MEDRENT";
 
     <PLPProductsSection products={products} />
   </PLPLayout>
+
+ 
 
   <script is:inline define:vars={{ products, brandName  }}>
     /* Event: view_item_list */
