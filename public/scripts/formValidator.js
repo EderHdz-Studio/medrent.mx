@@ -634,8 +634,6 @@ export function initForm(formId) {
     let errorOccurred = false;
     let responseHubspot = "error";
 
-    console.log("Submitting form with data:", data);
-
     try {
       const fetchPromise = fetch("/api/contact", {
         method: "POST",
@@ -646,13 +644,13 @@ export function initForm(formId) {
           // Manejo de status específicos
           if (response.status === 400) {
             setState("error");
-            console.log("Response 400:", response);
+            // console.log("Response 400:", response);
           } else if (response.status === 409) {
-            console.log("Response 409:", response);
+            // console.log("Response 409:", response);
             form.reset();
             setState("success");
           } else if (response.ok) {
-            console.log("Response 200:", response);
+            // console.log("Response 200:", response);
             form.reset();
             setState("success");
           } else {
@@ -683,54 +681,7 @@ export function initForm(formId) {
       }
     }
   });
-  // form.addEventListener('submit', async (e) => {
-  //   e.preventDefault();
-
-  //   if (!validateAll()) return;
-
-  //   const formData = new FormData(form);
-  //   const data = {};
-
-  //   formData.forEach((value, key) => {
-  //     data[key] = value;
-  //   });
-
-  //   // Validación mínima teléfono
-  //   const phoneDigits = extractDigits(data.phone || '');
-  //   if (phoneDigits.length < 10) {
-  //     if (status) status.textContent = "❌ Número de teléfono inválido.";
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("/api/contact", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(data),
-  //     });
-
-  //     if (response.ok) {
-  //       if (status) status.textContent = "✅ Tu solicitud se envió correctamente.";
-  //       form.reset();
-  //       validateAll();
-  //     } else {
-  //       if (status) status.textContent = "❌ Hubo un problema al enviar.";
-  //     }
-
-  //   } catch (error) {
-  //     if (status) status.textContent = "❌ Error de red.";
-  //     console.error(error);
-  //   }
-  // });
-
-  /* =============================
-     INICIALIZACIÓN
-  ============================== */
-  //     console.log("Form initialized:", formId);
-  // console.log("Phone wrapper:", phoneWrapper);
-  // console.log("Dropdown:", dropdown);
-
-  // No ejecutar validaciones al cargar la página. Solo tras interacción del usuario.
+  
 }
 
 function sendFormEvent({ formId, status }) {

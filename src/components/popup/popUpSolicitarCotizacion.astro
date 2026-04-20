@@ -156,8 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   window.resetToForm = function() {
-    console.log('resetToForm called');
-
+    
     toggleCloseButton(true);
     
     if (popupContentContainer) {
@@ -440,10 +439,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        console.log('Form submitted!');
-        console.log('Status element:', status);
-
         form.style.display = 'none';
 
         showFormMessage('success');
@@ -483,8 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       try {
         const jsonBody = JSON.stringify(data);
-        console.log("Objeto de datos a enviar:", data);
-        console.log("JSON string enviado:", jsonBody);
 
         const response = await fetch("https://kunz-app.com/hubspot.php", {
           method: "POST",
@@ -567,12 +560,12 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log(`🔍 Data Layer - ${eventName} Event:`, {
-          event: eventName,
-          ecommerce: ecommerceData,
-          event_data: eventClassification,
-          tracking: { utm: utmData, page: pageData }
-        });
+        // console.log(`🔍 Data Layer - ${eventName} Event:`, {
+        //   event: eventName,
+        //   ecommerce: ecommerceData,
+        //   event_data: eventClassification,
+        //   tracking: { utm: utmData, page: pageData }
+        // });
       }
     } catch (error) {
       console.error(`Error enviando evento ${eventName} al data layer:`, error);

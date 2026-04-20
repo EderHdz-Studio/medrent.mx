@@ -144,7 +144,6 @@ import ShareButtons from '@components/product/ShareButtons.astro';
       document.body.classList.add('video-fullscreen-manual');
       videoElement.classList.add('manual-fullscreen-active');
       
-      console.log('Fullscreen manual ACTIVADO');
     }
     
     function exitManualFullscreen() {
@@ -191,8 +190,6 @@ import ShareButtons from '@components/product/ShareButtons.astro';
       // Remover clases
       document.body.classList.remove('video-fullscreen-manual');
       videoElement.classList.remove('manual-fullscreen-active');
-      
-      console.log('Fullscreen manual DESACTIVADO');
     }
     
     function toggleManualFullscreen() {
@@ -237,7 +234,6 @@ import ShareButtons from '@components/product/ShareButtons.astro';
         // Verificar si el clic fue en el botón de pantalla completa
         const fullscreenBtn = e.target.closest('.fullscreen-button, [aria-label*="full"], [title*="full"]');
         if (fullscreenBtn || e.target.classList.contains('fullscreen-button')) {
-          console.log('Botón de pantalla completa clickeado');
           e.preventDefault();
           e.stopPropagation();
           
@@ -248,13 +244,11 @@ import ShareButtons from '@components/product/ShareButtons.astro';
       
       // 2. DETECTAR EL EVENTO nativo de fullscreen del video
       videoElement?.addEventListener('webkitbeginfullscreen', function() {
-        console.log('iOS comenzó fullscreen nativo');
         // En iOS, podemos intentar manejar esto
         setTimeout(toggleManualFullscreen, 100);
       });
       
       videoElement?.addEventListener('webkitendfullscreen', function() {
-        console.log('iOS terminó fullscreen nativo');
         setTimeout(exitManualFullscreen, 100);
       });
       
