@@ -1,6 +1,12 @@
 ---
 const { site } = Astro.props;
+
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
+
+console.log(siteConfig)
 ---
+
 <footer class="text-white"  style="background: var(--gradient-surface-dark);">
     <!-- Grid de links -->
     <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-4 py-12 text-white text-[14px] font-normal">
@@ -48,27 +54,48 @@ const { site } = Astro.props;
         </ul>
         </div>
         <div>
-            <h4 class="font-bold mb-2  text-[22px] ">Social</h4>
+            <h4 class="font-bold mb-2 text-[22px]">Social</h4>
             <ul class="space-y-1">
-                {Object.entries(site.socialMedia).map(([key, social]:any) => (
-                    <li>
-                        <a href={social.url} target="_blank" class="text-[var(--color-white)] opacity-70 hover:underline">{social.name}</a>
-                    </li>
+                {siteConfig?.socialLink?.map((social) => (
+                    social.isActive && social.url ? (
+                        <li key={social.id}>
+                            <a href={social.url} target="_blank" rel="noopener noreferrer" class="text-[var(--color-white)] opacity-70 hover:underline">
+                                {social.name}
+                            </a>
+                        </li>
+                    ) : null
                 ))}
             </ul>
         </div>
         <div>
             <h4 class="font-bold mb-2  text-[22px] ">Contacto</h4>
             <p class="text-[var(--color-white)] opacity-70"> Tel: 
-                <a href="https://wa.me/5215559854347" target="_blank" rel="noopener noreferrer" class="underline text-[var(--color-secondary)]">+52 5559854347</a>
+                <a 
+                    href={`https://wa.me/${siteConfig?.whatsappNumber}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="underline text-[var(--color-secondary)]"
+                >
+                    {(() => {
+                        const num = siteConfig?.whatsappNumber;
+                        return `+${num.slice(0, 2)} ${num.slice(2)}`;
+                    })()}
+                </a>
             </p>
             <p class="text-[var(--color-white)] opacity-70"> Email: 
-                <a href="mailto:contacto@medrent.mx" class="underline text-[var(--color-secondary)]">contacto@medrent.mx</a>
+                <a 
+                    href={`mailto:${siteConfig?.email || ''}`} 
+                    class="underline text-[var(--color-secondary)]"
+                >
+                    {siteConfig?.email}
+                </a>
             </p>
-            <p class="text-[var(--color-white)] opacity-70"> Lunes a viernes de 9:00 am a 6:00 pm</p>
+            <p class="text-[var(--color-white)] opacity-70">
+                {siteConfig?.businessHours}
+            </p>
             
             <p class="text-[var(--color-white)] opacity-70"> 
-                Domicilio: Av. Insurgentes Sur 866, Del Valle, Benito Juárez, 03100 Ciudad de México, CDMX.
+                Domicilio: {siteConfig?.address}
             </p>
         </div>
     </div>
