@@ -2,6 +2,9 @@
 import "../styles/global.css";
 import "lenis/dist/lenis.css";
 import "@glidejs/glide/dist/css/glide.core.min.css";
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
+
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const {
   title,
@@ -106,19 +109,19 @@ const isLocalEnv = import.meta.env.DEV;
     <!-- 8. Glide core se importa en el frontmatter (Vite); evita carrera con el JS del carrusel -->
 
     <!-- 9. Scripts que deben cargarse temprano (GTM) -->
-    {!isLocalEnv && (
+    {/* {!isLocalEnv && ( */}
       <>
         <!-- Google Tag Manager -->
-        <script is:inline>
+        <script is:inline define:vars={{ gtmId: siteConfig?.gtmId }}>
           (function(w,d,s,l,i){
             w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-PH4DRF6B');
+          })(window,document,'script','dataLayer',gtmId);
         </script>
         <!-- End Google Tag Manager -->
         <script src="/scripts/setEventsDataLayer.js" defer></script>
       </>
-    )}
+    {/* )} */}
 
   </head>
   
@@ -128,7 +131,7 @@ const isLocalEnv = import.meta.env.DEV;
         <!-- Google Tag Manager (noscript) -->
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-PH4DRF6B"
+            src={`https://www.googletagmanager.com/ns.html?id=${siteConfig?.gtmId}`}
             title="Google Tag Manager"
             height="0"
             width="0"

@@ -13,6 +13,9 @@ import { getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
 import { getAllSubcategories } from "@server/api/subcategories";
 
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
+
 /* ---------------- QUERY PARAMS ---------------- */
 
 const url = new URL(Astro.request.url);
@@ -49,9 +52,11 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 const totalProducts = products.length;
 const seoPlpTitle = "MEDRENT";
-const seoPlpDescription =
-  "Tecnología médica confiable para diagnóstico, terapia y rehabilitación. MedRent acerca soluciones clínicas de marcas líderes para optimizar la práctica médica y mejorar resultados terapéuticos en todo México.";
+const seoPlpDescription ="Tecnología médica confiable para diagnóstico, terapia y rehabilitación. MedRent acerca soluciones clínicas de marcas líderes para optimizar la práctica médica y mejorar resultados terapéuticos en todo México.";
 ---
+
+
+
 
 <Layout
   title="Catálogo de productos | Equipos médicos y consumibles | MedRent"
@@ -154,7 +159,7 @@ const seoPlpDescription =
   </section>
 
   <!-- PLP -->
-  <PLPLayout seoTitle={seoPlpTitle} seoDescription={seoPlpDescription}>
+  <PLPLayout seoTitle={seoPlpTitle} seoDescription={seoPlpDescription}  seoText={siteConfig.seoTextPLP}>
     <Fragment slot="filters">
       <div class="mb-6 self-stretch">
         <h1 class="font-lato text-[28px] font-bold leading-[36px] bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent">
@@ -173,4 +178,14 @@ const seoPlpDescription =
 
     <PLPProductsSection products={products} />
   </PLPLayout>
+
+
+  <script is:inline define:vars={{ products }}>
+    /* Event: view_item_list */
+    setTimeout(() => {
+      window.view_item_list(products, "Productos")
+    }, 2000);
+  </script>
+
 </Layout>
+

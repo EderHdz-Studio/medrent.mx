@@ -681,11 +681,6 @@ export function initForm(formId) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalSubmitText;
       }
-
-
-
-
-
     }
   });
   // form.addEventListener('submit', async (e) => {
@@ -742,7 +737,7 @@ function sendFormEvent({ formId, status }) {
   const pathname = window.location.pathname;
   const pageTitle = document.title;
   let eventName;
-  formId == "events-form" && document.querySelector("#event-popup-title")
+  formId == "form-evento" && document.querySelector("#event-popup-title")
     ? (eventName = document.querySelector("#event-popup-title").textContent)
     : (eventName = "");
 

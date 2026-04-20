@@ -60,56 +60,120 @@ function getTrackingData() {
 
     return newData;
 }
+window.getTrackingData = getTrackingData;
 
 (function() {
+  
+  window.dataLayer = window.dataLayer || [];
+  const pathname = window.location.pathname;  
 
-    window.dataLayer = window.dataLayer || [];
+  document.addEventListener("DOMContentLoaded", function() {
+      
+    /* Se dispara al ver una categoría o lista de productos. Esencial para el seguimiento de comercio electrónico. - PLP */
+    function view_item_list(items, item_list_name){
 
-    document.addEventListener("DOMContentLoaded", function() {
+      // const pathname = window.location.pathname;
+      // 👇 Obtener tracking desde la función
+      const tracking = getTrackingData();
 
-        const pathname = window.location.pathname;
-        // 👇 Obtener tracking desde la función
-        const tracking = getTrackingData();
+      items = items.map((item, index) => ({
+        item_name: item.name,
+        item_brand: item.brand.name,
+        item_category: item.subcategory.name,
+        item_list_name: 'Equipos de ' + item_list_name,
+        index: index + 1
+      }));
 
-        /*
-        *** Evento Page view
-        */
-        try {
-          window.dataLayer.push({
-            event: "custom_page_view",
-            event_data: {
-              category: "Page Engagement",
-              action: "Page View",
-              label: "Page view - " + pathname
-            },
-            tracking: tracking
-          });
-        } catch (e) {
-          console.log("Error_pageView: ", e);
-        }
+      /*
+      *** Evento Page view
+      */
+      try {
+        window.dataLayer.push({
+          event: "view_item_list",
+          item_list_name:item_list_name,
+          items:items,
+          tracking: tracking
+        });
+      } catch (e) {
+        console.log("Error view_item_list: ", e);
+      }
 
-        /*
-        *** Evento Click WhatsApp
-        */
-        const btnWhats = document.getElementById('btnWhatsapp');
-        if (btnWhats) {
-            btnWhats.addEventListener('click', () => {
-              try {
-                const urlParams = new URLSearchParams(window.location.search);
-                window.dataLayer.push({
-                    event: 'whatsapp_lead',
-                    event_data: {
-                      category: "Acction WhatsApp",
-                      action: "click whatsapp",
-                      label: "Page view - " + pathname
-                    },
-                    tracking: tracking
-                });
-              } catch (err) {
-                console.log(err)
+    }
+    window.view_item_list = view_item_list;
+
+    /* Se activa cuando un usuario visita la página específica de un producto. PDP */
+    function view_item(item, item_variant){
+
+      const tracking = getTrackingData();
+      try {
+        window.dataLayer.push({
+          event: "view_item",
+          ecommerce: {
+            currency: "MXN",
+            items: [
+              {
+                item_name: item.name,
+                item_brand: item.brand.name,
+                item_category: item.subcategory.name,
+                item_variant: item_variant,
+                currency: "MXN"
               }
+            ]
+          },
+          tracking: tracking
+        });
+      } catch (e) {
+        console.log("Error view_item: ", e);
+      }
+    } 
+    window.view_item = view_item;
+
+
+
+
+    // 👇 Obtener tracking desde la función
+    const tracking = getTrackingData();
+
+    /*
+    *** Evento Page view
+    */
+    try {
+      window.dataLayer.push({
+        event: "custom_page_view",
+        event_data: {
+          category: "Page Engagement",
+          action: "Page View",
+          label: "Page view - " + pathname
+        },
+        tracking: tracking
+      });
+    } catch (e) {
+      console.log("Error_pageView: ", e);
+    }
+
+    /*
+    *** Evento Click WhatsApp
+    */
+    const btnWhats = document.getElementById('btnWhatsapp');
+    if (btnWhats) {
+        btnWhats.addEventListener('click', () => {
+          try {
+            const urlParams = new URLSearchParams(window.location.search);
+            window.dataLayer.push({
+                event: 'whatsapp_lead',
+                event_data: {
+                  category: "Acction WhatsApp",
+                  action: "click whatsapp",
+                  label: "Page view - " + pathname
+                },
+                tracking: tracking
             });
+          } catch (err) {
+            console.log(err)
           }
         });
+      }
+    });
     }
 )();
+
