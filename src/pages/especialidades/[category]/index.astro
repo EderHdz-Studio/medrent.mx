@@ -6,6 +6,8 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
 import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
   const categories = await getCategories();
@@ -27,7 +29,7 @@ const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ??
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = canonical;
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 
 // console.log('Datos de especialidad:', especialidad);
 console.log(categories);

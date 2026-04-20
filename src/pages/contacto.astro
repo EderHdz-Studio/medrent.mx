@@ -13,11 +13,13 @@ import PhoneField from "@components/forms/PhoneField.astro";
 import SelectField from "@components/forms/SelectField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 
 ---
 

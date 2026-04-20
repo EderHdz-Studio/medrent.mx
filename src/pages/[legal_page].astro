@@ -4,6 +4,8 @@ import { strapiFetch } from "@server/strapiClient";
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
   const res = await strapiFetch("/legal-content?populate[legalPages][populate]=imageHero");
@@ -29,7 +31,7 @@ const pageSlug = pageDataSafe.slug ?? "";
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl = imageHero?.url || logoUrl;
 const isPrivacy = pageSlug === "aviso-de-privacidad";
 const schemaType = isPrivacy ? "PrivacyPolicy" : "TermsOfService";
