@@ -19,6 +19,8 @@ import PromotionSlider from "@components/sections/PromotionSlider.astro";
 import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import ProductVariants from '@components/product/ProductVariants.astro';
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
   const products = await getProducts();
@@ -46,7 +48,7 @@ const promotionsData = await getPromotionSlides();
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl =
   Array.isArray(product.gallery) && product.gallery.length > 0
     ? product.gallery[0]

@@ -2,11 +2,13 @@
 import Layout from "@layouts/Layout.astro"
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 ---
 
 <Layout

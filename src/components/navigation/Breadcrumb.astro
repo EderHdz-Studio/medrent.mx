@@ -31,7 +31,7 @@ const navLayout =
     class={`mx-auto flex w-full max-w-[1280px] items-center font-lato absolute max-lg:pt-3 max-lg:pb-3 max-lg:px-0 lg:px-8 lg:py-4 ${navLayout} ${className || ""}`}
     aria-label="Breadcrumb"
   >
-    <ol class={`scrollbar-hide flex touch-pan-x items-center gap-2 overflow-x-auto whitespace-nowrap ${listTypography}`}>
+    <ol class={`scrollbar-hide flex touch-pan-x items-center gap-2 overflow-x-auto whitespace-nowrap md:ml-0 ml-6 ${listTypography}`}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 

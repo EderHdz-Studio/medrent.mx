@@ -7,7 +7,8 @@ import Breadcrumb from "@components/navigation/Breadcrumb.astro";
 import PLPLayout from "@components/product/PLPLayout.astro";
 import PLPProductsSection from "@components/product/PLPProductsSection.astro";
 import SidebarFilters from "@components/product/SidebarFilters.astro";
-
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 import { getProducts } from "@server/api/products";
 import { getBrandBySlug, getBrands } from "@server/api/brands";
@@ -68,7 +69,7 @@ const pageKeywords = `${brandName}; equipo médico; MedRent`;
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
 const brandUrl = `${baseUrl}/nuestras-marcas/${brandName}`;
 const brandId = `${brandUrl}#brand`;

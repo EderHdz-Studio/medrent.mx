@@ -13,12 +13,18 @@ import PhoneField from "@components/forms/PhoneField.astro";
 import SelectField from "@components/forms/SelectField.astro";
 import SubmitButton from "@components/forms/SubmitButton.astro";
 import CheckboxField from "@components/forms/CheckboxField.astro";
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
+
+console.log(siteConfig)
 ---
 
 
@@ -262,32 +268,52 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                     <!-- <a href="https://wa.me/{site.contact}" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-light)] underline">
                         {site.contactText}
                     </a> -->
-                    <a id="btnWhatsapp" href="https://wa.me/525559854347" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-light)] underline">
-                        +52 55 59 85 43 47
+                    <a 
+                        id="btnWhatsapp" 
+                        href={`https://wa.me/${siteConfig?.whatsappNumber}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-[#87F4EF] underline"
+                    >
+                        {(() => {
+                            const num = siteConfig?.whatsappNumber;
+                            return `+52 ${num.slice(2, 4)} ${num.slice(4, 6)} ${num.slice(6, 8)} ${num.slice(8)}`;
+                        })()}
                     </a>
                 </div>
 
                 <div>
                     <p class="font-semibold text-white">Correo</p>
-                        <a href="https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A{site.email}" 
+                        <a 
+                            href={`https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A${siteConfig?.email || ''}`} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            class="text-[var(--color-primary-light)] underline">
-                            {site.email}
+                            class="text-[#87F4EF] underline"
+                        >
+                            {siteConfig?.email}
                         </a>
                 </div>
 
                 <div>
                     <p class="font-semibold text-white">Horario de atención</p>
-                    <p class=" text-[#FFFF]">Lunes a Viernes, 9:00 a.m. – 6:00 p.m. (Hora de México)</p>
+                    <p class="text-white">
+                        {siteConfig?.businessHours}
+                    </p>
                 </div>
 
                 <div>
                     <p class="font-semibold text-white">Dirección</p>
-                    <p class=" text-[var(--color-primary-light)]">Av. Insurgentes Sur 866, Del Valle, Benito Juárez, 03100 Ciudad de México, CDMX.</p>
+                    <p class="text-[#87F4EF]">
+                        {siteConfig?.address}
+                    </p>
                 </div>
 
-                <a href="https://maps.google.com/?q=Insurgentes+Sur+866,+Del+Valle,+Benito+Juárez,+03100+Ciudad+de+México,+CDMX" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-white text-white px-4 py-2 rounded bg-[#FFFF]">
+               <a 
+                    href={siteConfig?.googleMapsUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="inline-flex items-center gap-2 border border-white px-4 py-2 rounded bg-white hover:bg-opacity-10 transition-all"
+                >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M15 4.94606L9 2.94606L2 5.27906V21.3881L9 19.0541L15 21.0541L22 18.7211V2.61206L15 4.94606ZM10 5.38706L14 6.72006V18.6131L10 17.2801V5.38706ZM4 6.72106L8 5.38706V17.2791L4 18.6121V6.72106ZM20 17.2791L16 18.6131V6.72106L20 5.38806V17.2791Z" fill="var(--color-primary)"/>
                     </svg>              
@@ -303,7 +329,9 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                     loading="lazy"
                     allowfullscreen
                     referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.5752062788406!2d-99.17664532314329!3d19.38753774211532!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff768ec55555%3A0xad7538bfcf6a0471!2sMedRent!5e0!3m2!1ses-419!2smx!4v1770915146839!5m2!1ses-419!2smx">
+                    src={siteConfig?.googleMapsUrlIframe}
+
+                >
                 </iframe>
             </div>
         </div>
