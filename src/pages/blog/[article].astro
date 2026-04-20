@@ -9,6 +9,8 @@ import Newsletter from '@components/FormNewsletter.astro';
 // import SlideArticulos from '@components/blog/SlideArticulos.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import {
   buildClassificationTagByArticleKeyMap,
@@ -71,7 +73,7 @@ const classificationLabel = getClassificationTag(article, classificationTagByArt
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl = article?.heroImage?.url || logoUrl;
 const authorSlug = article?.writer?.slug || 'team-medrent';
 const personId = `${baseUrl}/blog/autor/${authorSlug}#person`;

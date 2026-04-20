@@ -8,6 +8,8 @@ import { strapiFetch } from "@server/strapiClient";
 import Newsletter from '@components/FormNewsletter.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 import ImageResponsive from '@components/media/ImageResponsive.astro';
 import {
   buildClassificationChips,
@@ -95,7 +97,7 @@ const articlesForClient = articulosActivos.map((a: any) => ({
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = `${baseUrl}/favicon-512.png`;
+const logoUrl = siteConfig?.favicon512x512?.url;
 ---
 
 <Layout

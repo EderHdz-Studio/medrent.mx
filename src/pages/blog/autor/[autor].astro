@@ -7,6 +7,8 @@ import ArticleCard from '@components/blog/articleCard.astro';
 import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import { getSiteConfig } from "@server/siteConfig";
+const siteConfig = await getSiteConfig();
 import { buildClassificationTagByArticleKeyMap } from '@lib/blog/classification';
 import {
   type NormalizedBlogArticle,
@@ -285,7 +287,7 @@ const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.m
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 /** Misma ruta que `Layout.astro` (origen actual del documento; evita URL absoluta rota en preview). */
-const heroBrandLogoSrc = "/favicon-512.png";
+const heroBrandLogoSrc = siteConfig?.favicon512x512?.url;
 const logoUrl = `${baseUrl}${heroBrandLogoSrc}`;
 const authorHeroImageUrl = authorPortraitUrl || logoUrl;
 const authorSlug = author.slug;
