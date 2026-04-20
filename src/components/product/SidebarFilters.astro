@@ -42,7 +42,7 @@ const {
     <h3>Filtros</h3>
     <button id="close-mobile-filters" class="close-filters-btn">✕</button>
   </div>
-  <div class="mobile-filters-content">
+  <div class="mobile-filters-content" data-lenis-prevent>
     <!-- Aquí se moverá el sidebar-filters-container -->
   </div>
   <!-- Botón Actualizar -->
@@ -54,8 +54,7 @@ const {
 </div>
 
 <!-- Sidebar Filters - se usa en ambos responsives -->
-<div class="sidebar-filters-container">
-
+<div class="sidebar-filters-container" data-lenis-prevent>
   <!-- HEADER -->
   <div class="sticky top-0 z-20 -mx-1 px-1 py-2 mb-4 flex justify-between items-center bg-[var(--color-secondary-light)] border-b border-[rgba(23,29,28,0.12)] filtersDesktop">
     <h3 id="filters-title" class="text-[16px] font-bold text-[var(--color-primary)]">Filtros (0)</h3>
@@ -238,6 +237,12 @@ const {
   overflow-y: auto;
 }
 
+.mobile-filters-content,
+.sidebar-filters-container {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
 .mobile-filters-footer {
   padding: 16px;
   border-top: 1px solid rgba(23, 29, 28, 0.12);
@@ -320,7 +325,6 @@ const {
   }
 }
 </style>
-
 
 <script>
 (function() {
@@ -688,4 +692,39 @@ const {
     resizeTimer = setTimeout(moveFilterButton, 150);
   });
 })();
+</script>
+
+<script>
+  function enableFilterScroll() {
+    const filterContent = document.querySelector('.mobile-filters-content');
+    const sidebarFilters = document.querySelector('.sidebar-filters-container');
+    
+    if (filterContent) {
+      filterContent.style.overflowY = 'auto';
+      filterContent.style.overscrollBehavior = 'contain';
+      filterContent.style.WebkitOverflowScrolling = 'touch';
+    }
+    
+    if (sidebarFilters && window.innerWidth > 1024) {
+      sidebarFilters.style.maxHeight = 'calc(100vh - 400px)';
+      sidebarFilters.style.overflowY = 'auto';
+    }
+  }
+
+  // Llama a esta función después de mover los filtros
+  function moveFiltersToDropdown() {
+    if (sidebarFilters && mobileContent) {
+      if (!originalParent && sidebarFilters.parentNode) {
+        originalParent = sidebarFilters.parentNode;
+        originalNextSibling = sidebarFilters.nextSibling;
+      }
+      mobileContent.innerHTML = '';
+      mobileContent.appendChild(sidebarFilters);
+      sidebarFilters.style.display = 'block';
+      enableFilterScroll(); // Agregar esta línea
+    }
+  }
+
+  // También llamar al cargar
+  enableFilterScroll();
 </script>
