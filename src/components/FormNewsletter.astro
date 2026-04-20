@@ -14,9 +14,9 @@ import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro"
   input[type="email"]:-webkit-autofill:focus,
   input[type="email"]:-webkit-autofill:hover,
   input[type="email"]:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
-    box-shadow: 0 0 0 1000px #fff inset !important;
-    background-color: #fff !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--color-white) inset !important;
+    box-shadow: 0 0 0 1000px var(--color-white) inset !important;
+    background-color: var(--color-white) !important;
     color: #261819 !important;
     transition: background-color 5000s ease-in-out 0s;
     outline: none !important;
@@ -59,22 +59,22 @@ import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro"
         const value = input.value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (emailRegex.test(value)) {
-          input.style.setProperty("border", "3px solid #006764", "important");
+          input.style.setProperty("border", "3px solid var(--color-primary)", "important");
           input.style.setProperty("outline", "none", "important");
-          if (label) label.style.background = "#006764";
+          if (label) label.style.background = "var(--color-primary)";
         } else if (document.activeElement === input) {
-          input.style.setProperty("border", "3px solid #006764", "important");
+          input.style.setProperty("border", "3px solid var(--color-primary)", "important");
           input.style.setProperty("outline", "none", "important");
           if (label) label.style.background = "";
         } else {
-          input.style.setProperty("border", "1px solid #006764", "important");
+          input.style.setProperty("border", "1px solid var(--color-primary)", "important");
           input.style.setProperty("outline", "none", "important");
           if (label) label.style.background = "";
         }
       }
 
       function forceWhiteBg() {
-        input.style.setProperty("background-color", "#fff", "important");
+        input.style.setProperty("background-color", "var(--color-white)", "important");
         input.style.setProperty("outline", "none", "important");
       }
 
@@ -149,9 +149,9 @@ import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro"
           // Resetear formulario
           if (form) form.reset();
           if (input) {
-            input.style.setProperty("border", "1px solid #006764", "important");
+            input.style.setProperty("border", "1px solid var(--color-primary)", "important");
           }
-          if (label) label.style.background = "#006764";
+          if (label) label.style.background = "var(--color-primary)";
           
           // Mostrar default nuevamente
           defaultContent.style.opacity = "1";
@@ -201,12 +201,12 @@ import NewsletterSuccessBanner from "./newsletter/NewsletterSuccessBanner.astro"
       // Manejo de status específicos
       if (response.status === 400) {
         
-        console.log("Response 400:", response);
+        // console.log("Response 400:", response);
       } else if (response.status === 409) {
         // console.log("Response 409:", response);
         // form.reset();
       } else if (response.ok) {
-        console.log("Response 200:", response);
+        // console.log("Response 200:", response);
         showSuccessMessage();
         // form.reset();
         

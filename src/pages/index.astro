@@ -268,9 +268,6 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     <!-- Sección slider de promociones -->
     <PromotionSlider promotionsData={promotionsData} />
     
-    <!-- slider de eventos -->
-    <Eventos dataEventos={dataEventos} />
-
     <!--  Sección de financiamiento-->
     <section class="defer-section py-6 px-0 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
         <div class="hero-slider relative w-full h-full">
@@ -282,8 +279,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                     <!-- Layout para desktop y contenido -->
                     <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
-                        <div class="w-full flex flex-col items-center justify-center space-y-4 z-10 bg-aqua px-4 py-4 md:px-8 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 lg:space-y-6 order-1 relative">
-                            <div class="w-full space-y-6 financing-copy-card">
+                        <div class="w-full flex flex-col items-center justify-center space-y-4 z-10 bg-aqua p-0 md:px-6 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 lg:space-y-6 order-1 relative">
+                            <div class="p-0 w-full space-y-6 financing-copy-card">
                                 <h3 class="type-eyebrow text-[var(--color-accent)] text-left m-0">FINANCIAMIENTO</h3>
 
                                 <div class="type-body text-left m-0">
@@ -323,6 +320,9 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         </div>
     </section>
 
+    <!-- slider de eventos -->
+    <Eventos dataEventos={dataEventos} />
+
     <!--  Sección de blogs (sin defer-section: content-visibility rompe el ancho de Glide) -->
     <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
         <span class="mb-2 uppercase font-kallisto text-[12px] font-medium leading-[20px] tracking-[0.1px] text-[var(--color-accent)]">BLOG</span>
@@ -354,7 +354,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
   @media (max-width: 1023px) {
     .financing-copy-card {
       background: #fff;
-      padding: 16px;
+      /* padding: 16px; */
     }
   }
 </style>

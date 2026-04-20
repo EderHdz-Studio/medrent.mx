@@ -244,7 +244,7 @@ if (writerSlugForCount) {
     <!-- Cabecera -->
     <div class="w-full p-4 md:py-6 md:px-4">
       {classificationLabel && (
-        <p class="mb-4 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+        <p class="mb-4 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)]">
           {classificationLabel}
         </p>
       )}
@@ -370,15 +370,15 @@ if (writerSlugForCount) {
           </p>
           <form class="justify-center max-w-xl w-full mx-auto flex flex-col gap-4 pt-4">
             <div class="relative w-full flex">
-              <label for="email" class="absolute -top-2 left-3 bg-[var(--color-green-dark)] text-[#FFF] text-xs px-1 rounded-sm">Correo electrónico*</label>
+              <label for="email" class="absolute -top-2 left-3 bg-[var(--color-green-dark)] text-[var(--color-white)] text-xs px-1 rounded-sm">Correo electrónico*</label>
               <input id="email" type="email" placeholder="Ej: nombre@correo.com" class="w-full border border-[#3b2a2a] rounded-l-md py-2 px-4 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#8C0032] bg-white" required="" />
-              <button type="submit" class="bg-[#006764] text-white font-semibold py-2 px-6 rounded-r-md transition-colors duration-300 cursor-pointer">
+              <button type="submit" class="bg-[var(--color-primary)] text-white font-semibold py-2 px-6 rounded-r-md transition-colors duration-300 cursor-pointer">
                 Suscríbeme
               </button>
             </div>
             <div class="flex items-center justify-start w-full gap-2 text-sm text-[#3b2a2a]">
-              <input type="checkbox" id="privacy" class="w-4 h-4 accent-[#2c1b1b]" required="" />
-              <label for="privacy" class="cursor-pointer">He leído y acepto el
+              <input type="checkbox" id="privacyBlog" class="w-4 h-4 accent-[#2c1b1b]" required="" />
+              <label for="privacyBlog" class="cursor-pointer">He leído y acepto el
                 <a href="/aviso-de-privacidad" class="underline text-[var(--color-primary)]"> Aviso de Privacidad</a>
               </label>
             </div>
@@ -399,7 +399,7 @@ if (writerSlugForCount) {
                   <div class="flex flex-col h-full justify-between w-full">
                     <div>
                       {getClassificationTag(rel, classificationTagByArticleKey) && (
-                        <span class="mb-1 block uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+                        <span class="mb-1 block uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)]">
                           {getClassificationTag(rel, classificationTagByArticleKey)}
                         </span>
                       )}

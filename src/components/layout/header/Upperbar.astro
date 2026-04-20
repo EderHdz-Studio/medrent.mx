@@ -2,8 +2,6 @@
 const { site } = Astro.props;
 import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
-
-console.log(siteConfig)
 ---
 <!-- Upperbar -->
 <div class="sticky hidden lg:block text-white text-[11px] tracking-[0.5px] font-light" style="background: var(--gradient-surface-dark);">

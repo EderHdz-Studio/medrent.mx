@@ -11,7 +11,7 @@ const inputId = `${name}-input`;
 ---
 
 <div class="relative form-field mb-0">
-  <label for={inputId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[#FFF] rounded-xs mb-0">
+  <label for={inputId} class="absolute -top-3 left-3 bg-[var(--color-green-dark)] px-2 text-sm text-[var(--color-white)] rounded-xs mb-0">
     {label}{required && '*'}
   </label>
 
@@ -21,6 +21,7 @@ const inputId = `${name}-input`;
     type={type}
     placeholder={placeholder}
     required={required}
+    autocomplete = {type === "email" ? "email" : "off"}
     class="w-full border border-[var(--color-green-dark)] border-2 rounded-[4px] px-4 py-3 placeholder:text-[#A0A0A0] text-[#212121] focus:outline-none bg-white hover:bg-[var(--color-secondary-light)] focus:bg-[var(--color-secondary-light)] transition-colors duration-300"
   />
 </div>

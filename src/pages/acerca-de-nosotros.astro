@@ -186,7 +186,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
             <div class="flex flex-col sm:flex-row md:flex-row lg:flex-row w-full items-center justify-between gap-6">
                 <a
                     href="/productos"
-                    class="w-full sm:w-1/2 bg-[#006764] border border-[var(--color-primary)] text-[#FFF] py-3 px-4 m-0 rounded font-bold transition cursor-pointer flex justify-center gap-2 hover:bg-[var(--color-primary)] hover:text-white lg:hidden"
+                    class="w-full sm:w-1/2 bg-[var(--color-primary)] border border-[var(--color-primary)] text-[var(--color-white)] py-3 px-4 m-0 rounded font-bold transition cursor-pointer flex justify-center gap-2 hover:bg-[var(--color-primary)] hover:text-white lg:hidden"
                     aria-label="Explora nuestro catálogo"
                 >
                     Ver equipos disponibles
@@ -205,7 +205,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     <section class="py-6 px-4 md:px-8 max-w-7xl mx-auto flex flex-col gap-6 metrics-section-safe">
         <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 metrics-slides">
             { metrics.map((metric) => (
-                <li class="rounded-[16px] text-center bg-[#87F4EF] metrics-slide-item" style="white-space: normal;">
+                <li class="rounded-[16px] text-center bg-[var(--color-primary-light)] metrics-slide-item" style="white-space: normal;">
                     <div class="flex flex-col h-full justify-center gap-2 py-8 px-6">
                         <span class="text-4xl font-bold text-gray-900 tracking-[0.5px]">
                             {metric.value}

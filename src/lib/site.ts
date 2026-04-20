@@ -364,7 +364,7 @@ export const BRANDS = [
   {
     name: "Electrocap",
     logo: "Electrocap.png",
-    bgColor: "bg-[#F5FAF9]",
+    bgColor: "bg-[var(--color-secondary-light)]",
     textColor: "text-[#0099CC]",
     title: "Precisión, comodidad y calidad en el registro EEG.",
     description: "Electro-Cap es una marca reconocida mundialmente por la fabricación de gorras y accesorios para electroencefalografía (EEG), diseñadas para ofrecer mediciones neurológicas precisas y confort duradero durante los estudios clínicos y de investigación. Sus sistemas se adaptan a diferentes configuraciones y necesidades, garantizando contacto uniforme, estabilidad eléctrica y compatibilidad con los principales equipos de neurodiagnóstico del mercado.",
@@ -572,7 +572,7 @@ export const BRANDS = [
   {
     name: "tVNS",
     logo: "tVNS Health - Logotipo.png",
-    bgColor: "bg-[#FFFFFF]",
+    bgColor: "bg-[var(--color-white)]",
     textColor: "text-[#CC0000]",
     title: "Estimulación vagal transcutánea para neuromodulación no invasiva",
     description:"tVNS es una marca especializada en soluciones de estimulación del nervio vago de forma no invasiva. Sus dispositivos están diseñados para aplicaciones terapéuticas y de investigación en neuromodulación, ofreciendo una alternativa segura y controlada a los sistemas implantables. La tecnología tVNS permite implementar protocolos de estimulación en entornos clínicos y ambulatorios, con enfoque en seguridad, facilidad de uso y seguimiento terapéutico.",
