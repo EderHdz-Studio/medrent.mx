@@ -40,7 +40,7 @@ console.log(categories);
 >
   <style>
     body {
-      background: #F5FAF9;
+      background: var(--color-secondary-light);
     }
   </style>
 
@@ -243,7 +243,7 @@ console.log(categories);
               <div class="flex items-center space-x-4 w-full justify-center sm:justify-center md:justify-between lg:justify-start pt-4 md:py-4">
                 <a href={prevItem ? `/especialidades/${prevItem.slug}` : "#"} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2 bg-white flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#006764" />
+                    <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="var(--color-primary)" />
                   </svg>
                 </a>
 
@@ -254,7 +254,7 @@ console.log(categories);
                   <span class="text-[var(--color-primary)] text-sm font-medium whitespace-nowrap">Siguiente especialidad</span>
                   <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#006764" />
+                      <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="var(--color-primary)" />
                     </svg>
                   </div>
                 </a>
@@ -265,7 +265,7 @@ console.log(categories);
       </div>
 
       {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion) => aplicacion.slug).length > 0 && (
-        <section class="mb-16 bg-[#F5FAF9] px-4 sm:px-6 lg:px-8">
+        <section class="mb-16 bg-[var(--color-secondary-light)] px-4 sm:px-6 lg:px-8">
           <div class="space-y-4 md:space-y-[25px]">
             {especialidad.subcategories.filter((aplicacion) => aplicacion.slug).map((aplicacion, index) => (
               <div>
@@ -287,18 +287,18 @@ console.log(categories);
                     />
                     {/* Mobile: degradado hacia abajo (texto debajo de la imagen) */}
                     <div
-                      class="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-t from-[#F5FAF9] to-transparent md:hidden"
+                      class="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-t from-[var(--color-secondary-light)] to-transparent md:hidden"
                       aria-hidden="true"
                     />
                     {/* Desktop: degradado en el borde que toca el texto (alterna izq/der con la fila) */}
                     {index % 2 === 0 ? (
                       <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-r from-transparent to-[#F5FAF9] sm:w-24 md:block"
+                        class="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-r from-transparent to-[var(--color-secondary-light)] sm:w-24 md:block"
                         aria-hidden="true"
                       />
                     ) : (
                       <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-20 bg-gradient-to-r from-[#F5FAF9] to-transparent sm:w-24 md:block"
+                        class="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-20 bg-gradient-to-r from-[var(--color-secondary-light)] to-transparent sm:w-24 md:block"
                         aria-hidden="true"
                       />
                     )}

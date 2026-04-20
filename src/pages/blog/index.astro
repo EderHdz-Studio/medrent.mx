@@ -194,7 +194,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
     </Fragment>
 
   <!-- Hero: breadcrumbs arriba a la izquierda; texto + chips alineados a la izquierda -->
-  <section class="relative w-full rounded-b-[24px] bg-[#F5FAF9] antialiased">
+  <section class="relative w-full rounded-b-[24px] bg-[var(--color-secondary-light)] antialiased">
     <div class="pointer-events-none absolute inset-x-0 top-0 z-10 w-full">
       <div class="pointer-events-auto">
         <Breadcrumb
@@ -258,7 +258,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                         <li class="shrink-0">
                           <button
                             type="button"
-                            class="blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]"
+                            class="blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]"
                             data-blog-classification-chip="inactive"
                             data-classification-id={String(chip.id)}
                             aria-pressed="false"
@@ -288,11 +288,11 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                     </ul>
                   </div>
                   {chipsMoreRow.length > 0 && (
-                    <div class="flex shrink-0 items-center self-stretch border-l border-[#171D1C]/15 bg-[#F5FAF9] pl-2 sm:pl-3">
+                    <div class="flex shrink-0 items-center self-stretch border-l border-[#171D1C]/15 bg-[var(--color-secondary-light)] pl-2 sm:pl-3">
                       <button
                         id="blog-filters-toggle"
                         type="button"
-                        class="flex h-fit w-fit shrink-0 items-center gap-2 rounded-lg border border-[#171D1C] bg-white py-1.5 pl-1 pr-2 font-lato text-[13px] font-medium leading-5 tracking-[0.02em] text-[var(--color-text-default)] shadow-sm transition hover:bg-[#171D1C]/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:text-[14px]"
+                        class="flex h-fit w-fit shrink-0 items-center gap-2 rounded-lg border border-[#171D1C] bg-white py-1.5 pl-1 pr-2 font-lato text-[13px] font-medium leading-5 tracking-[0.02em] text-[var(--color-text-default)] shadow-sm transition hover:bg-[#171D1C]/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:text-[14px]"
                         aria-expanded="false"
                         aria-controls="blog-filters-panel"
                       >
@@ -347,7 +347,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                         <li class="shrink-0">
                           <button
                             type="button"
-                            class="blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]"
+                            class="blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]"
                             data-blog-classification-chip="inactive"
                             data-classification-id={String(chip.id)}
                             aria-pressed="false"
@@ -414,7 +414,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
           <div class="mb-6 flex w-full flex-col pt-6">
             <span
               id="blog-article-count"
-              class="mb-2 self-stretch font-lato text-[14px] font-bold uppercase leading-5 tracking-[0.1px] text-(--Schemes-Primary-Container,#00827F)"
+              class="mb-2 self-stretch font-lato text-[14px] font-bold uppercase leading-5 tracking-[0.1px] text-[var(--color-accent)]"
             >
               {articulosActivos.length} artículos
             </span>
@@ -487,7 +487,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
               </div>
               <div class="p-6 flex flex-col flex-grow min-h-[300px]">
                 {getClassificationTag(articulosActivos[0], classificationTagByArticleKey) && (
-                  <span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+                  <span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)]">
                     {getClassificationTag(articulosActivos[0], classificationTagByArticleKey)}
                   </span>
                 )}
@@ -521,7 +521,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 <div class="bg-[var(--color-secondary-light)] rounded-[16px]   hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative sm:w-1/2 md:w-full">
                   <div class="p-6 flex flex-col flex-grow">
                     {getClassificationTag(articulo, classificationTagByArticleKey) && (
-                      <span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">
+                      <span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)]">
                         {getClassificationTag(articulo, classificationTagByArticleKey)}
                       </span>
                     )}
@@ -564,7 +564,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
               <button
                 id="blog-load-more-simple"
                 type="button"
-                class="hidden cursor-pointer flex items-center justify-center gap-2 rounded-[4px] bg-[#006764] px-4 py-3 font-lato text-base font-semibold text-white transition hover:bg-[var(--color-accent)]"
+                class="hidden cursor-pointer flex items-center justify-center gap-2 rounded-[4px] bg-[var(--color-primary)] px-4 py-3 font-lato text-base font-semibold text-white transition hover:bg-[var(--color-accent)]"
               >
                 Ver más artículos
               </button>
@@ -600,7 +600,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                   <button
                     id="blog-load-more"
                     type="button"
-                    class="flex cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#006764] px-4 py-3 font-lato text-base font-semibold text-white transition hover:bg-[var(--color-accent)]"
+                    class="flex cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[var(--color-primary)] px-4 py-3 font-lato text-base font-semibold text-white transition hover:bg-[var(--color-accent)]"
                   >
                     Ver más artículos
                   </button>
@@ -653,9 +653,9 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                 var clientMode = false;
                 var selectedIds = new Set();
                 var CHIP_INACTIVE =
-                  "blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]";
+                  "blog-chip--inactive inline-flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-1.5 pl-3 pr-3 font-lato text-[13px] font-normal uppercase leading-snug tracking-[0.04em] text-[#141918] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:py-1 sm:text-[14px] sm:leading-5 sm:tracking-[0.1px]";
                 var CHIP_ACTIVE =
-                  "blog-chip--active flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-transparent bg-[#006764] py-1 pl-1 pr-2 font-lato text-[14px] font-medium uppercase leading-5 tracking-[0.1px] text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006764]";
+                  "blog-chip--active flex h-fit w-fit shrink-0 items-center justify-center gap-2 rounded-full border border-transparent bg-[var(--color-primary)] py-1 pl-1 pr-2 font-lato text-[14px] font-medium uppercase leading-5 tracking-[0.1px] text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
 
                 function filterArticles() {
                   if (selectedIds.size === 0) return articles.slice();
@@ -743,7 +743,7 @@ const logoUrl = `${baseUrl}/favicon-512.png`;
                       '" class="w-full h-full object-cover max-h-[218px]" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" loading="lazy" decoding="async" /></div>'
                     : '<div class="h-55 relative overflow-hidden flex-shrink-0 bg-gray-200"></div>';
                   var cls = art.classification
-                    ? '<span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[#006764]">' +
+                    ? '<span class="mb-2 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)]">' +
                       escapeHtml(art.classification) +
                       "</span>"
                     : "";

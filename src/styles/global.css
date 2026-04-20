@@ -25,13 +25,10 @@
   /* Brand */
   --color-primary: #006764;
   --color-secondary: #69d8d3;
-  --color-surface-light: #F5FAF9;
+  --color-secondary-light: #F5FAF9;
   --color-accent: #00827f;
   --color-green-dark: #3D4948;
-  --color-secondary-light: #f5faf9;
   --color-text-default: #171d1c;
-  --color-text-default: #171d1c;
-  --color-dark: #171D1C;
   --color-gray: #bcc9c8;
   --color-gray-dark: #6d7a78;
   --color-white: #ffffff;
@@ -39,7 +36,7 @@
 
   /* Material / Figma schemes (cuerpo secundario sobre superficie) */
   --Schemes-On-Surface-Variant: var(--color-green-dark);
-  --Schemes-Primary-Container: #00827f;
+  
 
   /* Light surfaces */
   --color-text-light: 15 20 20; /* #0F1414 */
@@ -94,7 +91,7 @@
 }
 
 [data-theme="light"] {
-  --color-background: var(--color-surface-light);
+  --color-background: var(--color-secondary-light);
   --color-text: var(--color-text-light);
 }
 
@@ -117,20 +114,20 @@ body {
 
 ::selection {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-white);
 }
 ::-moz-selection {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .bg-black ::selection {
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-white);
 }
 .bg-black ::-moz-selection {
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 select option:hover,
@@ -144,19 +141,19 @@ select option:focus {
 /* Scrollbar personalizado para SidebarFilters */
 .custom-scrollbar::-webkit-scrollbar {
   width: 18px;
-  background: var(--Schemes-On-Primary, #69d8d3);
+  background: var(--color-secondary);
   border-radius: 16px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #69d8d3;
+  background: var(--color-secondary);
   border-radius: 16px;
   border: 2px solid #e0e0e0;
 }
 
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #69d8d3 #006764;
+  scrollbar-color: var(--color-secondary) var(--color-primary);
 }
 
 /* Ancho de la barra */
@@ -287,7 +284,7 @@ div.citaBlog p {
   text-align: left;
 }
 div.citaBlogAuthor span {
-  color: #171d1c;
+  color: var(--color-text-default);
   text-align: right;
   font-family: Lato;
   font-size: 16px;
@@ -429,7 +426,7 @@ select:autofill {
 
 /* Foco visible en la tira de chips (accesibilidad teclado) */
 .blog-chips-scroll:focus-within {
-  outline: 2px solid #006764;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 0.5rem;
 }
@@ -443,7 +440,7 @@ select:autofill {
   font-style: normal;
   font-weight: 700;
   line-height: 36px;
-  color: var(--Schemes-On-Surface, #171d1c);
+  color: var(--color-text-default);
 }
 
 /* Relacionados móvil/tablet en artículo — Medrent/headline/small */
@@ -456,7 +453,7 @@ select:autofill {
   font-style: normal;
   font-weight: 700;
   line-height: 32px;
-  color: var(--Schemes-On-Surface, #171d1c);
+  color: var(--color-text-default);
 }
 
 /* Título principal del artículo — headline/medium (alineado con tokens) */
@@ -503,7 +500,7 @@ select:autofill {
   font-weight: 700;
   line-height: 24px;
   letter-spacing: 0.15px;
-  color: var(--Schemes-On-Surface, #171d1c);
+  color: var(--color-text-default);
   text-decoration-line: none;
 }
 
@@ -582,7 +579,7 @@ select:autofill {
   font-style: normal;
   font-weight: 700;
   line-height: 32px;
-  color: var(--Schemes-On-Surface, #171d1c);
+  color: var(--color-text-default);
   text-align: left;
   margin: 0;
 }

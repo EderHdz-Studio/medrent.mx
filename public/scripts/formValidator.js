@@ -200,7 +200,7 @@ export function initForm(formId) {
         let contentRightPopUp = document.getElementById("ContenidoPopup");
         if(contentRightPopUp){
           contentRightPopUp.style.width = "50%";
-          contentRightPopUp.style.background = "#F5FAF9"
+          contentRightPopUp.style.background = "var(--color-secondary-light)"
 
         }
       }

@@ -216,7 +216,7 @@ import ShareButtons from '@components/product/ShareButtons.astro';
       const inactiveIcon = button.querySelector('.zoom-icon-inactive');
       if (activeIcon) activeIcon.classList.toggle('hidden', !active);
       if (inactiveIcon) inactiveIcon.classList.toggle('hidden', active);
-      button.classList.toggle('bg-[#006764]', active);
+      button.classList.toggle('bg-[var(--color-primary)]', active);
       button.classList.toggle('bg-transparent', !active);
       button.classList.toggle('text-white', active);
       button.classList.toggle('text-[#212121]', !active);

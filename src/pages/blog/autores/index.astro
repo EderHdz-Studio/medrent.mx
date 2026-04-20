@@ -134,7 +134,7 @@ const breadcrumbId = `${canonicalUrl}#breadcrumb`;
                             </div>
 
                             {/* PARTE DE ABAJO: contenido con blur */}
-                            <div class="flex h-full flex-1 flex-col items-start gap-2 self-stretch bg-[#F5FAF9] p-6 backdrop-blur-[6px]">
+                            <div class="flex h-full flex-1 flex-col items-start gap-2 self-stretch bg-[var(--color-secondary-light)] p-6 backdrop-blur-[6px]">
                                 {writer.speciality && (
                                     <p class="font-lato uppercase text-[var(--color-primary)] text-[14px] font-bold leading-5 tracking-[0.1px]">
                                         {writer.speciality}
@@ -163,7 +163,7 @@ const breadcrumbId = `${canonicalUrl}#breadcrumb`;
                     {page > 1 && (
                         <a
                             href={`/blog/autores?page=${page - 1}`}
-                            class="rounded-full border border-[#171d1c] px-4 py-2 font-lato text-sm font-medium text-[var(--color-text-default)] no-underline transition hover:bg-[var(--color-secondary-light)]"
+                            class="rounded-full border border-[var(--color-text-default)] px-4 py-2 font-lato text-sm font-medium text-[var(--color-text-default)] no-underline transition hover:bg-[var(--color-secondary-light)]"
                         >
                             ← Anterior
                         </a>
@@ -174,7 +174,7 @@ const breadcrumbId = `${canonicalUrl}#breadcrumb`;
                     {page < totalPages && (
                         <a
                             href={`/blog/autores?page=${page + 1}`}
-                            class="rounded-full border border-[#171d1c] px-4 py-2 font-lato text-sm font-medium text-[var(--color-text-default)] no-underline transition hover:bg-[var(--color-secondary-light)]"
+                            class="rounded-full border border-[var(--color-text-default)] px-4 py-2 font-lato text-sm font-medium text-[var(--color-text-default)] no-underline transition hover:bg-[var(--color-secondary-light)]"
                         >
                             Siguiente →
                         </a>

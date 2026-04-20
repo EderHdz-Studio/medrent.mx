@@ -87,7 +87,7 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
                         import { initForm } from "/scripts/formValidator.js";
 
                         document.addEventListener("DOMContentLoaded", () => {
-                            initForm("");
+                            initForm("form-evento");
                         });
                     </script>    
                 </div>
@@ -137,7 +137,7 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
         }
         
         function openEventPopup(eventData: any) {
-            console.log('Abriendo popup con datos:', eventData);
+            
             if (!popupOverlay) return;
             resetPopupToInitial();
             if (popupImage && eventData.img) { (popupImage as HTMLImageElement).src = eventData.img; (popupImage as HTMLImageElement).alt = eventData.title || 'Evento'; }

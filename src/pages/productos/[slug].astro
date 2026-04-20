@@ -303,7 +303,7 @@ const pdpJsonLd = {
                       return (
                         <div class="relative w-20 h-20 btnVerPopUpImagenes" data-imagenes={JSON.stringify(product.gallery)}>
                           <button
-                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
+                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-secondary-light)] hover:border-[var(--color-primary)]"
                             style="min-height:80px; max-height:80px;"
                             data-gallery-popup="true"
                             data-start-index={index}
@@ -331,7 +331,7 @@ const pdpJsonLd = {
                       return (
                         <div class="relative w-20 h-20 " data-gallery={JSON.stringify(product.gallery)}>
                           <button
-                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]"
+                            class="w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-secondary-light)] hover:border-[var(--color-primary)]"
                             style="min-height:80px; max-height:80px;"
                             data-thumbnail={imagen}
                             data-type={isImage ? 'image' : isVideo ? 'video' : 'other'}
@@ -555,7 +555,7 @@ const pdpJsonLd = {
                       <button
                         aria-label="Abrir" 
                         x-on:click={`openTechItems.includes(${itemIndex}) ? openTechItems = openTechItems.filter(i => i !== ${itemIndex}) : openTechItems.push(${itemIndex})`}
-                        x-bind:class={`{'text-[var(--color-primary)] bg-[#F5FAF9]': openTechItems.includes(${itemIndex}), 'bg-transparent text-[var(--color-primary)]': !openTechItems.includes(${itemIndex})}`}
+                        x-bind:class={`{'text-[var(--color-primary)] bg-[var(--color-secondary-light)]': openTechItems.includes(${itemIndex}), 'bg-transparent text-[var(--color-primary)]': !openTechItems.includes(${itemIndex})}`}
                         class="rounded px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-300 border-none relative z-20"
                       >
                         <span 
@@ -791,7 +791,7 @@ const pdpJsonLd = {
 
   function updateZoomButtonState(button, active) {
     button.setAttribute('aria-pressed', String(active));
-    button.classList.toggle('bg-[#006764]', active);
+    button.classList.toggle('bg-[var(--color-primary)]', active);
     button.classList.toggle('bg-transparent', !active);
     button.classList.toggle('text-white', active);
     button.classList.toggle('text-[#212121]', !active);
@@ -945,7 +945,7 @@ const pdpJsonLd = {
           if (window.reinitZoom) window.reinitZoom();
           
           document.querySelectorAll('[data-thumbnail]').forEach(t => {
-            t.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-surface-light)] hover:border-[var(--color-primary)]';
+            t.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border border-[var(--color-secondary-light)] hover:border-[var(--color-primary)]';
           });
           this.className = 'w-20 h-20 bg-white rounded overflow-hidden transition-colors cursor-pointer border-3 border-[var(--color-primary)]';
         }
