@@ -226,7 +226,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
             .filter((marca) => marca.name !== "Consumibles")
             .map((marca) => (
             <div 
-                class="text-center p-6 w-full md:w-[45%] lg:w-[30%] transition-all duration-300 hover:bg-white hover:shadow-lg cursor-pointer rounded-[24px]"
+                class="text-center p-6 w-full md:w-[45%] lg:w-[30%] transition-all duration-300  cursor-pointer rounded-[24px] hover:bg-[var(--color-secondary-light)]"
                 key={marca.slug}
             >
                 <div class="flex items-center justify-center p-4">
