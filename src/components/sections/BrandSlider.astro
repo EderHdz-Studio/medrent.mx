@@ -1,12 +1,14 @@
 ---
 import ImageResponsive from "@components/media/ImageResponsive.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
+import { localizePath } from "@lib/locale";
 type BrandItem = {
   slug?: string;
   name?: string;
   logo?: any;
 };
 const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 ---
 
 <section class="max-w-7xl mx-auto py-16">
@@ -33,7 +35,7 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
             {marcasData.map((brand: BrandItem) => (
               <li class="glide__slide flex justify-center items-center p-6" style="width: 158px;">
                 <a
-                  href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
+                  href={isUsableBrandSlug(brand.slug) ? localizePath(`/nuestras-marcas/${brand.slug}`, currentPathname) : localizePath("/productos", currentPathname)}
                   class="hover-scale-img block"
                 >
                   <ImageResponsive

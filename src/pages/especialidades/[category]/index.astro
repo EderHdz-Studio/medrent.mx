@@ -24,7 +24,7 @@ const categories = await getCategories();
 const especialidad = Array.isArray(categories)
   ? categories.find(item => item.slug === category)
   : null;
-const canonical = `https://www.medrent.mx/especialidades/${especialidad?.slug ?? ""}`;
+const canonical = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = canonical;

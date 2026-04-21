@@ -12,6 +12,7 @@ import react from '@astrojs/react';
  */
 export default defineConfig({
   site: 'https://www.medrent.mx',
+  output: 'server',
   compressHTML: true,
   build: {
     /** auto: inline CSS pequeño; CSS grande en archivo (balance LCP / caché) */

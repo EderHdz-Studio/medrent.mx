@@ -2,107 +2,103 @@
 const { site } = Astro.props;
 
 import { getSiteConfig } from "@server/siteConfig";
-const siteConfig = await getSiteConfig();
+import { localizePath } from "@lib/locale";
 
+const siteConfig = await getSiteConfig();
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 ---
 
-<footer class="text-white"  style="background: var(--gradient-surface-dark);">
-    <!-- Grid de links -->
-    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-4 py-12 text-white text-[14px] font-normal">
-        <div>
-        <h4 class="font-bold mb-2  text-[22px] ">Explora</h4>
-        <ul class="space-y-1">
-            <li>
-            <a href="/acerca-de-nosotros" class="text-[var(--color-white)] opacity-70 hover:underline">Acerca de nosotros</a>
-            </li>
-            <li>
-            <a href="/nuestras-marcas" class="text-[var(--color-white)] opacity-70 hover:underline">Nuestras marcas</a>
-            </li>
-            <li>
-            <a href="/especialidades" class="text-[var(--color-white)] opacity-70 hover:underline">Especialidades médicas</a>
-            </li>
-            <li>
-            <a href="/productos" class="text-[var(--color-white)] opacity-70 hover:underline">Productos</a>
-            </li>
-            <li>
-            <a href="/financiamiento" class="text-[var(--color-white)] opacity-70 hover:underline">Financiamiento</a>
-            </li>
-            <!-- <li>
-            <a href="/" class="text-[var(--color-white)] opacity-70 hover:underline">Soporte</a>
-            </li> -->
-            <li>
-            <a href="/blog" class="text-[var(--color-white)] opacity-70 hover:underline">Blog</a>
-            </li>
-            <li>
-            <a href="/eventos" class="text-[var(--color-white)] opacity-70 hover:underline">Eventos</a>
-            </li>
-            <li>
-            <a href="/contacto" class="text-[var(--color-white)] opacity-70 hover:underline">Contacto</a>
-            </li>
-        </ul>
-        </div>
-        <div>
-        <h4 class="font-bold mb-2  text-[22px] ">Legales</h4>
-        <ul class="space-y-1">
-            <li>
-            <a href="/aviso-de-privacidad" class="text-[var(--color-white)] opacity-70 hover:underline">Aviso de privacidad</a>
-            </li>
-            <li>
-            <a href="/condiciones-de-uso" class="text-[var(--color-white)] opacity-70 hover:underline">Condiciones de uso</a>
-            </li>
-        </ul>
-        </div>
-        <div>
-            <h4 class="font-bold mb-2 text-[22px]">Social</h4>
-            <ul class="space-y-1">
-                {siteConfig?.socialLink?.map((social) => (
-                    social.isActive && social.url ? (
-                        <li key={social.id}>
-                            <a href={social.url} target="_blank" rel="noopener noreferrer" class="text-[var(--color-white)] opacity-70 hover:underline">
-                                {social.name}
-                            </a>
-                        </li>
-                    ) : null
-                ))}
-            </ul>
-        </div>
-        <div>
-            <h4 class="font-bold mb-2  text-[22px] ">Contacto</h4>
-            <p class="text-[var(--color-white)] opacity-70"> Tel: 
-                <a 
-                    href={`https://wa.me/${siteConfig?.whatsappNumber}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    class="underline text-[var(--color-secondary)]"
-                >
-                    {(() => {
-                        const num = siteConfig?.whatsappNumber;
-                        return `+${num.slice(0, 2)} ${num.slice(2)}`;
-                    })()}
-                </a>
-            </p>
-            <p class="text-[var(--color-white)] opacity-70"> Email: 
-                <a 
-                    href={`mailto:${siteConfig?.email || ''}`} 
-                    class="underline text-[var(--color-secondary)]"
-                >
-                    {siteConfig?.email}
-                </a>
-            </p>
-            <p class="text-[var(--color-white)] opacity-70">
-                {siteConfig?.businessHours}
-            </p>
-            
-            <p class="text-[var(--color-white)] opacity-70"> 
-                Domicilio: {siteConfig?.address}
-            </p>
-        </div>
+<footer class="text-white" style="background: var(--gradient-surface-dark);">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-4 py-12 text-white text-[14px] font-normal">
+    <div>
+      <h4 class="font-bold mb-2 text-[22px]">Explora</h4>
+      <ul class="space-y-1">
+        <li>
+          <a href={localizePath("/acerca-de-nosotros", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Acerca de nosotros</a>
+        </li>
+        <li>
+          <a href={localizePath("/nuestras-marcas", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Nuestras marcas</a>
+        </li>
+        <li>
+          <a href={localizePath("/especialidades", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Especialidades mÃ©dicas</a>
+        </li>
+        <li>
+          <a href={localizePath("/productos", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Productos</a>
+        </li>
+        <li>
+          <a href={localizePath("/financiamiento", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Financiamiento</a>
+        </li>
+        <li>
+          <a href={localizePath("/blog", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Blog</a>
+        </li>
+        <li>
+          <a href={localizePath("/eventos", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Eventos</a>
+        </li>
+        <li>
+          <a href={localizePath("/contacto", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Contacto</a>
+        </li>
+      </ul>
     </div>
-    <!-- Bottom Bar -->
-    <div class="bg-[var(--color-primary)] text-center pt-5 pb-[104px] text-white font-bold text-sm md:pb-[104px]">
-        {site.legalName} {new Date().getFullYear()}. <span class="">Todos los derechos reservados.</span>
-        <!-- <span class="block mt-1 text-xs font-normal">
-        <a href="#" onclick="window.openCookieBanner && window.openCookieBanner(); return false;" class="underline hover:text-white transition-colors">Configuración de cookies</a>
-        </span> -->
+    <div>
+      <h4 class="font-bold mb-2 text-[22px]">Legales</h4>
+      <ul class="space-y-1">
+        <li>
+          <a href={localizePath("/aviso-de-privacidad", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Aviso de privacidad</a>
+        </li>
+        <li>
+          <a href={localizePath("/condiciones-de-uso", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Condiciones de uso</a>
+        </li>
+      </ul>
     </div>
+    <div>
+      <h4 class="font-bold mb-2 text-[22px]">Social</h4>
+      <ul class="space-y-1">
+        {siteConfig?.socialLink?.map((social) => (
+          social.isActive && social.url ? (
+            <li key={social.id}>
+              <a href={social.url} target="_blank" rel="noopener noreferrer" class="text-[var(--color-white)] opacity-70 hover:underline">
+                {social.name}
+              </a>
+            </li>
+          ) : null
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-2 text-[22px]">Contacto</h4>
+      <p class="text-[var(--color-white)] opacity-70">
+        Tel:
+        <a
+          href={`https://wa.me/${siteConfig?.whatsappNumber}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="underline text-[var(--color-secondary)]"
+        >
+          {(() => {
+            const num = siteConfig?.whatsappNumber;
+            return `+${num.slice(0, 2)} ${num.slice(2)}`;
+          })()}
+        </a>
+      </p>
+      <p class="text-[var(--color-white)] opacity-70">
+        Email:
+        <a
+          href={`mailto:${siteConfig?.email || ""}`}
+          class="underline text-[var(--color-secondary)]"
+        >
+          {siteConfig?.email}
+        </a>
+      </p>
+      <p class="text-[var(--color-white)] opacity-70">
+        {siteConfig?.businessHours}
+      </p>
+
+      <p class="text-[var(--color-white)] opacity-70">
+        Domicilio: {siteConfig?.address}
+      </p>
+    </div>
+  </div>
+  <div class="bg-[var(--color-primary)] text-center pt-5 pb-[104px] text-white font-bold text-sm md:pb-[104px]">
+    {site.legalName} {new Date().getFullYear()}. <span>Todos los derechos reservados.</span>
+  </div>
 </footer>

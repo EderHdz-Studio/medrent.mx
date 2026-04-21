@@ -1,11 +1,13 @@
 ---
 import type { Product } from "@lib/domain/product/types";
 import { isUsableBrandSlug } from "@lib/brandSlug";
+import { localizePath } from "@lib/locale";
 
 interface Props {
   product: Product;
 }
 const { product } = Astro.props;
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 ---
 <style>
     .productCard:hover{ box-shadow: 7px 11px 13px 0 rgba(33, 46, 56, 0.09), 2px 3px 7px 0 rgba(33, 46, 56, 0.10);}
@@ -42,7 +44,7 @@ const { product } = Astro.props;
             {product?.brand?.name &&
               (isUsableBrandSlug(product.brand.slug) ? (
                 <a
-                  href={`/nuestras-marcas/${product.brand.slug}`}
+                  href={localizePath(`/nuestras-marcas/${product.brand.slug}`, currentPathname)}
                   class="uppercase text-[11px] sm:text-[12px] font-medium leading-[18px] tracking-[0.1px] text-[var(--color-primary)] hover:underline"
                 >
                   {product.brand.name}
@@ -53,7 +55,7 @@ const { product } = Astro.props;
                 </span>
               ))}
             <a
-                href={`/productos/${product.slug}`}
+                href={localizePath(`/productos/${product.slug}`, currentPathname)}
                 class="block hover:underline transition-all duration-300 product-link"
             >
                 <h3 class="text-[15px] sm:text-[16px] font-bold text-[var(--color-text-default)] transition-colors uppercase hover:underline decoration-[var(--color-primary)] line-clamp-2 leading-[1.35]">
@@ -72,7 +74,7 @@ const { product } = Astro.props;
 
         {/* Botón */}
         <a
-        href={`/productos/${product.slug}`}
+        href={localizePath(`/productos/${product.slug}`, currentPathname)}
         class="relative z-10 inline-flex items-center bg-[#00201F] text-white px-4 py-2 rounded text-sm font-light hover:bg-[var(--color-primary)] hover:text-white transition-colors w-full justify-center mt-4 product-link min-h-[40px]"
         style={{ padding: "8px 16px" }}
         >

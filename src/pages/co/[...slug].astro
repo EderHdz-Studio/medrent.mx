@@ -1,0 +1,9 @@
+---
+export const prerender = false;
+
+const slug = Astro.params.slug ?? "";
+const normalized = Array.isArray(slug) ? slug.join("/") : slug;
+const targetPath = normalized ? `/${normalized}` : "/";
+
+return Astro.rewrite(targetPath);
+---

@@ -95,7 +95,7 @@ const articlesForClient = articulosActivos.map((a: any) => ({
 }));
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
 ---

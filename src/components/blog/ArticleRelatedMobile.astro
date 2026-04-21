@@ -1,5 +1,6 @@
 ---
 import ArticleCard from "@components/blog/articleCard.astro";
+import { localizePath } from "@lib/locale";
 
 const { articulos, tagByArticleKey } = Astro.props as {
   articulos: any[];
@@ -9,6 +10,7 @@ const { articulos, tagByArticleKey } = Astro.props as {
 const list = Array.isArray(articulos) ? articulos : [];
 const total = list.length;
 const prefixId = "RelacionadosMovil";
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 ---
 
 {
@@ -43,7 +45,7 @@ const prefixId = "RelacionadosMovil";
 
       {/* Misma fila que `slideArticles.astro` (home / vitrina blog) */}
       <div class="mt-4 flex flex-row flex-nowrap items-center justify-between gap-4">
-        <a href="/blog" class="medrent-btn-primary group h-fit shrink-0">
+        <a href={localizePath("/blog", currentPathname)} class="medrent-btn-primary group h-fit shrink-0">
           <span class="hidden min-[440px]:inline">Ver más artículos</span>
           <span class="inline min-[440px]:hidden">Ver más</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">

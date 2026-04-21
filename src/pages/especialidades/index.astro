@@ -1,5 +1,5 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
 import { ESPECIALTIES } from "@lib/site.ts";
@@ -12,7 +12,7 @@ import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
 ---

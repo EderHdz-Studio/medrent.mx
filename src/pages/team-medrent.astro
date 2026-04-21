@@ -7,5 +7,7 @@
  */
 export const prerender = false;
 
-return Astro.redirect("/blog/autor/team-medrent", 301);
+import { localizeRedirect } from "@lib/locale";
+
+return Astro.redirect(localizeRedirect("/blog/autor/team-medrent", Astro.originPathname ?? Astro.url.pathname), 301);
 ---
