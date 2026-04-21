@@ -4,6 +4,8 @@ const categorias = Astro.props.categorias || [];
 const subcategorias = Astro.props.subcategorias || [];
 const products = Astro.props.products || [];
 const articles = Astro.props.articles || [];
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const localePrefix = currentPathname === "/co" || currentPathname.startsWith("/co/") ? "/co" : "";
 
 ---
 
@@ -83,7 +85,7 @@ const articles = Astro.props.articles || [];
     }
 </style>
 
-<script define:vars={{ marcas, categorias, subcategorias, products, articles }}>
+<script define:vars={{ marcas, categorias, subcategorias, products, articles, localePrefix }}>
 
 const searchBtn = document.getElementById('searchButtonDesktop');
 const overlay = document.getElementById('searchOverlay');
@@ -192,7 +194,7 @@ const art = articles.filter(a =>
           </div>
           ${prod.map(p => `
             <a
-              href="/productos/${p.slug}"
+              href="${localePrefix}/productos/${p.slug}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${p.name}
@@ -211,7 +213,7 @@ const art = articles.filter(a =>
           </div>
           ${esp.map(e => `
             <a
-              href="/especialidades/${e.slug}"
+              href="${localePrefix}/especialidades/${e.slug}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${e.name}
@@ -229,7 +231,7 @@ const art = articles.filter(a =>
           </div>
           ${sub.map(s => `
             <a
-              href="/especialidades/${s.category.slug}/${s.slug}"
+              href="${localePrefix}/especialidades/${s.category.slug}/${s.slug}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${s.name}
@@ -247,7 +249,7 @@ const art = articles.filter(a =>
           </div>
           ${mar.map(m => `
             <a
-              href="${m.slug && m.slug !== 'undefined' && m.slug !== 'null' ? `/nuestras-marcas/${m.slug}` : '/productos'}"
+              href="${m.slug && m.slug !== 'undefined' && m.slug !== 'null' ? `${localePrefix}/nuestras-marcas/${m.slug}` : `${localePrefix}/productos`}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${m.name}
@@ -265,7 +267,7 @@ const art = articles.filter(a =>
           </div>
           ${art.map(a => `
             <a
-              href="/blog/${a.slug}"
+              href="${localePrefix}/blog/${a.slug}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${a.title}

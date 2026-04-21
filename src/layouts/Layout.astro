@@ -3,9 +3,13 @@ import "../styles/global.css";
 import "lenis/dist/lenis.css";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import { getSiteConfig } from "@server/siteConfig";
+import { getLocaleMeta, getLocalePrefix } from "@lib/locale";
 const siteConfig = await getSiteConfig();
 
-const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const requestedPathname = Astro.originPathname ?? Astro.url.pathname;
+const localeMeta = getLocaleMeta(requestedPathname);
+const localePrefix = getLocalePrefix(requestedPathname);
+const canonical = new URL(requestedPathname, Astro.site).toString();
 const {
   title,
   description,
@@ -17,7 +21,7 @@ const {
   ogUrl,
   ogImage,
   ogSiteName = "MedRent",
-  ogLocale = "es_MX",
+  ogLocale,
   twitterCard = "summary_large_image",
   twitterSite = "@MedRent_MX",
   twitterTitle,
@@ -53,7 +57,7 @@ const isLocalEnv = import.meta.env.DEV;
 ---
 
 <!doctype html>
-<html lang="es-MX">
+<html lang={localeMeta.htmlLang}>
   <head>
     <!-- 1. Meta esenciales -->
     <meta charset="UTF-8" />
@@ -65,6 +69,14 @@ const isLocalEnv = import.meta.env.DEV;
 
     <!-- 3. Canonical -->
     <link rel="canonical" href={canonical} />
+    {localeMeta.alternatePaths.map((alternate) => (
+      <link
+        rel="alternate"
+        hreflang={alternate.hreflang}
+        href={new URL(alternate.path, Astro.site).toString()}
+      />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={new URL("/", Astro.site).toString()} />
 
     <!-- 4. Favicons -->
     <link rel="icon" href={siteConfig?.faviconIco?.url} sizes="any">
@@ -89,7 +101,7 @@ const isLocalEnv = import.meta.env.DEV;
     <meta property="og:url" content={resolvedOgUrl} />
     <meta property="og:image" content={resolvedOgImage} />
     <meta property="og:site_name" content={ogSiteName} />
-    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale" content={ogLocale ?? localeMeta.ogLocale} />
 
     <meta name="twitter:card" content={twitterCard} />
     <meta name="twitter:site" content={twitterSite} />
@@ -169,6 +181,25 @@ const isLocalEnv = import.meta.env.DEV;
     <Footer site={site}/>
 
     <script type="module" src="/src/scripts/initLenis.ts"></script>
+    {localePrefix && (
+      <script is:inline define:vars={{ localePrefix }}>
+        const assetPattern = /\.(?:avif|webp|jpg|jpeg|png|gif|svg|ico|ttf|woff|woff2|pdf|xml|txt|js|css)$/i;
+        const prefixInternalLinks = () => {
+          document.querySelectorAll('a[href^="/"]').forEach((anchor) => {
+            const href = anchor.getAttribute("href");
+            if (!href || href.startsWith("/co") || href.startsWith("/api/") || href.startsWith("/_astro/")) return;
+            if (assetPattern.test(href.split("?")[0])) return;
+            anchor.setAttribute("href", `${localePrefix}${href === "/" ? "/" : href}`);
+          });
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", prefixInternalLinks, { once: true });
+        } else {
+          prefixInternalLinks();
+        }
+      </script>
+    )}
     <script>
       window.showBlurOverlay = function() {
         const overlay = document.getElementById('blur-overlay');

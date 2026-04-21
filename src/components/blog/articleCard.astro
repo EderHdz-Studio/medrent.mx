@@ -2,6 +2,7 @@
 import { formatDate } from '@lib/utils.js';
 import ImageResponsive from '@components/media/ImageResponsive.astro';
 import { getClassificationTag } from '@lib/blog/classification';
+import { localizePath } from '@lib/locale';
 
 const { article, tagByArticleKey } = Astro.props as {
   article: any;
@@ -9,6 +10,7 @@ const { article, tagByArticleKey } = Astro.props as {
 };
 
 const classificationLabel = getClassificationTag(article as Record<string, unknown>, tagByArticleKey);
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 ---
 
 <div class="bg-[var(--color-secondary-light)] rounded-[16px]  hover:bg-[var(--color-secondary-light)] hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full relative min-h-[500px]">
@@ -28,7 +30,7 @@ const classificationLabel = getClassificationTag(article as Record<string, unkno
             {classificationLabel}
           </span>
         )}
-        <a href={`/blog/${article?.slug}`}>
+        <a href={localizePath(`/blog/${article?.slug}`, currentPathname)}>
         <h3 class="text-[22px] font-bold text-[#261819] mb-2 font-lato line-clamp-2 leading-7 hover:text-[var(--color-primary)] hover:underline decoration-[var(--color-primary)]">{article?.title}</h3>
         </a>
         <p class="text-on-surface-variant text-[16px] font-lato font-normal mb-4 line-clamp-3 flex-grow" style="max-height: 70px;">{article?.shortDescription}</p>
@@ -37,7 +39,7 @@ const classificationLabel = getClassificationTag(article as Record<string, unkno
         <span class="text-xs text-on-surface-variant font-lato w-full flex flex-wrap items-center gap-x-1 gap-y-1">
             <span class="whitespace-nowrap">
               Por:&nbsp;
-              <a href={`/blog/autor/${article?.writer?.slug}`} 
+              <a href={localizePath(`/blog/autor/${article?.writer?.slug}`, currentPathname)} 
                   class="inline text-xs text-[var(--color-primary)] underline decoration-[var(--color-primary)] cursor-pointer font-lato ">
                       {article?.writer?.fullName}
               </a>

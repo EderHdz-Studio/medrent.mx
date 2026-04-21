@@ -1,10 +1,11 @@
 ---
 export const prerender = false;
+import { localizeRedirect } from "@lib/locale";
 
 const autorParam = Astro.params.autor?.trim();
 if (!autorParam) {
-  return Astro.redirect('/404');
+  return Astro.redirect(localizeRedirect("/404", Astro.originPathname ?? Astro.url.pathname));
 }
 
-return Astro.redirect(`/blog/autor/${autorParam}`, 301);
+return Astro.redirect(localizeRedirect(`/blog/autor/${autorParam}`, Astro.originPathname ?? Astro.url.pathname), 301);
 ---

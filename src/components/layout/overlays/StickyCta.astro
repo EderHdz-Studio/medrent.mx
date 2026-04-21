@@ -1,5 +1,7 @@
 ---
-const pathname = Astro.url.pathname;
+import { stripLocalePrefix } from "@lib/locale";
+
+const pathname = stripLocalePrefix(Astro.originPathname ?? Astro.url.pathname);
 const isPDP = pathname.startsWith('/productos/');
 const pathSegments = pathname.split('/').filter(Boolean);
 const isEspecialidadCuartoNivel = pathSegments[0] === 'especialidades' && pathSegments.length === 4;

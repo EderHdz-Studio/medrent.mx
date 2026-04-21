@@ -284,7 +284,7 @@ const showTeamFigmaIntro =
   (!Array.isArray(author.longDescription) || author.longDescription.length === 0);
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 /** Misma ruta que `Layout.astro` (origen actual del documento; evita URL absoluta rota en preview). */
 const heroBrandLogoSrc = siteConfig?.favicon512x512?.url;

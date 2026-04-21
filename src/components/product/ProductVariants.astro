@@ -1,11 +1,13 @@
 ---
 import { strapiFetch } from "@server/strapiClient";
+import { localizePath } from "@lib/locale";
 
 export interface Props {
   currentProductSlug: string;
 }
 
 const { currentProductSlug } = Astro.props;
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 
 async function getProductVariants() {
   const response = await strapiFetch(
@@ -31,7 +33,7 @@ const variantProducts = variants.filter(
     <div class="flex flex-wrap gap-3">
       {variantProducts.map((variant: any) => (
         <a
-          href={`/productos/${variant.slug}`}
+          href={localizePath(`/productos/${variant.slug}`, currentPathname)}
           class="flex flex-1 basis-[calc(33.333%-12px)] sm:basis-[calc(25%-12px)] md:basis-[calc(16.666%-12px)] min-w-[100px] justify-center items-center gap-2 px-3 py-2 rounded-[4px] border border-[#171D1C] text-[#171D1C] hover:bg-[#171D1C] hover:text-white transition-all duration-200 text-center text-sm font-medium"
         >
           {variant.name}
