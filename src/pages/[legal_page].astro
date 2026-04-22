@@ -1,5 +1,5 @@
 ---
-export const prerender = false;
+export const prerender = true;
 
 import Layout from "@layouts/Layout.astro";
 import { strapiFetch } from "@server/strapiClient";
@@ -7,6 +7,7 @@ import { BlocksRenderer } from '@strapi/blocks-react-renderer';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import { getSiteConfig } from "@server/siteConfig";
+import { getLocaleMeta, localizePath } from "@lib/locale";
 const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
@@ -31,12 +32,15 @@ const imageHero = pageDataSafe.imageHero;
 const pageSlug = pageDataSafe.slug ?? "";
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const localeMeta = getLocaleMeta(currentPathname);
+const canonicalUrl = new URL(currentPathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl = imageHero?.url || logoUrl;
 const isPrivacy = pageSlug === "aviso-de-privacidad";
 const schemaType = isPrivacy ? "PrivacyPolicy" : "TermsOfService";
+const homeUrl = new URL(localizePath("/", currentPathname), Astro.site).toString();
 const pageDescription =
   title === "Aviso de privacidad"
     ? "Consulta el aviso de privacidad y el tratamiento de datos personales de MedRent."
@@ -64,7 +68,7 @@ const pageDescription =
   <Fragment slot="head">
     <BreadcrumbSchema
       items={[
-        { name: 'Inicio', url: `${baseUrl}/` },
+        { name: 'Inicio', url: homeUrl },
         { name: title, url: canonicalUrl },
       ]}
       id={breadcrumbId}
@@ -81,7 +85,7 @@ const pageDescription =
             description: pageDescription,
             isPartOf: { "@id": `${baseUrl}/#website` },
             about: { "@id": `${baseUrl}/#organization` },
-            inLanguage: "es-MX",
+            inLanguage: localeMeta.htmlLang,
             breadcrumb: { "@id": breadcrumbId },
             primaryImageOfPage: heroImageUrl
               ? { "@type": "ImageObject", url: heroImageUrl }
@@ -96,7 +100,7 @@ const pageDescription =
     <Breadcrumb
       textColor="#171D1C"
       items={[
-        { name: "INICIO", href: "/" },
+        { name: "INICIO", href: localizePath("/", currentPathname) },
         { name: title }
       ]}
     />

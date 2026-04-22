@@ -1,0 +1,21 @@
+---
+export const prerender = true;
+
+import LegalPage from "../[legal_page].astro";
+import { strapiFetch } from "@server/strapiClient";
+
+export async function getStaticPaths() {
+  const res = await strapiFetch("/legal-content?populate[legalPages][populate]=imageHero");
+  const mainPublishedAt = res.data.publishedAt;
+
+  return res.data.legalPages.map((page: any) => ({
+    params: { legal_page: page.slug },
+    props: {
+      pageData: page,
+      mainPublishedAt,
+    },
+  }));
+}
+---
+
+<LegalPage {...Astro.props} />

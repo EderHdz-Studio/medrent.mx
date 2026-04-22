@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 Astro.response.headers.set("Cache-Control", "public, max-age=60");
 
 import { getProducts, getProductBySlug } from "@server/api/products";
@@ -20,6 +22,7 @@ import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import ProductVariants from '@components/product/ProductVariants.astro';
 import { getSiteConfig } from "@server/siteConfig";
+import { getLocaleMeta, localizePath } from "@lib/locale";
 const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
@@ -46,7 +49,9 @@ const especialidadesSliderItems = getHomeEspecialidadesForSlider();
 const promotionsData = await getPromotionSlides();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const localeMeta = getLocaleMeta(currentPathname);
+const canonicalUrl = new URL(currentPathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl =
@@ -56,6 +61,12 @@ const heroImageUrl =
 
 const productId = `${baseUrl}/entity/product/${product.slug}#id`;
 const offerId = `${baseUrl}/entity/offer/${product.slug}#offer`;
+const homeUrl = new URL(localizePath("/", currentPathname), Astro.site).toString();
+const productsUrl = new URL(localizePath("/productos", currentPathname), Astro.site).toString();
+const brandPath = product.brand?.slug
+  ? localizePath(`/nuestras-marcas/${product.brand.slug}`, currentPathname)
+  : "";
+const brandUrl = brandPath ? new URL(brandPath, Astro.site).toString() : "";
 const item_variant  = product?.relatedProducts?.length + ' Canales, ' + product?.variants?.length + ' Derivaciones';
 const firstVariant = Array.isArray((product as any)?.variants)
   ? (product as any).variants[0]
@@ -80,7 +91,7 @@ const pdpGraph: any[] = [
       `${product.name} | Equipo médico especializado de MedRent.`,
     isPartOf: { "@id": `${baseUrl}/#website` },
     about: { "@id": `${baseUrl}/#organization` },
-    inLanguage: "es-MX",
+    inLanguage: localeMeta.htmlLang,
     breadcrumb: { "@id": breadcrumbId },
     mainEntity: { "@id": productId },
     primaryImageOfPage: {
@@ -97,7 +108,7 @@ const pdpGraph: any[] = [
     category: ["Medical Device"],
     brand:
       product.brand && isUsableBrandSlug(product.brand.slug)
-        ? { "@type": "Brand", "@id": `${baseUrl}/nuestras-marcas/${product.brand.slug}#brand` }
+        ? { "@type": "Brand", "@id": `${brandUrl}#brand` }
         : undefined,
     datePublished: product.createdAt,
     offers: { "@id": offerId },
@@ -138,21 +149,22 @@ const pdpJsonLd = {
   ogImage={heroImageUrl}
 >
   <Fragment slot="head">
-      <BreadcrumbSchema
+    <BreadcrumbSchema
       items={[
-          { name: 'Inicio', url: `${baseUrl}/` },
-          { name: 'Productos', url: `${baseUrl}/productos` },
+        { name: 'Inicio', url: homeUrl },
+        { name: 'Productos', url: productsUrl },
+        { name: product.name, url: canonicalUrl },
       ]}
       id={breadcrumbId}
-      />
-      <script type="application/ld+json" set:html={JSON.stringify(pdpJsonLd)}></script>
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(pdpJsonLd)}></script>
   </Fragment>
   <Breadcrumb
     textColor="text-black"
     items={[
-        { name: "INICIO", href: "/" },
-        { name: "PRODUCTOS", href: "/productos" },
-        { name: product.name.toUpperCase() }
+      { name: "INICIO", href: localizePath("/", currentPathname) },
+      { name: "PRODUCTOS", href: localizePath("/productos", currentPathname) },
+      { name: product.name.toUpperCase() }
     ]}
   />
   
@@ -374,7 +386,7 @@ const pdpJsonLd = {
 
           {product.brand && isUsableBrandSlug(product.brand.slug) && (
             <a
-              href={`/nuestras-marcas/${product.brand.slug}`}
+              href={localizePath(`/nuestras-marcas/${product.brand.slug}`, currentPathname)}
               class="uppercase text-[var(--color-primary)] hover:underline text-sm m-0"
             >
               {product.brand.name}
