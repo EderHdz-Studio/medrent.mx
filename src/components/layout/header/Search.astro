@@ -195,7 +195,7 @@ const art = articles.filter(a =>
           ${prod.map(p => `
             <a
               href="${localePrefix}/productos/${p.slug}"
-              class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
+              class="block pr-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${p.name}
               ${icon}
@@ -214,7 +214,7 @@ const art = articles.filter(a =>
           ${esp.filter(e => e?.slug && e.slug !== "undefined" && e.slug !== "null").map(e => `
             <a
               href="${localePrefix}/especialidades/${e.slug}"
-              class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
+              class="block pr-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${e.name}
               ${icon}
@@ -232,7 +232,7 @@ const art = articles.filter(a =>
           ${sub.filter(s => s?.slug && s?.category?.slug && s.slug !== "undefined" && s.category.slug !== "undefined" && s.slug !== "null" && s.category.slug !== "null").map(s => `
             <a
               href="${localePrefix}/especialidades/${s.category.slug}/${s.slug}"
-              class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
+              class="block pr-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${s.name}
                 ${icon}
@@ -250,7 +250,7 @@ const art = articles.filter(a =>
           ${mar.map(m => `
             <a
               href="${m.slug && m.slug !== 'undefined' && m.slug !== 'null' ? `${localePrefix}/nuestras-marcas/${m.slug}` : `${localePrefix}/productos`}"
-              class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
+              class="block pr-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${m.name}
                 ${icon}
@@ -268,7 +268,7 @@ const art = articles.filter(a =>
           ${art.map(a => `
             <a
               href="${localePrefix}/blog/${a.slug}"
-              class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
+              class="block pr-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
             >
               ${a.title}
                 ${icon}
