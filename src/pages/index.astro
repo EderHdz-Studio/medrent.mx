@@ -213,7 +213,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
 
 
     <!--  Sección mosaico de categorías-->
-    <section class="max-w-7xl mx-auto py-6">
+    <section class="max-w-7xl mx-auto py-6 px-4 md:px-6 lg:px-8">
         <div class="text-center p-6 w-full"> 
             <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center">ESPECIALISTAS EN TECNOLOGÍA </h3> 
             <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight">Acercamos tecnología que fortalece los estándares en salud.</h2>
@@ -264,17 +264,17 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     <PromotionSlider promotionsData={promotionsData} />
     
     <!--  Sección de financiamiento -->
-    <section class="defer-section py-6 px-0 lg:px-8 max-w-7xl mx-auto flex flex-col gap-6">
+    <section class="defer-section py-6 px-0 max-w-7xl mx-auto flex flex-col gap-6">
         <div class="hero-slider relative w-full h-full">
             <div id="slides-hero" class="relative w-full h-full">
-                <div class="fade-slide-hero w-full h-full active-slide-hero pt-4 pb-4 px-4 gap-4 md:pt-6 md:pb-6 md:px-6 md:gap-6 lg:pt-8 lg:pb-8 lg:px-8 lg:gap-6 xl:pt-8 xl:pb-8 xl:px-8 xl:gap-6 2xl:pt-8 2xl:pb-8 2xl:px-8 2xl:gap-6">
+                <div class="fade-slide-hero w-full h-full active-slide-hero pt-4 pb-4  gap-4 md:pt-6 md:pb-6  md:gap-6 lg:pt-8 lg:pb-8 lg:gap-6 xl:pt-8 ">
                     <!-- Layout responsive: mobile = imagen full width arriba, texto abajo -->
                     <!-- En mobile/tablet: Imagen full width primero (arriba) -->
                     <div class="w-full block lg:hidden financing-hero-mobile" aria-hidden="true"></div>
                     <!-- Layout para desktop y contenido -->
                     <div class="flex flex-col w-full h-auto lg:flex-row lg:h-[524px] relative">
                         <!-- En mobile/tablet: Texto segundo (abajo) / En desktop: Texto izquierda -->
-                        <div class="w-full flex flex-col items-center justify-center space-y-4 z-10 bg-aqua p-0 md:px-6 md:py-6 lg:max-w-xl lg:px-[135px] lg:py-8 lg:space-y-6 order-1 relative">
+                        <div class="w-full flex flex-col items-center justify-center space-y-4 z-10 bg-aqua p-4 md:px-6 md:py-8 lg:max-w-xl lg:px-[135px] lg:py-8 lg:space-y-6 order-1 relative">
                             <div class="p-0 w-full space-y-6 financing-copy-card">
                                 <h3 class="type-eyebrow text-[var(--color-accent)] text-left m-0">FINANCIAMIENTO</h3>
 
@@ -302,7 +302,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                             <ImageResponsive
                               src="/temp/Financiamiento.png"
                               alt="SOMOS MED RENT"
-                              class="w-full h-auto lg:h-[524px] object-cover z-10 rounded-[12px]"
+                              class="w-full h-auto lg:h-[524px] object-cover z-10 "
                               sizes="(min-width: 1024px) 50vw, 100vw"
                               loading="eager"
                               decoding="async"
