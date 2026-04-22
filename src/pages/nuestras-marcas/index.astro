@@ -162,14 +162,20 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         </div>
     </section>
 
-    {brands.data.map((brand) => (
+    {brands.data.map((brand) => {
+        const primaryColor =
+            typeof brand.primaryColor === "string" && brand.primaryColor.trim().length > 0
+                ? (brand.primaryColor.startsWith("#") ? brand.primaryColor : `#${brand.primaryColor}`)
+                : "#ffffff";
+
+        return (
         <section class="max-w-7xl mx-auto px-4 py-16 space-y-12">
             {/* Logo con fondo */}
-            <div class={`min-h-[424px] rounded-2xl p-8 flex flex-col justify-center items-center bg-[${brand.primaryColor}]`}>
+            <div class="min-h-[424px] rounded-2xl p-8 flex flex-col justify-center items-center" style={`background-color: ${primaryColor};`}>
                 <ImageResponsive
                   image={brand.logo}
                   src={brand.logo?.url ?? "/images/default-logo.webp"}
-                  class="w-full max-w-[500px] h-auto"
+                  class="w-full max-w-[300px] h-auto"
                   alt={brand.name}
                   sizes="(min-width: 1024px) 500px, 90vw"
                   loading="lazy"
@@ -224,5 +230,6 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                 </div>
             )}
         </section>
-    ))}
+        );
+    })}
 </Layout>

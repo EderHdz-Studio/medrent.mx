@@ -424,6 +424,7 @@ select:autofill {
   display: none;
 }
 
+
 /* Foco visible en la tira de chips (accesibilidad teclado) */
 .blog-chips-scroll:focus-within {
   outline: 2px solid var(--color-primary);
@@ -666,4 +667,8 @@ select:autofill {
 
 .containerNextSpecialty:has(#nextSpecialty:hover) {
   background-color: rgb(255 255 255 / 0.2);
+}
+
+.sidebar-filters-container{
+  scrollbar-width: thin;
 }

@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 Astro.response.headers.set("Cache-Control", "public, max-age=60");
 
 import { getProducts, getProductBySlug } from "@server/api/products";
@@ -20,6 +22,7 @@ import { getHomeEspecialidadesForSlider } from "@lib/homeEspecialidades";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import ProductVariants from '@components/product/ProductVariants.astro';
 import { getSiteConfig } from "@server/siteConfig";
+import { getLocaleMeta, localizePath } from "@lib/locale";
 const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
@@ -46,7 +49,9 @@ const especialidadesSliderItems = getHomeEspecialidadesForSlider();
 const promotionsData = await getPromotionSlides();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const localeMeta = getLocaleMeta(currentPathname);
+const canonicalUrl = new URL(currentPathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
 const heroImageUrl =
@@ -56,6 +61,12 @@ const heroImageUrl =
 
 const productId = `${baseUrl}/entity/product/${product.slug}#id`;
 const offerId = `${baseUrl}/entity/offer/${product.slug}#offer`;
+const homeUrl = new URL(localizePath("/", currentPathname), Astro.site).toString();
+const productsUrl = new URL(localizePath("/productos", currentPathname), Astro.site).toString();
+const brandPath = product.brand?.slug
+  ? localizePath(`/nuestras-marcas/${product.brand.slug}`, currentPathname)
+  : "";
+const brandUrl = brandPath ? new URL(brandPath, Astro.site).toString() : "";
 const item_variant  = product?.relatedProducts?.length + ' Canales, ' + product?.variants?.length + ' Derivaciones';
 const firstVariant = Array.isArray((product as any)?.variants)
   ? (product as any).variants[0]
@@ -80,7 +91,7 @@ const pdpGraph: any[] = [
       `${product.name} | Equipo médico especializado de MedRent.`,
     isPartOf: { "@id": `${baseUrl}/#website` },
     about: { "@id": `${baseUrl}/#organization` },
-    inLanguage: "es-MX",
+    inLanguage: localeMeta.htmlLang,
     breadcrumb: { "@id": breadcrumbId },
     mainEntity: { "@id": productId },
     primaryImageOfPage: {
@@ -97,7 +108,7 @@ const pdpGraph: any[] = [
     category: ["Medical Device"],
     brand:
       product.brand && isUsableBrandSlug(product.brand.slug)
-        ? { "@type": "Brand", "@id": `${baseUrl}/nuestras-marcas/${product.brand.slug}#brand` }
+        ? { "@type": "Brand", "@id": `${brandUrl}#brand` }
         : undefined,
     datePublished: product.createdAt,
     offers: { "@id": offerId },
@@ -138,21 +149,22 @@ const pdpJsonLd = {
   ogImage={heroImageUrl}
 >
   <Fragment slot="head">
-      <BreadcrumbSchema
+    <BreadcrumbSchema
       items={[
-          { name: 'Inicio', url: `${baseUrl}/` },
-          { name: 'Productos', url: `${baseUrl}/productos` },
+        { name: 'Inicio', url: homeUrl },
+        { name: 'Productos', url: productsUrl },
+        { name: product.name, url: canonicalUrl },
       ]}
       id={breadcrumbId}
-      />
-      <script type="application/ld+json" set:html={JSON.stringify(pdpJsonLd)}></script>
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(pdpJsonLd)}></script>
   </Fragment>
   <Breadcrumb
     textColor="text-black"
     items={[
-        { name: "INICIO", href: "/" },
-        { name: "PRODUCTOS", href: "/productos" },
-        { name: product.name.toUpperCase() }
+      { name: "INICIO", href: localizePath("/", currentPathname) },
+      { name: "PRODUCTOS", href: localizePath("/productos", currentPathname) },
+      { name: product.name.toUpperCase() }
     ]}
   />
   
@@ -270,20 +282,22 @@ const pdpJsonLd = {
               <!-- Contenedor btns share -->
               <ShareButtons classNames="flex flex-row items-center gap-2 w-full justify-between" />
                 
-              <button
-                type="button"
-                data-zoom-button
-                aria-pressed="false"
-                title="Activar zoom"
-                class="w-10 h-10 flex items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent text-[#212121] transition-colors duration-200"
-              >
-                <svg class="zoom-icon-inactive w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
-                </svg>
-                <svg class="zoom-icon-active hidden w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21.71 20.29L18 16.61C19.4401 14.8144 20.1375 12.5353 19.9488 10.2413C19.7601 7.94733 18.6997 5.81281 16.9855 4.27667C15.2714 2.74053 13.0338 1.91954 10.7329 1.9825C8.43207 2.04546 6.24275 2.98759 4.61517 4.61517C2.98759 6.24275 2.04546 8.43207 1.9825 10.7329C1.91954 13.0338 2.74053 15.2714 4.27667 16.9855C5.81281 18.6997 7.94733 19.7601 10.2413 19.9488C12.5353 20.1375 14.8144 19.4401 16.61 18L20.29 21.68C20.383 21.7738 20.4936 21.8482 20.6154 21.8989C20.7373 21.9497 20.868 21.9758 21 21.9758C21.132 21.9758 21.2627 21.9497 21.3846 21.8989C21.5065 21.8482 21.6171 21.7738 21.71 21.68C21.8903 21.4936 21.991 21.2444 21.991 20.985C21.991 20.7257 21.8903 20.4765 21.71 20.29ZM11 18C9.61556 18 8.26218 17.5895 7.11103 16.8203C5.95989 16.0511 5.06268 14.9579 4.53287 13.6788C4.00306 12.3997 3.86443 10.9923 4.13453 9.63439C4.40463 8.27653 5.07131 7.02925 6.05028 6.05028C7.02925 5.07131 8.27653 4.40463 9.63439 4.13453C10.9923 3.86443 12.3997 4.00306 13.6788 4.53287C14.9579 5.06268 16.0511 5.95989 16.8203 7.11103C17.5895 8.26218 18 9.61556 18 11C18 12.8565 17.2625 14.637 15.9498 15.9498C14.637 17.2625 12.8565 18 11 18ZM15 10H7.00003C6.73481 10 6.48046 10.1054 6.29292 10.2929C6.10538 10.4805 6.00003 10.7348 6.00003 11C6.00003 11.2652 6.10538 11.5196 6.29292 11.7071C6.48046 11.8947 6.73481 12 7.00003 12H15C15.2652 12 15.5196 11.8947 15.7071 11.7071C15.8947 11.5196 16 11.2652 16 11C16 10.7348 15.8947 10.4805 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10Z" fill="white"/>
-                </svg>
-              </button>
+              <div class="w-10 h-10">
+                <button
+                  type="button"
+                  data-zoom-button
+                  aria-pressed="false"
+                  title="Activar zoom"
+                  class="w-10 h-10 flex absolute z-10 items-center justify-center rounded cursor-pointer border border-[#212121] bg-transparent text-[#212121] transition-colors duration-200"
+                >
+                  <svg class="zoom-icon-inactive w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14.9999 9.9999H11.9999V6.9999C11.9999 6.73469 11.8945 6.48033 11.707 6.2928C11.5195 6.10526 11.2651 5.9999 10.9999 5.9999C10.7347 5.9999 10.4803 6.10526 10.2928 6.2928C10.1053 6.48033 9.9999 6.73469 9.9999 6.9999V9.9999H6.9999C6.73469 9.9999 6.48033 10.1053 6.2928 10.2928C6.10526 10.4803 5.9999 10.7347 5.9999 10.9999C5.9999 11.2651 6.10526 11.5195 6.2928 11.707C6.48033 11.8945 6.73469 11.9999 6.9999 11.9999H9.9999V14.9999C9.9999 15.2651 10.1053 15.5195 10.2928 15.707C10.4803 15.8945 10.7347 15.9999 10.9999 15.9999C11.2651 15.9999 11.5195 15.8945 11.707 15.707C11.8945 15.5195 11.9999 15.2651 11.9999 14.9999V11.9999H14.9999C15.2651 11.9999 15.5195 11.8945 15.707 11.707C15.8945 11.5195 15.9999 11.2651 15.9999 10.9999C15.9999 10.7347 15.8945 10.4803 15.707 10.2928C15.5195 10.1053 15.2651 9.9999 14.9999 9.9999ZM21.7099 20.2899L17.9999 16.6099C19.44 14.8143 20.1374 12.5352 19.9487 10.2412C19.76 7.94721 18.6996 5.81269 16.9854 4.27655C15.2713 2.74041 13.0337 1.91941 10.7328 1.98237C8.43194 2.04534 6.24263 2.98747 4.61505 4.61505C2.98747 6.24263 2.04534 8.43194 1.98237 10.7328C1.91941 13.0337 2.74041 15.2713 4.27655 16.9854C5.81269 18.6996 7.94721 19.76 10.2412 19.9487C12.5352 20.1374 14.8143 19.44 16.6099 17.9999L20.2899 21.6799C20.3829 21.7736 20.4935 21.848 20.6153 21.8988C20.7372 21.9496 20.8679 21.9757 20.9999 21.9757C21.1319 21.9757 21.2626 21.9496 21.3845 21.8988C21.5063 21.848 21.6169 21.7736 21.7099 21.6799C21.8901 21.4934 21.9909 21.2442 21.9909 20.9849C21.9909 20.7256 21.8901 20.4764 21.7099 20.2899ZM10.9999 17.9999C9.61544 17.9999 8.26206 17.5894 7.11091 16.8202C5.95977 16.051 5.06256 14.9578 4.53275 13.6787C4.00293 12.3996 3.86431 10.9921 4.13441 9.63427C4.4045 8.27641 5.07119 7.02912 6.05016 6.05016C7.02912 5.07119 8.27641 4.4045 9.63427 4.13441C10.9921 3.86431 12.3996 4.00293 13.6787 4.53275C14.9578 5.06256 16.051 5.95977 16.8202 7.11091C17.5894 8.26206 17.9999 9.61544 17.9999 10.9999C17.9999 12.8564 17.2624 14.6369 15.9497 15.9497C14.6369 17.2624 12.8564 17.9999 10.9999 17.9999Z" fill="#212121"/>
+                  </svg>
+                  <svg class="zoom-icon-active hidden w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21.71 20.29L18 16.61C19.4401 14.8144 20.1375 12.5353 19.9488 10.2413C19.7601 7.94733 18.6997 5.81281 16.9855 4.27667C15.2714 2.74053 13.0338 1.91954 10.7329 1.9825C8.43207 2.04546 6.24275 2.98759 4.61517 4.61517C2.98759 6.24275 2.04546 8.43207 1.9825 10.7329C1.91954 13.0338 2.74053 15.2714 4.27667 16.9855C5.81281 18.6997 7.94733 19.7601 10.2413 19.9488C12.5353 20.1375 14.8144 19.4401 16.61 18L20.29 21.68C20.383 21.7738 20.4936 21.8482 20.6154 21.8989C20.7373 21.9497 20.868 21.9758 21 21.9758C21.132 21.9758 21.2627 21.9497 21.3846 21.8989C21.5065 21.8482 21.6171 21.7738 21.71 21.68C21.8903 21.4936 21.991 21.2444 21.991 20.985C21.991 20.7257 21.8903 20.4765 21.71 20.29ZM11 18C9.61556 18 8.26218 17.5895 7.11103 16.8203C5.95989 16.0511 5.06268 14.9579 4.53287 13.6788C4.00306 12.3997 3.86443 10.9923 4.13453 9.63439C4.40463 8.27653 5.07131 7.02925 6.05028 6.05028C7.02925 5.07131 8.27653 4.40463 9.63439 4.13453C10.9923 3.86443 12.3997 4.00306 13.6788 4.53287C14.9579 5.06268 16.0511 5.95989 16.8203 7.11103C17.5895 8.26218 18 9.61556 18 11C18 12.8565 17.2625 14.637 15.9498 15.9498C14.637 17.2625 12.8565 18 11 18ZM15 10H7.00003C6.73481 10 6.48046 10.1054 6.29292 10.2929C6.10538 10.4805 6.00003 10.7348 6.00003 11C6.00003 11.2652 6.10538 11.5196 6.29292 11.7071C6.48046 11.8947 6.73481 12 7.00003 12H15C15.2652 12 15.5196 11.8947 15.7071 11.7071C15.8947 11.5196 16 11.2652 16 11C16 10.7348 15.8947 10.4805 15.7071 10.2929C15.5196 10.1054 15.2652 10 15 10Z" fill="white"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -374,7 +388,7 @@ const pdpJsonLd = {
 
           {product.brand && isUsableBrandSlug(product.brand.slug) && (
             <a
-              href={`/nuestras-marcas/${product.brand.slug}`}
+              href={localizePath(`/nuestras-marcas/${product.brand.slug}`, currentPathname)}
               class="uppercase text-[var(--color-primary)] hover:underline text-sm m-0"
             >
               {product.brand.name}
@@ -407,11 +421,11 @@ const pdpJsonLd = {
             </button>
             <a 
                 id="open-demo-whatsapp"
-                class="w-full sm:w-1/2 flex justify-center items-center rounded border border-[var(--color-primary)] bg-[var(--color-secondary-light)] px-4 py-3 gap-1 text-[var(--color-primary)]  text-[14px] font-bold text-center hover:bg-[var(--color-accent)] transition-colors cursor-pointer hover:text-white group"
-                href="https://wa.me/525559854347" target="_blank" rel="noopener noreferrer"
+                class="w-full sm:w-1/2 flex justify-center items-center rounded border border-[var(--color-primary)] bg-[var(--color-secondary-light)] px-4 py-3 gap-2 text-[var(--color-primary)]  text-[14px] font-bold text-center hover:bg-[var(--color-accent)] transition-colors cursor-pointer hover:text-white group"
+                href="https://wa.me/525559854347" target="_blank" rel="noopener noreferrer" style="gap: 8px;"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="currentColor" class="transition-colors text-[#1E824C] group-hover:text-white">
-                <path d="M9.00074 1.5C13.143 1.5 16.5007 4.85775 16.5007 9C16.5007 13.1423 13.143 16.5 9.00074 16.5C7.67531 16.5023 6.37318 16.1515 5.22824 15.4838L1.50374 16.5L2.51774 12.774C1.84946 11.6287 1.49842 10.326 1.50074 9C1.50074 4.85775 4.85849 1.5 9.00074 1.5ZM6.44474 5.475L6.29474 5.481C6.19776 5.48768 6.103 5.51315 6.01574 5.556C5.93443 5.60213 5.86017 5.65972 5.79524 5.727C5.70524 5.81175 5.65424 5.88525 5.59949 5.9565C5.32209 6.31718 5.17272 6.75998 5.17499 7.215C5.17649 7.5825 5.27249 7.94025 5.42249 8.27475C5.72924 8.95125 6.23399 9.6675 6.89999 10.3312C7.06049 10.491 7.21799 10.6515 7.38749 10.8007C8.21507 11.5293 9.2012 12.0547 10.2675 12.3353L10.6935 12.4005C10.8322 12.408 10.971 12.3975 11.1105 12.3907C11.3289 12.3792 11.5421 12.3201 11.7352 12.2175C11.8334 12.1668 11.9292 12.1117 12.0225 12.0525C12.0225 12.0525 12.0542 12.031 12.1162 11.985C12.2175 11.91 12.2797 11.8568 12.3637 11.769C12.4267 11.704 12.4792 11.6285 12.5212 11.5425C12.5797 11.4202 12.6382 11.187 12.6622 10.9928C12.6802 10.8442 12.675 10.7633 12.6727 10.713C12.6697 10.6328 12.603 10.5495 12.5302 10.5142L12.0937 10.3185C12.0937 10.3185 11.4412 10.0343 11.0422 9.85275C11.0005 9.83457 10.9557 9.82415 10.9102 9.822C10.8589 9.81663 10.807 9.82236 10.7581 9.83879C10.7092 9.85523 10.6644 9.88198 10.6267 9.91725C10.623 9.91575 10.5727 9.9585 10.0305 10.6155C9.99937 10.6573 9.9565 10.6889 9.90735 10.7063C9.85819 10.7237 9.80498 10.726 9.75449 10.713C9.70561 10.7 9.65774 10.6834 9.61124 10.6635C9.51824 10.6245 9.48599 10.6095 9.42224 10.5825C8.99165 10.3949 8.59307 10.1411 8.24099 9.83025C8.14649 9.74775 8.05874 9.65775 7.96874 9.57075C7.6737 9.28816 7.41656 8.96849 7.20374 8.61975L7.15949 8.5485C7.12819 8.50035 7.10252 8.44876 7.08299 8.39475C7.05449 8.2845 7.12874 8.196 7.12874 8.196C7.12874 8.196 7.31099 7.9965 7.39574 7.8885C7.47824 7.7835 7.54799 7.6815 7.59299 7.60875C7.68149 7.46625 7.70924 7.32 7.66274 7.20675C7.45274 6.69375 7.23574 6.1835 7.01174 5.676C6.96749 5.5755 6.83624 5.5035 6.71699 5.48925C6.67649 5.48425 6.63599 5.48025 6.59549 5.47725C6.49479 5.47147 6.39381 5.47248 6.29324 5.48025L6.44474 5.475Z" fill="currentColor"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path class="transition-colors group-hover:fill-white" d="M10 0C15.523 0 20 4.477 20 10C20 15.523 15.523 20 10 20C8.23277 20.003 6.4966 19.5353 4.97002 18.645L0.00401546 20L1.35602 15.032C0.464974 13.5049 -0.00308163 11.768 1.52687e-05 10C1.52687e-05 4.477 4.47702 0 10 0ZM6.59202 5.3L6.39201 5.308C6.26271 5.31691 6.13636 5.35087 6.02002 5.408C5.91159 5.46951 5.81258 5.5463 5.72602 5.636C5.60602 5.749 5.53802 5.847 5.46502 5.942C5.09514 6.4229 4.89599 7.01331 4.89902 7.62C4.90102 8.11 5.02902 8.587 5.22902 9.033C5.63802 9.935 6.31102 10.89 7.19902 11.775C7.41302 11.988 7.62302 12.202 7.84902 12.401C8.95245 13.3724 10.2673 14.073 11.689 14.447L12.257 14.534C12.442 14.544 12.627 14.53 12.813 14.521C13.1042 14.5056 13.3885 14.4268 13.646 14.29C13.7769 14.2223 13.9047 14.1489 14.029 14.07C14.029 14.07 14.0714 14.0413 14.154 13.98C14.289 13.88 14.372 13.809 14.484 13.692C14.568 13.6053 14.638 13.5047 14.694 13.39C14.772 13.227 14.85 12.916 14.882 12.657C14.906 12.459 14.899 12.351 14.896 12.284C14.892 12.177 14.803 12.066 14.706 12.019L14.124 11.758C14.124 11.758 13.254 11.379 12.722 11.137C12.6663 11.1128 12.6067 11.0989 12.546 11.096C12.4776 11.0888 12.4084 11.0965 12.3432 11.1184C12.278 11.1403 12.2182 11.176 12.168 11.223C12.163 11.221 12.096 11.278 11.373 12.154C11.3315 12.2098 11.2744 12.2519 11.2088 12.2751C11.1433 12.2982 11.0723 12.3013 11.005 12.284C10.9398 12.2666 10.876 12.2446 10.814 12.218C10.69 12.166 10.647 12.146 10.562 12.11C9.98789 11.8599 9.45646 11.5215 8.98702 11.107C8.86102 10.997 8.74402 10.877 8.62402 10.761C8.23063 10.3842 7.88777 9.95799 7.60401 9.493L7.54501 9.398C7.50328 9.3338 7.46905 9.26501 7.44302 9.193C7.40502 9.046 7.50402 8.928 7.50402 8.928C7.50402 8.928 7.74702 8.662 7.86002 8.518C7.97002 8.378 8.06301 8.242 8.12302 8.145C8.24102 7.955 8.27802 7.76 8.21602 7.609C7.93602 6.925 7.64668 6.24467 7.34802 5.568C7.28902 5.434 7.11402 5.338 6.95502 5.319C6.90102 5.31233 6.84701 5.307 6.79302 5.303C6.65874 5.2953 6.52411 5.29664 6.39002 5.307L6.59202 5.3Z" fill="#006764"/>
                 </svg>
                 Agenda tu DEMO
             </a>
@@ -419,7 +433,7 @@ const pdpJsonLd = {
 
           <!-- Beneficios -->
           {product?.benefit && product.benefit.length > 0 && (
-            <div class="p-6 space-y-6 mb-0">
+            <div class="p-6 pb-0 space-y-6 mb-0">
                 {product.benefit.map((benefit) => (
                 <div class="rounded-lg flex items-start gap-4">
                     {/* Icono */}
@@ -450,7 +464,7 @@ const pdpJsonLd = {
 
           <!-- Preguntas Frecuentes -->
           {product?.faqItem && product.faqItem.length > 0 && (
-            <div id="preguntas-frecuentes">
+            <div id="preguntas-frecuentes" class="pt-6">
               <h3 class="pdp-section-title">
                 Preguntas frecuentes
               </h3>

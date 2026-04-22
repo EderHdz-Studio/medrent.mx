@@ -284,7 +284,7 @@ const especialidades = categoriesData;
                           <template x-for="especialidad in especialidades" :key="especialidad.id">
                             <li>
                               <a
-                                :href="`/especialidades/${especialidad.slug}`"
+                                :href="especialidad?.slug ? `/especialidades/${especialidad.slug}` : '#'"
                                 @mouseenter="setActiveEspecialidad(especialidad)"
                                 @focus="setActiveEspecialidad(especialidad)"
                                 @click.prevent="setActiveEspecialidad(especialidad)"
@@ -344,7 +344,7 @@ const especialidades = categoriesData;
                                           :key="aplicacion.id">
                                   <li>
                                     <a
-                                      :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}/${aplicacion.slug}`"
+                                      :href="especialidades.find(e => e.id === activeItem)?.slug && aplicacion?.slug ? `/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}/${aplicacion.slug}` : '#'"
                                       @mouseenter="activeAplicacion = aplicacion.id"
                                       @focus="activeAplicacion = aplicacion.id"
                                       @click="activeAplicacion = aplicacion.id"
@@ -374,7 +374,7 @@ const especialidades = categoriesData;
                               
                               <!-- "Ver más" del catálogo -->
                               <li>
-                                <a :href="`/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}`" 
+                                <a :href="especialidades.find(e => e.id === activeItem)?.slug ? `/especialidades/${especialidades.find(e => e.id === activeItem)?.slug}` : '#'" 
                                   class="text-[#261819] hover:text-[var(--color-primary)] transition-colors font-medium flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--color-secondary-light)] group"
                                   style="justify-content: space-between; text-decoration: none;">
                                   <span>Ver más</span>
@@ -695,7 +695,7 @@ const especialidades = categoriesData;
                 <div x-show="activeItem && especialidadesData.find(e => e.id == activeItem)?.subcategories?.length > 0">
                   <div class="space-y-3">
                     <template x-for="aplicacion in especialidadesData.find(e => e.id == activeItem)?.subcategories || []" :key="aplicacion.id">
-                      <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug || ''}/${aplicacion.slug}`"
+                      <a :href="especialidadesData.find(e => e.id == activeItem)?.slug && aplicacion?.slug ? `/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug}/${aplicacion.slug}` : '#'"
                           @click="activeAplicacion = aplicacion.id"
                           :aria-label="`Ver aplicación ${aplicacion.name || aplicacion.AplicacionClinica || 'clínica'}`"
                           :class="
@@ -712,7 +712,7 @@ const especialidades = categoriesData;
                   </div>
                   
                   <!-- Enlace para ver más -->
-                  <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug || ''}`" 
+                  <a :href="especialidadesData.find(e => e.id == activeItem)?.slug ? `/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug}` : '#'" 
                       class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-[#261819] mt-4">
                     <div class="font-medium">Ver todas las aplicaciones</div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -725,7 +725,7 @@ const especialidades = categoriesData;
                 <div x-show="activeItem && (!especialidadesData.find(e => e.id == activeItem)?.subcategories || especialidadesData.find(e => e.id == activeItem)?.subcategories?.length === 0)">
                   <div class="text-center py-8 text-gray-500">
                     <p>No hay aplicaciones disponibles para esta especialidad.</p>
-                      <a :href="`/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug || ''}`" 
+                      <a :href="especialidadesData.find(e => e.id == activeItem)?.slug ? `/especialidades/${especialidadesData.find(e => e.id == activeItem)?.slug}` : '#'" 
                         class="inline-block mt-4 text-[var(--color-primary)] font-medium hover:underline">
                       Ver especialidad
                     </a>

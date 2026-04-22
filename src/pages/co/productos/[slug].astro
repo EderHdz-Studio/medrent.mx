@@ -1,0 +1,16 @@
+---
+export const prerender = true;
+
+import ProductPage from "../../productos/[slug].astro";
+import { getProducts } from "@server/api/products";
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+
+  return products.map((product) => ({
+    params: { slug: product.slug },
+  }));
+}
+---
+
+<ProductPage />

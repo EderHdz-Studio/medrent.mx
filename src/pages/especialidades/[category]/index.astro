@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import Layout from "@layouts/Layout.astro";
 import { getApplicationsByCategory } from "@server/api/applications";
 import { getCategories } from "@server/api/categories";
@@ -7,6 +9,7 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
 import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
 import { getSiteConfig } from "@server/siteConfig";
+import { getLocaleMeta, localizePath } from "@lib/locale";
 const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
@@ -24,12 +27,16 @@ const categories = await getCategories();
 const especialidad = Array.isArray(categories)
   ? categories.find(item => item.slug === category)
   : null;
-const canonical = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const localeMeta = getLocaleMeta(currentPathname);
+const canonical = new URL(currentPathname, Astro.site).toString();
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = canonical;
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
+const homeUrl = new URL(localizePath("/", currentPathname), Astro.site).toString();
+const specialtiesUrl = new URL(localizePath("/especialidades", currentPathname), Astro.site).toString();
 ---
 
 <Layout
@@ -47,8 +54,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
   <BreadcrumbSchema
     slot="head"
     items={[
-      { name: 'Inicio', url: `${baseUrl}/` },
-      { name: 'Especialidades', url: `${baseUrl}/especialidades` },
+      { name: 'Inicio', url: homeUrl },
+      { name: 'Especialidades', url: specialtiesUrl },
       { name: especialidad?.name ?? "", url: canonicalUrl },
     ]}
     id={breadcrumbId}
@@ -64,7 +71,10 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         const listId = `${canonicalUrl}#applications`;
         const itemListElement = subs.slice(0, 12).map((s, index) => {
           const subSlug = s?.slug;
-          const subUrl = `${baseUrl}/especialidades/${especialidad?.slug ?? ""}/${subSlug}`;
+          const subUrl = new URL(
+            localizePath(`/especialidades/${especialidad?.slug ?? ""}/${subSlug}`, currentPathname),
+            Astro.site,
+          ).toString();
           const subName = s?.name ?? s?.Nombre ?? s?.title ?? "Aplicación";
           return {
             "@type": "ListItem",
@@ -92,12 +102,12 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                 "Tecnología médica para diagnóstico, terapia y rehabilitación con soporte especializado de MedRent.",
               isPartOf: { "@id": `${baseUrl}/#website` },
               about: { "@id": `${baseUrl}/#organization` },
-              inLanguage: "es-MX",
+              inLanguage: localeMeta.htmlLang,
               breadcrumb: { "@id": breadcrumbId },
               mainEntity: { "@id": listId },
               primaryImageOfPage: {
                 "@type": "ImageObject",
-                url: especialidad?.heroImage?.url || logoUrl,
+                url: especialidad?.heroImage || logoUrl,
               },
             },
             {
@@ -144,7 +154,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
               <div>
                 <a 
                   id="prevSpecialty"
-                  href={prevItem ? `/especialidades/${prevItem.slug}` : "#"}
+                  href={prevItem ? localizePath(`/especialidades/${prevItem.slug}`, currentPathname) : "#"}
                   class="ml-4 md:ml-8 flex items-center justify-center  py-2 px-4 rounded-full  bg-white/10  hover:bg-white/20  transition  backdrop-blur-sm  text-white cursor-pointer"
                   aria-label="Especialidad anterior"
                 >
@@ -163,7 +173,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                 <div class="w-1/4 md:w-1/2">
                   <a 
                     id="nextSpecialty" 
-                    href={nextItem ? `/especialidades/${nextItem.slug}` : "#"}
+                    href={nextItem ? localizePath(`/especialidades/${nextItem.slug}`, currentPathname) : "#"}
                     class="items-center justify-center rounded-full  bg-white  w-full flex h-[32px] cursor-pointer " aria-label="Especialidad anterior">              
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path d="M6.99998 13L14.59 13L11.29 16.29C11.1017 16.4783 10.9959 16.7337 10.9959 17C10.9959 17.2663 11.1017 17.5217 11.29 17.71C11.4783 17.8983 11.7337 18.0041 12 18.0041C12.2663 18.0041 12.5217 17.8983 12.71 17.71L17.71 12.71C17.801 12.6149 17.8724 12.5028 17.92 12.38C18.02 12.1365 18.02 11.8635 17.92 11.62C17.8724 11.4972 17.801 11.3851 17.71 11.29L12.71 6.29C12.617 6.19627 12.5064 6.12188 12.3846 6.07111C12.2627 6.02034 12.132 5.9942 12 5.9942C11.868 5.9942 11.7373 6.02034 11.6154 6.07111C11.4935 6.12188 11.3829 6.19627 11.29 6.29C11.1963 6.38296 11.1219 6.49356 11.0711 6.61542C11.0203 6.73728 10.9942 6.86799 10.9942 7C10.9942 7.13201 11.0203 7.26272 11.0711 7.38458C11.1219 7.50644 11.1963 7.61704 11.29 7.71L14.59 11L6.99998 11C6.73477 11 6.48041 11.1054 6.29287 11.2929C6.10534 11.4804 5.99998 11.7348 5.99998 12C5.99998 12.2652 6.10534 12.5196 6.29287 12.7071C6.48041 12.8946 6.73477 13 6.99998 13Z" fill="#171D1C"/>
@@ -176,7 +186,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
               <div class="relative h-full w-32 md:w-40 hidden md:block overflow-hidden min-w-[214px]">
                 <img 
                   id="nextSpecialtyImage"
-                  src={nextItem?.heroImage?.url || "https://balanced-amusement-bd4a404315.media.strapiapp.com/image_14_7aa0fcd37b.webp"}
+                  src={nextItem?.heroImage || "https://balanced-amusement-bd4a404315.media.strapiapp.com/image_14_7aa0fcd37b.webp"}
                   alt={nextItem?.name ? `Siguiente especialidad: ${nextItem.name}` : "Siguiente especialidad"}
                   class="w-full h-[68px] object-cover"
                 />
@@ -206,8 +216,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         <Breadcrumb
           textColor="text-white"
           items={[
-            { name: "INICIO", href: "/" },
-            { name: "ESPECIALIDADES", href: "/especialidades" },
+            { name: "INICIO", href: localizePath("/", currentPathname) },
+            { name: "ESPECIALIDADES", href: localizePath("/especialidades", currentPathname) },
             { name: especialidad?.name ?? "" },
           ]}
         />
@@ -218,7 +228,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         <!-- Columna: Imagen -->
         <div
           class="w-full h-[262px] min-h-[400px] relative overflow-hidden bg-cover bg-center md:rounded-none lg:rounded-bl-[24px]"
-          style={`background-image: url(${especialidad?.heroImage?.url})`}
+          style={`background-image: url(${especialidad?.heroImage})`}
         >
         </div>
 
@@ -240,14 +250,14 @@ const logoUrl = siteConfig?.favicon512x512?.url;
             const nextItem = items[nextIdx];
             return (
               <div class="flex items-center space-x-4 w-full justify-center sm:justify-center md:justify-between lg:justify-start pt-4 md:py-4">
-                <a href={prevItem ? `/especialidades/${prevItem.slug}` : "#"} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2 bg-white flex-shrink-0">
+                <a href={prevItem ? localizePath(`/especialidades/${prevItem.slug}`, currentPathname) : "#"} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2 bg-white flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="var(--color-primary)" />
                   </svg>
                 </a>
 
                 <a
-                  href={nextItem ? `/especialidades/${nextItem.slug}` : "#"}
+                  href={nextItem ? localizePath(`/especialidades/${nextItem.slug}`, currentPathname) : "#"}
                   class="flex items-center justify-center space-x-3 rounded-full cursor-pointer transition-opacity hover:opacity-80 pl-4 py-2 pr-2 bg-white w-full sm:w-full lg:w-auto"
                 >
                   <span class="text-[var(--color-primary)] text-sm font-medium whitespace-nowrap">Siguiente especialidad</span>
@@ -278,7 +288,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                 <div class="relative w-full shrink-0 md:w-1/2 md:min-h-[280px]">
                   <div class="relative aspect-[4/3] w-full overflow-hidden rounded-[24px] md:aspect-auto md:h-full md:min-h-[280px]">
                     <img
-                      src={aplicacion?.image?.url}
+                      src={aplicacion?.image}
                       alt={aplicacion.name}
                       class="absolute inset-0 z-0 h-full w-full rounded-[24px] object-cover md:relative md:inset-auto md:min-h-[280px]"
                       loading="lazy"
@@ -323,7 +333,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                         aplicacion.products.map((product, pIdx) => (
                           <span class="inline">
                             <a
-                              href={`/productos/${product.slug}`}
+                              href={localizePath(`/productos/${product.slug}`, currentPathname)}
                               class="text-[var(--color-primary)] italic underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-accent)]"
                             >
                               {product.name}
@@ -342,7 +352,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                   </div>
 
                   <a
-                    href={`/especialidades/${category}/${aplicacion.slug}`}
+                    href={localizePath(`/especialidades/${category}/${aplicacion.slug}`, currentPathname)}
                     class="mt-2 flex w-full items-center justify-center gap-2 rounded bg-[var(--color-primary)] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[var(--color-accent)] md:mt-8 md:w-fit md:justify-start"
                   >
                     Ver productos
@@ -365,8 +375,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
   <ul>
     {applications.map((app) => (
       <li>
-        <a href={`/especialidades/${category}/${app.slug}`}>
-          {app.name}
+        <a href={localizePath(`/especialidades/${category}/${app.slug}`, currentPathname)}>
+            {app.name}
         </a>
       </li>
     ))}
