@@ -1,0 +1,16 @@
+---
+export const prerender = true;
+
+import SpecialtyCategoryPage from "../../../especialidades/[category]/index.astro";
+import { getCategories } from "@server/api/categories";
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+
+  return categories.map((c) => ({
+    params: { category: c.slug },
+  }));
+}
+---
+
+<SpecialtyCategoryPage />
