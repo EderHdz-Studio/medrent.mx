@@ -121,7 +121,7 @@ try {
                     </div>
                     <h3 class="text-[22px] font-bold text-[var(--color-primary)]">{marca.name}</h3>
                     <a
-                      href={marca.isActive ? localizePath(`/especialidades/${marca.slug}`, currentPathname) : "#"}
+                      href={marca.isActive && marca.slug ? localizePath(`/especialidades/${marca.slug}`, currentPathname) : "#"}
                       class="text-[16px] tracking-[0.15px] text-[var(--color-text-default)] hover:underline hover:text-[var(--color-primary)] flex justify-center items-center gap-2 mt-0"
                     >
                       Ver aplicaciones

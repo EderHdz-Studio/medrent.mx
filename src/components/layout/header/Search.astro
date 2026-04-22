@@ -211,7 +211,7 @@ const art = articles.filter(a =>
           <div class=" text-[11px] text-[var(--color-primary)] font-semibold uppercase mt-2">
             Especialidades
           </div>
-          ${esp.map(e => `
+          ${esp.filter(e => e?.slug && e.slug !== "undefined" && e.slug !== "null").map(e => `
             <a
               href="${localePrefix}/especialidades/${e.slug}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"
@@ -229,7 +229,7 @@ const art = articles.filter(a =>
           <div class=" text-[11px] text-[var(--color-primary)]  font-semibold uppercase mt-2">
             Aplicaciones
           </div>
-          ${sub.map(s => `
+          ${sub.filter(s => s?.slug && s?.category?.slug && s.slug !== "undefined" && s.category.slug !== "undefined" && s.slug !== "null" && s.category.slug !== "null").map(s => `
             <a
               href="${localePrefix}/especialidades/${s.category.slug}/${s.slug}"
               class="block px-6 py-2 hover:bg-[var(--color-secondary-light)] hover:text-[var(--color-primary)] transition-colors text-[14px] flex flex-row justify-between items-center mt-2"

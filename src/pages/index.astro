@@ -236,7 +236,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                         {marca.name}
                     </h3>
                     <a 
-                        href={marca.isActive ? `/especialidades/${marca.slug}` : '#'} 
+                        href={marca.isActive && marca.slug ? `/especialidades/${marca.slug}` : '#'} 
                         class="mt-2 text-[16px] tracking-[0.15px] text-[var(--color-text-default)] hover:underline hover:text-[var(--color-primary)] flex justify-center gap-2"
                     >
                         Ver aplicaciones
