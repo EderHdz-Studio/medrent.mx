@@ -2,103 +2,121 @@
 const { site } = Astro.props;
 
 import { getSiteConfig } from "@server/siteConfig";
-import { localizePath } from "@lib/locale";
-
 const siteConfig = await getSiteConfig();
-const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+
 ---
 
-<footer class="text-white" style="background: var(--gradient-surface-dark);">
-  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-4 py-12 text-white text-[14px] font-normal">
-    <div>
-      <h4 class="font-bold mb-2 text-[22px]">Explora</h4>
-      <ul class="space-y-1">
-        <li>
-          <a href={localizePath("/acerca-de-nosotros", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Acerca de nosotros</a>
-        </li>
-        <li>
-          <a href={localizePath("/nuestras-marcas", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Nuestras marcas</a>
-        </li>
-        <li>
-          <a href={localizePath("/especialidades", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Especialidades mÃ©dicas</a>
-        </li>
-        <li>
-          <a href={localizePath("/productos", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Productos</a>
-        </li>
-        <li>
-          <a href={localizePath("/financiamiento", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Financiamiento</a>
-        </li>
-        <li>
-          <a href={localizePath("/blog", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Blog</a>
-        </li>
-        <li>
-          <a href={localizePath("/eventos", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Eventos</a>
-        </li>
-        <li>
-          <a href={localizePath("/contacto", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Contacto</a>
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="font-bold mb-2 text-[22px]">Legales</h4>
-      <ul class="space-y-1">
-        <li>
-          <a href={localizePath("/aviso-de-privacidad", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Aviso de privacidad</a>
-        </li>
-        <li>
-          <a href={localizePath("/condiciones-de-uso", currentPathname)} class="text-[var(--color-white)] opacity-70 hover:underline">Condiciones de uso</a>
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="font-bold mb-2 text-[22px]">Social</h4>
-      <ul class="space-y-1">
-        {siteConfig?.socialLink?.map((social) => (
-          social.isActive && social.url ? (
-            <li key={social.id}>
-              <a href={social.url} target="_blank" rel="noopener noreferrer" class="text-[var(--color-white)] opacity-70 hover:underline">
-                {social.name}
-              </a>
-            </li>
-          ) : null
-        ))}
-      </ul>
-    </div>
-    <div>
-      <h4 class="font-bold mb-2 text-[22px]">Contacto</h4>
-      <p class="text-[var(--color-white)] opacity-70">
-        Tel:
-        <a
-          href={`https://wa.me/${siteConfig?.whatsappNumber}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="underline text-[var(--color-secondary)]"
-        >
-          {(() => {
-            const num = siteConfig?.whatsappNumber;
-            return `+${num.slice(0, 2)} ${num.slice(2)}`;
-          })()}
-        </a>
-      </p>
-      <p class="text-[var(--color-white)] opacity-70">
-        Email:
-        <a
-          href={`mailto:${siteConfig?.email || ""}`}
-          class="underline text-[var(--color-secondary)]"
-        >
-          {siteConfig?.email}
-        </a>
-      </p>
-      <p class="text-[var(--color-white)] opacity-70">
-        {siteConfig?.businessHours}
-      </p>
+<footer class="text-white" style="border-radius: 24px 24px 0 0; background: var(--Medrent-surfaces-dark-medium-contrast-surface2, linear-gradient(0deg, rgba(105, 216, 211, 0.08) 0%, rgba(105, 216, 211, 0.08) 100%), #0F1414);;">
+    <!-- Nuevo diseño del footer -->
+    <div class="max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-8 rounded-t-[32px] p-4 md:p-8">
+            
+            <!-- COLUMNA IZQUIERDA: Información + Legales (juntos en desktop) -->
+            <div class="space-y-6">
+                <h3 class="uppercase text-[var(--color-secondary)] text-[28px] font-bold tracking-wide">Información de contacto</h3>
+                
+                <div>
+                    <p class="font-semibold text-white">Teléfono</p>
+                    <a 
+                        id="btnWhatsapp" 
+                        href={`https://wa.me/${siteConfig?.whatsappNumber}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-[var(--color-secondary)] underline"
+                    >
+                        {(() => {
+                            const num = siteConfig?.whatsappNumber;
+                            return `+52 ${num.slice(2, 4)} ${num.slice(4, 6)} ${num.slice(6, 8)} ${num.slice(8)}`;
+                        })()}
+                    </a>
+                </div>
 
-      <p class="text-[var(--color-white)] opacity-70">
-        Domicilio: {siteConfig?.address}
-      </p>
+                <div>
+                    <p class="font-semibold text-white">Correo</p>
+                    <a 
+                        href={`https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A${siteConfig?.email || ''}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-[var(--color-secondary)] underline"
+                    >
+                        {siteConfig?.email}
+                    </a>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-white">Dirección</p>
+                    <p class="text-white">
+                        {siteConfig?.address}
+                    </p>
+                </div>
+
+                <!-- Botón Cómo llegar -->
+                <a 
+                    href={siteConfig?.googleMapsUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="inline-flex items-center gap-2 border border-white px-4 py-2 rounded bg-white hover:bg-opacity-10 transition-all w-fit"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 4.94606L9 2.94606L2 5.27906V21.3881L9 19.0541L15 21.0541L22 18.7211V2.61206L15 4.94606ZM10 5.38706L14 6.72006V18.6131L10 17.2801V5.38706ZM4 6.72106L8 5.38706V17.2791L4 18.6121V6.72106ZM20 17.2791L16 18.6131V6.72106L20 5.38806V17.2791Z" fill="var(--color-primary)"/>
+                    </svg>              
+                    <span class="text-sm font-bold text-[var(--color-primary)]">Cómo llegar</span>
+                </a>
+
+                <!-- LEGALES (solo visible en desktop/tablet, en mobile se mostrará aparte) -->
+                <div class="hidden md:block">
+                    <h4 class="font-bold mb-2 text-[22px] text-white">Legales</h4>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="/aviso-de-privacidad" class="text-[var(--color-secondary)] underline">
+                                Aviso de privacidad
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/condiciones-de-uso" class="text-[var(--color-secondary)] underline">
+                                Condiciones de uso
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Mapa -->
+            <div class="overflow-hidden rounded-[32px] h-full">
+                <iframe
+                    class="w-full h-full min-h-[500px] rounded-[32px] border-0"
+                    title="Ubicacion de Itzel en Google Maps"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src={siteConfig?.googleMapsUrlIframe}
+                >
+                </iframe>
+            </div>
+        </div>
+
+        <!-- LEGALES SOLO PARA MOBILE (visible solo en móvil) -->
+        <div class="block md:hidden px-4 pb-8">
+            <div class="border-t border-white/20 pt-6">
+                <h4 class="font-bold mb-2 text-[22px] text-white">Legales</h4>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="/aviso-de-privacidad" class="text-[var(--color-secondary)] underline">
+                            Aviso de privacidad
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/condiciones-de-uso" class="text-[var(--color-secondary)] underline">
+                            Condiciones de uso
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="bg-[var(--color-primary)] text-center pt-5 pb-[104px] text-white font-bold text-sm md:pb-[104px]">
-    {site.legalName} {new Date().getFullYear()}. <span>Todos los derechos reservados.</span>
-  </div>
+
+    <!-- Bottom Bar -->
+    <div class="bg-[var(--color-primary)] text-center pt-5 pb-[104px] text-white font-bold text-sm md:pb-[104px]">
+        {site.legalName} {new Date().getFullYear()}. <span class="">Todos los derechos reservados.</span>
+    </div>
 </footer>
