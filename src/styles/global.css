@@ -664,7 +664,7 @@ select:autofill {
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
-  background: #2B993E;
+  background: #2B993E !important;
   color: var(--color-white);
   text-decoration: none;
   transition: background-color 0.2s ease;
