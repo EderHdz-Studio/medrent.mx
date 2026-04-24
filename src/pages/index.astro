@@ -223,7 +223,10 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         .map((marca) => (
             <a 
                 href={marca.isActive && marca.slug ? `/especialidades/${marca.slug}` : '#'}
-                class="block text-center p-6 transition-all duration-300 cursor-pointer rounded-[24px] hover:bg-[var(--color-secondary-light)] max-w-[380px] mx-auto w-full"
+                class="block text-center p-6 transition-all duration-300 cursor-pointer rounded-[24px] max-w-[380px] mx-auto w-full
+                    hover:border-[3px] hover:border-[#006764] 
+                    hover:bg-[#F5FAF9] 
+                    hover:shadow-[0_9px_24px_8px_rgba(0,103,100,0.40)]"
                 key={marca.slug}
             >
                 <div class="flex items-center justify-center p-4">
