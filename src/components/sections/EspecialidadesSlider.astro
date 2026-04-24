@@ -106,7 +106,10 @@ try {
             <ul class="glide__slides">
               {list.map((marca) => (
                 <li class="glide__slide h-auto">
-                  <article class="especialidades-slider-card flex flex-col items-center text-center h-full p-6 gap-2">
+                  <a
+                    href={marca.isActive && marca.slug ? localizePath(`/especialidades/${marca.slug}`, currentPathname) : "#"}
+                    class="especialidades-slider-card flex flex-col items-center text-center h-full gap-2 block p-6 transition-all duration-300 cursor-pointer rounded-[24px] max-w-[380px] mx-auto w-full hover:border-[3px] hover:border-[#006764] hover:bg-[#F5FAF9]"
+                  >
                     <div class="flex items-center justify-center shrink-0">
                       <ImageResponsive
                         src={marca.iconImage}
@@ -120,10 +123,7 @@ try {
                       />
                     </div>
                     <h3 class="text-[22px] font-bold text-[var(--color-primary)]">{marca.name}</h3>
-                    <a
-                      href={marca.isActive && marca.slug ? localizePath(`/especialidades/${marca.slug}`, currentPathname) : "#"}
-                      class="text-[16px] tracking-[0.15px] text-[var(--color-text-default)] hover:underline hover:text-[var(--color-primary)] flex justify-center items-center gap-2 mt-0"
-                    >
+                    <div class="text-[16px] tracking-[0.15px] text-[var(--color-text-default)] hover:underline hover:text-[var(--color-primary)] flex justify-center items-center gap-2 mt-0">
                       Ver aplicaciones
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -138,8 +138,8 @@ try {
                           fill="currentColor"
                         />
                       </svg>
-                    </a>
-                  </article>
+                    </div>
+                  </a>
                 </li>
               ))}
             </ul>
