@@ -1,138 +1,213 @@
 ---
 import ImageResponsive from "@components/media/ImageResponsive.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
-import { localizePath } from "@lib/locale";
 type BrandItem = {
   slug?: string;
   name?: string;
   logo?: any;
 };
 const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
-const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 ---
 
-<section class="max-w-7xl mx-auto py-6 px-4 md:px-6 lg:px-8">
+<section class="max-w-7xl mx-auto py-6 px-8 md:px-6 sm:px-4 sm:py-4">
   <div class="text-center p-6">
     <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center">
       NUESTRAS MARCAS
     </h3>
     <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight">
-      ¡Representamos marcas líderes a nivel mundial!
+      Tecnología confiable para tu práctica
     </h2>
     <p class="text-[var(--color-green-dark)] text-base tracking-[0.5px]">
-      Trabajamos directamente con las mejores marcas para ofrecer equipos confiables, duraderos y clínicamente validados
+      Trabajamos con fabricantes líderes que garantizan precisión clínica, innovación y resultados reales.
     </p>
   </div>
 
-  <div class="relative w-full overflow-hidden">
-    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent"></div>
-    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent"></div>
-    
-     {marcasData.length > 0 ? (
-      <div class="glide" id="BrandSlider">
-        <div class="glide__track" data-glide-el="track">
-          <ul class="glide__slides">
-            {marcasData.map((brand: BrandItem) => (
-              <li class="glide__slide flex justify-center items-center p-6" style="width: 158px;">
-                <a
-                  href={isUsableBrandSlug(brand.slug) ? localizePath(`/nuestras-marcas/${brand.slug}`, currentPathname) : localizePath("/productos", currentPathname)}
-                  class="hover-scale-img block"
-                >
-                  <ImageResponsive
-                    image={brand.logo}
-                    alt={brand.name}
-                    class="h-[40px] w-auto object-contain"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="158px"
-                    fetchpriority="low"
-                  />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* <div data-glide-el="controls">
-          <button data-glide-dir="<" aria-label="Anterior" class="group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black lg:hidden">
-            <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-              <path d="M17 11H9.41l3.3-3.29a1 1 0 10-1.42-1.42L6.29 11.29a1 1 0 000 1.42l5 5a1 1 0 001.42-1.42L9.41 13H17a1 1 0 000-2z" fill="currentColor"/>
-            </svg>
-          </button>
-          <button data-glide-dir=">" aria-label="Siguiente" class="group flex items-center justify-center w-[56px] h-[32px] rounded-full bg-white border border-black cursor-pointer transition hover:bg-black lg:hidden">
-            <svg width="24" height="24" viewBox="0 0 24 24" class="fill-current text-black transition group-hover:text-white">
-              <path d="M7 11h7.59l-3.3-3.29a1 1 0 111.42-1.42l5 5a1 1 0 010 1.42l-5 5a1 1 0 11-1.42-1.42L14.59 13H7a1 1 0 010-2z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div> */}
-
+  {marcasData.length > 0 ? (
+    <div>
+      <!-- Grid de marcas -->
+      <div class="brands-grid" id="brandsGrid">
+        {marcasData.map((brand: BrandItem, index: number) => (
+          <a
+            href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
+            class="brand-item hover-scale-img"
+            key={brand.slug}
+            data-brand-index={index}
+          >
+            <div class="brand-logo-wrapper">
+              {brand.logo?.url ? (
+                <img 
+                  src={brand.logo.url} 
+                  alt={brand.name}
+                  class="brand-logo"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="brand-placeholder">
+                  <span>{brand.name?.charAt(0)}</span>
+                </div>
+              )}
+            </div>
+          </a>
+        ))}
       </div>
-    ) : (
-      <p class="text-center text-gray-500">No hay marcas disponibles</p>
-    )}
-  </div>
+
+      <!-- Botón Ver más/Ver menos (solo visible en mobile Y si hay más de 3 marcas) -->
+      {marcasData.length > 3 && (
+        <div class="brands-button-container mobile-only">
+          <button id="toggleBrandsBtn" class="brands-toggle-btn">
+            <span id="btnText">Ver más marcas</span>
+            <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>
+            </svg>
+          </button>
+        </div>
+      )}
+    </div>
+  ) : (
+    <p class="text-center text-gray-500">No hay marcas disponibles</p>
+  )}
 </section>
 
+<style is:global>
+  .brands-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 20px 0;
+  }
 
+  .brand-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: all 0.3s ease;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+  }
+
+  .brand-logo-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .brand-logo {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .brand-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 12px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #ccc;
+  }
+
+  .brand-item:hover {
+    transform: scale(1.05);
+  }
+
+  .brands-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .brands-toggle-btn {
+    display: flex;
+    padding: 8px 12px 8px 18px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 1000px;
+    border: 1px solid var(--Schemes-On-Surface, #171D1C);
+    background: var(--Schemes-On-Primary, #FFF);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #171D1C;
+  }
+
+  @media (min-width: 768px) {
+    .brands-grid {
+      justify-content: space-around;
+    }
+    .brands-grid .brand-item {
+      display: flex !important;
+    }
+    .mobile-only {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .brands-grid {
+      justify-content: space-around;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .brands-grid .brand-item {
+      width: 100px;
+      height: 100px;
+    }
+    .brands-grid .brand-item:nth-child(n+4) {
+      display: none;
+    }
+    .brands-grid.show-all .brand-item {
+      display: flex !important;
+    }
+    .mobile-only {
+      display: flex;
+    }
+  }
+</style>
 
 <script>
-  (function () {
-    const slider = document.querySelector('#BrandSlider') as HTMLElement | null;
-    if (!slider || slider.dataset.mounted === 'true') return;
-    let glide: { mount: () => void; play: () => void; pause: () => void } | null = null;
-    let visibilityObserver: IntersectionObserver | null = null;
-
-    const mount = async () => {
-      if (slider.dataset.mounted === 'true') return;
-      const Glide = (await import('@glidejs/glide')).default;
-      glide = new Glide(slider, {
-        type: 'carousel',
-        perView: 8,
-        gap: 0,
-        autoplay: 2000,
-        animationDuration: 500,
-        animationTimingFunc: 'linear',
-        hoverpause: true,
-        breakpoints: {
-          1024: { perView: 4 },
-          640: { perView: 2 }
+  (function() {
+    const toggleBtn = document.getElementById('toggleBrandsBtn');
+    const brandsGrid = document.getElementById('brandsGrid');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.getElementById('btnIcon');
+    
+    if (toggleBtn && brandsGrid) {
+      let isExpanded = false;
+      
+      toggleBtn.addEventListener('click', () => {
+        isExpanded = !isExpanded;
+        
+        if (isExpanded) {
+          brandsGrid.classList.add('show-all');
+          btnText.textContent = 'Ver menos';
+          btnIcon.innerHTML = '<path d="M4 12H20" stroke="#171D1C" stroke-width="2" stroke-linecap="round"/>';
+        } else {
+          brandsGrid.classList.remove('show-all');
+          btnText.textContent = 'Ver más marcas';
+          btnIcon.innerHTML = '<path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>';
         }
       });
-      glide.mount();
-      slider.dataset.mounted = 'true';
-
-      if ('IntersectionObserver' in window && glide) {
-        visibilityObserver = new IntersectionObserver((entries) => {
-          const isVisible = entries.some((entry) => entry.isIntersecting);
-          if (isVisible) {
-            glide?.play();
-          } else {
-            glide?.pause();
-          }
-        }, { threshold: 0.05 });
-        visibilityObserver.observe(slider);
-      }
-    };
-
-    const scheduleMount = () => {
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => mount().catch(() => {}));
-      } else {
-        setTimeout(() => mount().catch(() => {}), 0);
-      }
-    };
-
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        const isVisible = entries.some((entry) => entry.isIntersecting);
-        if (isVisible) {
-          observer.disconnect();
-          scheduleMount();
-        }
-      }, { rootMargin: '300px 0px' });
-      observer.observe(slider);
-    } else {
-      scheduleMount();
     }
   })();
 </script>
