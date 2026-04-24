@@ -383,7 +383,6 @@ select:autofill {
   }
 }
 
-
 @media (min-width: 769px) {
   .sliderArticulosRelacionados .glider-track {
     display: flex;
@@ -423,7 +422,6 @@ select:autofill {
 .blog-chips-scroll::-webkit-scrollbar {
   display: none;
 }
-
 
 /* Foco visible en la tira de chips (accesibilidad teclado) */
 .blog-chips-scroll:focus-within {
@@ -656,6 +654,20 @@ select:autofill {
   background-color: var(--color-accent);
 }
 
+.btnWhatsApp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 14px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-white);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
 
 .glide__slides {
   /* align-items: stretch!important; */
