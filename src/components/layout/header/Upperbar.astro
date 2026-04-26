@@ -35,9 +35,14 @@ const getSocialIcon = (icon, scope = "") => {
             <a href="mailto:{siteConfig?.email || ''}" target="_blank" rel="noopener noreferrer" class="hover:text-white text-white text-[11px] tracking-[0.5px] font-light underline">
                 {siteConfig?.email || ""}
             </a>
-            <span class="hover:text-white text-white text-[11px] tracking-[0.5px] font-light">
-                | &nbsp;&nbsp;{ siteConfig?.businessHours || "Lun-Dom: 9am - 6pm"}
-            </span>
+            {siteConfig?.businessHours  && (
+                <>
+                    |
+                    <span class="hover:text-white text-white text-[11px] tracking-[0.5px] font-light">
+                        Horario de atención:
+                    </span>
+                </>
+            )}
         </div>
         
         <div class="flex items-center gap-2">

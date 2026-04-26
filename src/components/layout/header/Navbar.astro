@@ -780,7 +780,7 @@ const getSocialIcon = (icon, scope = "") => {
             rel="noopener noreferrer" 
             class="mobile-menu-footer__contact hover:opacity-90 flex flex-wrap items-center justify-center gap-1"
         >
-            <img src="/temp/whatsIcon.png"></img>
+            <img src="/temp/whatsIcon.png" alt="WhatsApp">
             <span>
               Servicio al cliente: 
               <span class="underline">
@@ -796,9 +796,11 @@ const getSocialIcon = (icon, scope = "") => {
         >
             Correo electrónico: {siteConfig?.email}
         </a>
-        <p class="mobile-menu-footer__contact mt-2 text-center">
-            {siteConfig?.businessHours}
-        </p>
+        {siteConfig?.businessHours  && (
+          <p class="mobile-menu-footer__contact mt-2 text-center">
+              {siteConfig?.businessHours}
+          </p>
+        )}
         <p class="mobile-menu-footer__social-head">Síguenos en todas nuestras redes:</p>
         <div class="mobile-menu-footer__icons">
           {siteConfig?.socialLink?.map((social) => (
