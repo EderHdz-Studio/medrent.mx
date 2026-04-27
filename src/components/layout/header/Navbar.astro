@@ -301,7 +301,6 @@ const getSocialIcon = (icon, scope = "") => {
                                 :href="especialidad?.slug ? `/especialidades/${especialidad.slug}` : '#'"
                                 @mouseenter="setActiveEspecialidad(especialidad)"
                                 @focus="setActiveEspecialidad(especialidad)"
-                                @click.prevent="setActiveEspecialidad(especialidad)"
                                 :aria-label="`Ver especialidad ${especialidad.name}`"
                                 :class="[
                                   'transition-colors flex items-center justify-between gap-2 p-2 rounded-lg cursor-pointer',
