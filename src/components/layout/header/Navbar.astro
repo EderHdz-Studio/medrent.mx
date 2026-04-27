@@ -152,7 +152,7 @@ const getSocialIcon = (icon, scope = "") => {
               x-cloak
               class="fixed left-0 right-0 bottom-0 z-[95] bg-black/20"
               @click="marcasOpen = false"
-              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px));"
+              style="top: calc(var(--upperbar-height, 34px) + var(--navbar-height, 69px));"
               x-transition:enter="transition ease-out duration-200"
               x-transition:enter-start="opacity-0"
               x-transition:enter-end="opacity-100"
@@ -172,7 +172,7 @@ const getSocialIcon = (icon, scope = "") => {
               x-transition:leave-end="opacity-0 scale-y-95"
               @keydown.escape.window="marcasOpen = false"
               :class="marcasOpen ? 'fixed left-0 w-full z-[110] origin-top bg-white border border-gray-200 shadow-lg flex justify-between' : 'fixed flex justify-between left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
-              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px)); max-width:100vw; border-bottom:2px solid var(--color-primary);"
+              style="top: calc(var(--upperbar-height, 34px) + var(--navbar-height, 69px)); max-width:100vw; border-bottom:2px solid var(--color-primary);"
               id="MarcasDropdownMenu"
             >
 
@@ -253,7 +253,7 @@ const getSocialIcon = (icon, scope = "") => {
                 :class="['flex items-center font-light focus:outline-none cursor-pointer h-full rounded-[4px] items-center justify-center px-1', especialidadesOpen ? 'text-[var(--color-primary)] bg-[var(--color-secondary-light)]' : 'hover:text-[var(--color-primary)]']"
               
             >
-                Especialidades
+                Productos
                 <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': especialidadesOpen }" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                 </svg>
@@ -265,7 +265,7 @@ const getSocialIcon = (icon, scope = "") => {
               x-cloak
               class="fixed left-0 right-0 bottom-0 z-[95] bg-black/20"
               @click="especialidadesOpen = false; activeItem = null; activeAplicacion = null"
-              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px));"
+              style="top: calc(var(--upperbar-height, 34px) + var(--navbar-height, 69px));"
               x-transition:enter="transition ease-out duration-200"
               x-transition:enter-start="opacity-0"
               x-transition:enter-end="opacity-100"
@@ -284,7 +284,7 @@ const getSocialIcon = (icon, scope = "") => {
               x-transition:leave-start="opacity-100 scale-y-100"
               x-transition:leave-end="opacity-0 scale-y-95"
               :class="especialidadesOpen ? 'fixed left-0 w-full z-[110] origin-top bg-white border border-gray-200 shadow-lg py-6 px-8' : 'fixed left-0 w-full bg-white border border-gray-200 shadow-lg py-6 px-8'"
-              style="top: calc(var(--upperbar-height, 40px) + var(--navbar-height, 69px)); border-bottom: 2px solid var(--color-primary);"
+              style="top: calc(var(--upperbar-height, 34px) + var(--navbar-height, 69px)); border-bottom: 2px solid var(--color-primary);"
               id="EspecialidadesDropdownMenu"
             >
               <div class="max-w-7xl mx-auto px-6">
@@ -408,7 +408,7 @@ const getSocialIcon = (icon, scope = "") => {
             </div>
           </div>
         
-        <a href={localizePath("/productos", currentPathname)} class={`${isActive('/productos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}>Productos </a>
+        <!-- <a href={localizePath("/productos", currentPathname)} class={`${isActive('/productos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}>Productos </a> -->
         <a href={localizePath("/financiamiento", currentPathname)} class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
         <a href={localizePath("/eventos", currentPathname)} class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
         <a href={localizePath("/blog", currentPathname)} class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a>
@@ -621,7 +621,7 @@ const getSocialIcon = (icon, scope = "") => {
               :class="especialidadesMobileOpen ? 'py-6 border-b flex items-center justify-between cursor-pointer text-[var(--color-primary)] w-full' : 'py-6 border-b border-[var(--color-gray-dark)] flex items-center justify-between cursor-pointer text-[#261819] w-full'"
               :aria-expanded="especialidadesMobileOpen.toString()"
               aria-controls="mobileEspecialidadesPanel">
-              <span>Especialidades</span>
+              <span>Productos</span>
               <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': especialidadesMobileOpen && vistaActual === 'lista-especialidades' }" 
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -766,7 +766,7 @@ const getSocialIcon = (icon, scope = "") => {
 
       <!-- <a href="/especialidades" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Especialidades</a> -->
       <a href={localizePath("/acerca-de-nosotros", currentPathname)} class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Acerca de nosotros</a>
-      <a href={localizePath("/productos", currentPathname)} class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Productos</a>
+      <!-- <a href={localizePath("/productos", currentPathname)} class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Productos</a> -->
       <a href={localizePath("/financiamiento", currentPathname)} class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Financiamiento</a>
       <!-- <a href="/servicio-tecnico" class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Servicio Técnico</a> -->
       <a href={localizePath("/blog", currentPathname)} class="py-6 text-[#261819] border-b border-[var(--color-gray-dark)] ">Blog</a>
