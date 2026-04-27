@@ -13,7 +13,7 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   <div class="flex justify-between items-center gap-5 flex-wrap">
   
   <!-- Texto del lado izquierdo -->
-  <div class="flex flex-col md:flex-row justify-between items-center gap-5">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-5 w-full">
   
   <!-- Texto arriba en mobile, izquierda en desktop -->
   <div class="w-full">
@@ -43,7 +43,7 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   {marcasData.length > 0 ? (
     <div>
       <!-- Grid de marcas -->
-      <div class="brands-grid" id="brandsGrid" style="gap: 6px 24px;">
+      <div class="brands-grid" id="brandsGrid" style="gap: 0 24px;">
         {marcasData.map((brand: BrandItem, index: number) => (
           <a
             href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
@@ -69,8 +69,18 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
         ))}
       </div>
 
-      <!-- Botón Ver más/Ver menos (solo visible en mobile Y si hay más de 3 marcas) -->
-      {marcasData.length > 3 && (
+      {marcasData.length > 20 && (
+        <div class="brands-button-container desktop-only">
+          <button id="toggleBrandsBtn" class="brands-toggle-btn">
+            <span id="btnText">Ver más marcas</span>
+            <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {marcasData.length > 9 && marcasData.length <= 20 && (
         <div class="brands-button-container mobile-only">
           <button id="toggleBrandsBtn" class="brands-toggle-btn">
             <span id="btnText">Ver más marcas</span>
@@ -90,10 +100,10 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   .brands-grid {
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-wrap: wrap;
     gap: 24px;
     padding: 20px 0;
+    justify-content: space-around;
   }
 
   .brand-item {
@@ -148,7 +158,6 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 24px;
   }
 
   .brands-toggle-btn {
@@ -167,34 +176,58 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     color: #171D1C;
   }
 
+  /* ========== DESKTOP (≥768px) ========== */
   @media (min-width: 768px) {
-    .brands-grid {
-      justify-content: space-around;
-    }
+    /* Ocultar todas por defecto */
     .brands-grid .brand-item {
+      display: none;
+    }
+    
+    /* Mostrar primeras 20 en desktop */
+    .brands-grid .brand-item:nth-child(1),
+    .brands-grid .brand-item:nth-child(2),
+    .brands-grid .brand-item:nth-child(3),
+    .brands-grid .brand-item:nth-child(4),
+    .brands-grid .brand-item:nth-child(5),
+    .brands-grid .brand-item:nth-child(6),
+    .brands-grid .brand-item:nth-child(7),
+    .brands-grid .brand-item:nth-child(8),
+    .brands-grid .brand-item:nth-child(9),
+    .brands-grid .brand-item:nth-child(10),
+    .brands-grid .brand-item:nth-child(11),
+    .brands-grid .brand-item:nth-child(12),
+    .brands-grid .brand-item:nth-child(13),
+    .brands-grid .brand-item:nth-child(14),
+    .brands-grid .brand-item:nth-child(15),
+    .brands-grid .brand-item:nth-child(16),
+    .brands-grid .brand-item:nth-child(17),
+    .brands-grid .brand-item:nth-child(18),
+    .brands-grid .brand-item:nth-child(19),
+    .brands-grid .brand-item:nth-child(20) {
       display: flex !important;
     }
-    .mobile-only {
-      display: none !important;
+    
+    /* Mostrar todas al hacer click */
+    .brands-grid.show-all .brand-item {
+      display: flex !important;
     }
   }
 
+  /* ========== MOBILE (<768px) ========== */
   @media (max-width: 767px) {
     .brands-grid {
-      justify-content: space-around;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
       gap: 16px !important;
     }
     .brands-grid .brand-item {
       width: 100px;
       height: 100px;
-      display: none;
+      display: none; /* Ocultar todas por defecto */
     }
     .brands-button-container {
       margin-top: 0 !important;
     }
+    
+    /* Mostrar primeras 9 en mobile */
     .brands-grid .brand-item:nth-child(1),
     .brands-grid .brand-item:nth-child(2),
     .brands-grid .brand-item:nth-child(3),
@@ -206,13 +239,9 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     .brands-grid .brand-item:nth-child(9) {
       display: flex !important;
     }
-    
+
     .brands-grid.show-all .brand-item {
       display: flex !important;
-    }
-    
-    .mobile-only {
-      display: flex;
     }
   }
 </style>
