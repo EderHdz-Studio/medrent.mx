@@ -123,7 +123,7 @@ const getSocialIcon = (icon, scope = "") => {
             Acerca de nosotros
           </a> -->
 
-          <!-- Dropdown Nuestras marcas -->
+          <!-- Dropdown Marcas -->
           <div
             id="MarcasDropdown"
             x-data="{ 
@@ -141,7 +141,7 @@ const getSocialIcon = (icon, scope = "") => {
               }`}
               style="display: flex; align-items: center; cursor: pointer!important; padding: 0 4px;  height: -webkit-fill-available;"
             >
-              Nuestras marcas
+              Marcas
               <svg class="ml-1 w-4 h-4 transition-transform" :class="{ 'rotate-180': marcasOpen }" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
               </svg>
@@ -539,7 +539,7 @@ const getSocialIcon = (icon, scope = "") => {
           :aria-expanded="marcasMobileOpen.toString()"
           aria-controls="mobileMarcasPanel"
         >
-          <span>Nuestras marcas</span>
+          <span>Marcas</span>
           <svg class="w-4 h-4 ml-2" :class="{ 'rotate-180': marcasMobileOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
         <div
