@@ -9,23 +9,41 @@ type BrandItem = {
 const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
 ---
 
-<section class="max-w-7xl mx-auto py-6 px-8 md:px-6 sm:px-4 sm:py-4">
-  <div class="text-center p-6">
-    <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center">
+<section class="max-w-7xl mx-auto px-4 py-4 md:py-6 md:px-">
+  <div class="flex justify-between items-center gap-5 flex-wrap">
+  
+  <!-- Texto del lado izquierdo -->
+  <div class="flex flex-col md:flex-row justify-between items-center gap-5">
+  
+  <!-- Texto arriba en mobile, izquierda en desktop -->
+  <div class="w-full">
+    <h3 class="text-center md:text-left text-[#006764] font-bold text-sm uppercase">
       NUESTRAS MARCAS
     </h3>
-    <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight">
+    <h2 class="text-center md:text-left text-2xl font-bold text-gray-900 tracking-tight mt-1">
       Tecnología confiable para tu práctica
     </h2>
-    <p class="text-[var(--color-green-dark)] text-base tracking-[0.5px]">
+    <p class="text-center md:text-left text-gray-700 text-base tracking-[0.5px] mt-1">
       Trabajamos con fabricantes líderes que garantizan precisión clínica, innovación y resultados reales.
     </p>
   </div>
 
+  <!-- Btb "Ver todas las marcas" -->
+  <div class="w-full md:w-auto flex-shrink-0">
+    <a 
+      href="/nuestras-marcas"
+      class="flex items-center justify-center gap-2 px-4 py-3 rounded border-2 border-[#006764] bg-white text-[#006764] text-base font-bold leading-6 tracking-[0.5px] hover:bg-[#006764] hover:text-white transition-all duration-200 w-full md:w-auto"
+    >
+      Ver todas las marcas
+    </a>
+  </div>
+
+</div>
+
   {marcasData.length > 0 ? (
     <div>
       <!-- Grid de marcas -->
-      <div class="brands-grid" id="brandsGrid">
+      <div class="brands-grid" id="brandsGrid" style="gap: 6px 24px;">
         {marcasData.map((brand: BrandItem, index: number) => (
           <a
             href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
@@ -97,7 +115,6 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     align-items: center;
     justify-content: center;
     background: white;
-    border-radius: 12px;
     padding: 16px;
   }
 
@@ -168,17 +185,32 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
       display: flex;
       align-items: center;
       flex-wrap: wrap;
+      gap: 16px !important;
     }
     .brands-grid .brand-item {
       width: 100px;
       height: 100px;
-    }
-    .brands-grid .brand-item:nth-child(n+4) {
       display: none;
     }
+    .brands-button-container {
+      margin-top: 0 !important;
+    }
+    .brands-grid .brand-item:nth-child(1),
+    .brands-grid .brand-item:nth-child(2),
+    .brands-grid .brand-item:nth-child(3),
+    .brands-grid .brand-item:nth-child(4),
+    .brands-grid .brand-item:nth-child(5),
+    .brands-grid .brand-item:nth-child(6),
+    .brands-grid .brand-item:nth-child(7),
+    .brands-grid .brand-item:nth-child(8),
+    .brands-grid .brand-item:nth-child(9) {
+      display: flex !important;
+    }
+    
     .brands-grid.show-all .brand-item {
       display: flex !important;
     }
+    
     .mobile-only {
       display: flex;
     }
