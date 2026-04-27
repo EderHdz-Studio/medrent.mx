@@ -17,7 +17,7 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   
   <!-- Texto arriba en mobile, izquierda en desktop -->
   <div class="w-full">
-    <h3 class="text-center md:text-left text-[#006764] font-bold text-sm uppercase">
+    <h3 class="text-center md:text-left text-[var(--color-primary)] font-bold text-sm uppercase">
       NUESTRAS MARCAS
     </h3>
     <h2 class="text-center md:text-left text-2xl font-bold text-gray-900 tracking-tight mt-1">
@@ -37,7 +37,6 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
       Ver todas las marcas
     </a>
   </div>
-
 </div>
 
   {marcasData.length > 0 ? (
@@ -176,13 +175,10 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     color: #171D1C;
   }
 
-  /* ========== DESKTOP (≥768px) ========== */
   @media (min-width: 768px) {
-    /* Ocultar todas por defecto */
     .brands-grid .brand-item {
       display: none;
     }
-    
     /* Mostrar primeras 20 en desktop */
     .brands-grid .brand-item:nth-child(1),
     .brands-grid .brand-item:nth-child(2),
@@ -206,14 +202,11 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     .brands-grid .brand-item:nth-child(20) {
       display: flex !important;
     }
-    
-    /* Mostrar todas al hacer click */
     .brands-grid.show-all .brand-item {
       display: flex !important;
     }
   }
 
-  /* ========== MOBILE (<768px) ========== */
   @media (max-width: 767px) {
     .brands-grid {
       gap: 16px !important;
@@ -221,12 +214,11 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     .brands-grid .brand-item {
       width: 100px;
       height: 100px;
-      display: none; /* Ocultar todas por defecto */
+      display: none;
     }
     .brands-button-container {
       margin-top: 0 !important;
-    }
-    
+    }    
     /* Mostrar primeras 9 en mobile */
     .brands-grid .brand-item:nth-child(1),
     .brands-grid .brand-item:nth-child(2),
@@ -239,7 +231,6 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     .brands-grid .brand-item:nth-child(9) {
       display: flex !important;
     }
-
     .brands-grid.show-all .brand-item {
       display: flex !important;
     }
