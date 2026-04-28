@@ -15,7 +15,6 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import ImageResponsive from "@components/media/ImageResponsive.astro";
 import { fetchBlogSliderData } from "@lib/blog/blogSliderData";
-
 import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
 
@@ -139,42 +138,42 @@ const logoUrl = siteConfig?.favicon512x512?.url;
             <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight">Acercamos tecnología que fortalece los estándares en salud.</h2>
         </div>
         <div class="w-full mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-    {marcas
-        .filter((marca) => marca.isActive)
-        .map((marca) => (
-            <a 
-                href={marca.isActive && marca.slug ? `/especialidades/${marca.slug}` : '#'}
-                class="block text-center p-6 transition-all duration-300 cursor-pointer rounded-[24px] max-w-[380px] mx-auto w-full
-                    hover:border-[3px] hover:border-[#006764] 
-                    hover:bg-[#F5FAF9] 
-                    hover:shadow-[0_9px_24px_8px_rgba(0,103,100,0.40)]"
-                key={marca.slug}
-            >
-                <div class="flex items-center justify-center p-4">
-                    <ImageResponsive
-                        src={marca.figure}
-                        alt={marca.name}
-                        width={84}
-                        height={84}
-                        class="object-contain max-w-[130px]"
-                        loading="lazy"
-                        decoding="async"
-                    />
-                </div>
-                <h3 class="my-2 text-[22px] font-bold text-[var(--color-primary)]">
-                    {marca.name}
-                </h3>
-                <div class="mt-2 text-[16px] tracking-[0.15px] text-[var(--color-text-default)] flex justify-center gap-2">
-                    Ver aplicaciones
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path 
-                            d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z"
-                            fill="currentColor"
+        {marcas
+            .filter((marca) => marca.isActive)
+            .map((marca) => (
+                <a 
+                    href={marca.isActive && marca.slug ? `/especialidades/${marca.slug}` : '#'}
+                    class="block text-center p-6 transition-all duration-300 cursor-pointer rounded-[24px] max-w-[380px] mx-auto w-full
+                        hover:border-[3px] hover:border-[#006764] 
+                        hover:bg-[#F5FAF9] 
+                        hover:shadow-[0_9px_24px_8px_rgba(0,103,100,0.40)]"
+                    key={marca.slug}
+                >
+                    <div class="flex items-center justify-center p-4">
+                        <ImageResponsive
+                            src={marca.figure}
+                            alt={marca.name}
+                            width={84}
+                            height={84}
+                            class="object-contain max-w-[130px]"
+                            loading="lazy"
+                            decoding="async"
                         />
-                    </svg>
-                </div>
-            </a>
-        ))}
+                    </div>
+                    <h3 class="my-2 text-[22px] font-bold text-[var(--color-primary)]">
+                        {marca.name}
+                    </h3>
+                    <div class="mt-2 text-[16px] tracking-[0.15px] text-[var(--color-text-default)] flex justify-center gap-2">
+                        Ver aplicaciones
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path 
+                                d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+                    </div>
+                </a>
+            ))}
         </div>
     </section>
 
@@ -233,27 +232,64 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         </div>
     </section> -->
 
-    <!-- Sección de contacto -->
-    <section class="max-w-7xl mx-auto grid md:grid-cols-2 gap-6 rounded-a-[24px] pt-6 pr-4 pb-0 pl-4 md:py-6 md:px-6 lg:px-[135px] lg:py-6">
+        <!-- Sección de contacto -->
+    <section class="max-w-7xl mx-auto flex flex-col md:grid md:grid-cols-2">
         <!-- Columna 1: Encabezado -->
-        <div class="space-y-2 p-0 md:pt-16 md:pb-16 md:px-0 lg:pt-[100px] lg:pb-6 lg:px-6 xl:px-6 2xl:px-6">
-            <h1 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase "> SOMOS MEDRENT</h1>
-            <h2 class="medrent-headline-section mb-6">
-                {dataHome.TituloContacto || 'La tecnología del futuro, hoy en tu consultorio gracias a MedRent. Financiamiento sin enganche.'}
+       <div class="medrentForm space-y-4 bg-[var(--color-primary)] rounded-3xl p-8 md:p-0">
+            <h2 class="mb-6 text-white font-bold text-[28px] leading-9 md:text-[45px] md:leading-[52px]">
+                {dataHome.TituloContacto || '¡Financia tu equipo médico hoy sin enganche!'}
             </h2>
-            <p class="text-[#212121] md:text-[16px] text-[16px] text-[var(--color-green-dark)] mt-2 text-pretty">
-                
+            
+            <p class="text-[#D8E5E3] font-normal text-base leading-6 tracking-[0.5px] mb-6">
                 {dataHome.DescripcionContacto ? (
-                    <BlocksRenderer content={dataHome.DescripcionContacto} />
+                <BlocksRenderer content={dataHome.DescripcionContacto} />
                 ) : (
-                    <>
-                        <span class="font-light">En MedRent no solo distribuimos equipos, impulsamos tu crecimiento profesional. Déjanos asesorarte para encontrar la solución tecnológica perfecta para transformar la vida de tus pacientes.</span>
-                    </>
+                <span class="font-light">Adquiere la tecnología del futuro sin barreras.</span>
                 )}
             </p>
+
+            <div class="flex flex-col gap-6">
+                <!-- Primera fila: icono + teléfono -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 rounded-full bg-white p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 0C15.523 0 20 4.477 20 10C20 15.523 15.523 20 10 20C8.23277 20.003 6.4966 19.5353 4.97002 18.645L0.00401546 20L1.35602 15.032C0.464974 13.5049 -0.00308163 11.768 1.52687e-05 10C1.52687e-05 4.477 4.47702 0 10 0ZM6.59202 5.3L6.39201 5.308C6.26271 5.31691 6.13636 5.35087 6.02002 5.408C5.91159 5.46951 5.81258 5.5463 5.72602 5.636C5.60602 5.749 5.53802 5.847 5.46502 5.942C5.09514 6.4229 4.89599 7.01331 4.89902 7.62C4.90102 8.11 5.02902 8.587 5.22902 9.033C5.63802 9.935 6.31102 10.89 7.19902 11.775C7.41302 11.988 7.62302 12.202 7.84902 12.401C8.95245 13.3724 10.2673 14.073 11.689 14.447L12.257 14.534C12.442 14.544 12.627 14.53 12.813 14.521C13.1042 14.5056 13.3885 14.4268 13.646 14.29C13.7769 14.2223 13.9047 14.1489 14.029 14.07C14.029 14.07 14.0714 14.0413 14.154 13.98C14.289 13.88 14.372 13.809 14.484 13.692C14.568 13.6053 14.638 13.5047 14.694 13.39C14.772 13.227 14.85 12.916 14.882 12.657C14.906 12.459 14.899 12.351 14.896 12.284C14.892 12.177 14.803 12.066 14.706 12.019L14.124 11.758C14.124 11.758 13.254 11.379 12.722 11.137C12.6663 11.1128 12.6067 11.0989 12.546 11.096C12.4776 11.0888 12.4084 11.0965 12.3432 11.1184C12.278 11.1403 12.2182 11.176 12.168 11.223C12.163 11.221 12.096 11.278 11.373 12.154C11.3315 12.2098 11.2744 12.2519 11.2088 12.2751C11.1433 12.2982 11.0723 12.3013 11.005 12.284C10.9398 12.2666 10.876 12.2446 10.814 12.218C10.69 12.166 10.647 12.146 10.562 12.11C9.98789 11.8599 9.45646 11.5215 8.98702 11.107C8.86102 10.997 8.74402 10.877 8.62402 10.761C8.23063 10.3842 7.88777 9.95799 7.60401 9.493L7.54501 9.398C7.50328 9.3338 7.46905 9.26501 7.44302 9.193C7.40502 9.046 7.50402 8.928 7.50402 8.928C7.50402 8.928 7.74702 8.662 7.86002 8.518C7.97002 8.378 8.06301 8.242 8.12302 8.145C8.24102 7.955 8.27802 7.76 8.21602 7.609C7.93602 6.925 7.64668 6.24467 7.34802 5.568C7.28902 5.434 7.11402 5.338 6.95502 5.319C6.90102 5.31233 6.84701 5.307 6.79302 5.303C6.65874 5.2953 6.52411 5.29664 6.39002 5.307L6.59202 5.3Z" fill="#2B993E"/>
+                        </svg>
+                    </div>
+                    <a 
+                        id="btnWhatsapp" 
+                        href={`https://wa.me/${siteConfig?.whatsappNumber}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-[var(--color-secondary)] underline"
+                    >
+                        {(() => {
+                            const num = siteConfig?.whatsappNumber;
+                            return `+52 ${num.slice(2, 4)} ${num.slice(4, 6)} ${num.slice(6, 8)} ${num.slice(8)}`;
+                        })()}
+                    </a>
+                </div>
+
+                <!-- Segunda fila: icono + email -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 rounded-full bg-white p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H20C20.55 4 21.0208 4.19583 21.4125 4.5875C21.8042 4.97917 22 5.45 22 6V18C22 18.55 21.8042 19.0208 21.4125 19.4125C21.0208 19.8042 20.55 20 20 20H4ZM12 13L4 8V18H20V8L12 13ZM12 11L20 6H4L12 11ZM4 8V6V18V8Z" fill="#006764"/>
+                        </svg>
+                    </div>
+                    <a 
+                        href={`https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A${siteConfig?.email || ''}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-[var(--color-secondary)] underline"
+                    >
+                        {siteConfig?.email}
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class="form-container px-0 py-8 md:pb-16 md:pt-[100px] md:px-0 lg:pt-[100px] lg:pb-6 lg:px-6 xl:px-6 2xl:px-6">
+        <div class="medrentForm1 form-container px-0 py-8 md:pb-16 md:pt-[100px] md:px-0 lg:pt-[100px] lg:pb-6 bg-[var(--color-secondary-light)]">
             <BaseForm
                 id="form-home"
                 class="space-y-6 flex flex-col gap-6"
@@ -285,7 +321,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                     link="/aviso-de-privacidad"
                 />
 
-                <SubmitButton text="Recibir asesoría personalizada" />
+                <SubmitButton text="Agenda tu DEMO" />
             </BaseForm>
         </div>
 
@@ -327,25 +363,41 @@ const logoUrl = siteConfig?.favicon512x512?.url;
 </Layout>
 
 <style>
-  .financing-hero-mobile {
-    flex: 1 0 0;
-    align-self: stretch;
-    aspect-ratio: 385 / 500;
-    background:
-      linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 38%),
-      linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.22) 100%),
-      url("/temp/FinanciamientoMobile.png") center center / cover no-repeat;
-  }
-
-  @media (min-width: 768px) and (max-width: 1023px) {
     .financing-hero-mobile {
-      aspect-ratio: 16 / 10;
+        flex: 1 0 0;
+        align-self: stretch;
+        aspect-ratio: 385 / 500;
+        background:
+        linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 38%),
+        linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.22) 100%),
+        url("/temp/FinanciamientoMobile.png") center center / cover no-repeat;
     }
-  }
+    .medrentForm,
+    .medrentForm1 {
+        padding: 64px 114px 64px 111px !important;
+    }
 
-  @media (max-width: 1023px) {
-    .financing-copy-card {
-      background: #fff;
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .financing-hero-mobile {
+            aspect-ratio: 16 / 10;
+        }
     }
-  }
+
+    @media (max-width: 1023px) {
+        .financing-copy-card {
+            background: #fff;
+        }
+    }
+    @media (max-width: 768px) {
+        .medrentForm,
+        .medrentForm1 {
+            padding: 32px 16px !important;
+        }
+        .medrentForm {
+            border-radius: 24px;
+        }
+        .medrentForm1 {
+            border-radius: 0 0 24px 24px;
+        }
+    }
 </style>
