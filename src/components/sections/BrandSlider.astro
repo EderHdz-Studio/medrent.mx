@@ -9,23 +9,40 @@ type BrandItem = {
 const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
 ---
 
-<section class="max-w-7xl mx-auto py-6 px-8 md:px-6 sm:px-4 sm:py-4">
-  <div class="text-center p-6">
-    <h3 class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase text-center">
-      MARCAS
+<section class="max-w-7xl mx-auto px-4 py-4 md:py-6 md:px-">
+  <div class="flex justify-between items-center gap-5 flex-wrap">
+  
+  <!-- Texto del lado izquierdo -->
+  <div class="flex flex-col md:flex-row justify-between items-center gap-5 w-full">
+  
+  <!-- Texto arriba en mobile, izquierda en desktop -->
+  <div class="w-full">
+    <h3 class="text-center md:text-left text-[var(--color-primary)] font-bold text-sm uppercase">
+      NUESTRAS MARCAS
     </h3>
-    <h2 class="text-[24px] font-bold text-[var(--color-text-default)] tracking-tight">
+    <h2 class="text-center md:text-left text-2xl font-bold text-gray-900 tracking-tight mt-1">
       Tecnología confiable para tu práctica
     </h2>
-    <p class="text-[var(--color-green-dark)] text-base tracking-[0.5px]">
+    <p class="text-center md:text-left text-gray-700 text-base tracking-[0.5px] mt-1">
       Trabajamos con fabricantes líderes que garantizan precisión clínica, innovación y resultados reales.
     </p>
   </div>
 
+  <!-- Btb "Ver todas las marcas" -->
+  <div class="w-full md:w-auto flex-shrink-0">
+    <a 
+      href="/nuestras-marcas"
+      class="flex items-center justify-center gap-2 px-4 py-3 rounded border-2 border-[var(--color-primary)] bg-white text-[var(--color-primary)] text-base font-bold leading-6 tracking-[0.5px] hover:bg-[var(--color-primary)] hover:text-white transition-all duration-200 w-full md:w-auto"
+    >
+      Ver todas las marcas
+    </a>
+  </div>
+</div>
+
   {marcasData.length > 0 ? (
     <div>
       <!-- Grid de marcas -->
-      <div class="brands-grid" id="brandsGrid">
+      <div class="brands-grid" id="brandsGrid" style="gap: 0 24px;">
         {marcasData.map((brand: BrandItem, index: number) => (
           <a
             href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
@@ -51,8 +68,18 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
         ))}
       </div>
 
-      <!-- Botón Ver más/Ver menos (solo visible en mobile Y si hay más de 3 marcas) -->
-      {marcasData.length > 3 && (
+      {marcasData.length > 20 && (
+        <div class="brands-button-container desktop-only">
+          <button id="toggleBrandsBtn" class="brands-toggle-btn">
+            <span id="btnText">Ver más marcas</span>
+            <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {marcasData.length > 9 && marcasData.length <= 20 && (
         <div class="brands-button-container mobile-only">
           <button id="toggleBrandsBtn" class="brands-toggle-btn">
             <span id="btnText">Ver más marcas</span>
@@ -72,10 +99,10 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   .brands-grid {
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-wrap: wrap;
     gap: 24px;
     padding: 20px 0;
+    justify-content: space-around;
   }
 
   .brand-item {
@@ -97,7 +124,6 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     align-items: center;
     justify-content: center;
     background: white;
-    border-radius: 12px;
     padding: 16px;
   }
 
@@ -131,7 +157,6 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 24px;
   }
 
   .brands-toggle-btn {
@@ -151,36 +176,63 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   }
 
   @media (min-width: 768px) {
-    .brands-grid {
-      justify-content: space-around;
-    }
     .brands-grid .brand-item {
+      display: none;
+    }
+    /* Mostrar primeras 20 en desktop */
+    .brands-grid .brand-item:nth-child(1),
+    .brands-grid .brand-item:nth-child(2),
+    .brands-grid .brand-item:nth-child(3),
+    .brands-grid .brand-item:nth-child(4),
+    .brands-grid .brand-item:nth-child(5),
+    .brands-grid .brand-item:nth-child(6),
+    .brands-grid .brand-item:nth-child(7),
+    .brands-grid .brand-item:nth-child(8),
+    .brands-grid .brand-item:nth-child(9),
+    .brands-grid .brand-item:nth-child(10),
+    .brands-grid .brand-item:nth-child(11),
+    .brands-grid .brand-item:nth-child(12),
+    .brands-grid .brand-item:nth-child(13),
+    .brands-grid .brand-item:nth-child(14),
+    .brands-grid .brand-item:nth-child(15),
+    .brands-grid .brand-item:nth-child(16),
+    .brands-grid .brand-item:nth-child(17),
+    .brands-grid .brand-item:nth-child(18),
+    .brands-grid .brand-item:nth-child(19),
+    .brands-grid .brand-item:nth-child(20) {
       display: flex !important;
     }
-    .mobile-only {
-      display: none !important;
+    .brands-grid.show-all .brand-item {
+      display: flex !important;
     }
   }
 
   @media (max-width: 767px) {
     .brands-grid {
-      justify-content: space-around;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
+      gap: 16px !important;
     }
     .brands-grid .brand-item {
       width: 100px;
       height: 100px;
-    }
-    .brands-grid .brand-item:nth-child(n+4) {
       display: none;
+    }
+    .brands-button-container {
+      margin-top: 0 !important;
+    }    
+    /* Mostrar primeras 9 en mobile */
+    .brands-grid .brand-item:nth-child(1),
+    .brands-grid .brand-item:nth-child(2),
+    .brands-grid .brand-item:nth-child(3),
+    .brands-grid .brand-item:nth-child(4),
+    .brands-grid .brand-item:nth-child(5),
+    .brands-grid .brand-item:nth-child(6),
+    .brands-grid .brand-item:nth-child(7),
+    .brands-grid .brand-item:nth-child(8),
+    .brands-grid .brand-item:nth-child(9) {
+      display: flex !important;
     }
     .brands-grid.show-all .brand-item {
       display: flex !important;
-    }
-    .mobile-only {
-      display: flex;
     }
   }
 </style>
