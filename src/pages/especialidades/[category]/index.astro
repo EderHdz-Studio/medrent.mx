@@ -248,27 +248,27 @@ const specialtiesUrl = new URL(localizePath("/especialidades", currentPathname),
             const nextIdx = currentIdx === items.length - 1 ? 0 : currentIdx + 1;
             const prevItem = items[prevIdx];
             const nextItem = items[nextIdx];
-            return (
-              <div class="flex items-center space-x-4 w-full justify-center sm:justify-center md:justify-between lg:justify-start pt-4 md:py-4">
-                <a href={prevItem ? localizePath(`/especialidades/${prevItem.slug}`, currentPathname) : "#"} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2 bg-white flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="var(--color-primary)" />
-                  </svg>
-                </a>
+            // return (
+            //   <div class="flex items-center space-x-4 w-full justify-center sm:justify-center md:justify-between lg:justify-start pt-4 md:py-4">
+            //     <a href={prevItem ? localizePath(`/especialidades/${prevItem.slug}`, currentPathname) : "#"} class="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80 p-2 bg-white flex-shrink-0">
+            //       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            //         <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="var(--color-primary)" />
+            //       </svg>
+            //     </a>
 
-                <a
-                  href={nextItem ? localizePath(`/especialidades/${nextItem.slug}`, currentPathname) : "#"}
-                  class="flex items-center justify-center space-x-3 rounded-full cursor-pointer transition-opacity hover:opacity-80 pl-4 py-2 pr-2 bg-white w-full sm:w-full lg:w-auto"
-                >
-                  <span class="text-[var(--color-primary)] text-sm font-medium whitespace-nowrap">Siguiente especialidad</span>
-                  <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="var(--color-primary)" />
-                    </svg>
-                  </div>
-                </a>
-              </div>
-            );
+            //     <a
+            //       href={nextItem ? localizePath(`/especialidades/${nextItem.slug}`, currentPathname) : "#"}
+            //       class="flex items-center justify-center space-x-3 rounded-full cursor-pointer transition-opacity hover:opacity-80 pl-4 py-2 pr-2 bg-white w-full sm:w-full lg:w-auto"
+            //     >
+            //       <span class="text-[var(--color-primary)] text-sm font-medium whitespace-nowrap">Siguiente especialidad</span>
+            //       <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+            //         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            //           <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="var(--color-primary)" />
+            //         </svg>
+            //       </div>
+            //     </a>
+            //   </div>
+            // );
           })()}
         </div>
       </div>
@@ -388,28 +388,28 @@ const specialtiesUrl = new URL(localizePath("/especialidades", currentPathname),
   <!-- Slider de especialidades -->
   <EspecialidadesSlider />
 <script>
-const sticky = document.getElementById('nextSpecialtySticky');
-const hero = document.querySelector('.heroEspeciality');
+// const sticky = document.getElementById('nextSpecialtySticky');
+// const hero = document.querySelector('.heroEspeciality');
 
-if (sticky && hero) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Hero visible → ocultar sticky
-          sticky.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-        } else {
-          // Hero fuera → mostrar sticky
-          sticky.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-        }
-      });
-    },
-    {
-      threshold: 0
-    }
-  );
+// if (sticky && hero) {
+//   const observer = new IntersectionObserver(
+//     (entries) => {
+//       entries.forEach(entry => {
+//         if (entry.isIntersecting) {
+//           // Hero visible → ocultar sticky
+//           sticky.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+//         } else {
+//           // Hero fuera → mostrar sticky
+//           sticky.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+//         }
+//       });
+//     },
+//     {
+//       threshold: 0
+//     }
+//   );
 
-  observer.observe(hero);
-}
+//   observer.observe(hero);
+// }
 </script>
 </Layout>
