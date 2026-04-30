@@ -41,7 +41,7 @@ export const buildEventsSchema = ({
         ? {
             "@type": "Place",
             name: evento.locationLabel,
-            url: evento?.locationUrlMaps,
+            url: evento?.locationUrl,
           }
         : undefined,
       organizer: { "@id": `${baseUrl}/#organization` },
