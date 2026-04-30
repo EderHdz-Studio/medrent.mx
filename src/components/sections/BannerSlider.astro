@@ -1,21 +1,22 @@
 ---
 const { data, class: className = "" } = Astro.props;
+const filterData = [...(data || [])]
+  .filter(item => item?.isActive)
+  .sort((a, b) => {
+    const orderA = Number(a?.displayOrder ?? Number.MAX_SAFE_INTEGER);
+    const orderB = Number(b?.displayOrder ?? Number.MAX_SAFE_INTEGER);
 
-const sortedData = [...data].sort((a, b) => {
-  const orderA = Number(a?.displayOrder ?? Number.MAX_SAFE_INTEGER);
-  const orderB = Number(b?.displayOrder ?? Number.MAX_SAFE_INTEGER);
-
-  return orderA - orderB;
-});
+    return orderA - orderB;
+  });
 ---
 
-{sortedData.length > 0 && (
+{filterData.length > 0 && (
   <section class:list={["w-full mx-auto flex flex-col gap-6 px-0", className]}>
     <div class="glide touch-pan-y select-none relative overflow-visible" id="bannerSlider" style="touch-action: pan-y;">
-      {sortedData.length > 1 && (
+      {filterData.length > 1 && (
         <div class="pointer-events-none absolute bottom-3 left-0 right-0 z-20 px-4 md:px-6">
           <div class="flex items-center gap-2">
-            {sortedData.map((_, index) => (
+            {filterData.map((_, index) => (
               <div
                 class="banner-progress flex-1 overflow-hidden rounded-full bg-white/35"
                 data-banner-progress-item
@@ -30,7 +31,7 @@ const sortedData = [...data].sort((a, b) => {
 
       <div class="glide__track" data-glide-el="track">
         <ul class="glide__slides">
-          {sortedData.map((item) => (
+          {filterData.map((item) => (
             <li class="glide__slide">
               <a
                 href={item.url}
@@ -71,7 +72,7 @@ const sortedData = [...data].sort((a, b) => {
         </ul>
       </div>
 
-      {sortedData.length > 1 && (
+      {filterData.length > 1 && (
         <div class="pointer-events-none absolute inset-0 z-20" data-glide-el="controls">
           <button
             type="button"
