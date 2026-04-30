@@ -509,24 +509,20 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                                             )}
                                                                         </div>
 
-
-
-
-
-                                                                    <div class="pt-4">
-                                                                        <button 
-                                                                            class="event-popup-btn inline-flex py-2 px-4 items-center gap-2 text-[#FFFF] text-[14px] transition-opacity bg-[#00201F] rounded cursor-pointer"
-                                                                            data-title={evento.titleRegistrer || ''}
-                                                                            data-description={evento.descriptionRegistrer || ''}
-                                                                            data-img={evento.image?.url || ''} 
-                                                                            data-titleRegisterSuccess={evento.titleRegisterSuccess || ''}
-                                                                            data-instructionsRegisterSuccess={evento.instructionsRegisterSuccess || ''}
-                                                                        >
-                                                                            Regístrate
-                                                                        </button>
+                                                                        <div class="pt-4">
+                                                                            <button 
+                                                                                class="event-popup-btn inline-flex py-2 px-4 items-center gap-2 text-[#FFFF] text-[14px] transition-opacity bg-[#00201F] rounded cursor-pointer"
+                                                                                data-title={evento.titleRegistrer || ''}
+                                                                                data-description={evento.descriptionRegistrer || ''}
+                                                                                data-img={evento.image?.url || ''} 
+                                                                                data-titleRegisterSuccess={evento.titleRegisterSuccess || ''}
+                                                                                data-instructionsRegisterSuccess={evento.instructionsRegisterSuccess || ''}
+                                                                            >
+                                                                                Regístrate
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
                                                         </article>
                                                     );
                                                 })}
