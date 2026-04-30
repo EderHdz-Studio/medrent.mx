@@ -167,7 +167,7 @@ const isLocalEnv = import.meta.env.DEV;
     </div>
 
     <!-- ESPACIADOR MENU FIXED -->
-    <div class="h-[50px] lg:h-[106px]"></div> 
+    <div class="h-[50px] lg:h-[100px]"></div> 
 
     <!-- Overlay de blur: debajo del navbar y buscador, sobre el contenido principal -->
     <!-- Overlay de blur: debajo del buscador (z-200), encima del contenido -->
@@ -180,7 +180,9 @@ const isLocalEnv = import.meta.env.DEV;
 
     <Footer site={site}/>
 
-    <script type="module" src="/src/scripts/initLenis.ts"></script>
+    <script>
+      import "../scripts/initLenis.ts";
+    </script>
     {localePrefix && (
       <script is:inline define:vars={{ localePrefix }}>
         const assetPattern = /\.(?:avif|webp|jpg|jpeg|png|gif|svg|ico|ttf|woff|woff2|pdf|xml|txt|js|css)$/i;

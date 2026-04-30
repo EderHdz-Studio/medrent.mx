@@ -93,7 +93,9 @@ const { data, class: className = "" } = Astro.props;
   </section>
 )}
 
-<script type="module" src="/src/scripts/banner-slider.ts"></script>
+<script>
+  import "../../scripts/banner-slider.ts";
+</script>
 
 <style>
   @keyframes bannerProgressFill {
