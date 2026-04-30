@@ -394,7 +394,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                     const fechaFin = dayjs(evento.endDate);
 
                                                     // Crear un ID único para el evento basado en la fecha de inicio
-                                                    const eventoId = `evento-${evento.startDate.split('T')[0]}`;
+                                                    const eventoId = evento.startDate ? `evento-${evento.startDate.split('T')[0]}` : 'evento-sin-fecha';
                                                     
                                                     let fechaTexto = '';
                                                     if (fechaInicio.isSame(fechaFin, 'day')) {
@@ -408,8 +408,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                     return (
                                                         <article 
                                                             id={eventoId}
-                                                            data-start-date={evento.startDate.split('T')[0]}
-                                                            data-end-date={evento.endDate.split('T')[0]}
+                                                            data-start-date={evento.startDate ? evento.startDate.split('T')[0] : ''}
+                                                            data-end-date={evento.endDate ? evento.endDate.split('T')[0] : ''}
                                                             data-event-type={(evento.eventType || 'Otro').toString().toLowerCase()}
                                                             data-event-category={(evento.category?.name || evento.category?.name || 'general').toString().toLowerCase()}
                                                             class="bg-white border border-[var(--color-gray-dark)] rounded-2xl hover:shadow-lg transition-shadow overflow-hidden hover:[background:var(--Schemes-Surface-Variant,#F3FFFD)]">
