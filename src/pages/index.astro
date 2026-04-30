@@ -28,7 +28,7 @@ let sliderHero = [];
 
 
 try {
-    const response = await strapiFetch("/home-page?populate[sliderHero][populate][desktopImage]=true&populate[sliderHero][populate][mobileImage]=true");
+    const response = await strapiFetch("/home-page?populate[sliderHero][populate][desktopImage]=true&populate[sliderHero][populate][mobileImage]=true&pagination[limit]=1");
     sliderHero = response?.data?.sliderHero || [];
 } catch (error) {
     console.error('Error fetching slider hero:', error);

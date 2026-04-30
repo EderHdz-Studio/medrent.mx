@@ -4,6 +4,12 @@ const initBannerSlider = () => {
   const slider = document.querySelector<HTMLElement>('#bannerSlider');
   if (!slider || slider.dataset.mounted === 'true') return;
 
+  const slides = Array.from(slider.querySelectorAll<HTMLElement>('.glide__slide'));
+  if (slides.length < 2) {
+    slider.dataset.mounted = 'true';
+    return;
+  }
+
   const progressItems = Array.from(
     slider.querySelectorAll<HTMLElement>('[data-banner-progress-item]')
   );
