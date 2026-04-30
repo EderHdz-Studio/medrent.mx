@@ -3,7 +3,7 @@ export const prerender = false;
 import { strapiFetch } from "@server/strapiClient";
 import Layout from '../layouts/Layout.astro';
 import BrandSlider from '@components/sections/BrandSlider.astro';
-import PromotionSlider from '@components/sections/PromotionSlider.astro';
+import BannerSlider from '@components/sections/BannerSlider.astro';
 import SlideArticles from '@components/blog/slideArticles.astro';
 import Eventos from '../components/eventosHome.astro';
 import BaseForm from "@components/forms/BaseForm.astro";
@@ -24,6 +24,18 @@ let classificationTagByArticleKey = new Map<string, string>();
 
 let brandsData = [];
 let marcasData = [];
+let sliderHero = [];
+
+
+try {
+    const response = await strapiFetch("/home-page?populate[sliderHero][populate][desktopImage]=true&populate[sliderHero][populate][mobileImage]=true");
+    sliderHero = response?.data?.sliderHero || [];
+} catch (error) {
+    console.error('Error fetching slider hero:', error);
+    sliderHero = [];
+}
+
+
 try {
     const response = await strapiFetch("/categories?populate=*");
     marcasData = response?.data || [];
@@ -127,6 +139,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
             })
         }></script>
     </Fragment>
+
+    <BannerSlider data={sliderHero} class="mb-8" /> 
 
     <!-- Sección slider de marcas -->
     <BrandSlider marcasData={brandsData} />

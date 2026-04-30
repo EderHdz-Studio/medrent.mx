@@ -1,0 +1,117 @@
+---
+const { data, class: className = "" } = Astro.props;
+---
+
+{data.length > 0 && (
+  <section class:list={["w-full mx-auto flex flex-col gap-6 px-0", className]}>
+    <div class="glide touch-pan-y select-none relative overflow-visible" id="bannerSlider" style="touch-action: pan-y;">
+      {data.length > 1 && (
+        <div class="pointer-events-none absolute bottom-3 left-0 right-0 z-20 px-4 md:px-6">
+          <div class="flex items-center gap-2">
+            {data.map((_, index) => (
+              <div
+                class="banner-progress flex-1 overflow-hidden rounded-full bg-white/35"
+                data-banner-progress-item
+                data-index={index}
+              >
+                <span class="banner-progress__fill block h-1 rounded-full bg-white"></span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="glide__track" data-glide-el="track">
+        <ul class="glide__slides">
+          {data.map((item) => (
+            <li class="glide__slide">
+              <a
+                href={item.url}
+                class="block rounded overflow-hidden"
+                target={item.url?.startsWith("http") ? "_self" : undefined}
+                draggable="false"
+              >
+                {item.mobileImage?.url && (
+                  <img
+                    src={item.mobileImage.url}
+                    alt={item.mobileImage.alternativeText || item.title || "itemción"}
+                    class="block w-full h-auto object-cover md:hidden"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                )}
+
+                {item.desktopImage?.url && (
+                  <img
+                    src={item.desktopImage.url}
+                    alt={item.desktopImage.alternativeText || item.title || "itemción"}
+                    class="hidden w-full h-auto object-cover md:block"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                )}
+
+                {!item.mobileImage?.url && !item.desktopImage?.url && (
+                  <div class="bg-gray-200 w-full h-48 flex items-center justify-center">
+                    <span class="text-gray-500">{item.title || "itemción"}</span>
+                  </div>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {data.length > 1 && (
+        <div class="pointer-events-none absolute inset-0 z-20" data-glide-el="controls">
+          <button
+            type="button"
+            data-glide-dir="<"
+            aria-label="Slide anterior"
+            class="cursor-pointer pointer-events-auto absolute left-0 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-[0_50%_50%_0] bg-white p-3 text-[#171D1C] shadow-[0_4px_18px_rgba(0,0,0,0.14)] transition hover:scale-105 md:h-16 md:w-16 md:p-4"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M7.825 13H20V11H7.825L13.425 5.4L12 4L4 12L12 20L13.425 18.6L7.825 13Z" fill="#171D1C"/>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            data-glide-dir=">"
+            aria-label="Slide siguiente"
+            class="cursor-pointer pointer-events-auto absolute right-0 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-[50%_0_0_50%] bg-white p-3 text-[#171D1C] shadow-[0_4px_18px_rgba(0,0,0,0.14)] transition hover:scale-105 md:h-16 md:w-16 md:p-4"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z" fill="#171D1C"/>
+            </svg>
+          </button>
+        </div>
+      )}
+    </div>
+  </section>
+)}
+
+<script type="module" src="/src/scripts/banner-slider.ts"></script>
+
+<style>
+  @keyframes bannerProgressFill {
+    from {
+      width: 0%;
+    }
+
+    to {
+      width: 100%;
+    }
+  }
+
+  .banner-progress__fill {
+    width: 0%;
+    animation: none;
+  }
+
+  .banner-progress__fill.animate-fill {
+    animation: bannerProgressFill 8000ms linear forwards;
+  }
+</style>
