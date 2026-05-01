@@ -116,8 +116,8 @@ import SubmitButton from "@components/forms/SubmitButton.astro";
         const status = document.getElementById("status");
         
         function resetPopupToInitial() {
-            if (popupTitle) popupTitle.textContent = 'Título del evento';
-            if (popupDescription) popupDescription.textContent = 'Descripción del evento';
+            if (popupTitle) popupTitle.textContent = 'No te pierdas de nada';
+            if (popupDescription) popupDescription.textContent = 'Déjanos tus datos para enviarte más información sobre este evento.';
             if (popupImage) (popupImage as HTMLDivElement).style.display = 'block';
             if (form) {
                 (form as HTMLDivElement).style.display = 'flex';
