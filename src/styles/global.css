@@ -641,7 +641,7 @@ select:autofill {
   gap: 0.5rem;
   padding: 14px 16px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-white);
