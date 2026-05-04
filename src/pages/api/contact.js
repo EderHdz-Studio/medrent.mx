@@ -20,10 +20,6 @@ function capitalizeName(value) {
 // Función para enviar datos a HubSpot (sin cambios)
 async function sendToHubspot(properties) {
   const payload = { properties };
-
-console.log('Payload to HubSpot:', payload);
-  return false;
-  
   const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
     method: 'POST',
     headers: {
