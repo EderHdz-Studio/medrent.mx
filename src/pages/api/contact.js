@@ -9,9 +9,21 @@ const allowedOrigins = [
   'http://localhost:4321', 'http://localhost:4322' // Permitir para desarrollo local
 ];
 
+function capitalizeName(value) {
+  return String(value)
+    .trim()
+    .split(/\s+/)
+    .map(part => part.charAt(0).toLocaleUpperCase('es-MX') + part.slice(1).toLocaleLowerCase('es-MX'))
+    .join(' ');
+}
+
 // Función para enviar datos a HubSpot (sin cambios)
 async function sendToHubspot(properties) {
   const payload = { properties };
+
+console.log('Payload to HubSpot:', payload);
+  return false;
+  
   const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
     method: 'POST',
     headers: {
@@ -69,9 +81,9 @@ export async function ALL({ request }) {
     
     // Separar nombre y apellido
     if (input.name) {
-      const nameParts = input.name.trim().split(' ');
-      properties.firstname = nameParts.shift() || '';
-      properties.lastname = nameParts.join(' ') || '';
+      const nameParts = input.name.trim().split(/\s+/);
+      properties.firstname = capitalizeName(nameParts.shift() || '');
+      properties.lastname = capitalizeName(nameParts.join(' ') || '');
     }
 
     // Procesar todos los campos del formulario
