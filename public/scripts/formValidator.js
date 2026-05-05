@@ -624,7 +624,7 @@ export function initForm(formId) {
     });
 
     // Static fields for HubSpot (add/update as needed)
-    data["unidades_de_negocios"] = "MEDRENT";
+    data["unidades_de_negocios"] = "MED RENT";
     data["hs_all_assigned_business_unit_ids"] = "0";
     data["definicion_de_necesidad"] = "Compra Equipo Médico";
 
