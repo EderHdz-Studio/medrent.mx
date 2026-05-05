@@ -680,6 +680,8 @@ export function initForm(formId) {
       })
         .then(async (response) => {
           // Manejo de status específicos
+          sendFormEvent({ form, formId, status: response.status, formData: data });
+
           if (response.status === 400) {
             setState("error");
             // console.log("Response 400:", response);
@@ -700,16 +702,18 @@ export function initForm(formId) {
             resetInitialForm()
           }, 5000); // 5 segundos para mostrar el mensaje antes de resetear el formulario
 
-          sendFormEvent({ formId: formId, status: response.status });
           return response;
         })
         .catch((error) => {
           errorOccurred = true;
           console.error("Fetch error:", error);
+          sendFormEvent({ form, formId, status: "error", formData: data });
+          setState("error");
         });
       await Promise.all([fetchPromise, minWait(1200)]); // 1.2 segundos mínimo
     } catch (error) {
       console.error(error);
+      sendFormEvent({ form, formId, status: "error", formData: data });
       setState("error");
     } finally {
       // Restaurar texto original del botón
@@ -724,44 +728,33 @@ export function initForm(formId) {
 
 
 
-function sendFormEvent({ formId, status }) {
+function sendFormEvent({ form, formId, status, formData = {} }) {
   const pathname = window.location.pathname;
   const pageTitle = document.title;
-  let eventName;
-  formId == "form-evento" && document.querySelector("#event-popup-title")
-    ? (eventName = document.querySelector("#event-popup-title").textContent)
-    : (eventName = "");
+  const eventName = formId === "form-evento" && document.querySelector("#event-popup-title")
+    ? document.querySelector("#event-popup-title").textContent
+    : "";
 
-  // Valores de formulario
-  const full_name = document.querySelector('input[name="name"]')?.value || "";
-  const email = document.querySelector('input[name="email"]')?.value || "";
-  const phone = document.querySelector('input[name="phone"]')?.value || "";
-  const institution =
-    document.querySelector('input[name="lugar_de_trabajo"]')?.value || "";
-  const medical_specialty =
-    document.querySelector('input[name="specialty"]')?.value || "";
-  const state = document.querySelector('input[name="estado_mx"]')?.value || "";
-  const discovery_channel =
-    document.querySelector('input[name="por_qu_medio_nos_conociste"]')?.value ||
-    "";
-  const product_interest =
-    document.querySelector('input[name="multi_equipo__medrent_"]')?.value || "";
-  const message =
-    document.querySelector('textarea[name="message"]')?.value || "";
+  const getFormValue = (name) => {
+    const value = formData?.[name];
+    if (Array.isArray(value)) return value.filter(Boolean).join(",");
+    if (value != null) return String(value);
+    return form?.querySelector(`[name="${name}"]`)?.value || "";
+  };
 
-  // Checkboxes de equipo
   const equipoInteres = Array.from(
-    document.querySelectorAll('input[name="equipoInteres[]"]:checked'),
+    form?.querySelectorAll('input[name="equipoInteres[]"]:checked') || [],
   );
-  const valoresStr =
-    equipoInteres.length > 0
-      ? equipoInteres.map((cb) => cb.value).join(",")
-      : "";
+  const valoresStr = equipoInteres.length > 0
+    ? equipoInteres.map((cb) => cb.value).join(",")
+    : "";
+  const medicalSpecialty = getFormValue("specialty");
+  const medicalSpecialtyOther = getFormValue("otras_especialidades");
 
-  // Obtener datos de tracking desde la función
-  const tracking = getTrackingData();
+  const tracking = typeof window.getTrackingData === "function"
+    ? window.getTrackingData()
+    : {};
 
-  // Construir objeto de evento
   const dataEventForm = {
     event: "generate_lead",
     event_data: {
@@ -773,22 +766,23 @@ function sendFormEvent({ formId, status }) {
     form_submission: {
       form_id: formId,
       form_data: {
-        full_name: full_name,
-        email: email,
-        phone: phone,
-        institution: institution,
-        medical_specialty: medical_specialty,
-        state: state,
-        discovery_channel: discovery_channel,
-        product_interest: valoresStr || product_interest,
-        message: message,
-        eventName: eventName,
+        full_name: getFormValue("name"),
+        email: getFormValue("email"),
+        phone: getFormValue("phone"),
+        institution: getFormValue("lugar_de_trabajo"),
+        medical_specialty: medicalSpecialtyOther || medicalSpecialty,
+        medical_specialty_other: medicalSpecialtyOther,
+        state: getFormValue("estado_mx"),
+        discovery_channel: getFormValue("por_qu_medio_nos_conociste"),
+        product_interest: valoresStr || getFormValue("multi_equipo__medrent_"),
+        message: getFormValue("message"),
+        eventName,
         statusResponseHubspot: status || "error",
       },
     },
-    tracking: tracking,
+    tracking,
   };
 
-  // Enviar al dataLayer
+  window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(dataEventForm);
 }
