@@ -309,6 +309,15 @@ export function initForm(formId) {
     phoneWrapper.appendChild(phoneHelper);
   }
 
+  const emailWrapper = emailInput?.closest(".form-field");
+  let emailHelper = emailWrapper?.querySelector(".email-helper");
+  if (!emailHelper && emailWrapper) {
+    emailHelper = document.createElement("div");
+    emailHelper.className =
+      "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    emailWrapper.appendChild(emailHelper);
+  }
+
   function setInitial(input) {
     input.style.removeProperty("outline");
     input.style.removeProperty("background");
@@ -326,6 +335,11 @@ export function initForm(formId) {
       phoneHelper.innerHTML = "";
       phoneHelper.className =
         "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    }
+    if (input === emailInput && emailHelper) {
+      emailHelper.textContent = "";
+      emailHelper.className =
+        "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -379,9 +393,14 @@ export function initForm(formId) {
     }
     // Mensaje success para teléfono
     if (input === phoneInput && phoneHelper) {
-      phoneHelper.innerHTML = "Número válido";
+      phoneHelper.innerHTML = "";
       phoneHelper.className =
         "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    }
+    if (input === emailInput && emailHelper) {
+      emailHelper.textContent = "";
+      emailHelper.className =
+        "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -408,6 +427,12 @@ export function initForm(formId) {
         "<strong>El número ingresado no tiene la cantidad correcta de dígitos.</strong><br>10 dígitos.";
       phoneHelper.className =
         "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    }
+    if (input === emailInput && emailHelper) {
+      emailHelper.textContent =
+        "Ingresa un correo electr\u00f3nico v\u00e1lido. Revisa que incluya \u201c@\u201d y dominio.";
+      emailHelper.className =
+        "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
