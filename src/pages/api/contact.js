@@ -93,12 +93,6 @@ export async function ALL({ request }) {
         continue;
       }
 
-      if (key === 'unidades_de_negocios') {
-        // Forzar el valor correcto para HubSpotF
-        properties['unidades_de_negocios'] = 'MED RENT';
-        continue;
-      }
-
       if (key === 'phone') {
         let rawPhone = String(value).replace(/[^0-9]/g, '');
         // Validar que tenga exactamente 10 dígitos (número mexicano)

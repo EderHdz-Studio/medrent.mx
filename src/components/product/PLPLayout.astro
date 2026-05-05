@@ -7,7 +7,7 @@ interface Props {
   /** Si se pasa junto con `title`, muestra el bloque de encabezado al estilo PLP productos */
   productCount?: number;
 }
-import Newsletter from '@components/FormNewsletter.astro';
+import Newsletter from '@components/seo/Newsletter.astro';
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
 import { getPromotionSlides } from "@server/api/promotions";
 import ViewMore from "@components/seo/ViewMore.astro";
@@ -16,8 +16,7 @@ import ViewMore from "@components/seo/ViewMore.astro";
 const promotionsData = await getPromotionSlides();
 const { title, productCount, seoText='' } = Astro.props;
 const showHeading = Boolean(title);
-const plpGradient =
-  "bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent";
+const plpGradient = "bg-[linear-gradient(266deg,#007BB6_0%,#00827F_100.77%)] bg-clip-text text-transparent";
 
 ---
 

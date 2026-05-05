@@ -176,34 +176,38 @@ export function initForm(formId) {
 
       let ContenidoPopup = document.getElementById("ContenidoPopup");
       ContenidoPopup ? (ContenidoPopup.style.maxWidth = "430px") : null;
+      document.querySelector("#NewsletterContainer") ? document.querySelector("#NewsletterContainer").style.background = "var(--color-secondary-light)" : null;
+
     }
   }
   
-    function resetPopup() {
-      const inputTypeForm = document.querySelector('#PopupContent input[name="formType"]')?.value || null;
-    
-      if(inputTypeForm == 'popupEventos'){
-        let containerImageCover = document.querySelector(".containerImageCover");
-        containerImageCover ? containerImageCover.style.display = "block" : null;
+  function resetPopup() {
+    const inputTypeForm = document.querySelector('#PopupContent input[name="formType"]')?.value || null;
+  
+    if(inputTypeForm == 'popupEventos'){
+      let containerImageCover = document.querySelector(".containerImageCover");
+      containerImageCover ? containerImageCover.style.display = "block" : null;
 
-        let eventPopupText = document.getElementById("event-popup-text");
-        eventPopupText ? eventPopupText.style.display = "block" : null;
+      let eventPopupText = document.getElementById("event-popup-text");
+      eventPopupText ? eventPopupText.style.display = "block" : null;
 
-        let contentRightPopUp = document.getElementById("contentRightPopUp");
-        contentRightPopUp ? (contentRightPopUp.style.padding = "16px", contentRightPopUp.style.width = "50%") : null;
+      let contentRightPopUp = document.getElementById("contentRightPopUp");
+      contentRightPopUp ? (contentRightPopUp.style.padding = "32px", contentRightPopUp.style.width = "50%") : null;
 
-        let PopupContent = document.getElementById("PopupContent");
-        PopupContent ? (PopupContent.style.maxWidth = "unset") : null;
-      }else{
-        let PopupContent = document.getElementById("ImagenPopup");
-        PopupContent ? (PopupContent.style.display = "block") : null;
-        let contentRightPopUp = document.getElementById("ContenidoPopup");
-        if(contentRightPopUp){
-          contentRightPopUp.style.width = "50%";
-          contentRightPopUp.style.background = "var(--color-secondary-light)"
+      let PopupContent = document.getElementById("PopupContent");
+      PopupContent ? (PopupContent.style.maxWidth = "unset") : null;
+    }else{
+      let PopupContent = document.getElementById("ImagenPopup");
+      PopupContent ? (PopupContent.style.display = "block") : null;
+      let contentRightPopUp = document.getElementById("ContenidoPopup");
+      if(contentRightPopUp){
+        contentRightPopUp.style.width = "50%";
+        contentRightPopUp.style.background = "var(--color-secondary-light)"
 
-        }
       }
+      document.querySelector("#NewsletterContainer") ? document.querySelector("#NewsletterContainer").style.background = "var(--color-secondary-light)" : null;
+
+    }
 
 
     }
@@ -231,6 +235,7 @@ export function initForm(formId) {
       errorBox?.classList.remove("hidden");
       clearPopup();
       document.querySelector("#ContenidoPopup") ? document.querySelector("#ContenidoPopup").style.background = "#FFF8F7" : null;
+      document.querySelector("#NewsletterContainer") ? document.querySelector("#NewsletterContainer").style.background = "#FFF8F7" : null;
     }
   }
 
@@ -260,6 +265,8 @@ export function initForm(formId) {
   });
 
   function resetInitialForm(){
+    const inputTypeForm = document.querySelector('input[name="formType"]')?.value || null;
+
     resetPopup()
     setState("form");
     setTimeout(() => {
@@ -269,7 +276,13 @@ export function initForm(formId) {
       validateAll();
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = "Agendar una DEMO";
+        if(inputTypeForm == 'newsletter'){
+          submitBtn.innerHTML = "Suscríbeme";
+        }else if(inputTypeForm == 'popupEventos'){
+          submitBtn.innerHTML = "Acceder a mis beneficios";
+        }else{
+          submitBtn.innerHTML = "Recibir asesoría personalizada";
+        }
       }
     }, 500); 
   }
@@ -296,6 +309,15 @@ export function initForm(formId) {
     phoneWrapper.appendChild(phoneHelper);
   }
 
+  const emailWrapper = emailInput?.closest(".form-field");
+  let emailHelper = emailWrapper?.querySelector(".email-helper");
+  if (!emailHelper && emailWrapper) {
+    emailHelper = document.createElement("div");
+    emailHelper.className =
+      "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    emailWrapper.appendChild(emailHelper);
+  }
+
   function setInitial(input) {
     input.style.removeProperty("outline");
     input.style.removeProperty("background");
@@ -313,6 +335,11 @@ export function initForm(formId) {
       phoneHelper.innerHTML = "";
       phoneHelper.className =
         "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    }
+    if (input === emailInput && emailHelper) {
+      emailHelper.textContent = "";
+      emailHelper.className =
+        "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -366,9 +393,14 @@ export function initForm(formId) {
     }
     // Mensaje success para teléfono
     if (input === phoneInput && phoneHelper) {
-      phoneHelper.innerHTML = "Número válido";
+      phoneHelper.innerHTML = "";
       phoneHelper.className =
         "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    }
+    if (input === emailInput && emailHelper) {
+      emailHelper.textContent = "";
+      emailHelper.className =
+        "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -395,6 +427,12 @@ export function initForm(formId) {
         "<strong>El número ingresado no tiene la cantidad correcta de dígitos.</strong><br>10 dígitos.";
       phoneHelper.className =
         "phone-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
+    }
+    if (input === emailInput && emailHelper) {
+      emailHelper.textContent =
+        "Ingresa un correo electr\u00f3nico v\u00e1lido. Revisa que incluya \u201c@\u201d y dominio.";
+      emailHelper.className =
+        "email-helper text-[12px] mt-1 text-left text-[var(--color-text-default)]";
     }
   }
 
@@ -624,7 +662,7 @@ export function initForm(formId) {
     });
 
     // Static fields for HubSpot (add/update as needed)
-    data["unidades_de_negocios"] = "MEDRENT";
+    data["unidades_de_negocios"] = "MED RENT";
     data["hs_all_assigned_business_unit_ids"] = "0";
     data["definicion_de_necesidad"] = "Compra Equipo Médico";
 
@@ -683,6 +721,8 @@ export function initForm(formId) {
   });
   
 }
+
+
 
 function sendFormEvent({ formId, status }) {
   const pathname = window.location.pathname;
