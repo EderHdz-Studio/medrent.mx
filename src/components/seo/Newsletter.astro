@@ -1,0 +1,51 @@
+---
+import BaseForm from "@components/forms/BaseForm.astro";
+import FormField from "@components/forms/FormField.astro";
+import PhoneField from "@components/forms/PhoneField.astro";
+import CheckboxField from "@components/forms/CheckboxField.astro";
+import SubmitButton from "@components/forms/SubmitButton.astro";
+---
+
+<section id="newsletter-section" class="newsletter-module">
+    <div id="NewsletterContainer" class="p-4 md:pt-16 md:px-6 md:pb-8 lg:px-0 bg-[var(--color-secondary-light)] rounded-t-[24px]">
+        <!-- Contenedor relativo para que ambos ocupen el mismo espacio -->
+        
+        <div id="newsletter-default" class="newsletter-module__default transition-opacity duration-400 ease-in-out w-full lg:max-w-[600px] m-auto" style="transition: opacity 0.4s ease-in-out;">
+            
+            <div class="pb-6">
+                <BaseForm id="form-newsletter" class="space-y-8 rounded flex flex-col gap-6" 
+                    type="newsletter" 
+                    successTitle="¡Gracias por suscribirte!" 
+                    successText="Te avisaremos cuando publiquemos contenido relevante, lanzamientos y análisis que realmente valen tu tiempo. Nada de spam, solo información clara y útil.">
+                        
+                        <FormField
+                        label="Correo electrónico"
+                        name="email"
+                        type="email"
+                        placeholder="Ej: carolina.avila@neuro.mx"
+                        />
+                        <PhoneField
+                            label="Teléfono de contacto"
+                            name="phone"
+                            placeholder="Ej: 55 1234 5678"
+                        />
+                        <SubmitButton text="Suscríbeme"></SubmitButton>
+                        <CheckboxField
+                            id="avisoPop"
+                            label="He leído y acepto el"
+                            link="/aviso-de-privacidad"
+                        />
+                </BaseForm>
+            </div>
+
+            <script type="module">
+                import { initForm } from "/scripts/formValidator.js";
+
+                document.addEventListener("DOMContentLoaded", () => {
+                    initForm("form-newsletter");
+                });
+            </script>
+        </div>
+        
+    </div>
+</section>

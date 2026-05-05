@@ -1,7 +1,6 @@
 /* --- Al final del archivo para asegurar prioridad sobre Tailwind --- */
 
 @import "tailwindcss";
-@import "./newsletter-module.css";
 
 /* FONTS */
 @font-face {
