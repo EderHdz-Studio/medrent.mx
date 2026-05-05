@@ -1,6 +1,5 @@
 ---
 export const prerender = true;
-import { strapiFetch } from "@server/strapiClient";
 import Layout from "@layouts/Layout.astro";
 // import { getApplicationsByCategory } from "@server/api/applications";
 import { getCategories } from "@server/api/categories";
@@ -9,20 +8,12 @@ import JsonLd from "@components/seo/JsonLd.astro";
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import PromotionSlider from '@components/sections/PromotionSlider.astro';
 import EspecialidadesSlider from "@components/sections/EspecialidadesSlider.astro";
+import SpecialtyApplicationsGrid from "@components/sections/SpecialtyApplicationsGrid.astro";
 import { getSiteConfig } from "@server/siteConfig";
 import { getLocaleMeta, localizePath } from "@lib/locale";
 import { buildSpecialtyCategorySchema } from "@seo/schemas/specialtyCategory";
 // import SpecialtyHero from "@components/navigation/SpecialtyHero.astro";
 import BannerSlider from '@components/sections/BannerSlider.astro';
-let sliderHero = [];
-try {
-    const response = await strapiFetch("/home-page?populate[sliderHero][populate][desktopImage]=true&populate[sliderHero][populate][mobileImage]=true&pagination[limit]=1");
-    sliderHero = response?.data?.sliderHero || [];
-} catch (error) {
-    console.error('Error fetching slider hero:', error);
-    sliderHero = [];
-}
-
 
 const siteConfig = await getSiteConfig();
 
@@ -41,6 +32,7 @@ const categories = await getCategories();
 const especialidad = Array.isArray(categories)
   ? categories.find(item => item.slug === category)
   : null;
+const sliderHero = especialidad?.sliderHero || [];
 const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 const localeMeta = getLocaleMeta(currentPathname);
 const canonical = new URL(currentPathname, Astro.site).toString();
@@ -90,17 +82,12 @@ const specialtiesUrl = new URL(localizePath("/especialidades", currentPathname),
     />
   </Fragment>
 
-  <!-- Sticky Next Specialty -->
-   <BannerSlider data={sliderHero} class="mb-8" /> 
-
-
-  <div class="w-full max-w-7xl mx-auto flex flex-col ">
-    <!-- Hero Section de la Categoría -->
-    <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none">
-
-      <!-- Breadcrumb sobre la imagen -->
-      <div class="max-w-[1280px] flex justify-start relative z-2">
+  <div class="relative mb-8">
+    <div class="absolute left-0 top-0 z-30 w-full">
+      <div class="mx-auto flex w-full max-w-[1280px] justify-start">
         <Breadcrumb
+          surface="light"
+          navPosition="inline"
           textColor="text-white"
           items={[
             { name: "INICIO", href: localizePath("/", currentPathname) },
@@ -109,7 +96,16 @@ const specialtiesUrl = new URL(localizePath("/especialidades", currentPathname),
           ]}
         />
       </div>
+    </div>
 
+    <BannerSlider data={sliderHero} />
+  </div>
+  
+
+
+  <div class="w-full max-w-7xl mx-auto flex flex-col ">
+    <!-- Hero Section de la Categoría -->
+    <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none">
       <!-- Fila 1 -->
       <!-- <SpecialtyHero
         category={category}
@@ -118,100 +114,11 @@ const specialtiesUrl = new URL(localizePath("/especialidades", currentPathname),
         currentPathname={currentPathname}
       /> -->
 
-      {especialidad?.subcategories && especialidad.subcategories.filter((aplicacion) => aplicacion.slug).length > 0 && (
-        <section class="mb-16 bg-[var(--color-secondary-light)] px-4 sm:px-6 lg:px-8">
-          <div class="space-y-4 md:space-y-[25px]">
-            {especialidad.subcategories.filter((aplicacion) => aplicacion.slug).map((aplicacion, index) => (
-              <div>
-              <div
-                class:list={[
-                  "flex w-full flex-col gap-4 md:flex-row md:gap-6 md:p-6 lg:gap-6 lg:py-6 lg:px-8",
-                  index % 2 === 1 ? "md:flex-row-reverse" : "",
-                ]}
-              >
-                {/* Imagen primero en DOM: arriba en mobile, columna en desktop */}
-                <div class="relative w-full shrink-0 md:w-1/2 md:min-h-[280px]">
-                  <div class="relative aspect-[4/3] w-full overflow-hidden rounded-[24px] md:aspect-auto md:h-full md:min-h-[280px]">
-                    <img
-                      src={aplicacion?.image}
-                      alt={aplicacion.name}
-                      class="absolute inset-0 z-0 h-full w-full rounded-[24px] object-cover md:relative md:inset-auto md:min-h-[280px]"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    {/* Mobile: degradado hacia abajo (texto debajo de la imagen) */}
-                    <div
-                      class="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-t from-[var(--color-secondary-light)] to-transparent md:hidden"
-                      aria-hidden="true"
-                    />
-                    {/* Desktop: degradado en el borde que toca el texto (alterna izq/der con la fila) */}
-                    {index % 2 === 0 ? (
-                      <div
-                        class="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-r from-transparent to-[var(--color-secondary-light)] sm:w-24 md:block"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <div
-                        class="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-20 bg-gradient-to-r from-[var(--color-secondary-light)] to-transparent sm:w-24 md:block"
-                        aria-hidden="true"
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Texto sin fondo; hereda surface de la sección */}
-                <div class="flex w-full flex-col justify-between gap-2 px-0 py-6 md:w-1/2 md:px-6 md:py-0">
-                  <div class="flex flex-col gap-2">
-                    <p class="text-[14px] font-medium text-[var(--color-primary)]">APLICACIÓN</p>
-
-                    <h3 class="text-[28px] font-bold leading-tight text-[#261819]">
-                      {aplicacion.name}
-                    </h3>
-
-                    <p class="text-[var(--color-text-default)] text-[16px] leading-relaxed">
-                      {aplicacion.description ?? ""}
-                    </p>
-
-                    <div class="text-[16px] leading-relaxed">
-                      <span class="font-semibold text-[#212121]">Equipos: </span>
-                      {aplicacion.products && aplicacion.products.length > 0 ? (
-                        aplicacion.products.map((product, pIdx) => (
-                          <span class="inline">
-                            <a
-                              href={localizePath(`/productos/${product.slug}`, currentPathname)}
-                              class="text-[var(--color-primary)] italic underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-accent)]"
-                            >
-                              {product.name}
-                            </a>
-                            {pIdx < aplicacion.products.length - 1 && (
-                              <span class="text-[var(--color-primary)]">, </span>
-                            )}
-                          </span>
-                        ))
-                      ) : (
-                        <span class="text-[var(--color-primary)] italic">
-                          No hay equipos disponibles
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <a
-                    href={localizePath(`/especialidades/${category}/${aplicacion.slug}`, currentPathname)}
-                    class="mt-2 flex w-full items-center justify-center gap-2 rounded bg-[var(--color-primary)] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[var(--color-accent)] md:mt-8 md:w-fit md:justify-start"
-                  >
-                    Ver productos
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M7 17 17 7M17 7h-6M17 7v6" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <SpecialtyApplicationsGrid
+        applications={especialidad?.subcategories}
+        category={category}
+        currentPathname={currentPathname}
+      />
     </section>
   </div>
 
