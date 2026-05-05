@@ -2,7 +2,7 @@ import { strapiFetch } from "../strapiClient";
 
 export async function getCategories() {
   const res = await strapiFetch(
-    "/categories?populate[subcategories][sort][0]=order:asc&populate[subcategories][populate][image]=true&populate[subcategories][populate][products]=true&populate[heroImage]=true&populate[listImage]=true&filters[isActive][$eq]=true",
+    "/categories?populate[subcategories][sort][0]=order:asc&populate[subcategories][populate][image]=true&populate[subcategories][populate][products]=true&populate[heroImage]=true&populate[listImage]=true&populate[sliderHero][populate][desktopImage]=true&populate[sliderHero][populate][mobileImage]=true&filters[isActive][$eq]=true",
   );
 
   const asCollection = (value: any) => {
@@ -31,6 +31,7 @@ export async function getCategories() {
         listImage: mediaUrl(attrs.listImage),
         heroImage: mediaUrl(attrs.heroImage),
         heroDescription: attrs.heroDescription ?? attrs.description ?? "",
+        sliderHero: attrs.sliderHero,
         subcategories:
           asCollection(attrs.subcategories).map((sub: any) => {
             const subAttrs = sub.attributes || sub;
