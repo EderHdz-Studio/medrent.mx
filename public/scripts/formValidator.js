@@ -770,7 +770,7 @@ function sendFormEvent({ form, formId, status, formData = {} }) {
         email: getFormValue("email"),
         phone: getFormValue("phone"),
         institution: getFormValue("lugar_de_trabajo"),
-        medical_specialty: medicalSpecialtyOther || medicalSpecialty,
+        medical_specialty: medicalSpecialty,
         medical_specialty_other: medicalSpecialtyOther,
         state: getFormValue("estado_mx"),
         discovery_channel: getFormValue("por_qu_medio_nos_conociste"),
