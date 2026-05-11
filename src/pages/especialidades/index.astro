@@ -2,19 +2,27 @@
 export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
-import { ESPECIALTIES } from "@lib/site.ts";
-const especialidades = ESPECIALTIES;
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ImageResponsive from '@components/media/ImageResponsive.astro';
 import TestimonialsSlider from '@components/sections/TestimonialsSlider.astro';
 import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
+import { strapiFetch } from "@server/strapiClient";
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
+
+let especialidades = [];
+try {
+    const response = await strapiFetch("/categories?populate=*");
+    especialidades = response?.data || [];
+} catch (error) {
+    console.error('Error fetching especialidades:', error);
+    especialidades = [];
+}
 ---
 
 <Layout
@@ -153,19 +161,21 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     <div class="max-w-7xl m-auto">
     <section class="flex flex-col gap-4 md:gap-6">
         {especialidades.map((categoria, index) => (
+
+          
             <div class={`flex flex-col md:flex-row w-full bg-white rounded-lg gap-6 p-4 md:p-6 lg:px-[135px] lg:py-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
                 <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-center"> 
                     <div class="py-6"> 
                         <p class="text-[var(--color-accent)] font-bold text-[14px] md:text-[14px] uppercase ">{String(index + 1).padStart(2, '0')}</p> 
                         <h3 class=" text-[24px] md:text-[28px] lg:text-[36px] font-light text-[#261819]"> 
-                            {categoria.Nombre} 
+                            {categoria.name} 
                         </h3> 
                         <p class="text-[var(--color-green-dark)] text-[16px] font-normal mb-4 leading-relaxed"> 
-                            {categoria.Descripcion}
+                            {categoria.shortDescription}
                         </p> 
                     </div>
                     <div class="mt-4 sm:mt-2"> 
-                        <a href={categoria.Slug ? `/especialidades/${categoria.Slug}` : "#"} class="items-center align-center justify-center flex bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white text-[14px] font-bold not-italic px-4 py-3 transition-colors w-full sm:w-fit md:w-fit gap-2 self-start rounded-[4px]">
+                        <a href={categoria.slug ? `/especialidades/${categoria.slug}` : "#"} class="items-center align-center justify-center flex bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white text-[14px] font-bold not-italic px-4 py-3 transition-colors w-full sm:w-fit md:w-fit gap-2 self-start rounded-[4px]">
                             Ver aplicaciones
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none"> 
                                 <path d="M13.44 4.965C13.3638 4.78174 13.2182 4.63611 13.035 4.56C12.9448 4.52157 12.848 4.50118 12.75 4.5H5.24995C5.05104 4.5 4.86028 4.57902 4.71962 4.71967C4.57897 4.86032 4.49995 5.05109 4.49995 5.25C4.49995 5.44891 4.57897 5.63968 4.71962 5.78033C4.86028 5.92098 5.05104 6 5.24995 6H10.9425L4.71745 12.2175C4.64716 12.2872 4.59136 12.3702 4.55329 12.4616C4.51521 12.553 4.49561 12.651 4.49561 12.75C4.49561 12.849 4.51521 12.947 4.55329 13.0384C4.59136 13.1298 4.64716 13.2128 4.71745 13.2825C4.78718 13.3528 4.87013 13.4086 4.96152 13.4467C5.05292 13.4847 5.15095 13.5043 5.24995 13.5043C5.34896 13.5043 5.44699 13.4847 5.53839 13.4467C5.62978 13.4086 5.71273 13.3528 5.78245 13.2825L12 7.0575V12.75C12 12.9489 12.079 13.1397 12.2196 13.2803C12.3603 13.421 12.551 13.5 12.75 13.5C12.9489 13.5 13.1396 13.421 13.2803 13.2803C13.4209 13.1397 13.5 12.9489 13.5 12.75V5.25C13.4988 5.15199 13.4784 5.05517 13.44 4.965Z" fill="white">
@@ -176,8 +186,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                 </div>  
                 <div class="w-full md:w-1/2 lg:w-3/5 h-64 md:h-auto min-h-[240px] relative overflow-hidden">  
                     <ImageResponsive
-                      src={`/temp/especialidades/${categoria.Image}`}
-                      alt={categoria.Nombre}
+                      src={categoria.heroImage?.url || ''}
+                      alt={categoria.name}
                       class="w-full h-full object-cover rounded-[4px]"
                       sizes="(min-width: 1024px) 50vw, 100vw"
                       loading="lazy"

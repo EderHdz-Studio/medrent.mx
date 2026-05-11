@@ -108,7 +108,7 @@ export const ESPECIALTIES = [
       { AplicacionClinica: "Monitoreo cerebral", Slug: "monitoreo-cerebral", id: 2, Equipos:"", image: "monitoreo-cerebral.png", Descripcion: "Plataformas tecnológicas diseñadas para el monitoreo continuo de parámetros cerebrales y fisiológicos, orientadas al seguimiento clínico en entornos hospitalarios y de cuidados críticos. Estas soluciones permiten la evaluación prolongada del estado cerebral como apoyo en la toma de decisiones clínicas y el manejo del paciente neurológico." },
     ]
   },
-  { Nombre:"Rehabilitación", id: 4, Id: 4, Path:"rehabilitacion", Descripcion:"Herramientas y equipos para rehabilitación física y neurológica, que incluyen isocinesia, electroterapia, ondas de choque, oscilación profunda, radiofrecuencia, terapias combinadas y ultrasonido diagnóstico, orientados a optimizar procesos terapéuticos y resultados clínicos.", Slug:"rehabilitacion", Image:"Rehabilitacion.jpg", ImageHero:"hero.png",
+  { Nombre:"Rehabilitaciónm", id: 4, Id: 4, Path:"rehabilitacion", Descripcion:"Herramientas y equipos para rehabilitación física y neurológica, que incluyen isocinesia, electroterapia, ondas de choque, oscilación profunda, radiofrecuencia, terapias combinadas y ultrasonido diagnóstico, orientados a optimizar procesos terapéuticos y resultados clínicos.", Slug:"rehabilitacion", Image:"Rehabilitacion.jpg", ImageHero:"hero.png",
     CatalogoAplicaciones: [
       { AplicacionClinica: "Electroterapia", Slug: "electroterapia", id: 2, Equipos:"", image: "electroterapia.png", Descripcion: "Tecnologías de estimulación eléctrica utilizadas en procesos de rehabilitación para el alivio del dolor, la activación neuromuscular y la recuperación funcional. La electroterapia es una herramienta fundamental en programas de fisioterapia y rehabilitación física." },
       { AplicacionClinica: "Isocinesia", Slug: "isocinesia", id: 2, Equipos:"", image: "isocinesia.png", Descripcion: "Sistemas de evaluación y rehabilitación isocinética diseñados para medir y entrenar la fuerza muscular de forma controlada, precisa y reproducible. La isocinesia es ampliamente utilizada en rehabilitación deportiva, ortopédica y neurológica." },
@@ -142,6 +142,7 @@ export const APLICATIONS = [
     url: "/aplicaciones/ultrasonido"
   },
 ];
+
 
 // export const BRANDS = [
 //   { name: "Ambu", logo: "Ambu.png" },
