@@ -5,6 +5,7 @@ import Search from "@components/layout/header/Search.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import { getProducts } from "@server/api/products";
 import { getArticles } from "@server/api/articles";
+import { getCategories } from "@server/api/categories";
 import { any } from "astro:schema";
 import { getSiteConfig } from "@server/siteConfig";
 import { localizePath, stripLocalePrefix } from "@lib/locale";
@@ -14,10 +15,17 @@ const currentPath = stripLocalePrefix(currentPathname);
 
 // --- CACHE EN MEMORIA POR DEPLOY ---
 let cachedMarcas = globalThis.__cachedMarcasNavData;
-let cachedCategories = globalThis.__cachedCategoriesData;
-let cachedSubcategorias = globalThis.__cachedSubcategoriasData;
+let cachedCategories = globalThis.__cachedCategoriesWithProductSubcategoriesData;
+let cachedSubcategorias = globalThis.__cachedSubcategoriasWithProductsData;
 let cachedProducts = globalThis.__cachedProductsData;
 let cachedArticles = globalThis.__cachedArticlesData;
+
+const hasProducts = (item) => {
+  const products = item?.products ?? item?.attributes?.products;
+  if (Array.isArray(products)) return products.length > 0;
+  if (Array.isArray(products?.data)) return products.data.length > 0;
+  return false;
+};
 
 if (!cachedMarcas) {
   try {
@@ -32,23 +40,22 @@ if (!cachedMarcas) {
 
 if (!cachedCategories) {
   try {
-    const response = await strapiFetch("/categories?populate=*");
-    cachedCategories = response?.data || [];
-    globalThis.__cachedCategoriesData = cachedCategories;
+    cachedCategories = await getCategories();
+    globalThis.__cachedCategoriesWithProductSubcategoriesData = cachedCategories;
   } catch (error) {
     cachedCategories = [];
-    globalThis.__cachedCategoriesData = [];
+    globalThis.__cachedCategoriesWithProductSubcategoriesData = [];
   }
 }
 
 if (!cachedSubcategorias) {
   try {
-    const response = await strapiFetch("/subcategories?populate[category]=true");
-    cachedSubcategorias = response?.data || [];
-    globalThis.__cachedSubcategoriasData = cachedSubcategorias;
+    const response = await strapiFetch("/subcategories?populate[category]=true&populate[products]=true");
+    cachedSubcategorias = (response?.data || []).filter(hasProducts);
+    globalThis.__cachedSubcategoriasWithProductsData = cachedSubcategorias;
   } catch (error) {
     cachedSubcategorias = [];
-    globalThis.__cachedSubcategoriasData = [];
+    globalThis.__cachedSubcategoriasWithProductsData = [];
   }
 }
 

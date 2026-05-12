@@ -8,7 +8,12 @@ const {
 } = Astro.props;
 
 const validApplications = Array.isArray(applications)
-  ? applications.filter((application) => application?.slug)
+  ? applications.filter(
+      (application) =>
+        application?.slug &&
+        Array.isArray(application.products) &&
+        application.products.length > 0,
+    )
   : [];
 ---
 
