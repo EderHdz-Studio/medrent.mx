@@ -1,0 +1,172 @@
+---
+export const prerender = true;
+
+import Layout from "@layouts/Layout.astro";
+import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
+import JsonLd from "@components/seo/JsonLd.astro";
+import Breadcrumb from "@components/navigation/Breadcrumb.astro";
+import BrandInterestitialGrid from "@components/sections/BrandInterestitialGrid.astro";
+import BannerSlider from "@components/sections/BannerSlider.astro";
+import ProductSlider from "@components/sections/ProductSlider.astro";
+import { getBrandLandingBySlug, getBrands } from "@server/api/brands";
+import { getProducts } from "@server/api/products";
+import { getSiteConfig } from "@server/siteConfig";
+import { isUsableBrandSlug } from "@lib/brandSlug";
+import { getLocaleMeta, localizePath } from "@lib/locale";
+
+const siteConfig = await getSiteConfig();
+
+export async function getStaticPaths() {
+  const brands = await getBrands();
+
+  return brands
+    .filter((brand) => isUsableBrandSlug(brand.slug))
+    .map((brand) => ({
+      params: { brand: brand.slug },
+    }));
+}
+
+const { brand } = Astro.params;
+
+if (!isUsableBrandSlug(brand)) {
+  return Astro.redirect("/nuestras-marcas", 301);
+}
+
+const brandData = await getBrandLandingBySlug(brand);
+
+if (!brandData) {
+  return Astro.redirect("/nuestras-marcas", 302);
+}
+
+const brands = await getBrands();
+const featuredProductSlugs = Array.isArray(brandData.featuredProducts)
+  ? brandData.featuredProducts.map((product) => product.slug).filter(Boolean)
+  : [];
+const featuredProducts = featuredProductSlugs.length > 0
+  ? await getProducts({ slugs: featuredProductSlugs, brands: [brandData.slug] })
+  : [];
+const featuredProductsBySlug = new Map(featuredProducts.map((product) => [product.slug, product]));
+const orderedFeaturedProducts = featuredProductSlugs
+  .map((slug) => featuredProductsBySlug.get(slug))
+  .filter(Boolean);
+const sliderHero = brandData.sliderHero || [];
+const interestitialCards = brandData.interestitialCard || [];
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const localeMeta = getLocaleMeta(currentPathname);
+const canonicalUrl = new URL(currentPathname, Astro.site).toString();
+const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const logoUrl = brandData.logoUrl || siteConfig?.favicon512x512?.url;
+const homeUrl = new URL(localizePath("/", currentPathname), Astro.site).toString();
+const brandsUrl = new URL(localizePath("/nuestras-marcas", currentPathname), Astro.site).toString();
+const pageTitle =
+  brandData.seoTitle ||
+  `${brandData.name} | Partners tecnologicos y equipo medico | MedRent`;
+const pageDescription =
+  brandData.seoDescription ||
+  brandData.description ||
+  `Conoce las soluciones de ${brandData.name} disponibles en MedRent.`;
+
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={`${brandData.name}; marcas equipo medico; tecnologia medica; MedRent`}
+  ogImage={logoUrl}
+>
+  <style>
+    body {
+      background: var(--color-secondary-light);
+    }
+  </style>
+
+  <BreadcrumbSchema
+    slot="head"
+    items={[
+      { name: "Inicio", url: homeUrl },
+      { name: "Marcas", url: brandsUrl },
+      { name: brandData.name, url: canonicalUrl },
+    ]}
+    id={breadcrumbId}
+  />
+
+  <Fragment slot="head">
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": `${canonicalUrl}#webpage`,
+            url: canonicalUrl,
+            name: pageTitle,
+            description: pageDescription,
+            isPartOf: { "@id": `${baseUrl}/#website` },
+            about: { "@id": `${canonicalUrl}#brand` },
+            inLanguage: localeMeta.htmlLang,
+            breadcrumb: { "@id": breadcrumbId },
+          },
+          {
+            "@type": "Brand",
+            "@id": `${canonicalUrl}#brand`,
+            name: brandData.name,
+            url: canonicalUrl,
+            image: logoUrl ? [logoUrl] : undefined,
+          },
+        ],
+      }}
+    />
+  </Fragment>
+
+  <div class="relative mb-8">
+    <div class="absolute left-0 top-0 z-30 w-full">
+      <div class="mx-auto flex w-full max-w-[1280px] justify-start">
+        <Breadcrumb
+          surface="light"
+          navPosition="inline"
+          textColor="text-white"
+          items={[
+            { name: "INICIO", href: localizePath("/", currentPathname) },
+            { name: "MARCAS", href: localizePath("/nuestras-marcas", currentPathname) },
+            { name: brandData.name },
+          ]}
+        />
+      </div>
+    </div>
+    <div class="pt-16 py-8 md:pt-8" style={`background-color: ${brandData.interstitialColor};`}>
+        <img
+            src={brandData.interstitialLogo || logoUrl}
+            alt={brandData.name}
+            class="mx-auto max-h-[24px] object-contain"
+            loading="lazy"
+            decoding="async"
+        />
+    </div>
+    <BannerSlider data={sliderHero} />
+  </div>
+
+  <div class="w-full max-w-7xl mx-auto flex flex-col">
+    <section class="relative w-full h-auto rounded-b-[24px] md:rounded-none">
+      
+        <BrandInterestitialGrid
+            cards={interestitialCards}
+            brand={brandData.slug}
+            brandName={brandData.name}
+            brandLogo={brandData.logoUrl}
+            fallbackColor={brandData.interstitialColor}
+            currentPathname={currentPathname}
+        />
+    </section>
+  </div>
+
+  <ProductSlider
+    data={orderedFeaturedProducts}
+    title="Productos destacados"
+    prefixId={`BrandFeaturedProducts-${brandData.slug}`}
+  />
+
+  <!-- <PromotionSlider /> -->
+
+  <!-- <BrandSlider marcasData={brands} /> -->
+</Layout>

@@ -3,6 +3,7 @@ import { mapStrapiProduct } from "@lib/domain/product/mapper";
 import type { Product } from "@lib/domain/product/types";
 
 export async function getProducts(filters?: {
+  slugs?: string[];
   brands?: string[];
   categories?: string[];
   subcategories?: string[];
@@ -23,6 +24,13 @@ export async function getProducts(filters?: {
     params.append("populate[subcategory][populate][category]", "true");
 
     /* ---------------- FILTERS ---------------- */
+
+    filters?.slugs?.forEach((slug, index) => {
+      params.append(
+        `filters[slug][$in][${index}]`,
+        slug
+      );
+    });
 
     filters?.brands?.forEach((brand, index) => {
       params.append(

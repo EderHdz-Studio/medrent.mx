@@ -11,22 +11,25 @@ import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
 
 import { getProducts } from "@server/api/products";
-import { getBrandBySlug, getBrands } from "@server/api/brands";
+import { getBrandLandingBySlug, getBrands } from "@server/api/brands";
 import { getCategories } from "@server/api/categories";
 import { getAllSubcategories } from "@server/api/subcategories";
 import { formatSlugAsTitle } from "@lib/utils.js";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import { localizeRedirect } from "@lib/locale";
 
-/* ---------------- ROUTE PARAM ---------------- */
+const { brand, interestitial } = Astro.params;
 
-const { brand } = Astro.params;
-
-if (!isUsableBrandSlug(brand)) {
-  return Astro.redirect(localizeRedirect("/productos", Astro.originPathname ?? Astro.url.pathname), 301);
+if (!isUsableBrandSlug(brand) || !interestitial) {
+  return Astro.redirect(localizeRedirect("/nuestras-marcas", Astro.originPathname ?? Astro.url.pathname), 301);
 }
 
-/* ---------------- QUERY PARAMS ---------------- */
+const brandData = await getBrandLandingBySlug(brand);
+const interestitialCard = brandData?.interestitialCard?.find((card) => card.slug === interestitial);
+
+if (!brandData || !interestitialCard) {
+  return Astro.redirect(localizeRedirect(`/nuestras-marcas/${brand}`, Astro.originPathname ?? Astro.url.pathname), 302);
+}
 
 const url = new URL(Astro.request.url);
 
@@ -43,61 +46,60 @@ const brandQuery = parseFilterParam("brand");
 const categoryQuery = parseFilterParam("category");
 const subcategoryQuery = parseFilterParam("subcategory");
 
-/* Siempre incluir marca base */
-if (brand && !brandQuery.includes(brand)) {
+if (!brandQuery.includes(brand)) {
   brandQuery.push(brand);
 }
 
-/* ---------------- FETCH DATA ---------------- */
+const cardProductSlugs = Array.isArray(interestitialCard.products)
+  ? interestitialCard.products.map((product) => product.slug).filter(Boolean)
+  : [];
 
-const products = await getProducts({
-  brands: brandQuery,
-  categories: categoryQuery,
-  subcategories: subcategoryQuery,
-});
+const products = interestitialCard.allProducts || cardProductSlugs.length > 0
+  ? await getProducts({
+      slugs: interestitialCard.allProducts ? undefined : cardProductSlugs,
+      brands: brandQuery,
+      categories: categoryQuery,
+      subcategories: subcategoryQuery,
+    })
+  : [];
 
 const brandsData = await getBrands();
 const categoriesData = await getCategories();
 const subcategoriesData = await getAllSubcategories();
-const brandData = brand ? await getBrandBySlug(brand) : null;
-const brandName = brand ?? "Marca";
-const plpHeadingTitle = brandData?.name || formatSlugAsTitle(brandName);
-const pageTitle = `${brandName} | Partners tecnológicos | MedRent`;
+const brandName = brandData.name || formatSlugAsTitle(brand);
+const plpHeadingTitle = interestitialCard.name || formatSlugAsTitle(interestitial);
+const pageTitle = `${plpHeadingTitle} | ${brandName} | MedRent`;
 const pageDescription =
-  `Descubre productos y soluciones de la marca ${brandName} con respaldo y soporte especializado de MedRent.`;
-const pageKeywords = `${brandName}; equipo médico; MedRent`;
+  interestitialCard.description ||
+  `Descubre productos y soluciones de ${brandName} para ${plpHeadingTitle} con soporte especializado de MedRent.`;
+const pageKeywords = `${brandName}; ${plpHeadingTitle}; equipo medico; MedRent`;
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
-const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
+const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const canonicalUrl = new URL(currentPathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
-const logoUrl = siteConfig?.favicon512x512?.url;
+const logoUrl = brandData.logoUrl || siteConfig?.favicon512x512?.url;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
-const brandUrl = `${baseUrl}/nuestras-marcas/${brandName}`;
+const brandUrl = `${baseUrl}/nuestras-marcas/${brand}`;
 const brandId = `${brandUrl}#brand`;
-const seoPlpDescription =
-  brandData?.SEO?.description ||
-  brandData?.SEO?.seoDescription ||
-  brandData?.description ||
-  "";
-const seoPlpTitle = brandData?.SEO?.title || "MEDRENT";
-const seoText = brandData?.SEO?.seoText || "";
+const seoPlpDescription = pageDescription;
+const seoPlpTitle = brandName;
+const seoText = "";
 ---
 
 <Layout
   title={pageTitle}
   description={pageDescription}
   keywords={pageKeywords}
-  ogImage={heroImageUrl}
+  ogImage={logoUrl || heroImageUrl}
 >
   <Fragment slot="head">
     <BreadcrumbSchema
       items={[
         { name: "Inicio", url: `${baseUrl}/` },
-        {
-          name: "Marcas",
-          url: `${baseUrl}/nuestras-marcas`,
-        },
-        { name: plpHeadingTitle, url: brandUrl }
+        { name: "Marcas", url: `${baseUrl}/nuestras-marcas` },
+        { name: brandName, url: brandUrl },
+        { name: plpHeadingTitle, url: canonicalUrl },
       ]}
       id={breadcrumbId}
     />
@@ -143,6 +145,7 @@ const seoText = brandData?.SEO?.seoText || "";
               "@id": brandId,
               name: brandName,
               url: brandUrl,
+              image: logoUrl ? [logoUrl] : undefined,
             },
             {
               "@type": "CollectionPage",
@@ -158,7 +161,7 @@ const seoText = brandData?.SEO?.seoText || "";
             {
               "@type": "ItemList",
               "@id": itemListId,
-              name: `${brandName} — productos`,
+              name: `${plpHeadingTitle} - productos`,
               itemListOrder: "https://schema.org/ItemListOrderAscending",
               itemListElement,
             },
@@ -168,7 +171,6 @@ const seoText = brandData?.SEO?.seoText || "";
     }></script>
   </Fragment>
 
-  <!-- HERO -->
   <section class="relative w-full h-[140px] overflow-hidden">
     <div class="absolute inset-0 heroproductos">
       <Breadcrumb
@@ -176,18 +178,18 @@ const seoText = brandData?.SEO?.seoText || "";
         items={[
           { name: "INICIO", href: "/" },
           { name: "MARCAS", href: "/nuestras-marcas" },
+          { name: brandName, href: `/nuestras-marcas/${brand}` },
           { name: plpHeadingTitle },
         ]}
       />
       <img
         src="/temp/HeroPLP.png"
-        alt={`Marca ${brandName}`}
+        alt={`${brandName} - ${plpHeadingTitle}`}
         class="w-full h-full object-cover rounded-b-[24px]"
       />
     </div>
   </section>
 
-  <!-- PLP -->
   <PLPLayout
     title={plpHeadingTitle}
     productCount={products.length}
@@ -206,12 +208,9 @@ const seoText = brandData?.SEO?.seoText || "";
     <PLPProductsSection products={products} />
   </PLPLayout>
 
- 
-
-  <script is:inline define:vars={{ products, brandName  }}>
-    /* Event: view_item_list */
+  <script is:inline define:vars={{ products, listName: plpHeadingTitle }}>
     setTimeout(() => {
-      window.view_item_list(products, brandName)
+      window.view_item_list(products, listName)
     }, 2000);
   </script>
 </Layout>
