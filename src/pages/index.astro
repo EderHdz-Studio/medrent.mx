@@ -247,7 +247,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     </section> -->
 
         <!-- Sección de contacto -->
-    <section class="max-w-7xl mx-auto flex flex-col md:grid md:grid-cols-2">
+    <section class="max-w-7xl mx-auto flex flex-col md:grid md:grid-cols-2 mb-6">
         <!-- Columna 1: Encabezado -->
        <div class="medrentForm space-y-4 bg-[var(--color-primary)] rounded-3xl p-8 md:p-0">
             <h2 class="mb-6 text-white font-bold text-[28px] leading-9 md:text-[45px] md:leading-[52px]">
@@ -366,7 +366,9 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     </section>
     
     <!-- slider de eventos -->
-    <Eventos dataEventos={dataEventos} />
+    {(dataEventos && dataEventos.events && dataEventos.events.length > 0 &&
+        <Eventos dataEventos={dataEventos} />
+    )}
 
     <!--  Sección de blogs (sin defer-section: content-visibility rompe el ancho de Glide) -->
      <!--<section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
