@@ -1,29 +1,31 @@
 ---
-import ImageResponsive from "@components/media/ImageResponsive.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 type BrandItem = {
   slug?: string;
   name?: string;
   logo?: any;
 };
-const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
+let { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
+
+/*** Triplicar imagenes para mostrar en el slider */
+// marcasData = Array.from({ length: 3 }, () => marcasData).flat();
 ---
 
 <section class="max-w-7xl mx-auto px-4 py-4 md:py-6 md:px-">
-  <div class="flex justify-between items-center gap-5 flex-wrap">
+  <div class="flex justify-center items-center gap-5 flex-wrap">
   
   <!-- Texto del lado izquierdo -->
   <div class="flex flex-col md:flex-row justify-between items-center gap-5 w-full">
   
   <!-- Texto arriba en mobile, izquierda en desktop -->
-  <div class="w-full">
-    <h3 class="text-center md:text-left text-[var(--color-primary)] font-bold text-sm uppercase">
+  <div class="w-full mt-8 flex flex-col gap-1">
+    <h3 class="text-center md:text-left text-[var(--color-secondary)] font-bold text-sm uppercase">
       NUESTRAS MARCAS
     </h3>
     <h2 class="text-center md:text-left text-2xl font-bold text-gray-900 tracking-tight mt-1">
       Tecnología confiable para tu práctica
     </h2>
-    <p class="text-center md:text-left text-gray-700 text-base tracking-[0.5px] mt-1">
+    <p class="text-center md:text-left text-[#261819] text-base tracking-[0.5px] mt-1">
       Trabajamos con fabricantes líderes que garantizan precisión clínica, innovación y resultados reales.
     </p>
   </div>
@@ -37,29 +39,31 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
       Ver todas las marcas
     </a>
   </div>
+
 </div>
 
   {marcasData.length > 0 ? (
-    <div>
+    <div class="w-full">
       <!-- Grid de marcas -->
-      <div class="brands-grid" id="brandsGrid" style="gap: 0 24px;">
+      <div class="brands-grid-wrapper relative">
+      <div class="brands-grid flex items-center flex-wrap gap-x-6 py-5 justify-center overflow-hidden transition-[max-height,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [--brand-size:48px] [--brand-row-gap:24px] [max-height:calc((var(--brand-size)*3)+(var(--brand-row-gap)*2)+40px)]" id="brandsGrid">
         {marcasData.map((brand: BrandItem, index: number) => (
           <a
             href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
-            class="brand-item hover-scale-img"
-            key={brand.slug}
+            class="brand-item group hover-scale-img flex h-auto w-[160px] shrink-0 items-center justify-center !m-0 !p-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.04]"
+            key={`${brand.slug ?? brand.name ?? "brand"}-${index}`}
             data-brand-index={index}
           >
-            <div class="brand-logo-wrapper">
+            <div class="brand-logo-wrapper flex h-auto w-full items-center justify-center p-4 transition-all duration-300 ease-out">
               {brand.logo?.url ? (
                 <img 
                   src={brand.logo.url} 
                   alt={brand.name}
-                  class="brand-logo"
+                  class="brand-logo block h-auto max-h-10 w-auto max-w-full object-contain transition-all duration-300 ease-out group-hover:brightness-105 group-hover:saturate-110"
                   loading="lazy"
                 />
               ) : (
-                <div class="brand-placeholder">
+                <div class="brand-placeholder flex h-full w-full items-center justify-center rounded-xl bg-[#f5f5f5] text-[32px] font-bold text-[#ccc]">
                   <span>{brand.name?.charAt(0)}</span>
                 </div>
               )}
@@ -67,28 +71,17 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
           </a>
         ))}
       </div>
+      <div class="brands-grid-fade pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-white/0 to-white opacity-0 transition-opacity duration-200" aria-hidden="true"></div>
+      </div>
 
-      {marcasData.length > 20 && (
-        <div class="brands-button-container desktop-only">
-          <button id="toggleBrandsBtn" class="brands-toggle-btn">
-            <span id="btnText">Ver más marcas</span>
-            <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>
-            </svg>
-          </button>
-        </div>
-      )}
-
-      {marcasData.length > 9 && marcasData.length <= 20 && (
-        <div class="brands-button-container mobile-only">
-          <button id="toggleBrandsBtn" class="brands-toggle-btn">
-            <span id="btnText">Ver más marcas</span>
-            <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>
-            </svg>
-          </button>
-        </div>
-      )}
+      <div class="brands-button-container hidden justify-center items-center">
+        <button id="toggleBrandsBtn" class="brands-toggle-btn flex cursor-pointer items-center justify-center gap-2 rounded-full border border-[#171D1C] bg-white py-2 pr-3 pl-[18px] text-sm font-medium text-[#171D1C] transition-all duration-300">
+          <span id="btnText">Ver más marcas</span>
+          <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>
+          </svg>
+        </button>
+      </div>
     </div>
   ) : (
     <p class="text-center text-gray-500">No hay marcas disponibles</p>
@@ -96,144 +89,16 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
 </section>
 
 <style is:global>
-  .brands-grid {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 24px;
-    padding: 20px 0;
-    justify-content: space-around;
+  .brands-grid.show-all {
+    max-height: var(--expanded-height);
   }
 
-  .brand-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 !important;
-    padding: 0 !important;
-    transition: all 0.3s ease;
-    width: 120px;
-    height: 120px;
-    flex-shrink: 0;
+  .brands-grid-wrapper.has-overflow:not(.is-expanded) .brands-grid-fade {
+    opacity: 1;
   }
 
-  .brand-logo-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    padding: 16px;
-  }
-
-  .brand-logo {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-  }
-
-  .brand-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f5f5;
-    border-radius: 12px;
-    font-size: 32px;
-    font-weight: bold;
-    color: #ccc;
-  }
-
-  .brand-item:hover {
-    transform: scale(1.05);
-  }
-
-  .brands-button-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .brands-toggle-btn {
-    display: flex;
-    padding: 8px 12px 8px 18px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    border-radius: 1000px;
-    border: 1px solid var(--Schemes-On-Surface, #171D1C);
-    background: var(--Schemes-On-Primary, #FFF);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
-    color: #171D1C;
-  }
-
-  @media (min-width: 768px) {
-    .brands-grid .brand-item {
-      display: none;
-    }
-    /* Mostrar primeras 20 en desktop */
-    .brands-grid .brand-item:nth-child(1),
-    .brands-grid .brand-item:nth-child(2),
-    .brands-grid .brand-item:nth-child(3),
-    .brands-grid .brand-item:nth-child(4),
-    .brands-grid .brand-item:nth-child(5),
-    .brands-grid .brand-item:nth-child(6),
-    .brands-grid .brand-item:nth-child(7),
-    .brands-grid .brand-item:nth-child(8),
-    .brands-grid .brand-item:nth-child(9),
-    .brands-grid .brand-item:nth-child(10),
-    .brands-grid .brand-item:nth-child(11),
-    .brands-grid .brand-item:nth-child(12),
-    .brands-grid .brand-item:nth-child(13),
-    .brands-grid .brand-item:nth-child(14),
-    .brands-grid .brand-item:nth-child(15),
-    .brands-grid .brand-item:nth-child(16),
-    .brands-grid .brand-item:nth-child(17),
-    .brands-grid .brand-item:nth-child(18),
-    .brands-grid .brand-item:nth-child(19),
-    .brands-grid .brand-item:nth-child(20) {
-      display: flex !important;
-    }
-    .brands-grid.show-all .brand-item {
-      display: flex !important;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .brands-grid {
-      gap: 16px !important;
-    }
-    .brands-grid .brand-item {
-      width: 100px;
-      height: 100px;
-      display: none;
-    }
-    .brands-button-container {
-      margin-top: 0 !important;
-    }    
-    /* Mostrar primeras 9 en mobile */
-    .brands-grid .brand-item:nth-child(1),
-    .brands-grid .brand-item:nth-child(2),
-    .brands-grid .brand-item:nth-child(3),
-    .brands-grid .brand-item:nth-child(4),
-    .brands-grid .brand-item:nth-child(5),
-    .brands-grid .brand-item:nth-child(6),
-    .brands-grid .brand-item:nth-child(7),
-    .brands-grid .brand-item:nth-child(8),
-    .brands-grid .brand-item:nth-child(9) {
-      display: flex !important;
-    }
-    .brands-grid.show-all .brand-item {
-      display: flex !important;
-    }
+  .brands-button-container.is-visible {
+    display: flex !important;
   }
 </style>
 
@@ -241,25 +106,49 @@ const { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
   (function() {
     const toggleBtn = document.getElementById('toggleBrandsBtn');
     const brandsGrid = document.getElementById('brandsGrid');
+    const brandsWrapper = brandsGrid?.closest('.brands-grid-wrapper');
+    const buttonContainer = toggleBtn?.closest('.brands-button-container');
     const btnText = document.getElementById('btnText');
     const btnIcon = document.getElementById('btnIcon');
     
     if (toggleBtn && brandsGrid) {
       let isExpanded = false;
+      let resizeTimer;
+
+      const updateOverflowState = () => {
+        brandsGrid.style.setProperty('--expanded-height', `${brandsGrid.scrollHeight}px`);
+        const styles = window.getComputedStyle(brandsGrid);
+        const brandSize = parseFloat(styles.getPropertyValue('--brand-size')) || 48;
+        const brandRowGap = parseFloat(styles.getPropertyValue('--brand-row-gap')) || 24;
+        const collapsedHeight = (brandSize * 3) + (brandRowGap * 2) + 60;
+        const hasOverflow = brandsGrid.scrollHeight > collapsedHeight + 1;
+        brandsWrapper?.classList.toggle('has-overflow', hasOverflow);
+        buttonContainer?.classList.toggle('is-visible', hasOverflow || isExpanded);
+      };
       
       toggleBtn.addEventListener('click', () => {
         isExpanded = !isExpanded;
         
         if (isExpanded) {
           brandsGrid.classList.add('show-all');
+          brandsWrapper?.classList.add('is-expanded');
           btnText.textContent = 'Ver menos';
           btnIcon.innerHTML = '<path d="M4 12H20" stroke="#171D1C" stroke-width="2" stroke-linecap="round"/>';
         } else {
           brandsGrid.classList.remove('show-all');
+          brandsWrapper?.classList.remove('is-expanded');
           btnText.textContent = 'Ver más marcas';
           btnIcon.innerHTML = '<path d="M18 11H13V6H11V11H6V13H11V18H13V13H18V11Z" fill="#171D1C"/>';
         }
+        updateOverflowState();
       });
+
+      window.addEventListener('load', updateOverflowState);
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(updateOverflowState, 150);
+      });
+      updateOverflowState();
     }
   })();
 </script>
