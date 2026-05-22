@@ -684,3 +684,8 @@ select:autofill {
 .sidebar-filters-container{
   scrollbar-width: thin;
 }
+
+input[type="checkbox"] {
+  accent-color: var(--color-primary)!important;
+  transform: scale(1.2);
+}
