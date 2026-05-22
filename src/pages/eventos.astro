@@ -25,7 +25,15 @@ let data: any = {};
 // let dataPromociones: any[] = [];
 
 try { 
-  const response = await strapiFetch("/events-page?populate[events][populate][image]=true&populate[events][populate][category]=true&populate=heroImage");
+    const currentYear = new Date().getFullYear();
+    const response = await strapiFetch(
+    `/events-page?populate[events][filters][startDate][$gte]=${currentYear}-01-01` +
+    `&populate[events][filters][startDate][$lte]=${currentYear}-12-31` +
+    `&populate[events][sort][0]=startDate:asc` +
+    `&populate[events][populate][image]=true` +
+    `&populate[events][populate][category]=true` +
+    `&populate=heroImage`
+    );
   data = response.data;
 } catch (error) {
   console.error('Error fetching events:', error);
@@ -297,9 +305,9 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                             // Verificar si hay eventos
                             const eventosList = data?.events || [];
                             
-                            if (eventosList.length === 0) {
-                                return <p class="text-center text-gray-500">No hay eventos próximos</p>;
-                            }
+                            // if (eventosList.length === 0) {
+                            //     return <p class="text-center text-gray-500">No hay eventos próximos</p>;
+                            // }
                             
                             // Agrupar eventos por mes
                             const eventosPorMes: any = {};
