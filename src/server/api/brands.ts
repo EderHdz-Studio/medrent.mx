@@ -49,7 +49,7 @@ export async function getBrandLandingBySlug(slug: string) {
 
   params.append("filters[slug][$eq]", slug);
   params.append("populate[logo]", "true");
-  params.append("populate[SEO]", "true");
+  params.append("populate[SEO][populate][ogImage]", "true");
   params.append("populate[featuredProducts]", "true");
   params.append("populate[interstitialLogo]", "true");
   params.append("populate[sliderHero][populate][desktopImage]", "true");
@@ -79,6 +79,7 @@ export async function getBrandLandingBySlug(slug: string) {
     interstitialLogo: mediaUrl(attrs.interstitialLogo),
     seoTitle: attrs.SEO?.seoTitle ?? attrs.SEO?.title ?? "",
     seoDescription: attrs.SEO?.seoDescription ?? attrs.SEO?.description ?? "",
+    seoOgImage: attrs.SEO?.ogImage?.url ?? "/OG_Default_Medrent.jpeg",
     sliderHero: asCollection(attrs.sliderHero),
     featuredProducts,
     interestitialCard: asCollection(attrs.interestitialCard)

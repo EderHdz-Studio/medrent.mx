@@ -68,10 +68,12 @@ const categoriesData = await getCategories();
 const subcategoriesData = await getAllSubcategories();
 const brandName = brandData.name || formatSlugAsTitle(brand);
 const plpHeadingTitle = interestitialCard.name || formatSlugAsTitle(interestitial);
-const pageTitle = `${plpHeadingTitle} | ${brandName} | MedRent`;
-const pageDescription =
+const fallbackPageTitle = `${plpHeadingTitle} | ${brandName} | MedRent`;
+const fallbackPageDescription =
   interestitialCard.description ||
   `Descubre productos y soluciones de ${brandName} para ${plpHeadingTitle} con soporte especializado de MedRent.`;
+const pageTitle = brandData.seoTitle || fallbackPageTitle;
+const pageDescription = brandData.seoDescription || fallbackPageDescription;
 const pageKeywords = `${brandName}; ${plpHeadingTitle}; equipo medico; MedRent`;
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
@@ -80,9 +82,10 @@ const canonicalUrl = new URL(currentPathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = brandData.logoUrl || siteConfig?.favicon512x512?.url;
 const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
+const openGraphImageUrl = brandData.seoOgImage || logoUrl || heroImageUrl;
 const brandUrl = `${baseUrl}/nuestras-marcas/${brand}`;
 const brandId = `${brandUrl}#brand`;
-const seoPlpDescription = pageDescription;
+const seoPlpDescription = fallbackPageDescription;
 const seoPlpTitle = brandName;
 const seoText = "";
 ---
@@ -91,7 +94,7 @@ const seoText = "";
   title={pageTitle}
   description={pageDescription}
   keywords={pageKeywords}
-  ogImage={logoUrl || heroImageUrl}
+  ogImage={openGraphImageUrl}
 >
   <Fragment slot="head">
     <BreadcrumbSchema

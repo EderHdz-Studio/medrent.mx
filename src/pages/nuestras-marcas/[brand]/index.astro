@@ -66,14 +66,14 @@ const pageDescription =
   brandData.seoDescription ||
   brandData.description ||
   `Conoce las soluciones de ${brandData.name} disponibles en MedRent.`;
-
+  const openGraphImageUrl = brandData.seoOgImage || logoUrl;
 ---
 
 <Layout
   title={pageTitle}
   description={pageDescription}
   keywords={`${brandData.name}; marcas equipo medico; tecnologia medica; MedRent`}
-  ogImage={logoUrl}
+  ogImage={openGraphImageUrl}
 >
   <style>
     body {
