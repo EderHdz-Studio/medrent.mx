@@ -61,7 +61,7 @@ const homeUrl = new URL(localizePath("/", currentPathname), Astro.site).toString
 const brandsUrl = new URL(localizePath("/nuestras-marcas", currentPathname), Astro.site).toString();
 const pageTitle =
   brandData.seoTitle ||
-  `${brandData.name} | Partners tecnologicos y equipo medico | MedRent`;
+  `${brandData.name} | Partners tecnológicos y equipo médico | MedRent`;
 const pageDescription =
   brandData.seoDescription ||
   brandData.description ||
@@ -72,7 +72,7 @@ const pageDescription =
 <Layout
   title={pageTitle}
   description={pageDescription}
-  keywords={`${brandData.name}; marcas equipo medico; tecnologia medica; MedRent`}
+  keywords={`${brandData.name}; marcas equipo médico; tecnología medica; MedRent`}
   ogImage={openGraphImageUrl}
 >
   <style>
