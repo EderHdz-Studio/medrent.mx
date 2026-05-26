@@ -17,8 +17,19 @@ import { getAllSubcategories } from "@server/api/subcategories";
 import { formatSlugAsTitle } from "@lib/utils.js";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import { localizeRedirect } from "@lib/locale";
+import { strapiFetch } from "@server/strapiClient";
 
 const { brand, interestitial } = Astro.params;
+
+let heroPLP: any = {};
+try {
+    const response = await strapiFetch("/plp?populate=*");
+    const sliderHero = response?.data || {};
+    heroPLP = Array.isArray(sliderHero) ? sliderHero[0] || {} : sliderHero;
+} catch (error) {
+    console.error('Error fetching slider hero:', error);
+    heroPLP = {};
+}
 
 if (!isUsableBrandSlug(brand) || !interestitial) {
   return Astro.redirect(localizeRedirect("/nuestras-marcas", Astro.originPathname ?? Astro.url.pathname), 301);
@@ -81,8 +92,19 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 const canonicalUrl = new URL(currentPathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = brandData.logoUrl || siteConfig?.favicon512x512?.url;
-const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
-const openGraphImageUrl = brandData.seoOgImage || logoUrl || heroImageUrl;
+const mediaUrl = (value: any) => {
+  if (typeof value === "string") return value;
+  if (typeof value?.url === "string") return value.url;
+  if (typeof value?.data?.attributes?.url === "string") return value.data.attributes.url;
+  if (typeof value?.data?.url === "string") return value.data.url;
+  return "";
+};
+const fallbackHeroImageUrl = "/temp/HeroPLP.png";
+const heroImageDesktop = mediaUrl(heroPLP.heroImageDesktop) || fallbackHeroImageUrl;
+const heroImageMobile = mediaUrl(heroPLP.heroImageMobile) || heroImageDesktop;
+const heroImageUrl = new URL(heroImageDesktop, baseUrl).toString();
+const openGraphImageUrl = new URL("/OG_Default_Medrent.jpeg", baseUrl).toString();
+
 const brandUrl = `${baseUrl}/nuestras-marcas/${brand}`;
 const brandId = `${brandUrl}#brand`;
 const seoPlpDescription = fallbackPageDescription;
@@ -185,11 +207,14 @@ const seoText = "";
           { name: plpHeadingTitle },
         ]}
       />
-      <img
-        src="/temp/HeroPLP.png"
-        alt={`${brandName} - ${plpHeadingTitle}`}
-        class="w-full h-full object-cover rounded-b-[24px]"
-      />
+      <picture>
+        <source media="(max-width: 767px)" srcset={heroImageMobile} />
+        <img
+          src={heroImageDesktop}
+          alt={`${brandName} - ${plpHeadingTitle}`}
+          class="w-full h-full object-cover rounded-b-[24px]"
+        />
+      </picture>
     </div>
   </section>
 
