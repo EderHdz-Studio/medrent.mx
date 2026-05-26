@@ -63,6 +63,10 @@ const products = interestitialCard.allProducts || cardProductSlugs.length > 0
     })
   : [];
 
+
+ 
+
+  
 const brandsData = await getBrands();
 const categoriesData = await getCategories();
 const subcategoriesData = await getAllSubcategories();
@@ -72,8 +76,8 @@ const fallbackPageTitle = `${plpHeadingTitle} | ${brandName} | MedRent`;
 const fallbackPageDescription =
   interestitialCard.description ||
   `Descubre productos y soluciones de ${brandName} para ${plpHeadingTitle} con soporte especializado de MedRent.`;
-const pageTitle = brandData.seoTitle || fallbackPageTitle;
-const pageDescription = brandData.seoDescription || fallbackPageDescription;
+const pageTitle = plpHeadingTitle || fallbackPageTitle;
+const pageDescription = interestitialCard.description || fallbackPageDescription;
 const pageKeywords = `${brandName}; ${plpHeadingTitle}; equipo médico; MedRent`;
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
