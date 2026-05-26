@@ -46,9 +46,12 @@ const {
     <!-- Aquí se moverá el sidebar-filters-container -->
   </div>
   <!-- Botón Actualizar -->
-  <div class="mobile-filters-footer">
+  <div class="mobile-filters-footer grid grid-cols-2 gap-4 bg-[#F5FAF9]">
+    <button id="reset-filters" class="reset-filters-btn inline-flex min-h-[48px] w-full items-center justify-center rounded-[8px] border border-[var(--color-primary)] bg-white px-4 py-3 text-[16px] font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-secondary-light)]">
+      Restablecer
+    </button>
     <button id="apply-filters-btn" class="apply-filters-btn">
-      Aplicar
+      Aplicar filtros
     </button>
   </div>
 </div>
@@ -250,7 +253,7 @@ const {
   border-top: 1px solid rgba(23, 29, 28, 0.12);
   position: sticky;
   bottom: 0;
-  background: white;
+  
   flex-shrink: 0;
 }
 
@@ -342,6 +345,7 @@ const {
     const mobileDropdown = document.getElementById('mobile-filters-dropdown');
     const closeBtn = document.getElementById('close-mobile-filters');
     const applyBtn = document.getElementById('apply-filters-btn');
+    const resetBtn = document.getElementById('reset-filters');
     const sidebarFilters = document.querySelector('.sidebar-filters-container');
     const mobileContent = document.querySelector('.mobile-filters-content');
     
@@ -405,6 +409,22 @@ const {
         window.location.href = newUrl;
       }, 300);
     }
+
+    function resetFiltersAndReload() {
+      document.querySelectorAll('input[data-filter]:checked').forEach((input) => {
+        if (input instanceof HTMLInputElement) input.checked = false;
+      });
+      updateMobileCount();
+
+      mobileDropdown.classList.remove('open');
+      overlay.classList.remove('show');
+
+      setTimeout(function() {
+        moveFiltersBack();
+        document.body.style.overflow = '';
+        window.location.href = window.location.pathname;
+      }, 300);
+    }
     
     // Abrir dropdown
     if (mobileBtn && mobileDropdown) {
@@ -435,6 +455,10 @@ const {
     // Aplicar filtros al hacer clic en Actualizar
     if (applyBtn) {
       applyBtn.addEventListener('click', applyFiltersAndReload);
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetFiltersAndReload);
     }
     
     // Actualizar contador en botón mobile
