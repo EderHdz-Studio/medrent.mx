@@ -1,5 +1,19 @@
 ---
 export const prerender = false;
+import { strapiFetch } from "@server/strapiClient";
+
+let heroPLP: any = {};
+try {
+    const response = await strapiFetch("/plp?populate=*");
+    const sliderHero = response?.data || {};
+    heroPLP = Array.isArray(sliderHero) ? sliderHero[0] || {} : sliderHero;
+} catch (error) {
+    console.error('Error fetching slider hero:', error);
+    heroPLP = {};
+}
+
+
+
 
 import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
@@ -81,7 +95,17 @@ const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.m
 const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
-const heroImageUrl = `${baseUrl}/temp/HeroPLP.png`;
+const mediaUrl = (value: any) => {
+  if (typeof value === "string") return value;
+  if (typeof value?.url === "string") return value.url;
+  if (typeof value?.data?.attributes?.url === "string") return value.data.attributes.url;
+  if (typeof value?.data?.url === "string") return value.data.url;
+  return "";
+};
+const fallbackHeroImageUrl = "/temp/HeroPLP.png";
+const heroImageDesktop = mediaUrl(heroPLP.heroImageDesktop?.url) || fallbackHeroImageUrl;
+const heroImageMobile = mediaUrl(heroPLP.heroImageMobile?.url) || heroImageDesktop;
+const heroImageUrl = new URL(heroImageDesktop, baseUrl).toString();
 const seoText = subcategoryData?.SEO?.seoText || "";
 
 ---
@@ -184,11 +208,14 @@ const seoText = subcategoryData?.SEO?.seoText || "";
           },
         ]}
       />
-      <img
-        src="/temp/HeroPLP.png"
-        alt={subcategoryName}
-        class="w-full h-auto object-cover rounded-b-[24px]"
-      />
+      <picture>
+        <source media="(max-width: 767px)" srcset={heroImageMobile} />
+        <img
+          src={heroImageDesktop}
+          alt={subcategoryName}
+          class="w-full h-full object-cover rounded-b-[24px]"
+        />
+      </picture>
     </div>
   </section>
 
