@@ -8,6 +8,7 @@ interface Props {
 }
 const { product } = Astro.props;
 const currentPathname = Astro.originPathname ?? Astro.url.pathname;
+const productUrl = localizePath(`/productos/${product.slug}`, currentPathname);
 ---
 <style>
     .productCard:hover{ box-shadow: 7px 11px 13px 0 rgba(33, 46, 56, 0.09), 2px 3px 7px 0 rgba(33, 46, 56, 0.10);}
@@ -24,6 +25,7 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
         )}
 
         <div class="h-full relative overflow-hidden shrink-0">
+            <a href={productUrl} aria-label={`Ver detalles de ${product.name}`}>
             <img
                 src={
                     typeof product.gallery?.[0] === 'string'
@@ -35,6 +37,7 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
                 alt={product?.name || "Producto"}
                 class="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-700"
             />
+            </a>
         </div>
     </div>
     
@@ -55,7 +58,7 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
                 </span>
               ))}
             <a
-                href={localizePath(`/productos/${product.slug}`, currentPathname)}
+                href={productUrl}
                 class="block hover:underline transition-all duration-300 product-link"
             >
                 <h3 class="text-[15px] sm:text-[16px] font-bold text-[var(--color-text-default)] transition-colors uppercase hover:underline decoration-[var(--color-primary)] line-clamp-2 leading-[1.35]">
@@ -74,7 +77,7 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 
         {/* Botón */}
         <a
-        href={localizePath(`/productos/${product.slug}`, currentPathname)}
+        href={productUrl}
         class="relative z-10 inline-flex items-center bg-[#00201F] text-white px-4 py-2 rounded text-sm font-light hover:bg-[var(--color-primary)] hover:text-white transition-colors w-full justify-center mt-4 product-link min-h-[40px]"
         style={{ padding: "8px 16px" }}
         >
