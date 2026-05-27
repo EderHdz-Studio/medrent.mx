@@ -294,7 +294,7 @@ const getSocialIcon = (icon, scope = "") => {
                 <div class="flex gap-12">
                   <!-- Columna izquierda - Especialidades -->
                   <div class="w-1/2">
-                    <div class="space-y-6">
+                    <div class="space-y-6" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
                       <!-- Lista de especialidades -->
                       <div>
                         <ul class="space-y-4">
@@ -350,7 +350,7 @@ const getSocialIcon = (icon, scope = "") => {
             
                     <!-- Columna derecha - subcategories -->
                     <div class="w-1/2">
-                      <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
+                      <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
                         <template x-if="activeItem">
                           <div>
                             <!-- Lista de aplicaciones clínicas -->
@@ -414,9 +414,7 @@ const getSocialIcon = (icon, scope = "") => {
         <a href={localizePath("/financiamiento", currentPathname)} class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
         <a href={localizePath("/eventos", currentPathname)} class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
         <!-- <a href={localizePath("/blog", currentPathname)} class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a> -->
-      
         <!-- </button> -->
-        
       </div>
 
       <Search 
@@ -444,8 +442,6 @@ const getSocialIcon = (icon, scope = "") => {
 
       <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded hidden lg:flex h-fit">Contáctanos</a>
     </div>
-
-
   </div>
 
   <!-- MOBILE MENU REDESIGN  -->
@@ -1054,5 +1050,36 @@ const getSocialIcon = (icon, scope = "") => {
     background: #edf2f0 !important;
     border-radius: 4px !important;
     color: var(--color-primary) !important;
+  }
+
+  [style*="max-height: 400px"] {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary, #006764) var(--color-secondary-light, #F5FAF9);
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar-track {
+    background: var(--color-secondary-light, #F5FAF9);
+    border-radius: 10px;
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar-thumb {
+    background: var(--color-primary, #006764);
+    border-radius: 10px;
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark, #006764);
+  }
+
+  /* Asegurar que el scroll con wheel funcione */
+  [style*="max-height: 400px"] {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
   }
 </style>
