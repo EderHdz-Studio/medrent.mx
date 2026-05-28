@@ -1,5 +1,10 @@
 ---
-const { site } = Astro.props;
+export interface Props {
+  site?: any;
+  hideSearch?: boolean;
+}
+
+const { site, hideSearch = false } = Astro.props;
 import { strapiFetch } from "@server/strapiClient";
 import Search from "@components/layout/header/Search.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
@@ -350,7 +355,13 @@ const getSocialIcon = (icon, scope = "") => {
             
                     <!-- Columna derecha - subcategories -->
                     <div class="w-1/2">
-                      <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
+                      <div
+                        x-show="activeItem && activeItem !== 'vermas'"
+                        x-transition
+                        class="pt-2"
+                        style="max-height: 400px; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"
+                        @wheel="$event.stopPropagation(); $el.scrollTop += $event.deltaY"
+                      >
                         <template x-if="activeItem">
                           <div>
                             <!-- Lista de aplicaciones clínicas -->
@@ -414,16 +425,17 @@ const getSocialIcon = (icon, scope = "") => {
         <a href={localizePath("/financiamiento", currentPathname)} class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
         <a href={localizePath("/eventos", currentPathname)} class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
         <!-- <a href={localizePath("/blog", currentPathname)} class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a> -->
-        <!-- </button> -->
       </div>
 
-      <Search 
-        marcas={marcasNavData} 
-        categorias={especialidades} 
-        subcategorias={subcategoriasData} 
-        products={productsData}
-        articles={articlesData}
-      />
+      {!hideSearch && (
+        <Search 
+          marcas={marcasNavData} 
+          categorias={especialidades} 
+          subcategorias={subcategoriasData} 
+          products={productsData}
+          articles={articlesData}
+        />
+      )}
 
       <button
         @click="open = !open"
