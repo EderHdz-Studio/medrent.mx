@@ -1,4 +1,9 @@
 ---
+import { SITE } from '@lib/site';
+const site = SITE;
+
+import Navbar from "@components/layout/header/Navbar.astro";
+
 interface FilterBrand {
   slug: string;
   name: string;
@@ -36,32 +41,37 @@ const {
   </svg>
 </button>
 
-<!-- Mobile Dropdown Filters - 80% -->
-<div id="mobile-filters-dropdown" class="mobile-filters-dropdown" style="display: none;">
-  <div class="mobile-filters-header">
-    <h3>Filtros</h3>
-    <button id="close-mobile-filters" class="close-filters-btn">✕</button>
-  </div>
+
+<!-- Mobile Dropdown Filters - 100% -->
+<div id="mobile-filters-dropdown" class="mobile-filters-dropdown">
+  <Navbar site={site} hideSearch={true} />
+
   <div class="mobile-filters-content" data-lenis-prevent>
     <!-- Aquí se moverá el sidebar-filters-container -->
   </div>
   <!-- Botón Actualizar -->
-  <div class="mobile-filters-footer grid grid-cols-2 gap-4 bg-[#F5FAF9]">
-    <button id="reset-filters" class="reset-filters-btn inline-flex min-h-[48px] w-full items-center justify-center rounded-[8px] border border-[var(--color-primary)] bg-white px-4 py-3 text-[16px] font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-secondary-light)]">
+  <div class="mobile-filters-footer flex gap-4  bg-[#FFFF]">
+    <button
+      id="reset-filters"
+      class="reset-filters-btn flex-1 basis-0 rounded-lg border border-[var(--color-primary,#00827F)] bg-white px-6 py-3 text-[16px] font-semibold text-[var(--color-primary,#00827F)] transition-colors hover:bg-[var(--color-primary,#00827F)] hover:text-white"
+    >
       Restablecer
     </button>
-    <button id="apply-filters-btn" class="apply-filters-btn">
+    <button id="apply-filters-btn" class="apply-filters-btn flex-1 basis-0">
       Aplicar filtros
     </button>
   </div>
 </div>
 
-<!-- Sidebar Filters - se usa en ambos responsives -->
-<div class="sidebar-filters-container" data-lenis-prevent>
+<!-- Sidebar Filters -->
+<div class="sidebar-filters-container" data-lenis-prevent style="display: none;">
   <!-- HEADER -->
-  <div class="sticky top-0 z-20 -mx-1 px-1 py-2 mb-4 flex justify-between items-center bg-[var(--color-secondary-light)] border-b border-[rgba(23,29,28,0.12)] filtersDesktop">
-    <h3 id="filters-title" class="text-[16px] font-bold text-[var(--color-primary)]">Filtros (0)</h3>
-    <button id="clear-filters" class="text-[16px] text-on-surface-variant underline cursor-pointer hover:text-[var(--color-primary)] transition-colors duration-300">
+  <div class="sticky top-0 z-20 px-1 py-1 mb-4 flex justify-between items-start bg-[var(--color-secondary-light)]">
+    <div>
+      <h3 id="filters-title" class="text-[16px] font-bold text-[var(--color-primary)]">Filtros</h3>
+      <p id="mobile-product-count" class="text-[14px] text-[var(--color-primary)] mt-1 font-bold">0 productos</p>
+    </div>
+    <button id="mobile-clear-filters" class="text-[14px] font-bold text-on-surface-variant underline cursor-pointer text-[var(--color-primary)] hover:opacity-80 transition-colors duration-300">
       Limpiar
     </button>
   </div>
@@ -165,7 +175,7 @@ const {
 
 <style>
 .mobile-filter-btn {
-  display: flex;
+  display: none;
   padding: 8px 16px;
   justify-content: center;
   align-items: center;
@@ -186,14 +196,14 @@ const {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 80%;
+  width: 100%;
   background: white;
   z-index: 1000;
   overflow-y: auto;
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  display: flex;
+  display: none;
   flex-direction: column;
 }
 
@@ -251,9 +261,8 @@ const {
 .mobile-filters-footer {
   padding: 16px;
   border-top: 1px solid rgba(23, 29, 28, 0.12);
-  position: sticky;
+  position: static;
   bottom: 0;
-  
   flex-shrink: 0;
 }
 
@@ -297,6 +306,10 @@ const {
   pointer-events: auto;
 }
 
+#mobile-product-count {
+  display: none !important;
+}
+
 @media (max-width: 1024px) {
   .mobile-filter-wrapper {
     display: block;
@@ -304,10 +317,17 @@ const {
     flex-shrink: 0;
   }
   .mobile-filter-btn {
+
     width: auto !important;
     margin-bottom: 0 !important;
     padding: 6px 12px !important;
     font-size: 14px !important;
+  }
+  .sidebar-filters-container {
+    display: none !important;
+  }
+  #mobile-filters-dropdown.open .sidebar-filters-container {
+    display: block !important;
   }
   .flex.items-center.justify-between.gap-3.w-full {
     display: flex;
@@ -318,6 +338,13 @@ const {
   .filtersDesktop {
     display: none !important;
   }
+  .sidebar-filters-container > .sticky {
+    background: white !important;
+    position: static;
+  }
+  #mobile-product-count {
+    display: flex !important;
+  }
 }
 
 @media (min-width: 1025px) {
@@ -326,7 +353,8 @@ const {
     display: none !important;
   }
   .sidebar-filters-container {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 }
 </style>
@@ -346,6 +374,7 @@ const {
     const closeBtn = document.getElementById('close-mobile-filters');
     const applyBtn = document.getElementById('apply-filters-btn');
     const resetBtn = document.getElementById('reset-filters');
+    const mobileClearBtn = document.getElementById('mobile-clear-filters');
     const sidebarFilters = document.querySelector('.sidebar-filters-container');
     const mobileContent = document.querySelector('.mobile-filters-content');
     
@@ -385,23 +414,24 @@ const {
     function applyFiltersAndReload() {
       // Construir URL con los filtros seleccionados
       const params = new URLSearchParams();
-      
+
       ["brand", "category", "subcategory"].forEach(key => {
         const checked = Array.from(
           document.querySelectorAll(`input[data-filter="${key}"]:checked`)
         ).flatMap((el) => (el instanceof HTMLInputElement ? [el.value] : []));
-        
-        if (checked.length) {
-          params.set(key, checked.join(","));
-        }
+
+        // Append each value separately to produce repeated params (brand=a&brand=b)
+        checked.forEach((val) => params.append(key, val));
       });
-      
-      const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
-      
+
+      // Navegar siempre a la lista global de productos para evitar rutas específicas
+      const basePath = '/productos';
+      const newUrl = basePath + (params.toString() ? `?${params.toString()}` : "");
+
       // Cerrar dropdown
       mobileDropdown.classList.remove('open');
       overlay.classList.remove('show');
-      
+
       setTimeout(function() {
         moveFiltersBack();
         document.body.style.overflow = '';
@@ -422,7 +452,8 @@ const {
       setTimeout(function() {
         moveFiltersBack();
         document.body.style.overflow = '';
-        window.location.href = window.location.pathname;
+        // Al resetear, volver a la lista global de productos
+        window.location.href = '/productos';
       }, 300);
     }
     
@@ -459,6 +490,10 @@ const {
 
     if (resetBtn) {
       resetBtn.addEventListener('click', resetFiltersAndReload);
+    }
+
+    if (mobileClearBtn) {
+      mobileClearBtn.addEventListener('click', resetFiltersAndReload);
     }
     
     // Actualizar contador en botón mobile
@@ -618,25 +653,19 @@ const {
   function updateUrl() {
     const params = new URLSearchParams();
 
-    ["brand", "category", "subcategory"].forEach(key => {
+    ["brand", "category", "subcategory"].forEach((key) => {
       const checked = Array.from(
-        document.querySelectorAll(`input[data-filter="${key}"]:checked`)
-      ).flatMap((el) => (el instanceof HTMLInputElement ? [el.value] : []));
+        document.querySelectorAll<HTMLInputElement>(`input[data-filter="${key}"]:checked`)
+      )
+        .map((input) => input.value)
+        .filter(Boolean);
 
       if (checked.length) {
         params.set(key, checked.join(","));
       }
     });
 
-    const newUrl =
-      window.location.pathname +
-      (params.toString() ? `?${params.toString()}` : "");
-
-    if (document.documentElement.dataset.plpClientFilters === "1") {
-      window.history.pushState({}, "", newUrl);
-      window.dispatchEvent(new CustomEvent("plp:filters-changed"));
-      return;
-    }
+    const newUrl = "/productos" + (params.toString() ? `?${params.toString()}` : "");
 
     window.location.href = newUrl;
   }
@@ -651,73 +680,38 @@ const {
     title.textContent = `Filtros (${getSelectedFiltersCount()})`;
   }
 
-  document.addEventListener("change", e => {
-    const target = e.target;
-    if (!(target instanceof HTMLInputElement)) return;
-    if (target.matches("input[data-filter]")) {
-      updateFiltersTitle();
-      // Solo actualizar automáticamente en desktop/tablet (NO en mobile)
-      // Usamos matchMedia para mayor precisión
-      if (!window.matchMedia('(max-width: 1024px)').matches) {
-        updateUrl();
-      }
+  function isMobileDropdownOpen() {
+    const mobileDropdown = document.getElementById('mobile-filters-dropdown');
+    return Boolean(mobileDropdown && mobileDropdown.classList.contains('open'));
+  }
+
+  document.addEventListener("change", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || !target.matches("input[data-filter]")) return;
+
+    updateFiltersTitle();
+
+    if (!isMobileDropdownOpen()) {
+      updateUrl();
     }
   });
 
-  document.getElementById("clear-filters")?.addEventListener("click", () => {
-    document.querySelectorAll("input[data-filter]:checked").forEach((input) => {
+  function clearAllFilters() {
+    document.querySelectorAll<HTMLInputElement>("input[data-filter]:checked").forEach((input) => {
       input.checked = false;
     });
+
     updateFiltersTitle();
-    if (document.documentElement.dataset.plpClientFilters === "1") {
-      window.history.pushState({}, "", window.location.pathname);
-      window.dispatchEvent(new CustomEvent("plp:filters-changed"));
-      return;
-    }
-    window.location.href = window.location.pathname;
-  });
+    window.location.href = "/productos";
+  }
+
+  document.getElementById("clear-filters")?.addEventListener("click", clearAllFilters);
+  if (!window.matchMedia('(max-width: 1024px)').matches) {
+    document.getElementById("mobile-clear-filters")?.addEventListener("click", clearAllFilters);
+  }
 
   setInitialState();
   updateFiltersTitle();
-</script>
-
-<script>
-(function() {
-  // Función para mover el botón de filtros al lado del sort
-  function moveFilterButton() {
-    const isMobile = window.innerWidth <= 1024;
-    
-    if (isMobile) {
-      const filterWrapper = document.querySelector('.mobile-filter-wrapper');
-      const sortContainer = document.querySelector('.relative.w-fit.max-w-full.min-w-0.shrink-0');
-      const productCountContainer = document.querySelector('.flex.items-center.justify-between.gap-3.w-full.sm\\:w-auto');
-      
-      if (filterWrapper && sortContainer && productCountContainer) {
-        // Mover el wrapper de filtros dentro del contenedor del contador
-        if (!productCountContainer.contains(filterWrapper)) {
-          productCountContainer.appendChild(filterWrapper);
-          filterWrapper.style.marginLeft = 'auto';
-          filterWrapper.style.width = 'auto';
-          filterWrapper.style.flexShrink = '0';
-        }
-      }
-    }
-  }
-  
-  // Ejecutar después de que el DOM esté listo
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', moveFilterButton);
-  } else {
-    moveFilterButton();
-  }
-  
-  // También ejecutar cuando cambie el tamaño de la ventana
-  let resizeTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(moveFilterButton, 150);
-  });
-})();
 </script>
 
 <script>
@@ -753,4 +747,191 @@ const {
 
   // También llamar al cargar
   enableFilterScroll();
+
+
+
+  // ==============================================
+// 1. FIX: Evitar sobreposición del menú del Navbar
+// ==============================================
+function fixNavbarOverlay() {
+  const navbar = document.querySelector('#mobile-filters-dropdown .navbar');
+  const mobileMenu = document.querySelector('#mobile-filters-dropdown #mobileMainMenu');
+  
+  if (navbar && mobileMenu) {
+    // Asegurar que el menú móvil tenga z-index más alto cuando está abierto
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === 'class') {
+          if (mobileMenu.classList.contains('open') || mobileMenu.style.display !== 'none') {
+            mobileMenu.style.zIndex = '1002';
+            mobileMenu.style.position = 'fixed';
+            mobileMenu.style.top = '0';
+            mobileMenu.style.left = '0';
+            mobileMenu.style.right = '0';
+            mobileMenu.style.bottom = '0';
+          } else {
+            mobileMenu.style.zIndex = '';
+          }
+        }
+      });
+    });
+    
+    observer.observe(mobileMenu, { attributes: true });
+  }
+}
+
+// ==============================================
+// 2. CONTADOR DE PRODUCTOS con filtros seleccionados
+// ==============================================
+function getProductItems() {
+  const productosList = document.getElementById('productos-list');
+  return productosList
+    ? productosList.querySelectorAll('[data-product-item]')
+    : document.querySelectorAll('[data-product-item]');
+}
+
+function updateMobileProductCount() {
+  const productCountElement = document.getElementById('mobile-product-count');
+  if (!productCountElement) return;
+  
+  // Obtener todos los productos del DOM dentro de la lista de productos
+  const productItems = getProductItems();
+  
+  if (productItems.length === 0) {
+    productCountElement.textContent = '0 productos';
+    productCountElement.style.display = 'block';
+    return;
+  }
+  
+  // Obtener filtros seleccionados
+  const selectedBrands = Array.from(document.querySelectorAll<HTMLInputElement>('input[data-filter="brand"]:checked')).map(el => el.value);
+  const selectedCategories = Array.from(document.querySelectorAll<HTMLInputElement>('input[data-filter="category"]:checked')).map(el => el.value);
+  const selectedSubcategories = Array.from(document.querySelectorAll<HTMLInputElement>('input[data-filter="subcategory"]:checked')).map(el => el.value);
+  
+  const hasFilters = selectedBrands.length > 0 || selectedCategories.length > 0 || selectedSubcategories.length > 0;
+  
+  if (!hasFilters) {
+    // Sin filtros: mostrar total de productos
+    const total = productItems.length;
+    productCountElement.textContent = `${total} ${total === 1 ? 'producto' : 'productos'}`;
+    productCountElement.style.display = 'block';
+    return;
+  }
+  
+  // Con filtros: contar productos que coinciden
+  let filteredCount = 0;
+  
+  productItems.forEach(product => {
+    const productBrand = product.getAttribute('data-brand') || '';
+    const productCategory = product.getAttribute('data-category') || '';
+    const productSubcategory = product.getAttribute('data-subcategory') || '';
+    
+    const brandMatch = selectedBrands.length === 0 || selectedBrands.includes(productBrand);
+    const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(productCategory);
+    const subcategoryMatch = selectedSubcategories.length === 0 || selectedSubcategories.includes(productSubcategory);
+    
+    if (brandMatch && categoryMatch && subcategoryMatch) {
+      filteredCount++;
+    }
+  });
+  
+  productCountElement.textContent = `${filteredCount} ${filteredCount === 1 ? 'producto' : 'productos'}`;
+  productCountElement.style.display = 'block';
+}
+
+
+// ==============================================
+// EJECUTAR TODAS LAS FUNCIONES
+// ==============================================
+function onDOMReady(callback) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+  } else {
+    callback();
+  }
+}
+
+onDOMReady(() => {
+  fixNavbarOverlay();
+  updateMobileProductCount();
+});
+
+// Re-ejecutar cuando cambien los filtros (para actualizar disponibilidad)
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.matches('input[data-filter]')) {
+    setTimeout(() => {
+      updateMobileProductCount();
+    }, 50);
+  }
+});
+
+
+
+// Función para cerrar TODOS los dropdowns de filtros (Especialidad, Aplicación clínica, Marca)
+function closeAllFilterDropdowns() {
+  // Cerrar filter-content
+  document.querySelectorAll('.filter-content').forEach(content => {
+    content.classList.remove('open');
+    content.style.maxHeight = '0px';
+    content.style.overflow = 'hidden';
+  });
+  
+  // Cerrar subcat-content
+  document.querySelectorAll('.subcat-content').forEach(content => {
+    content.classList.remove('open');
+    content.style.maxHeight = '0px';
+    content.style.overflow = 'hidden';
+    content.style.opacity = '0';
+    content.style.pointerEvents = 'none';
+  });
+  
+  // Rotar todas las flechas a su posición original (cerradas)
+  document.querySelectorAll('.filter-toggle .arrow, .subcat-toggle .arrow').forEach(arrow => {
+    arrow.classList.remove('rotate-180');
+  });
+}
+
+// Detectar cuando se abre el menú del navbar en mobile
+function initNavbarMenuWatcher() {
+  // Buscar el menú móvil del navbar (puede tener diferentes IDs o clases)
+  const mobileMenu = document.querySelector('#mobileMainMenu') || 
+                     document.querySelector('.mobile-menu') ||
+                     document.querySelector('[data-mobile-menu]');
+  
+  if (!mobileMenu) return;
+  
+  // Observar cambios en el menú
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === 'class' || mutation.attributeName === 'style') {
+        const isOpen = mobileMenu.classList.contains('open') || 
+                       mobileMenu.classList.contains('active') ||
+                       mobileMenu.style.display === 'block' ||
+                       mobileMenu.style.display === 'flex';
+        
+        if (isOpen) {
+          // Si el menú se abre, cerrar todos los filtros
+          closeAllFilterDropdowns();
+        }
+      }
+    });
+  });
+  
+  observer.observe(mobileMenu, { attributes: true });
+  
+  // También detectar clicks en el botón de hamburguesa
+  const menuButtons = document.querySelectorAll('.navbar button, .menu-toggle, [aria-label="Menu"], [aria-label="Abrir menú"]');
+  menuButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      closeAllFilterDropdowns();
+    });
+  });
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initNavbarMenuWatcher);
+} else {
+  initNavbarMenuWatcher();
+}
 </script>
