@@ -290,7 +290,6 @@ if (writerSlugForCount) {
       )
     )}
     
-    
     <SocialMedia articulo={article} inline={true} class="px-4" clase="SocialMediaMobile" />
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
@@ -306,7 +305,7 @@ if (writerSlugForCount) {
                   return <BlocksRenderer content={blocks} />;
                 }
                 case 'blog.article-image': {
-                  // ✅ PRIORIDAD: Si hay video (con o sin imagen), mostrar el video
+                  // PRIORIDAD: Si hay video (con o sin imagen), mostrar el video
                   if (item.iframeVideo) {
                     const videoUrl = item.iframeVideo;
                     
@@ -317,7 +316,6 @@ if (writerSlugForCount) {
                     };
                     
                     const videoId = getYouTubeId(videoUrl);
-                    
                     if (videoId) {
                       return (
                         <div class="relative w-full aspect-video rounded mb-6 overflow-hidden">
@@ -333,7 +331,7 @@ if (writerSlugForCount) {
                     }
                   }
                   
-                  // ✅ Si NO hay video, mostrar la imagen (si existe)
+                  // Si NO hay video, mostrar la imagen (si existe)
                   if (item.articleImage?.url) {
                     return (
                       <img
@@ -344,7 +342,7 @@ if (writerSlugForCount) {
                     );
                   }
                   
-                  // ❌ No hay ni video ni imagen
+                  // No hay ni video ni imagen
                   return null;
                 }
                 case 'blog.article-quote': {
@@ -428,17 +426,21 @@ if (writerSlugForCount) {
                 type="email"
                 placeholder="Ej: carolina.avila@neuro.mx"
               />
+
               <PhoneField
                 label="Teléfono de contacto"
                 name="phone"
                 placeholder="Ej: 55 1234 5678"
               />
+
               <SubmitButton text="Suscríbeme"></SubmitButton>
+
               <CheckboxField
                 id="avisoBlog"
                 label="He leído y acepto el"
                 link="/aviso-de-privacidad"
               />
+
           </BaseForm>
 
           <script type="module">
@@ -448,7 +450,6 @@ if (writerSlugForCount) {
               initForm("form-blog");
             });
           </script>    
-
         </section>
 
         <section class="articulosRelacionadosDesktop flex flex-col gap-6 mb-6">
