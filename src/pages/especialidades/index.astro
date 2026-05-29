@@ -159,10 +159,8 @@ try {
     </section>
 
     <div class="max-w-7xl m-auto">
-    <section class="flex flex-col gap-4 md:gap-6">
-        {especialidades.map((categoria, index) => (
-
-          
+      <section class="flex flex-col gap-4 md:gap-6">
+        {especialidades.map((categoria, index) => (       
             <div class={`flex flex-col md:flex-row w-full bg-white rounded-lg gap-6 p-4 md:p-6 lg:px-[135px] lg:py-8 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
                 <div class="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-center"> 
                     <div class="py-6"> 
@@ -195,10 +193,9 @@ try {
                       style="border-radius: 24px;"
                     /> 
                 </div> 
-
             </div>
         ))}
-    </section>
+      </section>
     </div>
 
     <TestimonialsSlider />

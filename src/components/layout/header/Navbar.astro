@@ -1,5 +1,10 @@
 ---
-const { site } = Astro.props;
+export interface Props {
+  site?: any;
+  hideSearch?: boolean;
+}
+
+const { site, hideSearch = false } = Astro.props;
 import { strapiFetch } from "@server/strapiClient";
 import Search from "@components/layout/header/Search.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
@@ -209,11 +214,11 @@ const getSocialIcon = (icon, scope = "") => {
                 <a 
                   href={localizePath("/nuestras-marcas", currentPathname)} 
                   style="order:999"
-                  class="marcaLink bg-[var(--color-secondary-light)] group flex items-center justify-center gap-2 rounded transition-colors p-4 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer"
+                  class="marcaLink bg-[#FFF] hover:bg-[var(--color-secondary-light)] group flex items-center justify-center gap-2 rounded transition-colors p-4 min-w-[140px] hover:text-[var(--color-primary)] cursor-pointer hover:underline"
                 >
-                  <span class="transition-colors underline" :class="{'group-hover:text-[var(--color-primary)]': true}">Ver más</span>
+                  <span class="transition-colors group-hover:text-[var(--color-primary)]">Ver más</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                      class="transition-colors" :class="{'group-hover:text-[var(--color-primary)]': true}">
+                      class="transition-colors group-hover:text-[var(--color-primary)]">
                     <path d="M17.9199 6.62C17.8185 6.37565 17.6243 6.18147 17.3799 6.08C17.2597 6.02876 17.1306 6.00158 16.9999 6H6.99994C6.73472 6 6.48037 6.10536 6.29283 6.29289C6.1053 6.48043 5.99994 6.73478 5.99994 7C5.99994 7.26522 6.1053 7.51957 6.29283 7.70711C6.48037 7.89464 6.73472 8 6.99994 8H14.5899L6.28994 16.29C6.19621 16.383 6.12182 16.4936 6.07105 16.6154C6.02028 16.7373 5.99414 16.868 5.99414 17C5.99414 17.132 6.02028 17.2627 6.07105 17.3846C6.12182 17.5064 6.19621 17.617 6.28994 17.71C6.3829 17.8037 6.4935 17.8781 6.61536 17.9289C6.73722 17.9797 6.86793 18.0058 6.99994 18.0058C7.13195 18.0058 7.26266 17.9797 7.38452 17.9289C7.50638 17.8781 7.61698 17.8037 7.70994 17.71L15.9999 9.41V17C15.9999 17.2652 16.1053 17.5196 16.2928 17.7071C16.4804 17.8946 16.7347 18 16.9999 18C17.2652 18 17.5195 17.8946 17.707 17.7071C17.8946 17.5196 17.9999 17.2652 17.9999 17V7C17.9984 6.86932 17.9712 6.74022 17.9199 6.62Z" fill="currentColor"/>
                   </svg>
                 </a>                  
@@ -294,7 +299,7 @@ const getSocialIcon = (icon, scope = "") => {
                 <div class="flex gap-12">
                   <!-- Columna izquierda - Especialidades -->
                   <div class="w-1/2">
-                    <div class="space-y-6">
+                    <div class="space-y-6" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
                       <!-- Lista de especialidades -->
                       <div>
                         <ul class="space-y-4">
@@ -350,7 +355,13 @@ const getSocialIcon = (icon, scope = "") => {
             
                     <!-- Columna derecha - subcategories -->
                     <div class="w-1/2">
-                      <div x-show="activeItem && activeItem !== 'vermas'" x-transition class="pt-2">
+                      <div
+                        x-show="activeItem && activeItem !== 'vermas'"
+                        x-transition
+                        class="pt-2"
+                        style="max-height: 400px; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"
+                        @wheel="$event.stopPropagation(); $el.scrollTop += $event.deltaY"
+                      >
                         <template x-if="activeItem">
                           <div>
                             <!-- Lista de aplicaciones clínicas -->
@@ -414,18 +425,17 @@ const getSocialIcon = (icon, scope = "") => {
         <a href={localizePath("/financiamiento", currentPathname)} class={`${isActive('/financiamiento') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Financiamiento </a>
         <a href={localizePath("/eventos", currentPathname)} class={`${isActive('/eventos') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Eventos </a>
         <!-- <a href={localizePath("/blog", currentPathname)} class={`${isActive('/blog') ? 'text-[var(--color-primary)]' : 'hover:text-[var(--color-primary)] hover:underline'}`}> Blog </a> -->
-      
-        <!-- </button> -->
-        
       </div>
 
-      <Search 
-        marcas={marcasNavData} 
-        categorias={especialidades} 
-        subcategorias={subcategoriasData} 
-        products={productsData}
-        articles={articlesData}
-      />
+      {!hideSearch && (
+        <Search 
+          marcas={marcasNavData} 
+          categorias={especialidades} 
+          subcategorias={subcategoriasData} 
+          products={productsData}
+          articles={articlesData}
+        />
+      )}
 
       <button
         @click="open = !open"
@@ -444,8 +454,6 @@ const getSocialIcon = (icon, scope = "") => {
 
       <a href="/contacto" class="bg-[var(--color-primary)] text-white text-[14px] px-4 py-2 rounded hidden lg:flex h-fit">Contáctanos</a>
     </div>
-
-
   </div>
 
   <!-- MOBILE MENU REDESIGN  -->
@@ -1054,5 +1062,36 @@ const getSocialIcon = (icon, scope = "") => {
     background: #edf2f0 !important;
     border-radius: 4px !important;
     color: var(--color-primary) !important;
+  }
+
+  [style*="max-height: 400px"] {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary, #006764) var(--color-secondary-light, #F5FAF9);
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar {
+    width: 6px;
+    height: 6px; 
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar-track {
+    background: var(--color-secondary-light, #F5FAF9);
+    border-radius: 10px;
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar-thumb {
+    background: var(--color-primary, #006764);
+    border-radius: 10px;
+  }
+
+  [style*="max-height: 400px"]::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark, #006764);
+  }
+
+  /* Asegurar que el scroll con wheel funcione */
+  [style*="max-height: 400px"] {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
   }
 </style>
