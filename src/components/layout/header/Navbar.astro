@@ -5,13 +5,13 @@ export interface Props {
 }
 
 const { site, hideSearch = false } = Astro.props;
-import { strapiFetch } from "@server/strapiClient";
 import Search from "@components/layout/header/Search.astro";
 import { isUsableBrandSlug } from "@lib/brandSlug";
+import { getBrands } from "@server/api/brands";
 import { getProducts } from "@server/api/products";
 import { getArticles } from "@server/api/articles";
 import { getCategories } from "@server/api/categories";
-import { any } from "astro:schema";
+import { getAllSubcategories } from "@server/api/subcategories";
 import { getSiteConfig } from "@server/siteConfig";
 import { localizePath, stripLocalePrefix } from "@lib/locale";
 const siteConfig = await getSiteConfig();
@@ -19,75 +19,96 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 const currentPath = stripLocalePrefix(currentPathname);
 
 // --- CACHE EN MEMORIA POR DEPLOY ---
-let cachedMarcas = globalThis.__cachedMarcasNavData;
-let cachedCategories = globalThis.__cachedCategoriesWithProductSubcategoriesData;
-let cachedSubcategorias = globalThis.__cachedSubcategoriasWithProductsData;
-let cachedProducts = globalThis.__cachedProductsData;
-let cachedArticles = globalThis.__cachedArticlesData;
-
-const hasProducts = (item) => {
-  const products = item?.products ?? item?.attributes?.products;
-  if (Array.isArray(products)) return products.length > 0;
-  if (Array.isArray(products?.data)) return products.data.length > 0;
-  return false;
+const navCacheKeys = {
+  marcas: "__cachedMarcasNavData_catalogVisibilityV2",
+  categories: "__cachedCategoriesWithProductSubcategoriesData_catalogVisibilityV2",
+  subcategorias: "__cachedSubcategoriasWithProductsData_catalogVisibilityV2",
+  products: "__cachedProductsData_catalogVisibilityV2",
+  articles: "__cachedArticlesData_catalogVisibilityV2",
 };
+
+let cachedMarcas = globalThis[navCacheKeys.marcas];
+let cachedCategories = globalThis[navCacheKeys.categories];
+let cachedSubcategorias = globalThis[navCacheKeys.subcategorias];
+let cachedProducts = globalThis[navCacheKeys.products];
+let cachedArticles = globalThis[navCacheKeys.articles];
 
 if (!cachedMarcas) {
   try {
-    const response = await strapiFetch("/brands?populate=*");
-    cachedMarcas = response?.data || [];
-    globalThis.__cachedMarcasNavData = cachedMarcas;
+    cachedMarcas = await getBrands();
+    globalThis[navCacheKeys.marcas] = cachedMarcas;
   } catch (error) {
     cachedMarcas = [];
-    globalThis.__cachedMarcasNavData = [];
+    globalThis[navCacheKeys.marcas] = [];
   }
 }
 
 if (!cachedCategories) {
   try {
     cachedCategories = await getCategories();
-    globalThis.__cachedCategoriesWithProductSubcategoriesData = cachedCategories;
+    globalThis[navCacheKeys.categories] = cachedCategories;
   } catch (error) {
     cachedCategories = [];
-    globalThis.__cachedCategoriesWithProductSubcategoriesData = [];
+    globalThis[navCacheKeys.categories] = [];
   }
 }
 
 if (!cachedSubcategorias) {
   try {
-    const response = await strapiFetch("/subcategories?populate[category]=true&populate[products]=true");
-    cachedSubcategorias = (response?.data || []).filter(hasProducts);
-    globalThis.__cachedSubcategoriasWithProductsData = cachedSubcategorias;
+    cachedSubcategorias = await getAllSubcategories();
+    globalThis[navCacheKeys.subcategorias] = cachedSubcategorias;
   } catch (error) {
     cachedSubcategorias = [];
-    globalThis.__cachedSubcategoriasWithProductsData = [];
+    globalThis[navCacheKeys.subcategorias] = [];
   }
 }
 
 if (!cachedProducts) {
   try {
     cachedProducts = await getProducts();
-    globalThis.__cachedProductsData = cachedProducts;
+    globalThis[navCacheKeys.products] = cachedProducts;
   } catch (error) {
     cachedProducts = [];
-    globalThis.__cachedProductsData = [];
+    globalThis[navCacheKeys.products] = [];
   }
 }
 
 if (!cachedArticles) {
   try {
     cachedArticles = await getArticles();
-    globalThis.__cachedArticlesData = cachedArticles;
+    globalThis[navCacheKeys.articles] = cachedArticles;
   } catch (error) {
     cachedArticles = [];
-    globalThis.__cachedArticlesData = [];
+    globalThis[navCacheKeys.articles] = [];
   }
 }
 
-const marcasNavData = cachedMarcas;
-const categoriesData = cachedCategories;
-const subcategoriasData = cachedSubcategorias;
-const productsData = cachedProducts;
+const hasActiveProducts = (item) =>
+  Array.isArray(item?.products) &&
+  item.products.some((product) => product?.isActive === true);
+
+const marcasNavData = Array.isArray(cachedMarcas)
+  ? cachedMarcas.filter((marca) => marca?.isActive === true && hasActiveProducts(marca))
+  : [];
+const categoriesData = Array.isArray(cachedCategories)
+  ? cachedCategories
+      .filter((category) => category?.isActive === true)
+      .map((category) => ({
+        ...category,
+        subcategories: Array.isArray(category.subcategories)
+          ? category.subcategories.filter(
+              (subcategory) => subcategory?.isActive === true && hasActiveProducts(subcategory),
+            )
+          : [],
+      }))
+      .filter((category) => category.subcategories.length > 0)
+  : [];
+const subcategoriasData = Array.isArray(cachedSubcategorias)
+  ? cachedSubcategorias.filter((subcategory) => subcategory?.isActive === true && hasActiveProducts(subcategory))
+  : [];
+const productsData = Array.isArray(cachedProducts)
+  ? cachedProducts.filter((product) => product?.isActive === true)
+  : [];
 const articlesData = cachedArticles;
 // cachedProducts ya disponible para usar
 const especialidades = categoriesData;

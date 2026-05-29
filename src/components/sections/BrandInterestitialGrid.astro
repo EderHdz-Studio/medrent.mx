@@ -11,7 +11,14 @@ const {
 } = Astro.props;
 
 const validCards = Array.isArray(cards)
-  ? cards.filter((card) => card?.slug && card?.name)
+  ? cards.filter(
+      (card) =>
+        card?.isActive === true &&
+        card?.slug &&
+        card?.name &&
+        Array.isArray(card.products) &&
+        card.products.some((product) => product?.isActive === true),
+    )
   : [];
 
 const maxVisibleProducts = 7;

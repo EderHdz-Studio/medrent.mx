@@ -1,6 +1,8 @@
 ---
 export const prerender = false;
 import { strapiFetch } from "@server/strapiClient";
+import { getBrands } from "@server/api/brands";
+import { getCategories } from "@server/api/categories";
 import Layout from '../layouts/Layout.astro';
 import BrandSlider from '@components/sections/BrandSlider.astro';
 import BannerSlider from '@components/sections/BannerSlider.astro';
@@ -37,8 +39,7 @@ try {
 
 
 try {
-    const response = await strapiFetch("/categories?populate=*");
-    marcasData = response?.data || [];
+    marcasData = await getCategories();
 } catch (error) {
     console.error('Error fetching categories:', error);
     marcasData = [];
@@ -57,10 +58,10 @@ const marcas = marcasData.map((category) => {
 
 try {
   const [brandsResp, promotionsResp] = await Promise.all([
-    strapiFetch("/brands?populate=*"),
+    getBrands(),
     strapiFetch("/promo-sliders?populate[desktopImage]=true&populate[mobileImage]=true&sort=displayOrder:asc"),
   ]);
-  brandsData = Array.isArray(brandsResp?.data) ? brandsResp.data : [];
+  brandsData = Array.isArray(brandsResp) ? brandsResp : [];
   promotionsData = Array.isArray(promotionsResp?.data) ? promotionsResp.data : [];
 } catch (e) {
   console.error("Error cargando marcas o promociones:", e);

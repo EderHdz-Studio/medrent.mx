@@ -7,8 +7,8 @@ import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ImageResponsive from '@components/media/ImageResponsive.astro';
 import TestimonialsSlider from '@components/sections/TestimonialsSlider.astro';
 import { getSiteConfig } from "@server/siteConfig";
+import { getCategories } from "@server/api/categories";
 const siteConfig = await getSiteConfig();
-import { strapiFetch } from "@server/strapiClient";
 
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
@@ -17,8 +17,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
 
 let especialidades = [];
 try {
-    const response = await strapiFetch("/categories?populate=*");
-    especialidades = response?.data || [];
+    especialidades = await getCategories();
 } catch (error) {
     console.error('Error fetching especialidades:', error);
     especialidades = [];
@@ -43,7 +42,7 @@ try {
           (() => {
             const list = Array.isArray(especialidades) ? especialidades : [];
             const itemListElement = list.map((c, index) => {
-              const specSlug = c?.Slug || c?.slug || "";
+              const specSlug = c?.slug || "";
               const specUrl = specSlug
                 ? `${baseUrl}/especialidades/${specSlug}`
                 : canonicalUrl;
@@ -56,10 +55,10 @@ try {
                 item: {
                   "@type": "MedicalSpecialty",
                   "@id": `${specUrl}#specialty`,
-                  name: c?.Nombre || "Especialidad",
+                  name: c?.name || "Especialidad",
                   url: specUrl,
                   image: imageUrl ? [imageUrl] : undefined,
-                  description: c?.Descripcion,
+                  description: c?.heroDescription,
                 },
                 url: specUrl,
               };

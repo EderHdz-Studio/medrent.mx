@@ -10,9 +10,10 @@ const {
 const validApplications = Array.isArray(applications)
   ? applications.filter(
       (application) =>
+        application?.isActive === true &&
         application?.slug &&
         Array.isArray(application.products) &&
-        application.products.length > 0,
+        application.products.some((product) => product?.isActive === true),
     )
   : [];
 ---

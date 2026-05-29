@@ -3,9 +3,19 @@ import { isUsableBrandSlug } from "@lib/brandSlug";
 type BrandItem = {
   slug?: string;
   name?: string;
+  isActive?: boolean;
   logo?: any;
+  products?: any[];
 };
 let { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
+const visibleMarcasData = Array.isArray(marcasData)
+  ? marcasData.filter(
+      (brand) =>
+        brand?.isActive === true &&
+        Array.isArray(brand.products) &&
+        brand.products.some((product) => product?.isActive === true),
+    )
+  : [];
 
 /*** Triplicar imagenes para mostrar en el slider */
 // marcasData = Array.from({ length: 3 }, () => marcasData).flat();
@@ -42,12 +52,12 @@ let { marcasData = [] } = Astro.props as { marcasData?: BrandItem[] };
 
 </div>
 
-  {marcasData.length > 0 ? (
+  {visibleMarcasData.length > 0 ? (
     <div class="w-full">
       <!-- Grid de marcas -->
       <div class="brands-grid-wrapper relative">
       <div class="brands-grid flex items-center flex-wrap gap-x-6 py-5 justify-center overflow-hidden transition-[max-height,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [--brand-size:48px] [--brand-row-gap:24px] [max-height:calc((var(--brand-size)*3)+(var(--brand-row-gap)*2)+40px)]" id="brandsGrid">
-        {marcasData.map((brand: BrandItem, index: number) => (
+        {visibleMarcasData.map((brand: BrandItem, index: number) => (
           <a
             href={isUsableBrandSlug(brand.slug) ? `/nuestras-marcas/${brand.slug}` : "/productos"}
             class="brand-item group hover-scale-img flex h-auto w-[160px] shrink-0 items-center justify-center !m-0 !p-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.04]"
