@@ -1,6 +1,6 @@
 ---
 import ImageResponsive from "@components/media/ImageResponsive.astro";
-import { strapiFetch } from "@server/strapiClient";
+import { getCategories } from "@server/api/categories";
 import { localizePath } from "@lib/locale";
 
 // Props opcionales
@@ -14,12 +14,12 @@ const currentPathname = Astro.originPathname ?? Astro.url.pathname;
 let list: any[] = [];
 
 try {
-  const response = await strapiFetch("/categories?populate=figure");
-  list = response.data.map((item: any) => ({
+  const response = await getCategories();
+  list = response.map((item: any) => ({
     name: item.name,
     slug: item.slug,
     iconImage: item.figure?.url || "/placeholder.svg",
-    isActive: item.isActive ?? true
+    isActive: item.isActive
   }));
   
 } catch (error) {

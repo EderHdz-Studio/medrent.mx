@@ -6,11 +6,11 @@ import Layout from '../../layouts/Layout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import ImageResponsive from '@components/media/ImageResponsive.astro';
-import { strapiFetch } from "@server/strapiClient";
+import { getBrands } from "@server/api/brands";
 import { isUsableBrandSlug } from "@lib/brandSlug";
 import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
-const brands = await strapiFetch("/brands?populate=*");
+const brands = await getBrands();
 const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.mx";
 const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
@@ -33,8 +33,8 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         />
         <script type="application/ld+json" set:html={
           (() => {
-            const list = Array.isArray(brands?.data)
-              ? brands.data.filter((b) => isUsableBrandSlug(b?.slug)).slice(0, 12)
+            const list = Array.isArray(brands)
+              ? brands.filter((b) => isUsableBrandSlug(b?.slug)).slice(0, 12)
               : [];
             const itemListElement = list.map((b, index) => {
               const brandUrl = `${baseUrl}/nuestras-marcas/${b.slug}`;
@@ -162,7 +162,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         </div>
     </section>
 
-    {brands.data.map((brand) => {
+    {brands.map((brand) => {
         const primaryColor =
             typeof brand.primaryColor === "string" && brand.primaryColor.trim().length > 0
                 ? (brand.primaryColor.startsWith("#") ? brand.primaryColor : `#${brand.primaryColor}`)

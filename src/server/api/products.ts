@@ -1,6 +1,7 @@
 import { strapiFetch } from "../strapiClient";
 import { mapStrapiProduct } from "@lib/domain/product/mapper";
 import type { Product } from "@lib/domain/product/types";
+import { isVisibleProduct } from "./catalogVisibility";
 
 export async function getProducts(filters?: {
   slugs?: string[];
@@ -64,11 +65,12 @@ export async function getProducts(filters?: {
     const url = `/products?${params.toString()}`;
 
     const res = await strapiFetch(url);
-    const products = res.data.map(mapStrapiProduct);
+    const rawProducts = Array.isArray(res.data) ? res.data : [];
+    const products = rawProducts.filter(isVisibleProduct).map(mapStrapiProduct);
     allProducts.push(...products);
     // Actualizar meta
     total = res.meta?.pagination?.total || products.length;
-    fetched += products.length;
+    fetched += rawProducts.length;
     page++;
   } while (fetched < total);
   return allProducts;
@@ -91,11 +93,12 @@ const PDP_POPULATE = `
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const res = await strapiFetch(
-    `/products?filters[slug][$eq]=${slug}${PDP_POPULATE}`
+    `/products?filters[slug][$eq]=${encodeURIComponent(slug)}&filters[isActive][$eq]=true${PDP_POPULATE}`
   );
 
   if (!res.data.length) return null;
 
 //   return res.data[0];
-  return mapStrapiProduct(res.data[0]);
+  const product = res.data.find(isVisibleProduct);
+  return product ? mapStrapiProduct(product) : null;
 }

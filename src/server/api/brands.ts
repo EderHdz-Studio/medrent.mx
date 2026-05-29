@@ -1,47 +1,60 @@
 import { strapiFetch } from "../strapiClient";
-
-const asCollection = (value: any) => {
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value?.data)) return value.data;
-  return [];
-};
-
-const mediaUrl = (value: any) => {
-  if (!value) return null;
-  if (typeof value?.url === "string") return value.url;
-  if (typeof value?.data?.attributes?.url === "string") return value.data.attributes.url;
-  if (typeof value?.data?.url === "string") return value.data.url;
-  return null;
-};
-
-const mapProductSummary = (product: any) => {
-  const attrs = product?.attributes || product;
-  return {
-    id: product?.id,
-    name: attrs?.name ?? "",
-    slug: attrs?.slug ?? "",
-  };
-};
+import { getProducts } from "./products";
+import {
+  asAttributes,
+  asCollection,
+  isStrictlyActive,
+  mapProductSummary,
+  mediaUrl,
+} from "./catalogVisibility";
 
 export async function getBrands() {
-  const res = await strapiFetch(
-    "/brands?fields[0]=name&fields[1]=slug"
-  );
+  const [res, visibleProducts] = await Promise.all([
+    strapiFetch("/brands?populate=*"),
+    getProducts(),
+  ]);
 
-  return res.data.map((b: any) => ({
-    id: b.id,
-    name: b?.name ?? "",
-    slug: b?.slug ?? "",
-  }));
+  const productsByBrandSlug = new Map<string, any[]>();
+  visibleProducts.forEach((product: any) => {
+    const brandSlug = product?.brand?.slug;
+    if (!brandSlug) return;
+    const products = productsByBrandSlug.get(brandSlug) ?? [];
+    products.push(product);
+    productsByBrandSlug.set(brandSlug, products);
+  });
+
+  return (res.data ?? []).flatMap((brand: any) => {
+    const attrs = asAttributes(brand);
+    const brandProducts = productsByBrandSlug.get(attrs.slug) ?? [];
+
+    if (!isStrictlyActive(brand) || brandProducts.length === 0) return [];
+
+    return {
+      id: brand.id,
+      name: attrs?.name ?? "",
+      slug: attrs?.slug ?? "",
+      isActive: attrs?.isActive,
+      displayOrder: attrs?.displayOrder,
+      primaryColor: attrs?.primaryColor,
+      textColor: attrs?.textColor,
+      title: attrs?.title,
+      description: attrs?.description,
+      logo: attrs?.logo,
+      logoUrl: mediaUrl(attrs?.logo),
+      categories: asCollection(attrs?.categories),
+      brandEspecialties: asCollection(attrs?.brandEspecialties),
+      products: brandProducts.map(mapProductSummary),
+    };
+  });
 }
 
 export async function getBrandBySlug(slug: string) {
   const res = await strapiFetch(
-    `/brands?filters[slug][$eq]=${slug}&populate[SEO]=true`
+    `/brands?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[SEO]=true`
   );
 
   if (!Array.isArray(res?.data) || !res.data.length) return null;
-  return res.data[0];
+  return isStrictlyActive(res.data[0]) ? res.data[0] : null;
 }
 
 export async function getBrandLandingBySlug(slug: string) {
@@ -50,12 +63,13 @@ export async function getBrandLandingBySlug(slug: string) {
   params.append("filters[slug][$eq]", slug);
   params.append("populate[logo]", "true");
   params.append("populate[SEO][populate][ogImage]", "true");
-  params.append("populate[featuredProducts]", "true");
+  params.append("populate[products][populate][subcategory][populate][category]", "true");
+  params.append("populate[featuredProducts][populate][subcategory][populate][category]", "true");
   params.append("populate[interstitialLogo]", "true");
   params.append("populate[sliderHero][populate][desktopImage]", "true");
   params.append("populate[sliderHero][populate][mobileImage]", "true");
   params.append("populate[interestitialCard][populate][image]", "true");
-  params.append("populate[interestitialCard][populate][products]", "true");
+  params.append("populate[interestitialCard][populate][products][populate][subcategory][populate][category]", "true");
 
 
   const res = await strapiFetch(`/brands?${params.toString()}`);
@@ -63,8 +77,16 @@ export async function getBrandLandingBySlug(slug: string) {
   if (!Array.isArray(res?.data) || !res.data.length) return null;
 
   const brand = res.data[0];
-  const attrs = brand.attributes || brand;
-  const featuredProducts = asCollection(attrs.featuredProducts).map(mapProductSummary);
+  const attrs = asAttributes(brand);
+  const brandProducts = await getProducts({ brands: [attrs.slug] });
+  if (!isStrictlyActive(brand) || brandProducts.length === 0) return null;
+
+  const visibleProductBySlug = new Map(brandProducts.map((product) => [product.slug, product]));
+  const featuredProducts = asCollection(attrs.featuredProducts)
+    .map(mapProductSummary)
+    .map((product) => visibleProductBySlug.get(product.slug))
+    .filter(Boolean)
+    .map(mapProductSummary);
 
   return {
     id: brand.id,
@@ -83,7 +105,7 @@ export async function getBrandLandingBySlug(slug: string) {
     sliderHero: asCollection(attrs.sliderHero),
     featuredProducts,
     interestitialCard: asCollection(attrs.interestitialCard)
-      .filter((card: any) => card?.isActive ?? true)
+      .filter((card: any) => isStrictlyActive(card))
       .sort((a: any, b: any) => {
         const normalizeOrder = (value: unknown) => {
           const order = Number(value ?? 0);
@@ -94,7 +116,11 @@ export async function getBrandLandingBySlug(slug: string) {
         return orderA - orderB;
       })
       .map((card: any) => {
-        const cardProducts = asCollection(card?.products).map(mapProductSummary);
+        const cardProducts = asCollection(card?.products)
+          .map(mapProductSummary)
+          .map((product) => visibleProductBySlug.get(product.slug))
+          .filter(Boolean);
+        const products = card.allProducts ? brandProducts : cardProducts;
         return {
           id: card.id,
           name: card.name ?? card.title ?? "",
@@ -102,8 +128,10 @@ export async function getBrandLandingBySlug(slug: string) {
           description: card.description ?? "",
           allProducts: card.allProducts ?? false,
           image: mediaUrl(card.image),
-          products: card.allProducts ? featuredProducts : cardProducts,
+          isActive: card.isActive,
+          products: products.map(mapProductSummary),
         };
-      }),
+      })
+      .filter((card: any) => card.products.length > 0),
   };
 }
