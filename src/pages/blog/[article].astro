@@ -275,10 +275,10 @@ if (writerSlugForCount) {
     </div>
 
     {/* Mostrar video si existe, si no mostrar imagen */}
-    {article?.iframeHeroVideoYoutube ? (
+    {article?.iframeHeroVideo ? (
       <div 
         class="relative w-full aspect-video rounded mb-6 overflow-hidden [&_iframe]:absolute [&_iframe]:top-0 [&_iframe]:left-0 [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
-        set:html={article.iframeHeroVideoYoutube}
+        set:html={article.iframeHeroVideo}
       />
     ) : (
       article?.heroImage?.url && (
@@ -306,13 +306,46 @@ if (writerSlugForCount) {
                   return <BlocksRenderer content={blocks} />;
                 }
                 case 'blog.article-image': {
-                  return item.articleImage?.url ? (
-                    <img
-                      src={item.articleImage.url}
-                      alt={item.articleImage.alternativeText || 'Imagen del artículo'}
-                      class="w-full h-auto rounded mb-6"
-                    />
-                  ) : null;
+                  // ✅ PRIORIDAD: Si hay video (con o sin imagen), mostrar el video
+                  if (item.iframeVideo) {
+                    const videoUrl = item.iframeVideo;
+                    
+                    const getYouTubeId = (url) => {
+                      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                      const match = url.match(regExp);
+                      return (match && match[2].length === 11) ? match[2] : null;
+                    };
+                    
+                    const videoId = getYouTubeId(videoUrl);
+                    
+                    if (videoId) {
+                      return (
+                        <div class="relative w-full aspect-video rounded mb-6 overflow-hidden">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title="Video de YouTube"
+                            class="absolute top-0 left-0 w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      );
+                    }
+                  }
+                  
+                  // ✅ Si NO hay video, mostrar la imagen (si existe)
+                  if (item.articleImage?.url) {
+                    return (
+                      <img
+                        src={item.articleImage.url}
+                        alt={item.articleImage.alternativeText || 'Imagen del artículo'}
+                        class="w-full h-auto rounded mb-6"
+                      />
+                    );
+                  }
+                  
+                  // ❌ No hay ni video ni imagen
+                  return null;
                 }
                 case 'blog.article-quote': {
                   return (
