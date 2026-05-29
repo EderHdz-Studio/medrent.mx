@@ -274,13 +274,22 @@ if (writerSlugForCount) {
       </div>
     </div>
 
-    {article?.heroImage?.url && (
-      <img
-        src={article.heroImage.url}
-        alt={article.heroImage.alternativeText || 'Imagen del artículo'}
-        class="w-full h-auto rounded mb-6"
+    {/* Mostrar video si existe, si no mostrar imagen */}
+    {article?.iframeHeroVideoYoutube ? (
+      <div 
+        class="relative w-full aspect-video rounded mb-6 overflow-hidden [&_iframe]:absolute [&_iframe]:top-0 [&_iframe]:left-0 [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
+        set:html={article.iframeHeroVideoYoutube}
       />
-    )} 
+    ) : (
+      article?.heroImage?.url && (
+        <img
+          src={article.heroImage.url}
+          alt={article.heroImage.alternativeText || 'Imagen del artículo'}
+          class="w-full h-auto rounded mb-6"
+        />
+      )
+    )}
+    
     
     <SocialMedia articulo={article} inline={true} class="px-4" clase="SocialMediaMobile" />
 
