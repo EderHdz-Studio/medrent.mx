@@ -67,10 +67,33 @@ try {
 // Configurar dayjs en español
 dayjs.locale('es');
 
-// Obtener fecha actual
 const now = dayjs();
 const currentMonth = now.format('MMMM YYYY');
 const currentMonthTitleCase = currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1).toLowerCase();
+
+// Incluir años desde 2025 hasta año actual + 5 años
+const currentYear = now.year();
+const startYear = 2025; // Año mínimo que quieres mostrar
+const endYear = currentYear + 5; // 5 años hacia adelante
+
+// Colección de años disponibles (eventos + rango)
+const availableYears = new Set<number>();
+
+// Agregar años del rango (2025 hasta futuro)
+for (let year = startYear; year <= endYear; year++) {
+    availableYears.add(year);
+}
+
+// También agregar años de eventos existentes (por si hay eventos más antiguos)
+(data?.events || []).forEach((evento: any) => {
+    const fecha = dayjs(evento.startDate);
+    if (fecha.isValid()) {
+        availableYears.add(fecha.year());
+    }
+});
+
+const availableYearsList = [...availableYears].sort((a, b) => a - b);
+const availableYearsAttr = availableYearsList.join(',');
 
 // Obtener información del mes actual
 const startOfMonth = now.startOf('month');
@@ -214,9 +237,23 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         <!-- Por debajo del breakpoint md el calendario no se muestra (lista de eventos y filtros sí) -->
                         <div class="hidden md:block bg-[var(--color-secondary-light)] rounded-2xl p-6" id="calendario-dinamico">
                             <div class="flex justify-between items-center">
-                                <span id="mes-actual">
-                                    {currentMonthTitleCase}
-                                </span>
+                                <div class="relative inline-flex items-center gap-2">
+                                    <span id="mes-actual" class="font-bold text-[16px]">
+                                        {currentMonthTitleCase}
+                                    </span>
+                                    <button
+                                        id="year-selector-toggle"
+                                        type="button"
+                                        class="inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-gray-200 transition-colors"
+                                        aria-expanded="false"
+                                        aria-label="Seleccionar año"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                            <path d="M9 11.25L5.25 7.5H12.75L9 11.25Z" fill="#5A4043"/>
+                                        </svg>
+                                    </button>
+                                    <div id="year-selector-dropdown" data-years={availableYearsAttr} class="hidden absolute left-0 top-full z-20 mt-2 w-36 overflow-hidden rounded-3xl border border-[#E5E9EA] bg-white shadow-lg"></div>
+                                </div>
                                 
                                 <!-- Agrupa los botones aquí -->
                                 <div class="flex gap-8">
@@ -342,11 +379,15 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                             });
                             
                             // Meses por año: siempre el año civil en curso + cualquier año que aparezca en fechas de eventos
-                            const yearsSet = new Set([now.year()]);
+                            const yearsSet = new Set(availableYearsList);
+
+                            // Agregar años de eventos existentes
                             Object.keys(eventosPorMes).forEach((k) => {
                                 const y = Number.parseInt(k.slice(0, 4), 10);
                                 if (Number.isFinite(y)) yearsSet.add(y);
                             });
+
+                            // ✅ NO redeclarar yearsSet, usar el mismo
                             const sortedYears = [...yearsSet].sort((a, b) => a - b);
                             const allMonths: {
                                 key: string;
@@ -354,18 +395,15 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                 nombreCompleto: string;
                                 hasEvents: boolean;
                             }[] = [];
+
                             sortedYears.forEach((yearNum) => {
                                 for (let i = 0; i < 12; i++) {
                                     const monthDate = dayjs(`${yearNum}-${String(i + 1).padStart(2, '0')}-01`);
                                     const key = monthDate.format('YYYY-MM');
                                     allMonths.push({
                                         key,
-                                        nombre:
-                                            monthDate.format('MMMM').charAt(0).toUpperCase() +
-                                            monthDate.format('MMMM').slice(1).toLowerCase(),
-                                        nombreCompleto:
-                                            monthDate.format('MMMM YYYY').charAt(0).toUpperCase() +
-                                            monthDate.format('MMMM YYYY').slice(1).toLowerCase(),
+                                        nombre: monthDate.format('MMMM').charAt(0).toUpperCase() + monthDate.format('MMMM').slice(1).toLowerCase(),
+                                        nombreCompleto: monthDate.format('MMMM YYYY').charAt(0).toUpperCase() + monthDate.format('MMMM YYYY').slice(1).toLowerCase(),
                                         hasEvents: Boolean(eventosPorMes[key]),
                                     });
                                 }
@@ -747,6 +785,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
     /** Navegación del calendario (< >) y alineación con la lista de meses al hacer scroll */
     let currentCalendarMonth = dayjs();
+    // Año actualmente seleccionado en la UI (inicializado al mes actual)
+    let selectedCalendarYear: number | null = currentCalendarMonth.year();
     let lastScrollSyncedMonthKey: string | null = null;
     let suppressScrollCalendarSyncUntil = 0;
 
@@ -762,20 +802,24 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         ) as HTMLElement[];
         if (!sections.length) return null;
         const anchorY = getLayoutHeaderOffsetPx() + 56;
-        let activeKey: string | null = null;
+
+        // Buscar el toggle visible cuya distancia absoluta al anchor sea mínima
+        let bestKey: string | null = null;
+        let bestDelta = Infinity;
         for (const section of sections) {
+            if (section.style.display === 'none') continue;
             const key = section.dataset.month;
             if (!key) continue;
             const toggle = section.querySelector('[data-month-toggle]');
             if (!toggle) continue;
-            const top = toggle.getBoundingClientRect().top;
-            if (top <= anchorY) {
-                activeKey = key;
+            const top = (toggle as HTMLElement).getBoundingClientRect().top;
+            const delta = Math.abs(top - anchorY);
+            if (delta < bestDelta) {
+                bestDelta = delta;
+                bestKey = key;
             }
         }
-        if (activeKey !== null) return activeKey;
-        const first = sections[0]?.dataset.month;
-        return first ?? null;
+        return bestKey;
     }
 
     function trySyncEventosCalendarioConMesEnLista() {
@@ -824,11 +868,16 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         currentCalendarMonth = dayjs(`${mesActualKey}-01`);
         lastScrollSyncedMonthKey = mesActualKey;
         actualizarCalendario(mesActualKey);
+        // Asegurar que las secciones y tarjetas se filtren por el año inicial (año actual)
+        selectedCalendarYear = currentCalendarMonth.year();
+        updateVisibleYearSections(currentCalendarMonth.year());
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 trySyncEventosCalendarioConMesEnLista();
             });
         });
+        // Aplicar filtros iniciales (incluye filtrado por año)
+        try { applyFilters(); } catch (e) { }
 
         // Configurar toggles de meses
         document.querySelectorAll('[data-month-toggle]').forEach(toggle => {
@@ -908,7 +957,16 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 
                 const matchType = selectedTipos.length === 0 || selectedTipos.includes(type);
                 const matchCategory = selectedCategorias.length === 0 || selectedCategorias.includes(category);
-                const visible = matchType && matchCategory;
+
+                // Filtrar también por año seleccionado (usar selectedCalendarYear si existe, si no usar currentCalendarMonth)
+                const sd = card.dataset.startDate || '';
+                const cardYear = sd && sd.length >= 4 ? Number.parseInt(sd.slice(0, 4), 10) : null;
+                const activeYear = typeof selectedCalendarYear !== 'undefined' && selectedCalendarYear !== null
+                    ? selectedCalendarYear
+                    : (currentCalendarMonth ? currentCalendarMonth.year() : null);
+                const matchYear = cardYear === null || activeYear === null ? true : cardYear === activeYear;
+
+                const visible = matchType && matchCategory && matchYear;
 
                 card.style.display = visible ? '' : 'none';
                 if (visible && !activeCard) activeCard = card;
@@ -927,9 +985,24 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 const cards = Array.from(monthSection.querySelectorAll('article[data-start-date]')) as HTMLElement[];
                 const hasVisible = cards.some((c) => (c.style.display !== 'none'));
                 const monthContent = monthSection.querySelector(`[data-month-content="${month}"]`) as HTMLElement | null;
-                
+
+                // Ocultar secciones que no coincidan con el año seleccionado
+                const sectionYear = month.slice(0,4);
+                const activeYear = typeof selectedCalendarYear !== 'undefined' && selectedCalendarYear !== null
+                    ? String(selectedCalendarYear)
+                    : (currentCalendarMonth ? String(currentCalendarMonth.year()) : null);
+
+                if (activeYear && sectionYear !== activeYear) {
+                    monthSection.style.display = 'none';
+                    if (monthContent) {
+                        monthContent.classList.add('month-hidden');
+                    }
+                    monthSection.classList.remove('open');
+                    return;
+                }
+
                 monthSection.style.display = '';
-                
+
                 if (monthContent) {
                     if (hasVisible) {
                         if (!monthSection.classList.contains('open')) {
@@ -1052,6 +1125,131 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             if (!isFilterArea) {
                 closeAllDropdowns();
             }
+        });
+
+        const yearSelectorToggle = document.getElementById('year-selector-toggle');
+        const yearSelectorDropdown = document.getElementById('year-selector-dropdown');
+
+        function updateVisibleYearSections(year: number) {
+            const sections = Array.from(document.querySelectorAll('.eventos-month-section[data-month]')) as HTMLElement[];
+            let firstVisibleMonthKey: string | null = null;
+
+            sections.forEach((section) => {
+                const monthKey = section.dataset.month;
+                if (!monthKey) return;
+                const sectionYear = parseInt(monthKey.slice(0, 4), 10);
+                const matches = sectionYear === year;
+
+                // Mostrar u ocultar la sección completa
+                section.style.display = matches ? 'flex' : 'none';
+
+                if (matches) {
+                    if (!firstVisibleMonthKey) {
+                        firstVisibleMonthKey = monthKey;
+                    }
+
+                    // Asegurar que el título mantenga sus clases y estilos
+                    const toggleLabel = section.querySelector('.eventos-month-toggle-label') as HTMLElement | null;
+                    if (toggleLabel) {
+                        toggleLabel.style.display = '';
+                    }
+
+                    // Mantener la lógica de abierto/cerrado según tenga eventos
+                    const hasEvents = section.hasAttribute('data-event-days');
+                    const monthContent = section.querySelector(`[data-month-content="${monthKey}"]`) as HTMLElement | null;
+
+                    if (!hasEvents) {
+                        section.classList.remove('open');
+                        if (monthContent) monthContent.classList.add('month-hidden');
+                    } else {
+                        section.classList.add('open');
+                        if (monthContent) monthContent.classList.remove('month-hidden', 'hidden');
+                    }
+                }
+            });
+
+            // Forzar reflow para que los estilos se apliquen correctamente
+            void document.body.offsetHeight;
+
+            return firstVisibleMonthKey;
+        }
+
+        function renderYearDropdown() {
+            if (!yearSelectorDropdown) return;
+            const yearsData = yearSelectorDropdown.dataset.years;
+            const years = yearsData ? yearsData.split(',').map((y) => Number(y)).filter(Number.isFinite) : [];
+            
+            // Ordenar años (ascendente)
+            years.sort((a, b) => a - b);
+            
+            yearSelectorDropdown.innerHTML = years.map((year) => `
+                <button type="button" data-year="${year}" class="w-full rounded-[14px] px-3 py-2 text-left text-sm text-[#261819] transition-colors hover:bg-[var(--color-secondary-light)] ${
+                    year === selectedCalendarYear ? 'bg-[var(--color-secondary-light)] font-semibold' : ''
+                }">
+                    ${year}
+                </button>
+            `).join('');
+        }
+
+        const closeYearSelector = () => {
+            if (yearSelectorDropdown && !yearSelectorDropdown.classList.contains('hidden')) {
+                yearSelectorDropdown.classList.add('hidden');
+                yearSelectorToggle?.setAttribute('aria-expanded', 'false');
+            }
+        };
+
+        yearSelectorToggle?.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (!yearSelectorDropdown) return;
+            const isHidden = yearSelectorDropdown.classList.contains('hidden');
+            yearSelectorDropdown.classList.toggle('hidden', !isHidden);
+            yearSelectorToggle?.setAttribute('aria-expanded', String(isHidden));
+        });
+
+        yearSelectorDropdown?.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        renderYearDropdown();
+
+        yearSelectorDropdown?.querySelectorAll('button[data-year]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                const selectedYear = Number((event.currentTarget as HTMLElement).dataset.year);
+                if (!Number.isFinite(selectedYear)) return;
+
+                selectedCalendarYear = selectedYear;
+                
+                // Actualizar el año en el título principal
+                const yearHeading = document.getElementById('eventos-medrent-year');
+                if (yearHeading) yearHeading.textContent = String(selectedYear);
+                
+                const firstVisibleMonthKey = updateVisibleYearSections(selectedYear);
+                
+                if (firstVisibleMonthKey) {
+                    currentCalendarMonth = dayjs(`${firstVisibleMonthKey}-01`);
+                } else {
+                    // Si no hay meses, mantener enero del año seleccionado
+                    currentCalendarMonth = dayjs(`${selectedYear}-01-01`);
+                }
+
+                const newMonthKey = currentCalendarMonth.format('YYYY-MM');
+                lastScrollSyncedMonthKey = newMonthKey;
+                actualizarCalendario(newMonthKey);
+                // Aplicar filtros para ocultar tarjetas que no pertenezcan al año seleccionado
+                try { applyFilters(); } catch (e) { /* noop */ }
+                closeYearSelector();
+
+                const mesActualElement = document.getElementById('mes-actual');
+                if (mesActualElement) {
+                    const nombreMes = currentCalendarMonth.format('MMMM YYYY');
+                    mesActualElement.textContent = nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1).toLowerCase();
+                }
+            });
+        });
+
+        document.addEventListener('click', () => {
+            closeYearSelector();
         });
 
         // Botones de navegación del calendario
