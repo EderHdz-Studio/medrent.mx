@@ -846,23 +846,17 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         const mesActualKey = fechaActualCliente.format('YYYY-MM');
         
         // Primero, configurar el estado inicial de los meses
-        // Solo los meses con eventos deben estar abiertos
+        // Todos los meses deben aparecer abiertos por defecto en la carga inicial.
         document.querySelectorAll('.eventos-month-section[data-month]').forEach((monthSection) => {
             const month = monthSection.getAttribute('data-month');
             const monthContent = month
                 ? monthSection.querySelector(`[data-month-content="${month}"]`)
                 : null;
             const parentDiv = monthSection as HTMLElement;
-            const hasEventDays = monthSection.hasAttribute('data-event-days');
             
-            if (monthContent && hasEventDays) {
-                // Mes con eventos: abierto por defecto
+            if (monthContent) {
                 parentDiv.classList.add('open');
                 monthContent.classList.remove('month-hidden', 'hidden');
-            } else if (monthContent) {
-                // Mes sin eventos: cerrado por defecto (solo .month-hidden; no usar Tailwind hidden)
-                parentDiv.classList.remove('open');
-                monthContent.classList.add('month-hidden');
             }
         });
         
@@ -1024,7 +1018,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 monthSection.style.display = '';
 
                 if (monthContent) {
-                    if (hasVisible) {
+                    if (hasVisible || isFirstLoad) {
                         if (!monthSection.classList.contains('open')) {
                             monthSection.classList.add('open');
                         }
@@ -1175,17 +1169,9 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                         toggleLabel.style.display = '';
                     }
 
-                    // Mantener la lógica de abierto/cerrado según tenga eventos
-                    const hasEvents = section.hasAttribute('data-event-days');
                     const monthContent = section.querySelector(`[data-month-content="${monthKey}"]`) as HTMLElement | null;
-
-                    if (!hasEvents) {
-                        section.classList.remove('open');
-                        if (monthContent) monthContent.classList.add('month-hidden');
-                    } else {
-                        section.classList.add('open');
-                        if (monthContent) monthContent.classList.remove('month-hidden', 'hidden');
-                    }
+                    section.classList.add('open');
+                    if (monthContent) monthContent.classList.remove('month-hidden', 'hidden');
                 }
             });
 
