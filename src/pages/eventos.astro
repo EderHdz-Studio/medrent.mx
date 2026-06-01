@@ -881,6 +881,20 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         lastScrollSyncedMonthKey = mesActualKey;
         actualizarCalendario(mesActualKey);
 
+        // Asegurarse de que la lista de meses muestre el mes actual en la columna derecha
+        requestAnimationFrame(() => {
+            const currentMonthSection = document.querySelector(`[data-month="${mesActualKey}"]`) as HTMLElement | null;
+            if (currentMonthSection) {
+                const toggleLabel = currentMonthSection.querySelector('.eventos-month-toggle-label') as HTMLElement | null;
+                if (toggleLabel) toggleLabel.classList.add('current-month');
+
+                const rect = currentMonthSection.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const targetTop = Math.max(0, rect.top + scrollTop - getLayoutHeaderOffsetPx() - 20);
+                window.scrollTo({ top: targetTop, behavior: 'auto' });
+            }
+        });
+
         // Permitir sincronización de scroll solo después de la inicialización completa
         setTimeout(() => {
             ignoreInitialScrollSync = false;
@@ -1389,6 +1403,10 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     z-index: 1;
     border-radius: 2px;
     pointer-events: none;
+  }
+
+  .eventos-month-toggle-label.current-month .eventos-month-hover-fill {
+    transform: scaleY(1);
   }
 
   @media (min-width: 768px) {
