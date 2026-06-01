@@ -462,12 +462,12 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                                                             <div class="flex flex-col md:flex-row">
                                                                 <div class="w-full md:w-1/2">
                                                                     <ImageResponsive
-                                                                    image={evento.image}
-                                                                    alt={evento.title}
-                                                                    class="w-full h-full aspect-square object-cover"
-                                                                    sizes="(min-width: 1024px) 30vw, 100vw"
-                                                                    loading="lazy"
-                                                                    decoding="async"
+                                                                        image={evento.image}
+                                                                        alt={evento.title}
+                                                                        class="w-full h-full aspect-square object-cover"
+                                                                        sizes="(min-width: 1024px) 30vw, 100vw"
+                                                                        loading="lazy"
+                                                                        decoding="async"
                                                                     />
                                                                 </div>
                                                                 <div class="w-full md:w-1/2 p-6 flex flex-col hover:bg-[var(--color-secondary-light)]">
@@ -620,7 +620,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
 
     <!-- Slider de promociones -->
     <PromotionSlider />
-
 
     <!-- Sin `defer-section`: content-visibility hace que Glide monte con ancho 0 y el carrusel queda roto -->
     <section class="max-w-7xl mx-auto py-8 sliderArticulosRelacionados px-4 md:px-6">
@@ -790,6 +789,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     let lastScrollSyncedMonthKey: string | null = null;
     let suppressScrollCalendarSyncUntil = 0;
     let ignoreInitialScrollSync = true;
+    let suppressApplyFiltersCalendarSync = false;
 
     /**
      * Mes que corresponde a lo que el usuario está leyendo en la lista (columna derecha).
@@ -981,8 +981,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 const matchYear = cardYear === null || activeYear === null ? true : cardYear === activeYear;
 
                 const visible = matchType && matchCategory && matchYear;
-
-                card.style.display = visible ? '' : 'none';
                 if (visible && !activeCard) activeCard = card;
                 card.classList.toggle('filtered-selected', false);
             });
@@ -1042,7 +1040,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 }
             }
 
-            if (!isFirstLoad) {
+            if (!isFirstLoad && !suppressApplyFiltersCalendarSync) {
                 if (firstVisibleMonth) {
                     lastScrollSyncedMonthKey = firstVisibleMonth;
                     currentCalendarMonth = dayjs(`${firstVisibleMonth}-01`);
@@ -1153,7 +1151,8 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 const monthKey = section.dataset.month;
                 if (!monthKey) return;
                 const sectionYear = parseInt(monthKey.slice(0, 4), 10);
-                const matches = sectionYear === year;
+                
+                const matches = sectionYear === year                // Mostrar u ocultar la sección completa                section.style.display = matches ? 'flex' : 'none';                section.style.display = matches ? 'flex' : 'none';
 
                 // Mostrar u ocultar la sección completa
                 section.style.display = matches ? 'flex' : 'none';
@@ -1244,7 +1243,9 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
                 lastScrollSyncedMonthKey = newMonthKey;
                 actualizarCalendario(newMonthKey);
                 // Aplicar filtros para ocultar tarjetas que no pertenezcan al año seleccionado
+                suppressApplyFiltersCalendarSync = true;
                 try { applyFilters(); } catch (e) { /* noop */ }
+                suppressApplyFiltersCalendarSync = false;
                 closeYearSelector();
 
                 const mesActualElement = document.getElementById('mes-actual');
@@ -1382,7 +1383,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #edf2f0;
+    background-color: #FFFF;
     transform: scaleY(0);
     transform-origin: bottom center;
     transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
