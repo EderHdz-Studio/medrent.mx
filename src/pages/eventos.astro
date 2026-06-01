@@ -789,6 +789,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     let selectedCalendarYear: number | null = currentCalendarMonth.year();
     let lastScrollSyncedMonthKey: string | null = null;
     let suppressScrollCalendarSyncUntil = 0;
+    let ignoreInitialScrollSync = true;
 
     /**
      * Mes que corresponde a lo que el usuario está leyendo en la lista (columna derecha).
@@ -823,6 +824,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
     }
 
     function trySyncEventosCalendarioConMesEnLista() {
+        if (ignoreInitialScrollSync) return;
         if (typeof performance !== 'undefined' && performance.now() < suppressScrollCalendarSyncUntil) return;
         const mk = getEventosMonthKeyClosestToListAnchor();
         if (!mk || mk === lastScrollSyncedMonthKey) return;
@@ -871,13 +873,18 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         // Asegurar que las secciones y tarjetas se filtren por el año inicial (año actual)
         selectedCalendarYear = currentCalendarMonth.year();
         updateVisibleYearSections(currentCalendarMonth.year());
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                trySyncEventosCalendarioConMesEnLista();
-            });
-        });
-        // Aplicar filtros iniciales (incluye filtrado por año)
-        try { applyFilters(); } catch (e) { }
+        // No sincronizar automáticamente al primer render con el scroll de la lista,
+        // porque el calendario debe mostrar el mes actual del cliente por defecto.
+
+        // Reafirmar el calendario al mes actual tras la inicialización
+        currentCalendarMonth = dayjs(`${mesActualKey}-01`);
+        lastScrollSyncedMonthKey = mesActualKey;
+        actualizarCalendario(mesActualKey);
+
+        // Permitir sincronización de scroll solo después de la inicialización completa
+        setTimeout(() => {
+            ignoreInitialScrollSync = false;
+        }, 400);
 
         // Configurar toggles de meses
         document.querySelectorAll('[data-month-toggle]').forEach(toggle => {
@@ -936,7 +943,6 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
             }
 
             setEventFiltersFromUrl();
-            applyFilters();
         }
 
         function applyFilters() {
@@ -1073,6 +1079,7 @@ const heroImageUrl = data?.heroImage?.url ?? logoUrl;
         });
 
         renderFilterOptions();
+        try { applyFilters(); } catch (e) { }
 
         // Dropdown toggles de filtros
         const toggleEventType = document.getElementById('toggle-event-type');
