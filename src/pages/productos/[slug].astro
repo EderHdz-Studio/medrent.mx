@@ -23,6 +23,7 @@ import { isUsableBrandSlug } from "@lib/brandSlug";
 import ProductVariants from '@components/product/ProductVariants.astro';
 import { getSiteConfig } from "@server/siteConfig";
 import { getLocaleMeta, localizePath } from "@lib/locale";
+import TestimonialsSlider from '@components/sections/TestimonialsSlider.astro';
 const siteConfig = await getSiteConfig();
 
 export async function getStaticPaths() {
@@ -177,7 +178,7 @@ const pdpJsonLd = {
         ========================== -->
         <!-- Galería de imágenes mobile tipo Slide (solo mobile) -->
         <div class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start sm:hidden">
-          <div class="w-full relative">
+          <div class="w-full relative mt-12">
             {product.isNew && (
               <div class="badge-launch-mobile">
                 LANZAMIENTO
@@ -251,7 +252,7 @@ const pdpJsonLd = {
         </div>
 
         <!-- Galería de Imágenes (solo tablet/desktop) -->
-        <div id="galleryProducto" class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start hidden sm:flex">
+        <div id="galleryProducto" class="flex flex-col lg:flex-row-reverse gap-4 lg:sticky lg:top-32 self-start items-center lg:items-start hidden sm:flex mt-8">
 
           <!-- Imagen Principal -->  
           <div class="flex-1 aspect-squar bg-white rounded-lg overflow-hidden relative">
@@ -688,6 +689,9 @@ const pdpJsonLd = {
       
   <!-- Newsletter -->
   <Newsletter />
+
+  <!-- Testimonios -->
+  <TestimonialsSlider />
 
   </main>
 
