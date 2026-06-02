@@ -28,10 +28,40 @@ const navLayout =
 ---
 <div class={`mx-auto flex w-full max-w-[1280px] flex-col justify-start ${outerBg} relative `}>
   <nav
-    class={`mx-auto flex w-full max-w-[1280px] items-center font-lato absolute max-lg:pt-3 max-lg:pb-3 max-lg:px-0 lg:px-8 lg:py-4 mt-2 ${navLayout} ${className || ""}`}
+    class={`mx-auto flex w-full max-w-[1280px] items-center absolute 
+    top-0 lg:top-4
+    max-lg:pt-3 max-lg:pb-3 max-lg:px-0 max-lg:mt-6 
+    lg:px-8 lg:py-4 
+    ${navLayout} ${className || ""}`}
     aria-label="Breadcrumb"
   >
-    <ol class={`scrollbar-hide flex touch-pan-x items-center gap-2 overflow-x-auto whitespace-nowrap md:ml-0 ml-6 ${listTypography}`}>
+    <ol 
+      class={`
+          scrollbar-hide 
+          flex 
+          touch-pan-x 
+          items-center 
+          gap-2 
+          overflow-x-auto 
+          whitespace-nowrap 
+          ml-0
+          md:ml-0
+          custom-ol-padding
+          /* Tablet y desktop */
+          max-lg:py-3 
+          max-lg:px-0
+          ${listTypography}
+      `}
+    >
+    <style>
+        /* Solo tablet: 768px a 1023px */
+        @media (max-width: 1023px) {
+            .custom-ol-padding {
+                padding: 12px 0 12px 16px !important;
+            }
+        }
+    </style>
+
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
