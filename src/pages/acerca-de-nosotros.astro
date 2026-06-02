@@ -2,8 +2,6 @@
 export const prerender = false;
 
 import Layout from '../layouts/Layout.astro';
-import { METRICS } from '@lib/site';
-const metrics = METRICS;
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import Breadcrumb from '@components/navigation/Breadcrumb.astro';
 import { getSiteConfig } from "@server/siteConfig";
@@ -13,6 +11,38 @@ const baseUrl = Astro.site ? new URL(Astro.site).origin : "https://www.medrent.m
 const canonicalUrl = new URL(Astro.originPathname ?? Astro.url.pathname, Astro.site).toString();
 const breadcrumbId = `${canonicalUrl}#breadcrumb`;
 const logoUrl = siteConfig?.favicon512x512?.url;
+
+import { strapiFetch } from "@server/strapiClient";
+const about = await strapiFetch(
+  "/about?populate=*"
+);
+
+const aboutData = about?.data ?? {};
+const pageTitle = aboutData.title ?? "DISTRIBUIMOS LAS MEJORES MARCAS DE EQUIPO MÉDICO";
+const pageDescription = aboutData.Description ?? "Contamos el respaldo de más de 50 años de experiencia en el mercado de distribución de equipo médico.";
+const leftText = aboutData.leftText ?? "Más de 50 años conectando tecnología médica con especialistas en salud";
+const rightText = aboutData.rightText ?? "";
+const benefitsTitle = aboutData.benefitsTitle ?? "Esforzándonos siempre por tener a su alcance:";
+const mission = aboutData.mission ?? "";
+const values = (aboutData.values ?? "")
+  .split("\n")
+  .map((value) => value.trim())
+  .filter(Boolean)
+  .map((value) => {
+    const [title, ...description] = value.split(":");
+    return {
+      title: description.length ? title.trim() : "",
+      description: description.length ? description.join(":").trim() : value,
+    };
+  });
+
+const metrics = [
+  { value: aboutData.benefitTitleA, label: aboutData.benefitDescriptionA },
+  { value: aboutData.benefitTitleB, label: aboutData.benefitDescriptionB },
+  { value: aboutData.benefitTitleC, label: aboutData.benefitDescriptionC },
+  { value: aboutData.benefitTitleD, label: aboutData.benefitDescriptionD },
+  { value: aboutData.benefitTitleE, label: aboutData.benefitDescriptionE },
+].filter((metric) => metric.value || metric.label);
 ---
 
 <Layout
@@ -72,15 +102,15 @@ const logoUrl = siteConfig?.favicon512x512?.url;
         <div class="w-full max-w-7xl mx-auto flex flex-col gap-6 py-[32px] px-4 mt-9 sm:px-6 lg:px-[135px] md:py-[32px] sm:py-[32px] relative z-10"> 
             <div class="text-left flex flex-col gap-2">
                 <h1
-                    id="about-hero-title"
-                    class="mt-8 uppercase font-lato font-bold text-[14px] leading-[1.43] tracking-[0.1px] text-[var(--color-secondary)]"
+                  id="about-hero-title"
+                  class="mt-8 uppercase font-lato font-bold text-[14px] leading-[1.43] tracking-[0.1px] text-[var(--color-secondary)]"
                 >
                     LÍDERES EN TECNOLOGÍA MÉDICA
                 </h1>
                 <h2 class="text-[24px] font-bold text-white/90 tracking-tight">
-                    DISTRIBUIMOS LAS MEJORES MARCAS DE EQUIPO MÉDICO
+                    {pageTitle}
                 </h2>
-                <p class="text-white/90 text-base tracking-[0.5px]">Contamos el respaldo de más de 50 años de experiencia en el mercado de distribución de equipo médico.</p>
+                <p class="text-white/90 text-base tracking-[0.5px]">{pageDescription}</p>
             </div>
             <a
             href="/productos"
@@ -98,7 +128,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
     <section  aria-labelledby="value-proposition-title" class="py-6 px-8 max-w-7xl mx-auto flex flex-col gap-6 mt-6">
         <!-- Título -->
         <h2 class="text-center font-semibold text-gray-900 text-[24px]  md:text-[28px] ">
-            Esforzándonos siempre por tener a su alcance:
+            {benefitsTitle}
         </h2>
 
         <!-- Grid de cards -->
@@ -167,18 +197,12 @@ const logoUrl = siteConfig?.favicon512x512?.url;
             </div>
             <!-- Contenido -->
             <h2 class="mb-4 font-semibold text-gray-900 text-[24px]  md:text-[28px] tracking-[0.5px] text-center lg:text-left">
-            Más de 50 años conectando tecnología médica con especialistas en salud
+            {leftText}
             </h2>
 
             <div>
                 <p class="mb-4 text-base tracking-[0.5px] text-center lg:text-left ">
-                En MedRent distribuimos equipos líderes en
-                <strong class="text-[var(--color-primary)]">Neurofisiología, Cardiología, Ultrasonido, Neurología y Rehabilitación, </strong>
-                ofreciendo soluciones confiables respaldadas por décadas de experiencia.
-                </p>
-
-                <p class="text-base sm:text-center tracking-[0.5px] text-center lg:text-left">
-                    Fundada en  <strong>1960</strong> bajo  <strong>Laboratorios Mexicanos Colliere.</strong>
+                {rightText}
                 </p>
             </div>
 
@@ -211,7 +235,7 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                     <h4 class="text-[var(--color-secondary)] font-bold text-[14px] md:text-[14px] uppercase "> MEDRENT</h4>
                     <h3 class="mb-4 text-[28px]  font-bold text-[var(--color-white)]"> Misión</h3>
                     <p class="text-sm leading-relaxed text-[var(--color-gray)] text-[16px]  tracking-[0.5px]">
-                    Brindar al profesional de la salud acceso ágil a equipos y dispositivos de calidad superior, elevando la atención al paciente. Seleccionamos solo marcas confiables y ofrecemos formación y soporte continuo para maximizar su impacto en el cuidado.
+                    {mission}
                     </p>
                 </article>
 
@@ -220,10 +244,11 @@ const logoUrl = siteConfig?.favicon512x512?.url;
                     <h4 class="text-[var(--color-secondary)] font-bold text-[14px] md:text-[14px] uppercase "> MEDRENT</h4>
                     <h3 class="mb-4 text-[28px]  font-bold text-[var(--color-white)]"> Valores</h3>
                     <ul class="space-y-2 text-sm  text-[var(--color-gray)] list-disc list-inside  text-[16px]  tracking-[0.5px]">
-                        <li><strong class="">Compromiso:</strong> actitudes que respaldan cada promesa hecha.</li>
-                        <li><strong>Integridad:</strong> coherencia entre lo que decimos y hacemos.</li>
-                        <li><strong>Honestidad:</strong> claridad plena, sin confusiones ni engaños.</li>
-                        <li><strong>Ética en todos lados (“Ethics everywhere”):</strong> en cada decisión, acción y relación.</li>
+                        {values.map((value) => (
+                          <li>
+                            {value.title && <strong>{value.title}:</strong>} {value.description}
+                          </li>
+                        ))}
                     </ul>
                 </article>
             </div>
