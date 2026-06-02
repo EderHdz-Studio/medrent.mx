@@ -1,149 +1,148 @@
 ---
+// TestimonialsSlider.astro
 import { strapiFetch } from "@server/strapiClient";
 
-let cachedTestimonials = globalThis.__cachedTestimonials || null;
+export interface Props {
+  productId?: number;
+  productSlug?: string;
+}
 
-if (!cachedTestimonials) {
+const { productId, productSlug } = Astro.props;
+
+// Construir query base
+let filterQuery = "filters[isActive][$eq]=true&populate=*";
+
+let allTestimonials = globalThis.__cachedTestimonials || null;
+
+if (!allTestimonials) {
   try {
-    const response = await strapiFetch("/testimonials?filters[isActive][$eq]=true&populate=*");
-    cachedTestimonials = response?.data || [];
-    globalThis.__cachedTestimonials = cachedTestimonials;
+    const response = await strapiFetch(`/testimonials?${filterQuery}`);
+    allTestimonials = response?.data || [];
+    globalThis.__cachedTestimonials = allTestimonials;
   } catch (error) {
-    cachedTestimonials = [];
+    allTestimonials = [];
     globalThis.__cachedTestimonials = [];
   }
 }
 
----
-<section class="py-6 bg-[var(--color-surface)] overflow-hidden mt-4 md:mt-6">
+// Filtrar testimonios por producto (si se proporciona productId o productSlug)
+let cachedTestimonials = allTestimonials;
 
-<div class="max-w-7xl mx-auto pr-0 pl-4 md:px-6 lg:px-8 glide overflow-visible flex flex-col gap-6" id="slideTestimonials">
-
-  <!-- Header -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+if (productId || productSlug) {
+  cachedTestimonials = allTestimonials.filter(testimonial => {
+    // Si no tiene productos asociados, no lo incluyas
+    if (!testimonial.products || testimonial.products.length === 0) {
+      return false;
+    }
     
-    <div class="text-center md:text-center lg:text-left w-full ">
-      <p class="text-[var(--color-primary)] text-sm font-semibold uppercase tracking-wide mb-2">
-        Confianza médica real
-      </p>
+    // Verificar si alguno de los productos coincide
+    return testimonial.products.some(product => {
+      if (productId && product.id === productId) return true;
+      if (productSlug && product.slug === productSlug) return true;
+      return false;
+    });
+  });
+}
 
-      <h2 class="text-[28px] font-bold text-[var(--color-text-default)]">
-        Historias de quienes ya dieron el paso
-      </h2>
-    </div>
+const hasTestimonials = cachedTestimonials && cachedTestimonials.length > 0;
+---
+{hasTestimonials && (
+  <section class="py-6 bg-[var(--color-surface)] overflow-hidden mt-4 md:mt-6">
+    <div class="max-w-7xl mx-auto pr-0 pl-4 md:px-6 lg:px-8 glide overflow-visible flex flex-col gap-6" id="slideTestimonials">
+      
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="text-center md:text-center lg:text-left w-full">
+          <p class="text-[var(--color-primary)] text-sm font-semibold uppercase tracking-wide mb-2">
+            Confianza médica real
+          </p>
+          <h2 class="text-[28px] font-bold text-[var(--color-text-default)]">
+            Historias de quienes ya dieron el paso
+          </h2>
+        </div>
 
-    <!-- Controls -->
-    {cachedTestimonials.length > 3 && (
-      <div class="flex items-center gap-4 hidden md:hidden lg:flex border-2 border-[var(--color-primary)]  rounded-full">
-        <button 
-          data-glide-dir="<"
-          class="w-12 h-12 flex items-center justify-center cursor-pointer" >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="var(--color-primary)"/>
-          </svg>
-        </button>
-        <span id="testimonialCounter"class=" text-sm font-medium w-max">
-          1 / 1
-        </span>
-        <button 
-          data-glide-dir=">"
-          class="w-12 h-12 flex items-center justify-center cursor-pointer" >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="var(--color-primary)"/>
-          </svg>
-        </button>
-      </div>
-    )}
-
-  </div>
-
-  <!-- Slider -->
-  <div class="glide__track" data-glide-el="track">
-
-    <ul class="glide__slides">
-
-      {cachedTestimonials.map((testimonial) => (
-
-        <li 
-          key={testimonial.id}
-          class="glide__slide h-auto"
-        >
-
-          <div 
-            class="rounded-2xl p-6 h-full 
-                   bg-[var(--color-secondary-light)]"
-          >
-
-            <div class="flex items-start gap-4">
-
-              <img
-                src={testimonial.avatar?.url || "/default-avatar.png"}
-                alt={testimonial.name}
-                class="w-16 h-16 rounded-full object-cover"
-              />
-
-              <div class="flex flex-col gap-1">
-
-                {(testimonial.role || testimonial.location) && (
-                  <p class="text-sm text-[var(--color-primary)]">
-                    {testimonial.role}
-                    {testimonial.role && testimonial.location && ' - '}
-                    {testimonial.location}
-                  </p>
-                )}
-
-                <p class="text-[22px] font-semibold text-[var(--color-text-default)]">
-                  {testimonial.name}
-                </p>
-
-                <p class="text-[14px] text-[var(--color-green-dark)] leading-relaxed">
-                  {testimonial.testimonial}
-                </p>
-
-              </div>
-
-            </div>
-
+        {/* Controls - solo mostrar si hay más de 3 testimonios */}
+        {cachedTestimonials.length > 3 && (
+          <div class="flex items-center gap-4 hidden md:hidden lg:flex border-2 border-[var(--color-primary)] rounded-full">
+            <button data-glide-dir="<" class="w-12 h-12 flex items-center justify-center cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="var(--color-primary)"/>
+              </svg>
+            </button>
+            <span id="testimonialCounter" class="text-sm font-medium w-max">1 / 1</span>
+            <button data-glide-dir=">" class="w-12 h-12 flex items-center justify-center cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="var(--color-primary)"/>
+              </svg>
+            </button>
           </div>
+        )}
+      </div>
 
-        </li>
-
-      ))}
-
-    </ul>
-
-  </div>
-
-</div>
-
-</section>
+      <!-- Slider -->
+      <div class="glide__track" data-glide-el="track">
+        <ul class="glide__slides">
+          {cachedTestimonials.map((testimonial) => (
+            <li key={testimonial.id} class="glide__slide h-auto">
+              <div class="rounded-2xl p-6 h-full bg-[var(--color-secondary-light)]">
+                <div class="flex items-start gap-4">
+                  <img
+                    src={testimonial.avatar?.url || "/default-avatar.png"}
+                    alt={testimonial.name}
+                    class="w-16 h-16 rounded-full object-cover"
+                  />
+                  <div class="flex flex-col gap-1">
+                    {(testimonial.role || testimonial.location) && (
+                      <p class="text-sm text-[var(--color-primary)]">
+                        {testimonial.role}
+                        {testimonial.role && testimonial.location && ' - '}
+                        {testimonial.location}
+                      </p>
+                    )}
+                    <p class="text-[22px] font-semibold text-[var(--color-text-default)]">
+                      {testimonial.name}
+                    </p>
+                    <p class="text-[14px] text-[var(--color-green-dark)] leading-relaxed">
+                      {testimonial.testimonial}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+)}
 
 <script>
 const safeInit = async () => {
+  // Solo inicializar Glide si hay testimonios y el elemento existe
+  const container = document.querySelector('#slideTestimonials');
+  if (!container) return;
+  
   const { default: Glide } = await import('@glidejs/glide');
+  const slides = document.querySelectorAll('#slideTestimonials .glide__slide');
+  
+  if (slides.length === 0) return;
 
   const glide = new Glide('#slideTestimonials', {
     type: 'slider',
-    perView: 3,
+    perView: Math.min(3, slides.length),
     gap: 24,
     animationDuration: 500,
     animationTimingFunc: 'ease-in-out',
     rewind: false,
     breakpoints: {
       1024: {
-        perView: 2,
-        peek: {
-          before: 0,
-          after: 80
-        }
+        perView: Math.min(2, slides.length),
+        peek: { before: 0, after: 80 }
       },
       840: {
-        perView: 1.0001,
+        perView: 1,
         gap: 16,
-        peek: {
-          before: 0,
-          after: 60
-        }
+        peek: { before: 0, after: 60 }
       }
     }
   });
@@ -151,29 +150,21 @@ const safeInit = async () => {
   const updateCounter = () => {
     const perView = glide.settings.perView;
     const totalSlides = glide._c.Html.slides.length;
-
     const totalPages = Math.ceil(totalSlides / perView);
     const currentPage = Math.floor(glide.index / perView) + 1;
-
     const counter = document.querySelector('#testimonialCounter');
-
-    if (counter) {
-      counter.textContent = `${currentPage} / ${totalPages}`;
-    }
+    if (counter) counter.textContent = `${currentPage} / ${totalPages}`;
   };
 
   glide.on(['mount.after', 'run.after', 'resize'], updateCounter);
-
   glide.mount();
 
-  // Flechas manuales por página
   const prevBtn = document.querySelector('[data-glide-dir="<"]');
   const nextBtn = document.querySelector('[data-glide-dir=">"]');
 
   const getMaxIndex = () => {
     const perView = glide.settings.perView;
     const totalSlides = glide._c.Html.slides.length;
-
     return Math.floor((totalSlides - 1) / perView) * perView;
   };
 
@@ -191,7 +182,9 @@ const safeInit = async () => {
   });
 };
 
-if (document.readyState === 'loading')
+if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', safeInit, { once: true });
-else safeInit();
+} else {
+  safeInit();
+}
 </script>
