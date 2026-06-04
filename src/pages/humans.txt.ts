@@ -21,7 +21,6 @@ import {
   SOCIAL_MEDIA
 } from '@lib/siteMetadata';
 import { getCategories } from '@server/api/categories';
-// ✅ AGREGADO: Importar productos y artículos
 import { getProducts } from '@server/api/products';
 import { getArticles } from '@server/api/articles';
 
@@ -31,7 +30,6 @@ import { getArticles } from '@server/api/articles';
  */
 async function getDynamicSiteData() {
   try {
-    // ✅ AGREGADO: Obtener categorías, productos y artículos en paralelo
     const [categories, products, articles] = await Promise.all([
       getCategories().catch(() => []),
       getProducts().catch(() => []),

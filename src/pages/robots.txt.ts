@@ -11,7 +11,6 @@
 
 import type { APIRoute } from 'astro';
 import { ROBOTS_CONFIG, SITE_INFO, STATIC_ROUTES } from '@lib/siteMetadata';
-// ✅ CAMBIO: Importar desde archivos específicos en lugar de @server/api
 import { getCategories } from '@server/api/categories';
 import { getProducts } from '@server/api/products';
 import { getArticles as getBlogPosts } from '@server/api/articles';
