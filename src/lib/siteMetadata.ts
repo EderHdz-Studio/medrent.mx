@@ -51,7 +51,7 @@ export const SITE_INFO = {
   name: 'MedRent (Medrent®)',
   description: 'MedRent distribuye tecnología médica, equipos y consumibles en México para profesionales e instituciones de salud',
   canonicalUrl: 'https://www.medrent.mx',
-  email: 'sdr_telemarketing@medrent.mx',
+  email: 'contacto@medrent.mx',
   phone: '+52 55 5985 4347',
   language: 'es-MX',
   lastUpdated: new Date().toISOString().split('T')[0],
@@ -180,9 +180,9 @@ export const BUSINESS_CONTEXT = {
     law: 'Mexican Federal Law on Protection of Personal Data (LFPDPPP)',
     infrastructure: 'Google Cloud Platform (GCP)',
     department: {
-      email: 'dataprotection@medrent.mx',
-      address: 'Av. Insurgentes Sur 866, Col. Del Valle, Benito Juárez, CDMX, 03100',
-      phone: '+52 55 1078 9311'
+      email: 'contacto@medrent.mx',
+      address: 'Av. Insurgentes Sur 866, Del Valle, Benito Juárez, 03100 Ciudad de México, CDMX.',
+      phone: '+52 55 59 85 4347'
     }
   }
 };
