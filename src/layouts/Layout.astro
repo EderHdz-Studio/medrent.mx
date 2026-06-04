@@ -221,72 +221,69 @@ const isLocalEnv = import.meta.env.DEV;
 
 
     <script>
-  console.log(`
-  ╔═══════════════════════════════════════════════════════════════╗
-  ║                                                               ║
-  ║   ███╗   ███╗███████╗██████╗ ██████╗ ███████╗███╗   ██╗████████╗
-  ║   ████╗ ████║██╔════╝██╔══██╗██╔══██╗██╔════╝████╗  ██║╚══██╔══╝
-  ║   ██╔████╔██║█████╗  ██║  ██║██████╔╝█████╗  ██╔██╗ ██║   ██║   
-  ║   ██║╚██╔╝██║██╔══╝  ██║  ██║██╔══██╗██╔══╝  ██║╚██╗██║   ██║   
-  ║   ██║ ╚═╝ ██║███████╗██████╔╝██║  ██║███████╗██║ ╚████║   ██║   
-  ║   ╚═╝     ╚═╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
-  ║                                                               ║
-  ║              MedRent.mx - Tecnología médica                   ║
-  ╚═══════════════════════════════════════════════════════════════╝
+      console.log(
+        `%c
+    ╔═══════════════════════════════════════════════════════════════╗
+    ║                                                               ║
+    ║   ███╗   ███╗███████╗██████╗ ██████╗ ███████╗███╗   ██╗████████╗
+    ║   ████╗ ████║██╔════╝██╔══██╗██╔══██╗██╔════╝████╗  ██║╚══██╔══╝
+    ║   ██╔████╔██║█████╗  ██║  ██║██████╔╝█████╗  ██╔██╗ ██║   ██║   
+    ║   ██║╚██╔╝██║██╔══╝  ██║  ██║██╔══██╗██╔══╝  ██║╚██╗██║   ██║   
+    ║   ██║ ╚═╝ ██║███████╗██████╔╝██║  ██║███████╗██║ ╚████║   ██║   
+    ║   ╚═╝     ╚═╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
+    ║                                                               ║
+    ║              MedRent.mx - Tecnología médica                   ║
+    ╚═══════════════════════════════════════════════════════════════╝
+        `,
+        'font-family: monospace; white-space: pre; display: block;'
+      );
 
-  /* ============================================
-     TEAM MEDRENT
-  ============================================ */
+      console.log(`%c
+    /* ============================================
+      TEAM MEDRENT
+    ============================================ */
 
-  /* Product Lead & UX Strategy */
-  Name: Benjamin Giovanni Vidaurri Solís
-  Role: Product Lead & UX Strategy
-  Expertise: Information architecture, UX/UI design, accessibility, atomic design system, technical SEO strategy, CRO alignment
-  Portfolio: https://www.giovidaurri.com/
+    /* Product Lead & UX Strategy */
+    Name: Benjamin Giovanni Vidaurri Solís
+    Role: Product Lead & UX Strategy
+    Expertise: Information architecture, UX/UI design, accessibility, atomic design system, technical SEO strategy, CRO alignment
+    Portfolio: https://www.giovidaurri.com/
 
-  /* Principal Full-Stack Developer */
-  Name: Eder Hernández Avendaño
-  Role: Principal Full-Stack Developer
-  Expertise: Astro + Strapi architecture, performance optimization, CMS modeling, structured data implementation, Vercel deployments
-  GitHub: https://github.com/Ederhdz
+    /* Principal Full-Stack Developer */
+    Name: Eder Hernández Avendaño
+    Role: Principal Full-Stack Developer
+    Expertise: Astro + Strapi architecture, performance optimization, CMS modeling, structured data implementation, Vercel deployments
+    GitHub: https://github.com/Ederhdz
 
-  /* Frontend Developer Jr. */
-  Name: María de la Paz Medina Guzmán
-  Role: Frontend Developer Jr.
-  Expertise: Frontend development, UI/UX redesign, bug fixing, QA, Strapi CMS administration (content modeling & population), cross-browser testing, and performance optimization
-  GitHub: https://github.com/PazMedinaGuz
+    /* Frontend Developer Jr. */
+    Name: María de la Paz Medina Guzmán
+    Role: Frontend Developer Jr.
+    Expertise: Frontend development, UI/UX redesign, bug fixing, QA, Strapi CMS administration (content modeling & population), cross-browser testing, and performance optimization
+    GitHub: https://github.com/PazMedinaGuz
 
-  /* Direction */
-  Name: Iván Francisco García Anguiano
-  Role: MedRent Direction
-  Expertise: Marketing strategy, brand supervision, business alignment, clinical content validation
+    /* Direction */
+    Name: Iván Francisco García Anguiano
+    Role: MedRent Direction
+    Expertise: Marketing strategy, brand supervision, business alignment, clinical content validation
 
-  /* ============================================
-     TECH STACK
-  ============================================ */
-  Framework: Astro JS
-  CMS: Strapi (Headless)
-  Styling: Tailwind CSS
-  Hosting: Vercel
-  Analytics: Google Analytics 4, Google Tag Manager
-  CRM: HubSpot
+    /* ============================================
+      TECH STACK
+    ============================================ */
+    Astro JS · Strapi · Tailwind CSS · Vercel · GA4 · GTM · HubSpot
 
-  /* ============================================
-     SITE INFO
-  ============================================ */
-  Website: https://www.medrent.mx
-  Humans.txt: https://www.medrent.mx/humans.txt
-  Robots.txt: https://www.medrent.mx/robots.txt
-  Sitemap: https://www.medrent.mx/sitemap-index.xml
+    /* ============================================
+      SITE
+    ============================================ */
+    https://www.medrent.mx
+    /humans.txt · /robots.txt · /sitemap-index.xml
 
-  /* ============================================
-     THANK YOU
-  ============================================ */
-  Medical technology, deployed by real humans.
-  Built in Mexico for advanced clinical practice.
-
-  `);
-</script>
+    /* ============================================
+      THANK YOU
+    ============================================ */
+    Medical technology, deployed by real humans.
+    Built in Mexico for advanced clinical practice.
+      `, 'font-family: monospace;');
+    </script>
     
   </body>
 </html>
