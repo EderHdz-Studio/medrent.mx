@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = true;
+
 const BASE_URL = 'https://www.medrent.mx';
 
 export const GET: APIRoute = () => {

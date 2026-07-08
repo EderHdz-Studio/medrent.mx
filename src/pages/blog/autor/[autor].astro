@@ -1,5 +1,5 @@
 ---
-export const prerender = false;
+export const prerender = true;
 
 import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
@@ -19,6 +19,39 @@ import {
 } from "@lib/strapi/blogArticle";
 
 const TEAM_MEDRENT_SLUG = "team-medrent";
+
+export async function getStaticPaths() {
+  const slugs = new Set<string>(["team-medrent"]);
+
+  try {
+    const writers = await strapiFetch(
+      "/writers?fields[0]=slug&pagination[pageSize]=1000",
+    );
+    for (const entry of writers?.data ?? []) {
+      const writer = entry?.attributes ? entry.attributes : entry;
+      if (writer?.slug) slugs.add(writer.slug);
+    }
+  } catch {
+    /** Writers endpoint can be unavailable in some environments; articles below still cover linked authors. */
+  }
+
+  try {
+    const articles = await strapiFetch(
+      "/blog-articles?fields[0]=slug&populate[writer][fields][0]=slug&pagination[pageSize]=1000",
+    );
+    for (const entry of articles?.data ?? []) {
+      const article = entry?.attributes ? entry.attributes : entry;
+      const writer = article?.writer?.data?.attributes ?? article?.writer;
+      if (writer?.slug) slugs.add(writer.slug);
+    }
+  } catch {
+    /** Keep the team route even if CMS lookup fails. */
+  }
+
+  return Array.from(slugs).map((autor) => ({
+    params: { autor },
+  }));
+}
 
 /** Copy hero perfil colectivo — Wireframes Medrent (node 526:2818). */
 const TEAM_FIGMA_INTRO_P1 =

@@ -24,6 +24,8 @@ import { getCategories } from '@server/api/categories';
 import { getProducts } from '@server/api/products';
 import { getArticles } from '@server/api/articles';
 
+export const prerender = true;
+
 /**
  * Obtiene datos dinámicos para humanizar el sitio
  * (URLs públicas, especialidades, contenido)

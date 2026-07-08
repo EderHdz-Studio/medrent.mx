@@ -1,5 +1,5 @@
 ---
-export const prerender = false;
+export const prerender = true;
 
 import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
@@ -20,6 +20,27 @@ import { localizeRedirect } from "@lib/locale";
 import { strapiFetch } from "@server/strapiClient";
 
 const { brand, interestitial } = Astro.params;
+
+export async function getStaticPaths() {
+  const brands = await getBrands();
+  const paths = [];
+
+  for (const brand of brands) {
+    if (!brand?.slug || !isUsableBrandSlug(brand.slug)) continue;
+    const brandData = await getBrandLandingBySlug(brand.slug);
+    for (const card of brandData?.interestitialCard ?? []) {
+      if (!card?.slug) continue;
+      paths.push({
+        params: {
+          brand: brand.slug,
+          interestitial: card.slug,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
 
 let heroPLP: any = {};
 try {
@@ -42,20 +63,9 @@ if (!brandData || !interestitialCard) {
   return Astro.redirect(localizeRedirect(`/nuestras-marcas/${brand}`, Astro.originPathname ?? Astro.url.pathname), 302);
 }
 
-const url = new URL(Astro.request.url);
-
-const parseFilterParam = (key: string) => {
-  const values = url.searchParams
-    .getAll(key)
-    .flatMap((value) => value.split(","))
-    .map((value) => value.trim())
-    .filter(Boolean);
-  return [...new Set(values)];
-};
-
-const brandQuery = parseFilterParam("brand");
-const categoryQuery = parseFilterParam("category");
-const subcategoryQuery = parseFilterParam("subcategory");
+const brandQuery: string[] = [];
+const categoryQuery: string[] = [];
+const subcategoryQuery: string[] = [];
 
 if (!brandQuery.includes(brand)) {
   brandQuery.push(brand);

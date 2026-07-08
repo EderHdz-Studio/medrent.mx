@@ -3,7 +3,7 @@ const STRAPI_TOKEN = import.meta.env.STRAPI_API_TOKEN;
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-const CACHE_TTL_MS = 60_000;
+const CACHE_TTL_MS = 60 * 60_000;
 const DISK_CACHE_DIR = join(process.cwd(), ".cache", "strapi");
 const responseCache = new Map<string, { expiresAt: number; value: unknown }>();
 const inFlightRequests = new Map<string, Promise<unknown>>();

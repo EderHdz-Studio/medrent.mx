@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { getCategories } from "@server/api/categories";
 
+export const prerender = true;
+
 const BASE_URL = "https://www.medrent.mx";
 
 /** Páginas estáticas del sitio (sin `/aplicaciones`: no existe ruta; el hub real es `/especialidades`). */

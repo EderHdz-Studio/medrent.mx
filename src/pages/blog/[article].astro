@@ -1,5 +1,5 @@
 ---
-export const prerender = false;
+export const prerender = true;
 
 import Layout from '@layouts/Layout.astro';
 import { strapiFetch } from "@server/strapiClient";
@@ -23,6 +23,19 @@ import {
   getClassificationTag,
 } from '@lib/blog/classification';
 import ArticleRelatedMobile from '@components/blog/ArticleRelatedMobile.astro';
+
+export async function getStaticPaths() {
+  const res = await strapiFetch(
+    "/blog-articles?fields[0]=slug&fields[1]=isActive&pagination[pageSize]=1000",
+  );
+
+  return (res?.data ?? [])
+    .map((entry: any) => entry?.attributes ? { ...entry.attributes, id: entry.id } : entry)
+    .filter((article: any) => article?.slug && article?.isActive !== false)
+    .map((article: any) => ({
+      params: { article: article.slug },
+    }));
+}
 
 const slugParam = Astro.params.article;
 if (!slugParam) {

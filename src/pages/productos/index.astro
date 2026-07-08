@@ -1,5 +1,5 @@
 ---
-export const prerender = false;
+export const prerender = true;
 
 import Layout from "@layouts/Layout.astro";
 import BreadcrumbSchema from "@components/seo/BreadcrumbSchema.astro";
@@ -27,28 +27,9 @@ try {
 
 /* ---------------- QUERY PARAMS ---------------- */
 
-const url = new URL(Astro.request.url);
-
-const parseFilterParam = (key: string) => {
-  const values = url.searchParams
-    .getAll(key)
-    .flatMap((value) => value.split(","))
-    .map((value) => value.trim())
-    .filter(Boolean);
-  return [...new Set(values)];
-};
-
-const brandQuery = parseFilterParam("brand");
-const categoryQuery = parseFilterParam("category");
-const subcategoryQuery = parseFilterParam("subcategory");
-
 /* ---------------- FETCH DATA ---------------- */
 
-const products = await getProducts({
-  brands: brandQuery,
-  categories: categoryQuery,
-  subcategories: subcategoryQuery,
-});
+const products = await getProducts();
 
 const brandsData = await getBrands();
 const categoriesData = await getCategories();

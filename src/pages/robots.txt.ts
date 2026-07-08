@@ -15,6 +15,8 @@ import { getCategories } from '@server/api/categories';
 import { getProducts } from '@server/api/products';
 import { getArticles as getBlogPosts } from '@server/api/articles';
 
+export const prerender = true;
+
 export const GET: APIRoute = async () => {
   // Obtener TODOS los datos dinámicos en UNA SOLA llamada
   const [categories, products, blogPosts] = await Promise.all([

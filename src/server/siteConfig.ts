@@ -1,5 +1,6 @@
 const STRAPI_URL = import.meta.env.STRAPI_URL;
 const STRAPI_API_TOKEN = import.meta.env.STRAPI_API_TOKEN;
+let siteConfigPromise: Promise<any> | null = null;
 
 const fetchWithCache = async (endpoint: string) => {
   const res = await fetch(`${STRAPI_URL}${endpoint}`, {
@@ -19,6 +20,13 @@ const fetchWithCache = async (endpoint: string) => {
 };
 
 export const getSiteConfig = async () => {
+  if (siteConfigPromise) return siteConfigPromise;
+
+  siteConfigPromise = getSiteConfigFromStrapi();
+  return siteConfigPromise;
+};
+
+const getSiteConfigFromStrapi = async () => {
   try {
     const response = await fetchWithCache("/site-setting?populate=*");
     

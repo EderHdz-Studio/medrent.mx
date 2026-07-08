@@ -1,5 +1,5 @@
 ---
-export const prerender = false;
+export const prerender = true;
 import { strapiFetch } from "@server/strapiClient";
 
 let heroPLP: any = {};
@@ -30,26 +30,27 @@ import { formatSlugAsTitle } from "@lib/utils.js";
 import { getSiteConfig } from "@server/siteConfig";
 const siteConfig = await getSiteConfig();
 
+export async function getStaticPaths() {
+  const categories = await getCategories();
+  return categories.flatMap((category: any) =>
+    (category.subcategories ?? []).map((subcategory: any) => ({
+      params: {
+        category: category.slug,
+        subcategory: subcategory.slug,
+      },
+    })),
+  );
+}
+
 /* ---------------- ROUTE PARAMS ---------------- */
 
 const { category, subcategory } = Astro.params;
 
 /* ---------------- QUERY PARAMS ---------------- */
 
-const url = new URL(Astro.request.url);
-
-const parseFilterParam = (key: string) => {
-  const values = url.searchParams
-    .getAll(key)
-    .flatMap((value) => value.split(","))
-    .map((value) => value.trim())
-    .filter(Boolean);
-  return [...new Set(values)];
-};
-
-const brandQuery = parseFilterParam("brand");
-const categoryQuery = parseFilterParam("category");
-const subcategoryQuery = parseFilterParam("subcategory");
+const brandQuery: string[] = [];
+const categoryQuery: string[] = [];
+const subcategoryQuery: string[] = [];
 
 /* Siempre incluir contexto base */
 if (category && !categoryQuery.includes(category)) {
