@@ -10,11 +10,25 @@ const inFlightRequests = new Map<string, Promise<unknown>>();
 
 function normalizeStrapiBaseUrl(rawUrl: string) {
   const trimmed = (rawUrl || "").replace(/\/+$/, "");
-  if (!trimmed) return "";
+  if (!trimmed) {
+    throw new Error(
+      "STRAPI_URL is required for server-side Strapi requests. Set STRAPI_URL in Vercel and local .env.",
+    );
+  }
+  try {
+    new URL(trimmed);
+  } catch {
+    throw new Error(`STRAPI_URL must be an absolute URL. Received: ${rawUrl}`);
+  }
   return trimmed.endsWith("/api") ? trimmed : `${trimmed}/api`;
 }
 
 const STRAPI_URL = normalizeStrapiBaseUrl(RAW_STRAPI_URL);
+
+export function buildStrapiRequestUrl(path: string) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return new URL(normalizedPath.replace(/^\//, ""), `${STRAPI_URL}/`).toString();
+}
 
 function cachePathForUrl(requestUrl: string) {
   const key = createHash("sha1").update(requestUrl).digest("hex");
@@ -46,7 +60,7 @@ async function writeDiskCache(requestUrl: string, value: unknown) {
 }
 
 export async function strapiFetch(path: string) {
-  const requestUrl = `${STRAPI_URL}${path}`;
+  const requestUrl = buildStrapiRequestUrl(path);
   const now = Date.now();
   const cacheEntry = responseCache.get(requestUrl);
 

@@ -1,9 +1,9 @@
-const STRAPI_URL = import.meta.env.STRAPI_URL;
 const STRAPI_API_TOKEN = import.meta.env.STRAPI_API_TOKEN;
+import { buildStrapiRequestUrl } from "./strapiClient";
 let siteConfigPromise: Promise<any> | null = null;
 
 const fetchWithCache = async (endpoint: string) => {
-  const res = await fetch(`${STRAPI_URL}${endpoint}`, {
+  const res = await fetch(buildStrapiRequestUrl(endpoint), {
     headers: {
       Authorization: `Bearer ${STRAPI_API_TOKEN}`,
     },
