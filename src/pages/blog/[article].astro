@@ -261,7 +261,7 @@ if (writerSlugForCount) {
     </div>
 
     <!-- Cabecera -->
-    <div class="w-full p-4 md:py-6 md:px-4">
+    <div class="w-full p-4 md:py-6 md:px-4 flex flex-col gap-2">
       {classificationLabel && (
         <p class="mb-4 uppercase font-lato text-[14px] font-medium leading-5 tracking-[0.1px] text-[var(--color-primary)]">
           {classificationLabel}
@@ -350,7 +350,7 @@ if (writerSlugForCount) {
                       <img
                         src={item.articleImage.url}
                         alt={item.articleImage.alternativeText || 'Imagen del artículo'}
-                        class="w-full h-auto rounded mb-6"
+                        class="w-full max-w-[400px] h-auto rounded mb-6 mx-auto"
                       />
                     );
                   }
